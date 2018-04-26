@@ -1,0 +1,30 @@
+<h2>Listing Category</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Category name</th>
+      <th>Category description</th>
+      <th>Is default menu</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for category <- @category do %>
+    <tr>
+      <td><%= category.category_name %></td>
+      <td><%= category.category_description %></td>
+      <td><%= category.is_default_menu %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: category_path(@conn, :show, category), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: category_path(@conn, :edit, category), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: category_path(@conn, :delete, category), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Category", to: category_path(@conn, :new) %></span>

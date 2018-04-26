@@ -1,0 +1,30 @@
+<h2>Listing Tag items</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Item name</th>
+      <th>Tag name</th>
+      <th>Printer</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for tag_items <- @tag_items do %>
+    <tr>
+      <td><%= tag_items.item_name %></td>
+      <td><%= tag_items.tag_name %></td>
+      <td><%= tag_items.printer %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: tag_items_path(@conn, :show, tag_items), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: tag_items_path(@conn, :edit, tag_items), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: tag_items_path(@conn, :delete, tag_items), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Tag items", to: tag_items_path(@conn, :new) %></span>

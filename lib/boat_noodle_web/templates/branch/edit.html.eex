@@ -1,0 +1,5 @@
+<h2>Edit Branch</h2>
+
+<%= render "form.html", Map.put(assigns, :action, branch_path(@conn, :update, @branch)) %>
+
+<span><%= link "Back", to: branch_path(@conn, :index) %></span>

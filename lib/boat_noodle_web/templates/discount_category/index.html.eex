@@ -1,0 +1,36 @@
+<h2>Listing Discount category</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Discount type</th>
+      <th>Amount percentage</th>
+      <th>Status</th>
+      <th>Discount catalog</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for discount_category <- @discount_category do %>
+    <tr>
+      <td><%= discount_category.name %></td>
+      <td><%= discount_category.description %></td>
+      <td><%= discount_category.discount_type %></td>
+      <td><%= discount_category.amount_percentage %></td>
+      <td><%= discount_category.status %></td>
+      <td><%= discount_category.discount_catalog %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: discount_category_path(@conn, :show, discount_category), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: discount_category_path(@conn, :edit, discount_category), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: discount_category_path(@conn, :delete, discount_category), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Discount category", to: discount_category_path(@conn, :new) %></span>

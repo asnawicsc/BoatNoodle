@@ -1,0 +1,43 @@
+<h2>Show Menu catalog</h2>
+
+<ul>
+
+  <li>
+    <strong>Menu catalog master:</strong>
+    <%= @menu_catalog.menu_catalog_master_id %>
+  </li>
+
+  <li>
+    <strong>Item code:</strong>
+    <%= @menu_catalog.item_code %>
+  </li>
+
+  <li>
+    <strong>Item name:</strong>
+    <%= @menu_catalog.item_name %>
+  </li>
+
+  <li>
+    <strong>Price code:</strong>
+    <%= @menu_catalog.price_code %>
+  </li>
+
+  <li>
+    <strong>Price:</strong>
+    <%= @menu_catalog.price %>
+  </li>
+
+  <li>
+    <strong>Active:</strong>
+    <%= @menu_catalog.active %>
+  </li>
+
+  <li>
+    <strong>Category item:</strong>
+    <%= @menu_catalog.category_item %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: menu_catalog_path(@conn, :edit, @menu_catalog) %></span>
+<span><%= link "Back", to: menu_catalog_path(@conn, :index) %></span>

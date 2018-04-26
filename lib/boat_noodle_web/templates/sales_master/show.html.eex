@@ -1,0 +1,38 @@
+<h2>Show Sales master</h2>
+
+<ul>
+
+  <li>
+    <strong>Receipt no:</strong>
+    <%= @sales_master.receipt_no %>
+  </li>
+
+  <li>
+    <strong>Payment:</strong>
+    <%= @sales_master.payment %>
+  </li>
+
+  <li>
+    <strong>Total amount:</strong>
+    <%= @sales_master.total_amount %>
+  </li>
+
+  <li>
+    <strong>Table:</strong>
+    <%= @sales_master.table %>
+  </li>
+
+  <li>
+    <strong>Pax:</strong>
+    <%= @sales_master.pax %>
+  </li>
+
+  <li>
+    <strong>Casher:</strong>
+    <%= @sales_master.casher %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: sales_master_path(@conn, :edit, @sales_master) %></span>
+<span><%= link "Back", to: sales_master_path(@conn, :index) %></span>

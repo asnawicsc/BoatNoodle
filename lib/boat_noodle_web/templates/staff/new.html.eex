@@ -1,0 +1,5 @@
+<h2>New Staff</h2>
+
+<%= render "form.html", Map.put(assigns, :action, staff_path(@conn, :create)) %>
+
+<span><%= link "Back", to: staff_path(@conn, :index) %></span>

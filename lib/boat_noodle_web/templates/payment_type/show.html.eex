@@ -1,0 +1,13 @@
+<h2>Show Payment type</h2>
+
+<ul>
+
+  <li>
+    <strong>Payment name:</strong>
+    <%= @payment_type.payment_name %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: payment_type_path(@conn, :edit, @payment_type) %></span>
+<span><%= link "Back", to: payment_type_path(@conn, :index) %></span>

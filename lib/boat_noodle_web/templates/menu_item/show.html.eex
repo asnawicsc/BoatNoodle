@@ -1,0 +1,78 @@
+<h2>Show Menu item</h2>
+
+<ul>
+
+  <li>
+    <strong>Item code:</strong>
+    <%= @menu_item.item_code %>
+  </li>
+
+  <li>
+    <strong>Item:</strong>
+    <%= @menu_item.item %>
+  </li>
+
+  <li>
+    <strong>Item name:</strong>
+    <%= @menu_item.item_name %>
+  </li>
+
+  <li>
+    <strong>Item description:</strong>
+    <%= @menu_item.item_description %>
+  </li>
+
+  <li>
+    <strong>Price:</strong>
+    <%= @menu_item.price %>
+  </li>
+
+  <li>
+    <strong>Item image:</strong>
+    <%= @menu_item.item_image %>
+  </li>
+
+  <li>
+    <strong>Category:</strong>
+    <%= @menu_item.category %>
+  </li>
+
+  <li>
+    <strong>Part code:</strong>
+    <%= @menu_item.part_code %>
+  </li>
+
+  <li>
+    <strong>Price code:</strong>
+    <%= @menu_item.price_code %>
+  </li>
+
+  <li>
+    <strong>Active:</strong>
+    <%= @menu_item.active %>
+  </li>
+
+  <li>
+    <strong>Enable discount:</strong>
+    <%= @menu_item.enable_discount %>
+  </li>
+
+  <li>
+    <strong>Is included in minimum spend:</strong>
+    <%= @menu_item.is_included_in_minimum_spend %>
+  </li>
+
+  <li>
+    <strong>Tags:</strong>
+    <%= @menu_item.tags %>
+  </li>
+
+  <li>
+    <strong>Menu catalogs:</strong>
+    <%= @menu_item.menu_catalogs %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: menu_item_path(@conn, :edit, @menu_item) %></span>
+<span><%= link "Back", to: menu_item_path(@conn, :index) %></span>

@@ -1,0 +1,104 @@
+<br>
+
+  <div class="col-lg-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                           <center>Total Taxes </center>
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <center>123213123</center>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+  </div>
+
+    <div class="col-lg-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                           <center>Total Amounts after tax deduction</center>
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                          <center>1231313</center>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+  </div>
+
+  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Tax Report
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="daily_sales"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+  </div>
+  <div class="col-lg-12">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <i class="fa fa-bar-chart-o fa-fw"></i> Outlet Sales Information 
+                              <div class="pull-right">
+                                  <div class="btn-group">
+                                    
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- /.panel-heading -->
+                          <div class="panel-body">
+                              <div class="table-responsive">
+                                          <table class="table table-bordered table-hover table-striped">
+                                              <thead>
+                                                  <tr>
+                                                      <th>Sales Time</th>
+                                                      <th>Receipt No</th>
+                                                      <th>Tax</th>
+                                                      <th>Standard Supply Rate</th>
+                                                      <th>Action</th>
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+                                                <%= for tax <- @tax do %>
+                                                  <tr>
+                                                      <td>3326</td>
+                                                      <td>10/21/2013</td>
+                                                      <td>3:29 PM</td>
+                                                      <td>$321.33</td>
+                                                      <td class="text-right">
+                                                      <span><%= link "Show", to: tax_path(@conn, :show, tax), class: "btn btn-default btn-xs" %></span>
+                                                      <span><%= link "Edit", to: tax_path(@conn, :edit, tax), class: "btn btn-default btn-xs" %></span>
+                                                      <span><%= link "Delete", to: tax_path(@conn, :delete, tax), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+                                                    </td>
+                                                  </tr>
+
+                                                  <%end%>
+                                               
+                                              </tbody>
+                                          </table>
+                                      </div>
+                          </div>
+                          <!-- /.panel-body -->
+                      </div>
+             
+  </div>
+
+<span><%= link "New Tax", to: tax_path(@conn, :new) %></span>

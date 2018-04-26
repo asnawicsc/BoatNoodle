@@ -1,0 +1,5 @@
+<h2>New Discount item</h2>
+
+<%= render "form.html", Map.put(assigns, :action, discount_item_path(@conn, :create)) %>
+
+<span><%= link "Back", to: discount_item_path(@conn, :index) %></span>

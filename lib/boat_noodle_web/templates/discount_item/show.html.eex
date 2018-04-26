@@ -1,0 +1,48 @@
+<h2>Show Discount item</h2>
+
+<ul>
+
+  <li>
+    <strong>Discount name:</strong>
+    <%= @discount_item.discount_name %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @discount_item.description %>
+  </li>
+
+  <li>
+    <strong>Discount type:</strong>
+    <%= @discount_item.discount_type %>
+  </li>
+
+  <li>
+    <strong>Discount category:</strong>
+    <%= @discount_item.discount_category %>
+  </li>
+
+  <li>
+    <strong>Discount percentage:</strong>
+    <%= @discount_item.discount_percentage %>
+  </li>
+
+  <li>
+    <strong>Status:</strong>
+    <%= @discount_item.status %>
+  </li>
+
+  <li>
+    <strong>Minimum spend:</strong>
+    <%= @discount_item.minimum_spend %>
+  </li>
+
+  <li>
+    <strong>Discount catalog:</strong>
+    <%= @discount_item.discount_catalog %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: discount_item_path(@conn, :edit, @discount_item) %></span>
+<span><%= link "Back", to: discount_item_path(@conn, :index) %></span>

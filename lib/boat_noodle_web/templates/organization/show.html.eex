@@ -1,0 +1,38 @@
+<h2>Show Organization</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @organization.name %>
+  </li>
+
+  <li>
+    <strong>Address:</strong>
+    <%= @organization.address %>
+  </li>
+
+  <li>
+    <strong>Company registration number:</strong>
+    <%= @organization.company_registration_number %>
+  </li>
+
+  <li>
+    <strong>Tax registration number:</strong>
+    <%= @organization.tax_registration_number %>
+  </li>
+
+  <li>
+    <strong>Contact number:</strong>
+    <%= @organization.contact_number %>
+  </li>
+
+  <li>
+    <strong>Country:</strong>
+    <%= @organization.country %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: organization_path(@conn, :edit, @organization) %></span>
+<span><%= link "Back", to: organization_path(@conn, :index) %></span>

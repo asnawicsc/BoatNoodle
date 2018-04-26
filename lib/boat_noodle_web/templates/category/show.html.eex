@@ -1,0 +1,23 @@
+<h2>Show Category</h2>
+
+<ul>
+
+  <li>
+    <strong>Category name:</strong>
+    <%= @category.category_name %>
+  </li>
+
+  <li>
+    <strong>Category description:</strong>
+    <%= @category.category_description %>
+  </li>
+
+  <li>
+    <strong>Is default menu:</strong>
+    <%= @category.is_default_menu %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: category_path(@conn, :edit, @category) %></span>
+<span><%= link "Back", to: category_path(@conn, :index) %></span>

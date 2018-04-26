@@ -1,0 +1,5 @@
+<h2>Edit Remark</h2>
+
+<%= render "form.html", Map.put(assigns, :action, remark_path(@conn, :update, @remark)) %>
+
+<span><%= link "Back", to: remark_path(@conn, :index) %></span>

@@ -1,0 +1,153 @@
+<h2>Listing Menu item</h2>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem"><i class="fa fa-book" aria-hidden="true"></i> Add New Menu Item</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlUploadMenu"><i class="fa fa-upload" aria-hidden="true"></i> Upload Menus</button>
+<button type="button" class="btn btn-primary" id="btnAddCombo"><i class="fa fa-tags" aria-hidden="true"></i> Add New Combo</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat"><i class="fa fa-tags" aria-hidden="true"></i> Add New Category</button>
+<button id="btnDlMenu" type="button" class="btn btn-primary"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Menu list CSV</button>
+
+<br>
+<br>
+
+  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-book"></i> List Item
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                      <th>Item code</th>
+                                                      <th>Item Code</th>
+                                                      <th>Item name</th>
+                                                      <th>Price</th>
+                                                      <th>Category</th>
+                                                      <th>Active</th>
+                                                      <th>Action</th>
+                                             
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                               <%= for menu_item <- @menu_item do %>
+                                                  <tr>
+                                                    <td><%= menu_item.item_code %></td>
+                                                    <td><%= menu_item.item %></td>
+                                                    <td><%= menu_item.item_name %></td>
+                                                    <td><%= menu_item.price %></td>
+                                                    <td><%= menu_item.category %></td>
+                                                    <td><%= menu_item.active %></td>
+                                               
+                                                    <td class="text-right">
+                                                      <span><%= link "Show", to: menu_item_path(@conn, :show, menu_item), class: "btn btn-default btn-xs" %></span>
+                                                      <span><%= link "Edit", to: menu_item_path(@conn, :edit, menu_item), class: "btn btn-default btn-xs" %></span>
+                                                      <span><%= link "Delete", to: menu_item_path(@conn, :delete, menu_item), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+                                                    </td>
+                                                  </tr>
+                                              <% end %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+  </div>
+   <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-book"></i> Remark Items 
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>3326</td>
+                                                    <td>10/21/2013</td>
+                                                    <td>3:29 PM</td>
+                                                    <td>$321.33</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3325</td>
+                                                    <td>10/21/2013</td>
+                                                    <td>3:20 PM</td>
+                                                    <td>$234.34</td>
+                                                </tr>
+                                             
+                                            </tbody>
+                                        </table>
+                                    </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+  </div>
+   <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-book"></i> Menu Catalog 
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>3326</td>
+                                                    <td>10/21/2013</td>
+                                                    <td>3:29 PM</td>
+                                                    <td>$321.33</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3325</td>
+                                                    <td>10/21/2013</td>
+                                                    <td>3:20 PM</td>
+                                                    <td>$234.34</td>
+                                                </tr>
+                                             
+                                            </tbody>
+                                        </table>
+                                    </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+  </div>
+
+
+<span><%= link "New Menu item", to: menu_item_path(@conn, :new) %></span>

@@ -1,0 +1,28 @@
+<h2>Show Tax</h2>
+
+<ul>
+
+  <li>
+    <strong>Sales time:</strong>
+    <%= @tax.sales_time %>
+  </li>
+
+  <li>
+    <strong>Receipt no:</strong>
+    <%= @tax.receipt_no %>
+  </li>
+
+  <li>
+    <strong>Tax:</strong>
+    <%= @tax.tax %>
+  </li>
+
+  <li>
+    <strong>Standard supply rate:</strong>
+    <%= @tax.standard_supply_rate %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: tax_path(@conn, :edit, @tax) %></span>
+<span><%= link "Back", to: tax_path(@conn, :index) %></span>

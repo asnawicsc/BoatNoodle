@@ -1,0 +1,26 @@
+<h2>Listing Menu catalog master</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Catalog name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for menu_catalog_master <- @menu_catalog_master do %>
+    <tr>
+      <td><%= menu_catalog_master.catalog_name %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: menu_catalog_master_path(@conn, :show, menu_catalog_master), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: menu_catalog_master_path(@conn, :edit, menu_catalog_master), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: menu_catalog_master_path(@conn, :delete, menu_catalog_master), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Menu catalog master", to: menu_catalog_master_path(@conn, :new) %></span>

@@ -1,0 +1,95 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :item_code, class: "control-label" %>
+    <%= text_input f, :item_code, class: "form-control" %>
+    <%= error_tag f, :item_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :item, class: "control-label" %>
+    <%= text_input f, :item, class: "form-control" %>
+    <%= error_tag f, :item %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :item_name, class: "control-label" %>
+    <%= text_input f, :item_name, class: "form-control" %>
+    <%= error_tag f, :item_name %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :item_description, class: "control-label" %>
+    <%= text_input f, :item_description, class: "form-control" %>
+    <%= error_tag f, :item_description %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :price, class: "control-label" %>
+    <%= number_input f, :price, step: "any", class: "form-control" %>
+    <%= error_tag f, :price %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :item_image, class: "control-label" %>
+    <%= text_input f, :item_image, class: "form-control" %>
+    <%= error_tag f, :item_image %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :category, class: "control-label" %>
+    <%= text_input f, :category, class: "form-control" %>
+    <%= error_tag f, :category %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :part_code, class: "control-label" %>
+    <%= text_input f, :part_code, class: "form-control" %>
+    <%= error_tag f, :part_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :price_code, class: "control-label" %>
+    <%= text_input f, :price_code, class: "form-control" %>
+    <%= error_tag f, :price_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :active, class: "control-label" %>
+    <%= checkbox f, :active, class: "checkbox" %>
+    <%= error_tag f, :active %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :enable_discount, class: "control-label" %>
+    <%= checkbox f, :enable_discount, class: "checkbox" %>
+    <%= error_tag f, :enable_discount %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_included_in_minimum_spend, class: "control-label" %>
+    <%= checkbox f, :is_included_in_minimum_spend, class: "checkbox" %>
+    <%= error_tag f, :is_included_in_minimum_spend %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :tags, class: "control-label" %>
+    <%= text_input f, :tags, class: "form-control" %>
+    <%= error_tag f, :tags %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :menu_catalogs, class: "control-label" %>
+    <%= text_input f, :menu_catalogs, class: "form-control" %>
+    <%= error_tag f, :menu_catalogs %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

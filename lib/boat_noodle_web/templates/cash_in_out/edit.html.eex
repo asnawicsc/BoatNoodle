@@ -1,0 +1,5 @@
+<h2>Edit Cash in out</h2>
+
+<%= render "form.html", Map.put(assigns, :action, cash_in_out_path(@conn, :update, @cash_in_out)) %>
+
+<span><%= link "Back", to: cash_in_out_path(@conn, :index) %></span>

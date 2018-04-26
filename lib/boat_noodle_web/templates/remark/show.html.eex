@@ -1,0 +1,23 @@
+<h2>Show Remark</h2>
+
+<ul>
+
+  <li>
+    <strong>Remark description:</strong>
+    <%= @remark.remark_description %>
+  </li>
+
+  <li>
+    <strong>Target category:</strong>
+    <%= @remark.target_category %>
+  </li>
+
+  <li>
+    <strong>Target item:</strong>
+    <%= @remark.target_item %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: remark_path(@conn, :edit, @remark) %></span>
+<span><%= link "Back", to: remark_path(@conn, :index) %></span>

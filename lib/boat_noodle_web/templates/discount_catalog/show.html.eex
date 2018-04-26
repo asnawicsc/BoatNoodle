@@ -1,0 +1,33 @@
+<h2>Show Discount catalog</h2>
+
+<ul>
+
+  <li>
+    <strong>Discount catalog master:</strong>
+    <%= @discount_catalog.discount_catalog_master_id %>
+  </li>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @discount_catalog.name %>
+  </li>
+
+  <li>
+    <strong>Discount categories:</strong>
+    <%= @discount_catalog.discount_categories %>
+  </li>
+
+  <li>
+    <strong>Discount category:</strong>
+    <%= @discount_catalog.discount_category %>
+  </li>
+
+  <li>
+    <strong>Discount name:</strong>
+    <%= @discount_catalog.discount_name %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: discount_catalog_path(@conn, :edit, @discount_catalog) %></span>
+<span><%= link "Back", to: discount_catalog_path(@conn, :index) %></span>

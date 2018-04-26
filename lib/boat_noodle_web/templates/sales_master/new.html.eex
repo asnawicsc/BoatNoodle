@@ -1,0 +1,5 @@
+<h2>New Sales master</h2>
+
+<%= render "form.html", Map.put(assigns, :action, sales_master_path(@conn, :create)) %>
+
+<span><%= link "Back", to: sales_master_path(@conn, :index) %></span>

@@ -1,0 +1,71 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :branch_name, class: "control-label" %>
+    <%= text_input f, :branch_name, class: "form-control" %>
+    <%= error_tag f, :branch_name %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branch_code, class: "control-label" %>
+    <%= text_input f, :branch_code, class: "form-control" %>
+    <%= error_tag f, :branch_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branch_contact, class: "control-label" %>
+    <%= text_input f, :branch_contact, class: "form-control" %>
+    <%= error_tag f, :branch_contact %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branch_address, class: "control-label" %>
+    <%= text_input f, :branch_address, class: "form-control" %>
+    <%= error_tag f, :branch_address %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :organization, class: "control-label" %>
+    <%= text_input f, :organization, class: "form-control" %>
+    <%= error_tag f, :organization %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :goverment_tax_percentage, class: "control-label" %>
+    <%= number_input f, :goverment_tax_percentage, class: "form-control" %>
+    <%= error_tag f, :goverment_tax_percentage %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :service_tax_percentage, class: "control-label" %>
+    <%= number_input f, :service_tax_percentage, class: "form-control" %>
+    <%= error_tag f, :service_tax_percentage %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branch_manager, class: "control-label" %>
+    <%= text_input f, :branch_manager, class: "form-control" %>
+    <%= error_tag f, :branch_manager %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :number_of_staff, class: "control-label" %>
+    <%= number_input f, :number_of_staff, class: "form-control" %>
+    <%= error_tag f, :number_of_staff %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :report_class, class: "control-label" %>
+    <%= text_input f, :report_class, class: "form-control" %>
+    <%= error_tag f, :report_class %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

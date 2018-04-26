@@ -1,0 +1,28 @@
+<h2>Show Cash in out</h2>
+
+<ul>
+
+  <li>
+    <strong>Branch:</strong>
+    <%= @cash_in_out.branch %>
+  </li>
+
+  <li>
+    <strong>Cash in:</strong>
+    <%= @cash_in_out.cash_in %>
+  </li>
+
+  <li>
+    <strong>Cash out:</strong>
+    <%= @cash_in_out.cash_out %>
+  </li>
+
+  <li>
+    <strong>Open drawer:</strong>
+    <%= @cash_in_out.open_drawer %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: cash_in_out_path(@conn, :edit, @cash_in_out) %></span>
+<span><%= link "Back", to: cash_in_out_path(@conn, :index) %></span>

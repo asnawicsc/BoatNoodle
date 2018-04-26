@@ -1,0 +1,23 @@
+<h2>Show Sales</h2>
+
+<ul>
+
+  <li>
+    <strong>Sales master:</strong>
+    <%= @sales.sales_master_id %>
+  </li>
+
+  <li>
+    <strong>Item:</strong>
+    <%= @sales.item_id %>
+  </li>
+
+  <li>
+    <strong>Quantity:</strong>
+    <%= @sales.quantity %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: sales_path(@conn, :edit, @sales) %></span>
+<span><%= link "Back", to: sales_path(@conn, :index) %></span>

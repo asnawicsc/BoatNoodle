@@ -1,0 +1,23 @@
+<h2>Show Tag items</h2>
+
+<ul>
+
+  <li>
+    <strong>Item name:</strong>
+    <%= @tag_items.item_name %>
+  </li>
+
+  <li>
+    <strong>Tag name:</strong>
+    <%= @tag_items.tag_name %>
+  </li>
+
+  <li>
+    <strong>Printer:</strong>
+    <%= @tag_items.printer %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: tag_items_path(@conn, :edit, @tag_items) %></span>
+<span><%= link "Back", to: tag_items_path(@conn, :index) %></span>

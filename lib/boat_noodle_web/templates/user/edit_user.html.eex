@@ -1,0 +1,76 @@
+<h2>Listing User</h2>
+<br>
+ <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-book"></i> User Detail 
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table style="width:800px;" class="tbluser">
+                        <tbody><tr>
+                            <td class="labelrow"><label>Username</label></td>
+                            <td><input name="txtUsername" id="txtUsername" class="form-control" value="alvis" required="" type="text">
+                            <input name="txtUserID" id="txtUserID" class="form-control" value="eyJpdiI6InVhMFg2dFBlREluVkhHY2ltVHpRSHc9PSIsInZhbHVlIjoiVUpFWGNZK1VWVHo0azI0UkRhdFEzUT09IiwibWFjIjoiYjI3NjIwMDdjZDg3MTBlYzI5ODkwNmIxMWJkYThhOWY1MWE0ODA4ODk5MzcxYmI2NTA0ZGM1MjYwNjc2ZDMxZSJ9" type="hidden">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="labelrow"><label>Old Password</label></td>
+                            <td><input name="txtoldpass" id="txtoldpass" class="form-control" required="" type="password"></td>
+                        </tr>
+                        <tr>
+                            <td class="labelrow"><label>New Password</label></td>
+                            <td><input name="txtnewpass" id="txtnewpass" class="form-control" required="" type="password"></td>
+                        </tr>
+                        <tr>
+                            <td class="labelrow"><label>Confirm Password</label></td>
+                            <td><input name="txtConPass" id="txtConPass" class="form-control" required="" type="password"></td>
+                        </tr>
+                        <tr>
+                            <td class="labelrow"><label>Email Address</label></td>
+                            <td><input name="txtEmail" id="txtEmail" class="form-control" value="yugi_destiny@hotmail.com" required="" type="text"></td>
+                        </tr>
+                      
+                    </tbody></table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+  </div>
+  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-book"></i> User Access 
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table class="tbluser" style="width:800px;">
+                                <tbody>
+                                	<tr>
+                                    <td class="labelrow"><label>Position</label></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class="labelrow"><label>Branch Access</label></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="trBranchList" class="labelrow" style="display: none;">
+                                    <td></td>
+                                 
+                                </tr>
+                            </tbody></table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+  </div>

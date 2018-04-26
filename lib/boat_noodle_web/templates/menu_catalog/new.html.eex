@@ -1,0 +1,5 @@
+<h2>New Menu catalog</h2>
+
+<%= render "form.html", Map.put(assigns, :action, menu_catalog_path(@conn, :create)) %>
+
+<span><%= link "Back", to: menu_catalog_path(@conn, :index) %></span>

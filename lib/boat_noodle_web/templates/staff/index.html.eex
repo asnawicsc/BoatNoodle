@@ -1,0 +1,42 @@
+<h2>Listing Staff</h2>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem"><i class="fa fa-plus" aria-hidden="true"></i> Add New Staff</button>
+
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Staff name</th>
+      <th>Contact number</th>
+      <th>Email</th>
+      <th>Pin number</th>
+      <th>Branch</th>
+      <th>Staff role</th>
+      <th>Photo</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for staff <- @staff do %>
+    <tr>
+      <td><%= staff.staff_name %></td>
+      <td><%= staff.contact_number %></td>
+      <td><%= staff.email %></td>
+      <td><%= staff.pin_number %></td>
+      <td><%= staff.branch %></td>
+      <td><%= staff.staff_role %></td>
+      <td><%= staff.photo %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: staff_path(@conn, :show, staff), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: staff_path(@conn, :edit, staff), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: staff_path(@conn, :delete, staff), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Staff", to: staff_path(@conn, :new) %></span>

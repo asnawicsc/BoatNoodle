@@ -1,0 +1,43 @@
+<h2>Show Staff</h2>
+
+<ul>
+
+  <li>
+    <strong>Staff name:</strong>
+    <%= @staff.staff_name %>
+  </li>
+
+  <li>
+    <strong>Contact number:</strong>
+    <%= @staff.contact_number %>
+  </li>
+
+  <li>
+    <strong>Email:</strong>
+    <%= @staff.email %>
+  </li>
+
+  <li>
+    <strong>Pin number:</strong>
+    <%= @staff.pin_number %>
+  </li>
+
+  <li>
+    <strong>Branch:</strong>
+    <%= @staff.branch %>
+  </li>
+
+  <li>
+    <strong>Staff role:</strong>
+    <%= @staff.staff_role %>
+  </li>
+
+  <li>
+    <strong>Photo:</strong>
+    <%= @staff.photo %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: staff_path(@conn, :edit, @staff) %></span>
+<span><%= link "Back", to: staff_path(@conn, :index) %></span>

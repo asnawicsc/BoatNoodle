@@ -1,0 +1,105 @@
+  <h2>Sales Chart</h2>
+  <br>       
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Month to Month Comparison
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="monthly"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+                </div>
+               
+
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Daily Sales
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="daily_sales"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                  </div>
+            
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Hourly Sales
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="hourly_sales"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                  </div>
+
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Hourly Pax and Transaction
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="hourly_pax_and_transaction"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                  </div>
+
+
+<table class="table">
+  <thead>
+    <tr>
+     <%#  <th>Sales master</th>
+      <th>Item</th>
+      <th>Quantity</th> %>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for sales <- @sales do %>
+    <tr>
+      <td><%= sales.sales_master_id %></td>
+      <td><%= sales.item_id %></td>
+      <td><%= sales.quantity %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: sales_path(@conn, :show, sales), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: sales_path(@conn, :edit, sales), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: sales_path(@conn, :delete, sales), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Sales", to: sales_path(@conn, :new) %></span>
