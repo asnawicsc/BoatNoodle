@@ -1,0 +1,5 @@
+<h2>Edit User pwd</h2>
+
+<%= render "form.html", Map.put(assigns, :action, user_pwd_path(@conn, :update, @user_pwd)) %>
+
+<span><%= link "Back", to: user_pwd_path(@conn, :index) %></span>

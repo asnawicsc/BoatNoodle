@@ -1,0 +1,158 @@
+<h2>Show Rpttransaction</h2>
+
+<ul>
+
+  <li>
+    <strong>Salesid:</strong>
+    <%= @rpttransaction.salesid %>
+  </li>
+
+  <li>
+    <strong>Salesyear:</strong>
+    <%= @rpttransaction.salesyear %>
+  </li>
+
+  <li>
+    <strong>Salesmonth:</strong>
+    <%= @rpttransaction.salesmonth %>
+  </li>
+
+  <li>
+    <strong>Salesdate:</strong>
+    <%= @rpttransaction.salesdate %>
+  </li>
+
+  <li>
+    <strong>Saleshour:</strong>
+    <%= @rpttransaction.saleshour %>
+  </li>
+
+  <li>
+    <strong>Salestime:</strong>
+    <%= @rpttransaction.salestime %>
+  </li>
+
+  <li>
+    <strong>Quarter:</strong>
+    <%= @rpttransaction.quarter %>
+  </li>
+
+  <li>
+    <strong>Branchid:</strong>
+    <%= @rpttransaction.branchid %>
+  </li>
+
+  <li>
+    <strong>Branchcode:</strong>
+    <%= @rpttransaction.branchcode %>
+  </li>
+
+  <li>
+    <strong>Invoiceno:</strong>
+    <%= @rpttransaction.invoiceno %>
+  </li>
+
+  <li>
+    <strong>Sub total:</strong>
+    <%= @rpttransaction.sub_total %>
+  </li>
+
+  <li>
+    <strong>After disc:</strong>
+    <%= @rpttransaction.after_disc %>
+  </li>
+
+  <li>
+    <strong>Decimal:</strong>
+    <%= @rpttransaction.decimal %>
+  </li>
+
+  <li>
+    <strong>Gst charge:</strong>
+    <%= @rpttransaction.gst_charge %>
+  </li>
+
+  <li>
+    <strong>Decimal:</strong>
+    <%= @rpttransaction.decimal %>
+  </li>
+
+  <li>
+    <strong>Service charge:</strong>
+    <%= @rpttransaction.service_charge %>
+  </li>
+
+  <li>
+    <strong>Rounding:</strong>
+    <%= @rpttransaction.rounding %>
+  </li>
+
+  <li>
+    <strong>Grand total:</strong>
+    <%= @rpttransaction.grand_total %>
+  </li>
+
+  <li>
+    <strong>Pax:</strong>
+    <%= @rpttransaction.pax %>
+  </li>
+
+  <li>
+    <strong>Payment type:</strong>
+    <%= @rpttransaction.payment_type %>
+  </li>
+
+  <li>
+    <strong>Cash:</strong>
+    <%= @rpttransaction.cash %>
+  </li>
+
+  <li>
+    <strong>Changes:</strong>
+    <%= @rpttransaction.changes %>
+  </li>
+
+  <li>
+    <strong>Tbl no:</strong>
+    <%= @rpttransaction.tbl_no %>
+  </li>
+
+  <li>
+    <strong>Type:</strong>
+    <%= @rpttransaction.type %>
+  </li>
+
+  <li>
+    <strong>Staffid:</strong>
+    <%= @rpttransaction.staffid %>
+  </li>
+
+  <li>
+    <strong>Staffname:</strong>
+    <%= @rpttransaction.staffname %>
+  </li>
+
+  <li>
+    <strong>Is void:</strong>
+    <%= @rpttransaction.is_void %>
+  </li>
+
+  <li>
+    <strong>Void by:</strong>
+    <%= @rpttransaction.void_by %>
+  </li>
+
+  <li>
+    <strong>Voidreason:</strong>
+    <%= @rpttransaction.voidreason %>
+  </li>
+
+  <li>
+    <strong>Remark:</strong>
+    <%= @rpttransaction.remark %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: rpttransaction_path(@conn, :edit, @rpttransaction) %></span>
+<span><%= link "Back", to: rpttransaction_path(@conn, :index) %></span>

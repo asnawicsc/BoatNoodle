@@ -1,9 +1,9 @@
 <h2>Listing Discount item</h2>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem"><i class="fa fa-plus" aria-hidden="true"></i> New Discount Category</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlUploadMenu"><i class="fa fa-plus" aria-hidden="true"></i> New Discount Item</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat"><i class="fa fa-plus" aria-hidden="true"></i> Discount Report</button>
-<button id="btnDlMenu" type="button" class="btn btn-primary"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Menu list CSV</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem"  onclick="window.location.href='/discount_category/new'"><i class="fa fa-plus" aria-hidden="true"></i> New Discount Category</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlUploadMenu" onclick="window.location.href='/discount_item/new'"><i class="fa fa-plus" aria-hidden="true"></i> New Discount Item</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat" onclick="window.location.href='/discount_catalog/new'"><i class="fa fa-plus" aria-hidden="true"></i> New Discount Catalog</button>
+<button id="btnDlMenu" type="button" class="btn btn-primary" onclick="window.location.href='/discount_catalog/new'"><i class="fa fa-file-excel-o" aria-hidden="true"></i>  Discount Report</button>
 
 <br>
 <br>
@@ -29,28 +29,24 @@
                                                   <th>Discount type</th>
                                                   <th>Discount category</th>
                                                   <th>Discount percentage</th>
-                                                  <th>Status</th>
+                                                  
                                                   <th>Minimum spend</th>
-                                                  <th>Discount catalog</th>
+                                                 
                                                 </tr>
                                             </thead>
                                             <tbody>
                                               <%= for discount_item <- @discount_item do %>
                                                   <tr>
-                                                    <td><%= discount_item.discount_name %></td>
-                                                    <td><%= discount_item.description %></td>
-                                                    <td><%= discount_item.discount_type %></td>
-                                                    <td><%= discount_item.discount_category %></td>
-                                                    <td><%= discount_item.discount_percentage %></td>
-                                                    <td><%= discount_item.status %></td>
-                                                    <td><%= discount_item.minimum_spend %></td>
-                                                    <td><%= discount_item.discount_catalog %></td>
+                                                    <td><%= discount_item.discitemsname %></td>
+                                                    <td><%= discount_item.descriptions %></td>
+                                                    <td><%= discount_item.disctype %></td>
+                                                    <td><%= discount_item.is_categorize %></td>
+                                                    <td><%= discount_item.discamtpercentage %></td>
+                                                  
+                                                    <td><%= discount_item.min_spend %></td>
+                                                  
 
-                                                    <td class="text-right">
-                                                      <span><%= link "Show", to: discount_item_path(@conn, :show, discount_item), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Edit", to: discount_item_path(@conn, :edit, discount_item), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Delete", to: discount_item_path(@conn, :delete, discount_item), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-                                                    </td>
+                                              
                                                   </tr>
                                               <% end %>
                                             </tbody>

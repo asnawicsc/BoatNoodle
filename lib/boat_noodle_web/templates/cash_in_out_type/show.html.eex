@@ -1,0 +1,23 @@
+<h2>Show Cash in out type</h2>
+
+<ul>
+
+  <li>
+    <strong>Cash type:</strong>
+    <%= @cash_in_out_type.cash_type_id %>
+  </li>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @cash_in_out_type.name %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @cash_in_out_type.description %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: cash_in_out_type_path(@conn, :edit, @cash_in_out_type) %></span>
+<span><%= link "Back", to: cash_in_out_type_path(@conn, :index) %></span>

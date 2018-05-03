@@ -1,0 +1,68 @@
+<h2>Show Rpthourlyoutlet</h2>
+
+<ul>
+
+  <li>
+    <strong>Salesyear:</strong>
+    <%= @rpthourlyoutlet.salesyear %>
+  </li>
+
+  <li>
+    <strong>Salesmonth:</strong>
+    <%= @rpthourlyoutlet.salesmonth %>
+  </li>
+
+  <li>
+    <strong>Salesquarter:</strong>
+    <%= @rpthourlyoutlet.salesquarter %>
+  </li>
+
+  <li>
+    <strong>Salesdate:</strong>
+    <%= @rpthourlyoutlet.salesdate %>
+  </li>
+
+  <li>
+    <strong>Branchid:</strong>
+    <%= @rpthourlyoutlet.branchid %>
+  </li>
+
+  <li>
+    <strong>Brachcode:</strong>
+    <%= @rpthourlyoutlet.brachcode %>
+  </li>
+
+  <li>
+    <strong>Branchname:</strong>
+    <%= @rpthourlyoutlet.branchname %>
+  </li>
+
+  <li>
+    <strong>Saleshour:</strong>
+    <%= @rpthourlyoutlet.saleshour %>
+  </li>
+
+  <li>
+    <strong>Sales:</strong>
+    <%= @rpthourlyoutlet.sales %>
+  </li>
+
+  <li>
+    <strong>Pax:</strong>
+    <%= @rpthourlyoutlet.pax %>
+  </li>
+
+  <li>
+    <strong>Transaction:</strong>
+    <%= @rpthourlyoutlet.transaction %>
+  </li>
+
+  <li>
+    <strong>Integer:</strong>
+    <%= @rpthourlyoutlet.integer %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: rpthourlyoutlet_path(@conn, :edit, @rpthourlyoutlet) %></span>
+<span><%= link "Back", to: rpthourlyoutlet_path(@conn, :index) %></span>

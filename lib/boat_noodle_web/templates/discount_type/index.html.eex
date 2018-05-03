@@ -1,0 +1,23 @@
+<h2>Listing Discount type</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Disctypeid</th>
+      <th>Disctypename</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for discount_type <- @discount_type do %>
+    <tr>
+      <td><%= discount_type.disctypeid %></td>
+      <td><%= discount_type.disctypename %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Discount type", to: discount_type_path(@conn, :new) %></span>

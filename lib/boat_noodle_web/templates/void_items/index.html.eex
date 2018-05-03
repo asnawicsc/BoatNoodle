@@ -1,0 +1,58 @@
+<h2>Listing Voiditems</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Itemcode</th>
+      <th>Itemname</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Tableid</th>
+      <th>Itemid</th>
+      <th>Displayprice</th>
+      <th>Is print</th>
+      <th>Discount</th>
+      <th>Priceafterdiscount</th>
+      <th>Qtyafterdisc</th>
+      <th>Itempriceperqty</th>
+      <th>Takeawayid</th>
+      <th>Discountitemsid</th>
+      <th>Remark</th>
+      <th>Is void</th>
+      <th>Void by</th>
+      <th>Voidreason</th>
+      <th>Orderid</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for void_items <- @voiditems do %>
+    <tr>
+      <td><%= void_items.itemcode %></td>
+      <td><%= void_items.itemname %></td>
+      <td><%= void_items.quantity %></td>
+      <td><%= void_items.price %></td>
+      <td><%= void_items.tableid %></td>
+      <td><%= void_items.itemid %></td>
+      <td><%= void_items.displayprice %></td>
+      <td><%= void_items.is_print %></td>
+      <td><%= void_items.discount %></td>
+      <td><%= void_items.priceafterdiscount %></td>
+      <td><%= void_items.qtyafterdisc %></td>
+      <td><%= void_items.itempriceperqty %></td>
+      <td><%= void_items.takeawayid %></td>
+      <td><%= void_items.discountitemsid %></td>
+      <td><%= void_items.remark %></td>
+      <td><%= void_items.is_void %></td>
+      <td><%= void_items.void_by %></td>
+      <td><%= void_items.voidreason %></td>
+      <td><%= void_items.orderid %></td>
+
+   
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Void items", to: void_items_path(@conn, :new) %></span>

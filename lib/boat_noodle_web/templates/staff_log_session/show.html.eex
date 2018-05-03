@@ -1,0 +1,38 @@
+<h2>Show Staff log session</h2>
+
+<ul>
+
+  <li>
+    <strong>Log:</strong>
+    <%= @staff_log_session.log_id %>
+  </li>
+
+  <li>
+    <strong>Id:</strong>
+    <%= @staff_log_session.id %>
+  </li>
+
+  <li>
+    <strong>Branch:</strong>
+    <%= @staff_log_session.branch_id %>
+  </li>
+
+  <li>
+    <strong>Staff:</strong>
+    <%= @staff_log_session.staff_id %>
+  </li>
+
+  <li>
+    <strong>Log in:</strong>
+    <%= @staff_log_session.log_in %>
+  </li>
+
+  <li>
+    <strong>Log out:</strong>
+    <%= @staff_log_session.log_out %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: staff_log_session_path(@conn, :edit, @staff_log_session) %></span>
+<span><%= link "Back", to: staff_log_session_path(@conn, :index) %></span>

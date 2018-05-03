@@ -42,19 +42,26 @@ defmodule BoatNoodleWeb.Router do
     resources "/sales", SalesController
     resources "/tax", TaxController
     resources "/cash_in_out", CashInOutController
-
-
-
-
-
-
-
-
-
-
-
-
-
+    resources "/branch_item_deactivate", BranchItemDeactivateController
+    resources "/cashier_session", CashierSessionController
+    resources "/cash_in_out_type", CashInOutTypeController
+    resources "/combo_details", ComboDetailsController
+    resources "/combo_map", ComboMapController
+    resources "/discount_type", DiscountTypeController
+    resources "/item_customized", ItemCustomizedController
+    resources "/migrations", MigrationsController
+    resources "/password_resets", PasswordResetsController
+    resources "/rpt_cashier_eod", RPTCASHIEREODController
+    resources "/rpt_hourly_outlet", RPTHOURLYOUTLETController
+    resources "/rpt_transaction", RPTTRANSACTIONController
+    resources "/salesdetailcust", SalesDetailCustController
+    resources "/staff_log_session", StaffLogSessionController
+    resources "/staff_type", StaffTypeController
+    resources "/user_branch_access", UserBranchAccessController
+    resources "/user_pwd", UserPwdController
+    resources "/user_role", UserRoleController
+    resources "/voiditems", VoidItemsController
+    resources "/salespayment", SalesPaymentController
 
   end
 

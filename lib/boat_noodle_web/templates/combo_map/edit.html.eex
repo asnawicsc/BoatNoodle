@@ -1,0 +1,5 @@
+<h2>Edit Combo map</h2>
+
+<%= render "form.html", Map.put(assigns, :action, combo_map_path(@conn, :update, @combo_map)) %>
+
+<span><%= link "Back", to: combo_map_path(@conn, :index) %></span>

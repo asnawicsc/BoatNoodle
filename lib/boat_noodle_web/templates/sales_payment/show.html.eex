@@ -1,0 +1,128 @@
+<h2>Show Sales payment</h2>
+
+<ul>
+
+  <li>
+    <strong>Salespay:</strong>
+    <%= @sales_payment.salespay_id %>
+  </li>
+
+  <li>
+    <strong>Salesid:</strong>
+    <%= @sales_payment.salesid %>
+  </li>
+
+  <li>
+    <strong>Sub total:</strong>
+    <%= @sales_payment.sub_total %>
+  </li>
+
+  <li>
+    <strong>After disc:</strong>
+    <%= @sales_payment.after_disc %>
+  </li>
+
+  <li>
+    <strong>Service charge:</strong>
+    <%= @sales_payment.service_charge %>
+  </li>
+
+  <li>
+    <strong>Gst charge:</strong>
+    <%= @sales_payment.gst_charge %>
+  </li>
+
+  <li>
+    <strong>Rounding:</strong>
+    <%= @sales_payment.rounding %>
+  </li>
+
+  <li>
+    <strong>Grand total:</strong>
+    <%= @sales_payment.grand_total %>
+  </li>
+
+  <li>
+    <strong>Cash:</strong>
+    <%= @sales_payment.cash %>
+  </li>
+
+  <li>
+    <strong>Changes:</strong>
+    <%= @sales_payment.changes %>
+  </li>
+
+  <li>
+    <strong>Payment type:</strong>
+    <%= @sales_payment.payment_type %>
+  </li>
+
+  <li>
+    <strong>Card no:</strong>
+    <%= @sales_payment.card_no %>
+  </li>
+
+  <li>
+    <strong>Taxcode:</strong>
+    <%= @sales_payment.taxcode %>
+  </li>
+
+  <li>
+    <strong>Disc amt:</strong>
+    <%= @sales_payment.disc_amt %>
+  </li>
+
+  <li>
+    <strong>Voucher code:</strong>
+    <%= @sales_payment.voucher_code %>
+  </li>
+
+  <li>
+    <strong>Discountid:</strong>
+    <%= @sales_payment.discountid %>
+  </li>
+
+  <li>
+    <strong>Payment type id1:</strong>
+    <%= @sales_payment.payment_type_id1 %>
+  </li>
+
+  <li>
+    <strong>Payment type am1:</strong>
+    <%= @sales_payment.payment_type_am1 %>
+  </li>
+
+  <li>
+    <strong>Payment code1:</strong>
+    <%= @sales_payment.payment_code1 %>
+  </li>
+
+  <li>
+    <strong>Payment type id2:</strong>
+    <%= @sales_payment.payment_type_id2 %>
+  </li>
+
+  <li>
+    <strong>Payment type am2:</strong>
+    <%= @sales_payment.payment_type_am2 %>
+  </li>
+
+  <li>
+    <strong>Payment code2:</strong>
+    <%= @sales_payment.payment_code2 %>
+  </li>
+
+  <li>
+    <strong>Updated at:</strong>
+    <%= @sales_payment.updated_at %>
+  </li>
+
+  <li>
+    <strong>Created at:</strong>
+    <%= @sales_payment.created_at %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: sales_payment_path(@conn, :edit, @sales_payment) %></span>
+<span><%= link "Back", to: sales_payment_path(@conn, :index) %></span>

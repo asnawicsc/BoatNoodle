@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.DiscountCatalogMasterController do
   alias BoatNoodle.BN.DiscountCatalogMaster
 
   def index(conn, _params) do
-    discount_catalog_master = BN.list_discount_catalog_master()
+    discount_catalog_master = Repo.all(DiscountCatalogMaster)
     render(conn, "index.html", discount_catalog_master: discount_catalog_master)
   end
 

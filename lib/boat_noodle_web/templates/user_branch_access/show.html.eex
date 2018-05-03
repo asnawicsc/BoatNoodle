@@ -1,0 +1,23 @@
+<h2>Show User branch access</h2>
+
+<ul>
+
+  <li>
+    <strong>Userbranchid:</strong>
+    <%= @user_branch_access.userbranchid %>
+  </li>
+
+  <li>
+    <strong>Userid:</strong>
+    <%= @user_branch_access.userid %>
+  </li>
+
+  <li>
+    <strong>Branchid:</strong>
+    <%= @user_branch_access.branchid %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: user_branch_access_path(@conn, :edit, @user_branch_access) %></span>
+<span><%= link "Back", to: user_branch_access_path(@conn, :index) %></span>

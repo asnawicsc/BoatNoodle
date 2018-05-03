@@ -1,0 +1,5 @@
+<h2>New Rpthourlyoutlet</h2>
+
+<%= render "form.html", Map.put(assigns, :action, rpthourlyoutlet_path(@conn, :create)) %>
+
+<span><%= link "Back", to: rpthourlyoutlet_path(@conn, :index) %></span>

@@ -2,20 +2,21 @@ defmodule BoatNoodle.BN.TagCatalog do
   use Ecto.Schema
   import Ecto.Changeset
 
-
+@primary_key false
   schema "tag_catalog" do
+    field :id, :integer, primary_key: true
     field :description, :string
     field :name, :string
-    field :tag_category, :string
-    field :tag_items, :string
+    field :tags, :string
+    field :tagitems, :string
 
-    timestamps()
+ 
   end
 
   @doc false
   def changeset(tag_catalog, attrs) do
     tag_catalog
-    |> cast(attrs, [:name, :description, :tag_category, :tag_items])
-    |> validate_required([:name, :description, :tag_category, :tag_items])
+    |> cast(attrs, [:id,:name, :description, :tags, :tagitems])
+  
   end
 end

@@ -1,0 +1,68 @@
+<h2>Listing Salespayment</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Salespay</th>
+      <th>Salesid</th>
+      <th>Sub total</th>
+      <th>After disc</th>
+      <th>Service charge</th>
+      <th>Gst charge</th>
+      <th>Rounding</th>
+      <th>Grand total</th>
+      <th>Cash</th>
+      <th>Changes</th>
+      <th>Payment type</th>
+      <th>Card no</th>
+      <th>Taxcode</th>
+      <th>Disc amt</th>
+      <th>Voucher code</th>
+      <th>Discountid</th>
+      <th>Payment type id1</th>
+      <th>Payment type amt1</th>
+      <th>Payment code1</th>
+      <th>Payment type id2</th>
+      <th>Payment type amt2</th>
+      <th>Payment code2</th>
+      <th>Updated at</th>
+      <th>Created at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for sales_payment <- @salespayment do %>
+    <tr>
+      <td><%= sales_payment.salespay_id %></td>
+      <td><%= sales_payment.salesid %></td>
+      <td><%= sales_payment.sub_total %></td>
+      <td><%= sales_payment.after_disc %></td>
+      <td><%= sales_payment.service_charge %></td>
+      <td><%= sales_payment.gst_charge %></td>
+      <td><%= sales_payment.rounding %></td>
+      <td><%= sales_payment.grand_total %></td>
+      <td><%= sales_payment.cash %></td>
+      <td><%= sales_payment.changes %></td>
+      <td><%= sales_payment.payment_type %></td>
+      <td><%= sales_payment.card_no %></td>
+      <td><%= sales_payment.taxcode %></td>
+      <td><%= sales_payment.disc_amt %></td>
+      <td><%= sales_payment.voucher_code %></td>
+      <td><%= sales_payment.discountid %></td>
+      <td><%= sales_payment.payment_type_id1 %></td>
+      <td><%= sales_payment.payment_type_amt1 %></td>
+      <td><%= sales_payment.payment_code1 %></td>
+      <td><%= sales_payment.payment_type_id2 %></td>
+      <td><%= sales_payment.payment_type_amt2 %></td>
+      <td><%= sales_payment.payment_code2 %></td>
+      <td><%= sales_payment.updated_at %></td>
+      <td><%= sales_payment.created_at %></td>
+
+      
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Sales payment", to: sales_payment_path(@conn, :new) %></span>

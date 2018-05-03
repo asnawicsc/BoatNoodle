@@ -1,0 +1,23 @@
+<h2>Show Staff type</h2>
+
+<ul>
+
+  <li>
+    <strong>Id:</strong>
+    <%= @staff_type.id %>
+  </li>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @staff_type.name %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @staff_type.description %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: staff_type_path(@conn, :edit, @staff_type) %></span>
+<span><%= link "Back", to: staff_type_path(@conn, :index) %></span>

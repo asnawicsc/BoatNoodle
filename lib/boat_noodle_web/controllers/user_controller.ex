@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.UserController do
   alias BoatNoodle.BN.User
 
   def index(conn, _params) do
-    user = BN.list_user()
+    user = Repo.all(User)
     render(conn, "index.html", user: user)
   end
 

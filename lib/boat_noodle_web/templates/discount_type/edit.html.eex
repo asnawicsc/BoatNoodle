@@ -1,0 +1,5 @@
+<h2>Edit Discount type</h2>
+
+<%= render "form.html", Map.put(assigns, :action, discount_type_path(@conn, :update, @discount_type)) %>
+
+<span><%= link "Back", to: discount_type_path(@conn, :index) %></span>

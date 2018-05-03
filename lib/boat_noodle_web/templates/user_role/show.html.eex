@@ -1,0 +1,23 @@
+<h2>Show User role</h2>
+
+<ul>
+
+  <li>
+    <strong>Roleid:</strong>
+    <%= @user_role.roleid %>
+  </li>
+
+  <li>
+    <strong>Role name:</strong>
+    <%= @user_role.role_name %>
+  </li>
+
+  <li>
+    <strong>Role desc:</strong>
+    <%= @user_role.role_desc %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: user_role_path(@conn, :edit, @user_role) %></span>
+<span><%= link "Back", to: user_role_path(@conn, :index) %></span>

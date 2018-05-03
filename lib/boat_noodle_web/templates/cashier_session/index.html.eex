@@ -1,0 +1,45 @@
+<h2>Listing Cashier session</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Csid</th>
+      <th>Staffid</th>
+      <th>Branchid</th>
+      <th>Time start</th>
+      <th>Time end</th>
+      <th>Floatamt</th>
+      <th>Open amt</th>
+      <th>Close amt</th>
+      <th>Cash in</th>
+      <th>Cash out</th>
+      <th>Durations</th>
+      <th>Deposits</th>
+      <th>Paidout</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for cashier_session <- @cashier_session do %>
+    <tr>
+      <td><%= cashier_session.csid %></td>
+      <td><%= cashier_session.staffid %></td>
+      <td><%= cashier_session.branchid %></td>
+      <td><%= cashier_session.time_start %></td>
+      <td><%= cashier_session.time_end %></td>
+      <td><%= cashier_session.floatamt %></td>
+      <td><%= cashier_session.open_amt %></td>
+      <td><%= cashier_session.close_amt %></td>
+      <td><%= cashier_session.cash_in %></td>
+      <td><%= cashier_session.cash_out %></td>
+      <td><%= cashier_session.durations %></td>
+      <td><%= cashier_session.deposits %></td>
+      <td><%= cashier_session.paidout %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Cashier session", to: cashier_session_path(@conn, :new) %></span>

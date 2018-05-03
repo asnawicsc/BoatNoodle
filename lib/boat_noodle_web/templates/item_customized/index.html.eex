@@ -1,0 +1,35 @@
+<h2>Listing Item customized</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Itemcustomid</th>
+      <th>Subcatid</th>
+      <th>Customize code</th>
+      <th>Customize detail</th>
+      <th>Price</th>
+      <th>Availability</th>
+      <th>Created at</th>
+      <th>Updated at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for item_customized <- @item_customized do %>
+    <tr>
+      <td><%= item_customized.itemcustomid %></td>
+      <td><%= item_customized.subcatid %></td>
+      <td><%= item_customized.customize_code %></td>
+      <td><%= item_customized.customize_detail %></td>
+      <td><%= item_customized.price %></td>
+      <td><%= item_customized.availability %></td>
+      <td><%= item_customized.created_at %></td>
+      <td><%= item_customized.updated_at %></td>
+      
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Item customized", to: item_customized_path(@conn, :new) %></span>

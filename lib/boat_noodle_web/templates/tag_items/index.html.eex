@@ -6,6 +6,7 @@
       <th>Item name</th>
       <th>Tag name</th>
       <th>Printer</th>
+      <th>Is New</th>
 
       <th></th>
     </tr>
@@ -13,15 +14,12 @@
   <tbody>
 <%= for tag_items <- @tag_items do %>
     <tr>
-      <td><%= tag_items.item_name %></td>
-      <td><%= tag_items.tag_name %></td>
-      <td><%= tag_items.printer %></td>
+      <td><%= tag_items.tagitemid %></td>
+      <td><%= tag_items.tagid %></td>
+      <td><%= tag_items.itemcustomid %></td>
+      <td><%= tag_items.is_new %></td>
 
-      <td class="text-right">
-        <span><%= link "Show", to: tag_items_path(@conn, :show, tag_items), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: tag_items_path(@conn, :edit, tag_items), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: tag_items_path(@conn, :delete, tag_items), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
+     
     </tr>
 <% end %>
   </tbody>

@@ -1,0 +1,23 @@
+<h2>Listing User pwd</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Pass</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for user_pwd <- @user_pwd do %>
+    <tr>
+      <td><%= user_pwd.name %></td>
+      <td><%= user_pwd.pass %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New User pwd", to: user_pwd_path(@conn, :new) %></span>

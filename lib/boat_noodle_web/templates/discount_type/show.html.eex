@@ -1,0 +1,18 @@
+<h2>Show Discount type</h2>
+
+<ul>
+
+  <li>
+    <strong>Disctypeid:</strong>
+    <%= @discount_type.disctypeid %>
+  </li>
+
+  <li>
+    <strong>Disctypename:</strong>
+    <%= @discount_type.disctypename %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: discount_type_path(@conn, :edit, @discount_type) %></span>
+<span><%= link "Back", to: discount_type_path(@conn, :index) %></span>

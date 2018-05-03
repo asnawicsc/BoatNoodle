@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   alias BoatNoodle.BN.MenuItem
 
   def index(conn, _params) do
-    menu_item = BN.list_menu_item()
+    menu_item = Repo.all(MenuItem)
     render(conn, "index.html", menu_item: menu_item)
   end
 

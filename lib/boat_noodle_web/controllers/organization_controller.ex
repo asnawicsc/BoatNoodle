@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.OrganizationController do
   alias BoatNoodle.BN.Organization
 
   def index(conn, _params) do
-    organization = BN.list_organization()
+    organization = Repo.all(Organization)
     render(conn, "index.html", organization: organization)
   end
 

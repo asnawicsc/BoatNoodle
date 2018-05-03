@@ -1,0 +1,32 @@
+<h2>Listing Branch item deactivate</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Branchid</th>
+      <th>Itemid</th>
+      <th>Is activate</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for branch_item_deactivate <- @branch_item_deactivate do %>
+    <tr>
+      <td><%= branch_item_deactivate.id %></td>
+      <td><%= branch_item_deactivate.branchid %></td>
+      <td><%= branch_item_deactivate.itemid %></td>
+      <td><%= branch_item_deactivate.is_activate %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: branch_item_deactivate_path(@conn, :show, branch_item_deactivate), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: branch_item_deactivate_path(@conn, :edit, branch_item_deactivate), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: branch_item_deactivate_path(@conn, :delete, branch_item_deactivate), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Branch item deactivate", to: branch_item_deactivate_path(@conn, :new) %></span>

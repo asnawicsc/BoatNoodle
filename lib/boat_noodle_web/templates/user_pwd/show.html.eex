@@ -1,0 +1,18 @@
+<h2>Show User pwd</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @user_pwd.name %>
+  </li>
+
+  <li>
+    <strong>Pass:</strong>
+    <%= @user_pwd.pass %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: user_pwd_path(@conn, :edit, @user_pwd) %></span>
+<span><%= link "Back", to: user_pwd_path(@conn, :index) %></span>

@@ -1,0 +1,24 @@
+<h2>Listing Staff type</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Description</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for staff_type <- @staff_type do %>
+    <tr>
+      <td><%= staff_type.id %></td>
+      <td><%= staff_type.name %></td>
+      <td><%= staff_type.description %></td>
+
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Staff type", to: staff_type_path(@conn, :new) %></span>

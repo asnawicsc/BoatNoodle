@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.SalesController do
   alias BoatNoodle.BN.Sales
 
   def index(conn, _params) do
-    sales = BN.list_sales()
+    sales = Repo.all(from s in Sales, limit: 10)
     render(conn, "index.html", sales: sales)
   end
 

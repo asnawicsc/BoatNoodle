@@ -1,0 +1,5 @@
+<h2>Edit Staff log session</h2>
+
+<%= render "form.html", Map.put(assigns, :action, staff_log_session_path(@conn, :update, @staff_log_session)) %>
+
+<span><%= link "Back", to: staff_log_session_path(@conn, :index) %></span>

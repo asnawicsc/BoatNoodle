@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.BranchController do
   alias BoatNoodle.BN.Branch
 
   def index(conn, _params) do
-    branch = BN.list_branch()
+    branch = Repo.all(Branch)
     render(conn, "index.html", branch: branch)
   end
 

@@ -1,0 +1,25 @@
+<h2>Listing User role</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Roleid</th>
+      <th>Role name</th>
+      <th>Role desc</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for user_role <- @user_role do %>
+    <tr>
+      <td><%= user_role.roleid %></td>
+      <td><%= user_role.role_name %></td>
+      <td><%= user_role.role_desc %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New User role", to: user_role_path(@conn, :new) %></span>

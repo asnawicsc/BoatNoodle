@@ -1,0 +1,18 @@
+<h2>Show Migrations</h2>
+
+<ul>
+
+  <li>
+    <strong>Migration:</strong>
+    <%= @migrations.migration %>
+  </li>
+
+  <li>
+    <strong>Batch:</strong>
+    <%= @migrations.batch %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: migrations_path(@conn, :edit, @migrations) %></span>
+<span><%= link "Back", to: migrations_path(@conn, :index) %></span>

@@ -1,0 +1,125 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :itemcode, class: "control-label" %>
+    <%= text_input f, :itemcode, class: "form-control" %>
+    <%= error_tag f, :itemcode %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemname, class: "control-label" %>
+    <%= text_input f, :itemname, class: "form-control" %>
+    <%= error_tag f, :itemname %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :quantity, class: "control-label" %>
+    <%= number_input f, :quantity, class: "form-control" %>
+    <%= error_tag f, :quantity %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :price, class: "control-label" %>
+    <%= number_input f, :price, step: "any", class: "form-control" %>
+    <%= error_tag f, :price %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :tableid, class: "control-label" %>
+    <%= number_input f, :tableid, class: "form-control" %>
+    <%= error_tag f, :tableid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemid, class: "control-label" %>
+    <%= number_input f, :itemid, class: "form-control" %>
+    <%= error_tag f, :itemid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :displayprice, class: "control-label" %>
+    <%= text_input f, :displayprice, class: "form-control" %>
+    <%= error_tag f, :displayprice %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_print, class: "control-label" %>
+    <%= number_input f, :is_print, class: "form-control" %>
+    <%= error_tag f, :is_print %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :discount, class: "control-label" %>
+    <%= number_input f, :discount, step: "any", class: "form-control" %>
+    <%= error_tag f, :discount %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :priceafterdiscount, class: "control-label" %>
+    <%= number_input f, :priceafterdiscount, step: "any", class: "form-control" %>
+    <%= error_tag f, :priceafterdiscount %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :qtyafterdisc, class: "control-label" %>
+    <%= number_input f, :qtyafterdisc, class: "form-control" %>
+    <%= error_tag f, :qtyafterdisc %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itempriceperqty, class: "control-label" %>
+    <%= number_input f, :itempriceperqty, step: "any", class: "form-control" %>
+    <%= error_tag f, :itempriceperqty %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :takeawayid, class: "control-label" %>
+    <%= text_input f, :takeawayid, class: "form-control" %>
+    <%= error_tag f, :takeawayid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :discountitemsid, class: "control-label" %>
+    <%= number_input f, :discountitemsid, class: "form-control" %>
+    <%= error_tag f, :discountitemsid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :remark, class: "control-label" %>
+    <%= text_input f, :remark, class: "form-control" %>
+    <%= error_tag f, :remark %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_void, class: "control-label" %>
+    <%= number_input f, :is_void, class: "form-control" %>
+    <%= error_tag f, :is_void %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :void_by, class: "control-label" %>
+    <%= number_input f, :void_by, class: "form-control" %>
+    <%= error_tag f, :void_by %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :voidreason, class: "control-label" %>
+    <%= text_input f, :voidreason, class: "form-control" %>
+    <%= error_tag f, :voidreason %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :orderid, class: "control-label" %>
+    <%= text_input f, :orderid, class: "form-control" %>
+    <%= error_tag f, :orderid %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

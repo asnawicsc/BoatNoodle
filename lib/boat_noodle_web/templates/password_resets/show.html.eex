@@ -1,0 +1,23 @@
+<h2>Show Password resets</h2>
+
+<ul>
+
+  <li>
+    <strong>Email:</strong>
+    <%= @password_resets.email %>
+  </li>
+
+  <li>
+    <strong>Token:</strong>
+    <%= @password_resets.token %>
+  </li>
+
+  <li>
+    <strong>Created at:</strong>
+    <%= @password_resets.created_at %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: password_resets_path(@conn, :edit, @password_resets) %></span>
+<span><%= link "Back", to: password_resets_path(@conn, :index) %></span>

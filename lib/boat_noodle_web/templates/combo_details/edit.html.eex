@@ -1,0 +1,5 @@
+<h2>Edit Combo details</h2>
+
+<%= render "form.html", Map.put(assigns, :action, combo_details_path(@conn, :update, @combo_details)) %>
+
+<span><%= link "Back", to: combo_details_path(@conn, :index) %></span>

@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
   alias BoatNoodle.BN.MenuCatalog
 
   def index(conn, _params) do
-    menu_catalog = BN.list_menu_catalog()
+    menu_catalog = Repo.all(MenuCatalog)
     render(conn, "index.html", menu_catalog: menu_catalog)
   end
 

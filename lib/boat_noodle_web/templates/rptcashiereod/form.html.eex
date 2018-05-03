@@ -1,0 +1,197 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :rptid, class: "control-label" %>
+    <%= number_input f, :rptid, class: "form-control" %>
+    <%= error_tag f, :rptid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branch_id, class: "control-label" %>
+    <%= number_input f, :branch_id, class: "form-control" %>
+    <%= error_tag f, :branch_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :staff_name, class: "control-label" %>
+    <%= text_input f, :staff_name, class: "form-control" %>
+    <%= error_tag f, :staff_name %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :time_start, class: "control-label" %>
+    <%= datetime_select f, :time_start, class: "form-control" %>
+    <%= error_tag f, :time_start %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :time_end, class: "control-label" %>
+    <%= datetime_select f, :time_end, class: "form-control" %>
+    <%= error_tag f, :time_end %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :duration, class: "control-label" %>
+    <%= text_input f, :duration, class: "form-control" %>
+    <%= error_tag f, :duration %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :open_amt, class: "control-label" %>
+    <%= number_input f, :open_amt, step: "any", class: "form-control" %>
+    <%= error_tag f, :open_amt %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :close_amt, class: "control-label" %>
+    <%= number_input f, :close_amt, step: "any", class: "form-control" %>
+    <%= error_tag f, :close_amt %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :totalpax, class: "control-label" %>
+    <%= number_input f, :totalpax, class: "form-control" %>
+    <%= error_tag f, :totalpax %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :totalsales, class: "control-label" %>
+    <%= number_input f, :totalsales, step: "any", class: "form-control" %>
+    <%= error_tag f, :totalsales %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :voidsales, class: "control-label" %>
+    <%= number_input f, :voidsales, step: "any", class: "form-control" %>
+    <%= error_tag f, :voidsales %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :voiditem, class: "control-label" %>
+    <%= number_input f, :voiditem, step: "any", class: "form-control" %>
+    <%= error_tag f, :voiditem %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :totaltax, class: "control-label" %>
+    <%= number_input f, :totaltax, step: "any", class: "form-control" %>
+    <%= error_tag f, :totaltax %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :totalsvc, class: "control-label" %>
+    <%= number_input f, :totalsvc, step: "any", class: "form-control" %>
+    <%= error_tag f, :totalsvc %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :total_round, class: "control-label" %>
+    <%= number_input f, :total_round, step: "any", class: "form-control" %>
+    <%= error_tag f, :total_round %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :dinein, class: "control-label" %>
+    <%= number_input f, :dinein, step: "any", class: "form-control" %>
+    <%= error_tag f, :dinein %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :takeaway, class: "control-label" %>
+    <%= number_input f, :takeaway, step: "any", class: "form-control" %>
+    <%= error_tag f, :takeaway %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :total_disc, class: "control-label" %>
+    <%= number_input f, :total_disc, step: "any", class: "form-control" %>
+    <%= error_tag f, :total_disc %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :total_pymt, class: "control-label" %>
+    <%= number_input f, :total_pymt, step: "any", class: "form-control" %>
+    <%= error_tag f, :total_pymt %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :total_cash, class: "control-label" %>
+    <%= number_input f, :total_cash, step: "any", class: "form-control" %>
+    <%= error_tag f, :total_cash %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :total_changes, class: "control-label" %>
+    <%= number_input f, :total_changes, step: "any", class: "form-control" %>
+    <%= error_tag f, :total_changes %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :floats, class: "control-label" %>
+    <%= number_input f, :floats, step: "any", class: "form-control" %>
+    <%= error_tag f, :floats %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :deposit, class: "control-label" %>
+    <%= number_input f, :deposit, step: "any", class: "form-control" %>
+    <%= error_tag f, :deposit %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :cash_in, class: "control-label" %>
+    <%= number_input f, :cash_in, step: "any", class: "form-control" %>
+    <%= error_tag f, :cash_in %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :paidout, class: "control-label" %>
+    <%= number_input f, :paidout, step: "any", class: "form-control" %>
+    <%= error_tag f, :paidout %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :cash, class: "control-label" %>
+    <%= number_input f, :cash, step: "any", class: "form-control" %>
+    <%= error_tag f, :cash %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :drawamt, class: "control-label" %>
+    <%= number_input f, :drawamt, step: "any", class: "form-control" %>
+    <%= error_tag f, :drawamt %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :exp_drw_amt, class: "control-label" %>
+    <%= number_input f, :exp_drw_amt, step: "any", class: "form-control" %>
+    <%= error_tag f, :exp_drw_amt %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :total_sr, class: "control-label" %>
+    <%= number_input f, :total_sr, step: "any", class: "form-control" %>
+    <%= error_tag f, :total_sr %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :extra, class: "control-label" %>
+    <%= number_input f, :extra, step: "any", class: "form-control" %>
+    <%= error_tag f, :extra %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branchcode, class: "control-label" %>
+    <%= text_input f, :branchcode, class: "form-control" %>
+    <%= error_tag f, :branchcode %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

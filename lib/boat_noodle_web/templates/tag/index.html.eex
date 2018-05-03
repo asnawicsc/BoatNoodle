@@ -2,8 +2,8 @@
 
 
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlUploadMenu"><i class="fa fa-upload" aria-hidden="true"></i> Upload Menus</button>
-<button type="button" class="btn btn-primary" id="btnAddCombo"><i class="fa fa-tags" aria-hidden="true"></i> Add New Tag</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat"><i class="fa fa-tags" aria-hidden="true"></i> Add New Tag Catalog</button>
+<button type="button" class="btn btn-primary" id="btnAddCombo" onclick="window.location.href='/tag/new'"><i class="fa fa-tags" aria-hidden="true"></i> Add New Tag</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat" onclick="window.location.href='/tag_catalog/new'"><i class="fa fa-tags" aria-hidden="true"></i> Add New Tag Catalog</button>
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat"><i class="fa fa-tags" aria-hidden="true"></i> Assign Item Printer</button>
 
 <br>
@@ -32,15 +32,11 @@
                                             <tbody>
                                               <%= for tag <- @tag do %>
                                                   <tr>
-                                                    <td><%= tag.tag_name %></td>
-                                                    <td><%= tag.description %></td>
-                                                    <td><%= tag.printer_name %></td>
+                                                    <td><%= tag.tagname %></td>
+                                                    <td><%= tag.tagdesc %></td>
+                                                    <td><%= tag.printer %></td>
 
-                                                    <td class="text-right">
-                                                      <span><%= link "Show", to: tag_path(@conn, :show, tag), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Edit", to: tag_path(@conn, :edit, tag), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Delete", to: tag_path(@conn, :delete, tag), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-                                                    </td>
+                                                   
                                                   </tr>
                                               <% end %>
                                              

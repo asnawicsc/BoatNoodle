@@ -1,0 +1,5 @@
+<h2>New Void items</h2>
+
+<%= render "form.html", Map.put(assigns, :action, void_items_path(@conn, :create)) %>
+
+<span><%= link "Back", to: void_items_path(@conn, :index) %></span>

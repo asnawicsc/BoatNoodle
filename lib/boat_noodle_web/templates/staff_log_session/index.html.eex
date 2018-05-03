@@ -1,0 +1,31 @@
+<h2>Listing Staff log session</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Log</th>
+      <th>Id</th>
+      <th>Branch</th>
+      <th>Staff</th>
+      <th>Log in</th>
+      <th>Log out</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for staff_log_session <- @staff_log_session do %>
+    <tr>
+      <td><%= staff_log_session.log_id %></td>
+      <td><%= staff_log_session.id %></td>
+      <td><%= staff_log_session.branch_id %></td>
+      <td><%= staff_log_session.staff_id %></td>
+      <td><%= staff_log_session.log_in %></td>
+      <td><%= staff_log_session.log_out %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Staff log session", to: staff_log_session_path(@conn, :new) %></span>

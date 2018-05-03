@@ -3,9 +3,11 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Remark description</th>
+      <th>Remark ID</th>
+      <th>Remark</th>
       <th>Target category</th>
       <th>Target item</th>
+
 
       <th></th>
     </tr>
@@ -13,15 +15,11 @@
   <tbody>
 <%= for remark <- @remark do %>
     <tr>
-      <td><%= remark.remark_description %></td>
-      <td><%= remark.target_category %></td>
+      <td><%= remark.itemsremarkid %></td>
+      <td><%= remark.remark %></td>
+       <td ><%= remark.target_cat %></td>
       <td><%= remark.target_item %></td>
-
-      <td class="text-right">
-        <span><%= link "Show", to: remark_path(@conn, :show, remark), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: remark_path(@conn, :edit, remark), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: remark_path(@conn, :delete, remark), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
+     
     </tr>
 <% end %>
   </tbody>

@@ -1,0 +1,41 @@
+<h2>Listing Combo details</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Menu cat</th>
+      <th>Combo</th>
+      <th>Combo qty</th>
+      <th>Combo item</th>
+      <th>Combo item name</th>
+      <th>Combo item code</th>
+      <th>Combo item qty</th>
+      <th>Update qty</th>
+      <th>Unit price</th>
+      <th>Top up</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for combo_details <- @combo_details do %>
+    <tr>
+      <td><%= combo_details.id %></td>
+      <td><%= combo_details.menu_cat_id %></td>
+      <td><%= combo_details.combo_id %></td>
+      <td><%= combo_details.combo_qty %></td>
+      <td><%= combo_details.combo_item_id %></td>
+      <td><%= combo_details.combo_item_name %></td>
+      <td><%= combo_details.combo_item_code %></td>
+      <td><%= combo_details.combo_item_qty %></td>
+      <td><%= combo_details.update_qty %></td>
+      <td><%= combo_details.unit_price %></td>
+      <td><%= combo_details.top_up %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Combo details", to: combo_details_path(@conn, :new) %></span>

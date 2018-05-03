@@ -2,24 +2,28 @@ defmodule BoatNoodle.BN.DiscountItem do
   use Ecto.Schema
   import Ecto.Changeset
 
+@primary_key false
+  schema "discountitems" do
+    field :discountitemsid, :integer, primary_key: true
+    field :discountid, :integer
+    field :discitemsname, :string
+    field :descriptions, :string
+    field :discamtpercentage, :decimal
+    field :target_cat, :integer
+    field :is_used, :integer
+    field :disc_qty, :integer
+    field :disctype, :string
+    field :is_categorize, :integer
+    field :is_targetmenuitems, :integer
+    field :is_visable, :integer
+    field :is_delete, :integer
+    field :min_spend, :decimal
 
-  schema "discount_item" do
-    field :description, :string
-    field :discount_catalog, :string
-    field :discount_category, :string
-    field :discount_name, :string
-    field :discount_percentage, :string
-    field :discount_type, :string
-    field :minimum_spend, :integer
-    field :status, :boolean, default: false
-
-    timestamps()
   end
 
   @doc false
   def changeset(discount_item, attrs) do
     discount_item
-    |> cast(attrs, [:discount_name, :description, :discount_type, :discount_category, :discount_percentage, :status, :minimum_spend, :discount_catalog])
-    |> validate_required([:discount_name, :description, :discount_type, :discount_category, :discount_percentage, :status, :minimum_spend, :discount_catalog])
+    |> cast(attrs, [:min_spend,:is_delete,:is_visable,:is_targetmenuitems,:is_categorize,:disctype,:disc_qty,:is_used,:target_cat,:discamtpercentage,:descriptions,:discitemsname,:discountid,:discountitemsid])
   end
 end

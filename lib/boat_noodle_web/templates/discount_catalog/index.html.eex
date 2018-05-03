@@ -3,29 +3,20 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Discount catalog master</th>
+      <th>Discount ID</th>
       <th>Name</th>
       <th>Discount categories</th>
-      <th>Discount category</th>
-      <th>Discount name</th>
+      <th>Discount </th>
 
-      <th></th>
     </tr>
   </thead>
   <tbody>
 <%= for discount_catalog <- @discount_catalog do %>
     <tr>
-      <td><%= discount_catalog.discount_catalog_master_id %></td>
+      <td><%= discount_catalog.id %></td>
       <td><%= discount_catalog.name %></td>
-      <td><%= discount_catalog.discount_categories %></td>
-      <td><%= discount_catalog.discount_category %></td>
-      <td><%= discount_catalog.discount_name %></td>
-
-      <td class="text-right">
-        <span><%= link "Show", to: discount_catalog_path(@conn, :show, discount_catalog), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: discount_catalog_path(@conn, :edit, discount_catalog), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: discount_catalog_path(@conn, :delete, discount_catalog), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
+      <td><%= discount_catalog.categories %></td>
+      <td><%= discount_catalog.discounts %></td>
     </tr>
 <% end %>
   </tbody>

@@ -1610,4 +1610,1536 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_cash_in_out(cash_in_out)
     end
   end
+
+  describe "branch_item_deactivate" do
+    alias BoatNoodle.BN.BranchItemDeactivate
+
+    @valid_attrs %{branchid: 42, id: 42, is_activate: 42, itemid: 42}
+    @update_attrs %{branchid: 43, id: 43, is_activate: 43, itemid: 43}
+    @invalid_attrs %{branchid: nil, id: nil, is_activate: nil, itemid: nil}
+
+    def branch_item_deactivate_fixture(attrs \\ %{}) do
+      {:ok, branch_item_deactivate} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_branch_item_deactivate()
+
+      branch_item_deactivate
+    end
+
+    test "list_branch_item_deactivate/0 returns all branch_item_deactivate" do
+      branch_item_deactivate = branch_item_deactivate_fixture()
+      assert BN.list_branch_item_deactivate() == [branch_item_deactivate]
+    end
+
+    test "get_branch_item_deactivate!/1 returns the branch_item_deactivate with given id" do
+      branch_item_deactivate = branch_item_deactivate_fixture()
+      assert BN.get_branch_item_deactivate!(branch_item_deactivate.id) == branch_item_deactivate
+    end
+
+    test "create_branch_item_deactivate/1 with valid data creates a branch_item_deactivate" do
+      assert {:ok, %BranchItemDeactivate{} = branch_item_deactivate} = BN.create_branch_item_deactivate(@valid_attrs)
+      assert branch_item_deactivate.branchid == 42
+      assert branch_item_deactivate.id == 42
+      assert branch_item_deactivate.is_activate == 42
+      assert branch_item_deactivate.itemid == 42
+    end
+
+    test "create_branch_item_deactivate/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_branch_item_deactivate(@invalid_attrs)
+    end
+
+    test "update_branch_item_deactivate/2 with valid data updates the branch_item_deactivate" do
+      branch_item_deactivate = branch_item_deactivate_fixture()
+      assert {:ok, branch_item_deactivate} = BN.update_branch_item_deactivate(branch_item_deactivate, @update_attrs)
+      assert %BranchItemDeactivate{} = branch_item_deactivate
+      assert branch_item_deactivate.branchid == 43
+      assert branch_item_deactivate.id == 43
+      assert branch_item_deactivate.is_activate == 43
+      assert branch_item_deactivate.itemid == 43
+    end
+
+    test "update_branch_item_deactivate/2 with invalid data returns error changeset" do
+      branch_item_deactivate = branch_item_deactivate_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_branch_item_deactivate(branch_item_deactivate, @invalid_attrs)
+      assert branch_item_deactivate == BN.get_branch_item_deactivate!(branch_item_deactivate.id)
+    end
+
+    test "delete_branch_item_deactivate/1 deletes the branch_item_deactivate" do
+      branch_item_deactivate = branch_item_deactivate_fixture()
+      assert {:ok, %BranchItemDeactivate{}} = BN.delete_branch_item_deactivate(branch_item_deactivate)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_branch_item_deactivate!(branch_item_deactivate.id) end
+    end
+
+    test "change_branch_item_deactivate/1 returns a branch_item_deactivate changeset" do
+      branch_item_deactivate = branch_item_deactivate_fixture()
+      assert %Ecto.Changeset{} = BN.change_branch_item_deactivate(branch_item_deactivate)
+    end
+  end
+
+  describe "cashier_session" do
+    alias BoatNoodle.BN.CashierSession
+
+    @valid_attrs %{branchid: "some branchid", cash_in: "120.5", cash_out: "120.5", close_amt: "120.5", csid: 42, deposits: "120.5", duration: 42, floatamt: "120.5", open_amt: "120.5", paidout: "120.5", staffid: "some staffid", time_end: "2010-04-17 14:00:00.000000Z", time_start: "2010-04-17 14:00:00.000000Z"}
+    @update_attrs %{branchid: "some updated branchid", cash_in: "456.7", cash_out: "456.7", close_amt: "456.7", csid: 43, deposits: "456.7", duration: 43, floatamt: "456.7", open_amt: "456.7", paidout: "456.7", staffid: "some updated staffid", time_end: "2011-05-18 15:01:01.000000Z", time_start: "2011-05-18 15:01:01.000000Z"}
+    @invalid_attrs %{branchid: nil, cash_in: nil, cash_out: nil, close_amt: nil, csid: nil, deposits: nil, duration: nil, floatamt: nil, open_amt: nil, paidout: nil, staffid: nil, time_end: nil, time_start: nil}
+
+    def cashier_session_fixture(attrs \\ %{}) do
+      {:ok, cashier_session} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_cashier_session()
+
+      cashier_session
+    end
+
+    test "list_cashier_session/0 returns all cashier_session" do
+      cashier_session = cashier_session_fixture()
+      assert BN.list_cashier_session() == [cashier_session]
+    end
+
+    test "get_cashier_session!/1 returns the cashier_session with given id" do
+      cashier_session = cashier_session_fixture()
+      assert BN.get_cashier_session!(cashier_session.id) == cashier_session
+    end
+
+    test "create_cashier_session/1 with valid data creates a cashier_session" do
+      assert {:ok, %CashierSession{} = cashier_session} = BN.create_cashier_session(@valid_attrs)
+      assert cashier_session.branchid == "some branchid"
+      assert cashier_session.cash_in == Decimal.new("120.5")
+      assert cashier_session.cash_out == Decimal.new("120.5")
+      assert cashier_session.close_amt == Decimal.new("120.5")
+      assert cashier_session.csid == 42
+      assert cashier_session.deposits == Decimal.new("120.5")
+      assert cashier_session.duration == 42
+      assert cashier_session.floatamt == Decimal.new("120.5")
+      assert cashier_session.open_amt == Decimal.new("120.5")
+      assert cashier_session.paidout == Decimal.new("120.5")
+      assert cashier_session.staffid == "some staffid"
+      assert cashier_session.time_end == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert cashier_session.time_start == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+    end
+
+    test "create_cashier_session/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_cashier_session(@invalid_attrs)
+    end
+
+    test "update_cashier_session/2 with valid data updates the cashier_session" do
+      cashier_session = cashier_session_fixture()
+      assert {:ok, cashier_session} = BN.update_cashier_session(cashier_session, @update_attrs)
+      assert %CashierSession{} = cashier_session
+      assert cashier_session.branchid == "some updated branchid"
+      assert cashier_session.cash_in == Decimal.new("456.7")
+      assert cashier_session.cash_out == Decimal.new("456.7")
+      assert cashier_session.close_amt == Decimal.new("456.7")
+      assert cashier_session.csid == 43
+      assert cashier_session.deposits == Decimal.new("456.7")
+      assert cashier_session.duration == 43
+      assert cashier_session.floatamt == Decimal.new("456.7")
+      assert cashier_session.open_amt == Decimal.new("456.7")
+      assert cashier_session.paidout == Decimal.new("456.7")
+      assert cashier_session.staffid == "some updated staffid"
+      assert cashier_session.time_end == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert cashier_session.time_start == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+    end
+
+    test "update_cashier_session/2 with invalid data returns error changeset" do
+      cashier_session = cashier_session_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_cashier_session(cashier_session, @invalid_attrs)
+      assert cashier_session == BN.get_cashier_session!(cashier_session.id)
+    end
+
+    test "delete_cashier_session/1 deletes the cashier_session" do
+      cashier_session = cashier_session_fixture()
+      assert {:ok, %CashierSession{}} = BN.delete_cashier_session(cashier_session)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_cashier_session!(cashier_session.id) end
+    end
+
+    test "change_cashier_session/1 returns a cashier_session changeset" do
+      cashier_session = cashier_session_fixture()
+      assert %Ecto.Changeset{} = BN.change_cashier_session(cashier_session)
+    end
+  end
+
+  describe "cash_in_out_type" do
+    alias BoatNoodle.BN.CashInOutType
+
+    @valid_attrs %{cash_type_id: 42, description: "some description", name: "some name"}
+    @update_attrs %{cash_type_id: 43, description: "some updated description", name: "some updated name"}
+    @invalid_attrs %{cash_type_id: nil, description: nil, name: nil}
+
+    def cash_in_out_type_fixture(attrs \\ %{}) do
+      {:ok, cash_in_out_type} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_cash_in_out_type()
+
+      cash_in_out_type
+    end
+
+    test "list_cash_in_out_type/0 returns all cash_in_out_type" do
+      cash_in_out_type = cash_in_out_type_fixture()
+      assert BN.list_cash_in_out_type() == [cash_in_out_type]
+    end
+
+    test "get_cash_in_out_type!/1 returns the cash_in_out_type with given id" do
+      cash_in_out_type = cash_in_out_type_fixture()
+      assert BN.get_cash_in_out_type!(cash_in_out_type.id) == cash_in_out_type
+    end
+
+    test "create_cash_in_out_type/1 with valid data creates a cash_in_out_type" do
+      assert {:ok, %CashInOutType{} = cash_in_out_type} = BN.create_cash_in_out_type(@valid_attrs)
+      assert cash_in_out_type.cash_type_id == 42
+      assert cash_in_out_type.description == "some description"
+      assert cash_in_out_type.name == "some name"
+    end
+
+    test "create_cash_in_out_type/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_cash_in_out_type(@invalid_attrs)
+    end
+
+    test "update_cash_in_out_type/2 with valid data updates the cash_in_out_type" do
+      cash_in_out_type = cash_in_out_type_fixture()
+      assert {:ok, cash_in_out_type} = BN.update_cash_in_out_type(cash_in_out_type, @update_attrs)
+      assert %CashInOutType{} = cash_in_out_type
+      assert cash_in_out_type.cash_type_id == 43
+      assert cash_in_out_type.description == "some updated description"
+      assert cash_in_out_type.name == "some updated name"
+    end
+
+    test "update_cash_in_out_type/2 with invalid data returns error changeset" do
+      cash_in_out_type = cash_in_out_type_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_cash_in_out_type(cash_in_out_type, @invalid_attrs)
+      assert cash_in_out_type == BN.get_cash_in_out_type!(cash_in_out_type.id)
+    end
+
+    test "delete_cash_in_out_type/1 deletes the cash_in_out_type" do
+      cash_in_out_type = cash_in_out_type_fixture()
+      assert {:ok, %CashInOutType{}} = BN.delete_cash_in_out_type(cash_in_out_type)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_cash_in_out_type!(cash_in_out_type.id) end
+    end
+
+    test "change_cash_in_out_type/1 returns a cash_in_out_type changeset" do
+      cash_in_out_type = cash_in_out_type_fixture()
+      assert %Ecto.Changeset{} = BN.change_cash_in_out_type(cash_in_out_type)
+    end
+  end
+
+  describe "combo_details" do
+    alias BoatNoodle.BN.ComboDetails
+
+    @valid_attrs %{combo_id: 42, combo_item_code: "some combo_item_code", combo_item_id: 42, combo_item_name: "some combo_item_name", combo_item_qty: 42, combo_qty: 42, id: 42, menu_cat_id: 42, top_up: "120.5", unit_price: "120.5", update_qty: 42}
+    @update_attrs %{combo_id: 43, combo_item_code: "some updated combo_item_code", combo_item_id: 43, combo_item_name: "some updated combo_item_name", combo_item_qty: 43, combo_qty: 43, id: 43, menu_cat_id: 43, top_up: "456.7", unit_price: "456.7", update_qty: 43}
+    @invalid_attrs %{combo_id: nil, combo_item_code: nil, combo_item_id: nil, combo_item_name: nil, combo_item_qty: nil, combo_qty: nil, id: nil, menu_cat_id: nil, top_up: nil, unit_price: nil, update_qty: nil}
+
+    def combo_details_fixture(attrs \\ %{}) do
+      {:ok, combo_details} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_combo_details()
+
+      combo_details
+    end
+
+    test "list_combo_details/0 returns all combo_details" do
+      combo_details = combo_details_fixture()
+      assert BN.list_combo_details() == [combo_details]
+    end
+
+    test "get_combo_details!/1 returns the combo_details with given id" do
+      combo_details = combo_details_fixture()
+      assert BN.get_combo_details!(combo_details.id) == combo_details
+    end
+
+    test "create_combo_details/1 with valid data creates a combo_details" do
+      assert {:ok, %ComboDetails{} = combo_details} = BN.create_combo_details(@valid_attrs)
+      assert combo_details.combo_id == 42
+      assert combo_details.combo_item_code == "some combo_item_code"
+      assert combo_details.combo_item_id == 42
+      assert combo_details.combo_item_name == "some combo_item_name"
+      assert combo_details.combo_item_qty == 42
+      assert combo_details.combo_qty == 42
+      assert combo_details.id == 42
+      assert combo_details.menu_cat_id == 42
+      assert combo_details.top_up == Decimal.new("120.5")
+      assert combo_details.unit_price == Decimal.new("120.5")
+      assert combo_details.update_qty == 42
+    end
+
+    test "create_combo_details/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_combo_details(@invalid_attrs)
+    end
+
+    test "update_combo_details/2 with valid data updates the combo_details" do
+      combo_details = combo_details_fixture()
+      assert {:ok, combo_details} = BN.update_combo_details(combo_details, @update_attrs)
+      assert %ComboDetails{} = combo_details
+      assert combo_details.combo_id == 43
+      assert combo_details.combo_item_code == "some updated combo_item_code"
+      assert combo_details.combo_item_id == 43
+      assert combo_details.combo_item_name == "some updated combo_item_name"
+      assert combo_details.combo_item_qty == 43
+      assert combo_details.combo_qty == 43
+      assert combo_details.id == 43
+      assert combo_details.menu_cat_id == 43
+      assert combo_details.top_up == Decimal.new("456.7")
+      assert combo_details.unit_price == Decimal.new("456.7")
+      assert combo_details.update_qty == 43
+    end
+
+    test "update_combo_details/2 with invalid data returns error changeset" do
+      combo_details = combo_details_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_combo_details(combo_details, @invalid_attrs)
+      assert combo_details == BN.get_combo_details!(combo_details.id)
+    end
+
+    test "delete_combo_details/1 deletes the combo_details" do
+      combo_details = combo_details_fixture()
+      assert {:ok, %ComboDetails{}} = BN.delete_combo_details(combo_details)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_combo_details!(combo_details.id) end
+    end
+
+    test "change_combo_details/1 returns a combo_details changeset" do
+      combo_details = combo_details_fixture()
+      assert %Ecto.Changeset{} = BN.change_combo_details(combo_details)
+    end
+  end
+
+  describe "combo_map" do
+    alias BoatNoodle.BN.ComboMap
+
+    @valid_attrs %{linkid: 42, subcatid: 42}
+    @update_attrs %{linkid: 43, subcatid: 43}
+    @invalid_attrs %{linkid: nil, subcatid: nil}
+
+    def combo_map_fixture(attrs \\ %{}) do
+      {:ok, combo_map} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_combo_map()
+
+      combo_map
+    end
+
+    test "list_combo_map/0 returns all combo_map" do
+      combo_map = combo_map_fixture()
+      assert BN.list_combo_map() == [combo_map]
+    end
+
+    test "get_combo_map!/1 returns the combo_map with given id" do
+      combo_map = combo_map_fixture()
+      assert BN.get_combo_map!(combo_map.id) == combo_map
+    end
+
+    test "create_combo_map/1 with valid data creates a combo_map" do
+      assert {:ok, %ComboMap{} = combo_map} = BN.create_combo_map(@valid_attrs)
+      assert combo_map.linkid == 42
+      assert combo_map.subcatid == 42
+    end
+
+    test "create_combo_map/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_combo_map(@invalid_attrs)
+    end
+
+    test "update_combo_map/2 with valid data updates the combo_map" do
+      combo_map = combo_map_fixture()
+      assert {:ok, combo_map} = BN.update_combo_map(combo_map, @update_attrs)
+      assert %ComboMap{} = combo_map
+      assert combo_map.linkid == 43
+      assert combo_map.subcatid == 43
+    end
+
+    test "update_combo_map/2 with invalid data returns error changeset" do
+      combo_map = combo_map_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_combo_map(combo_map, @invalid_attrs)
+      assert combo_map == BN.get_combo_map!(combo_map.id)
+    end
+
+    test "delete_combo_map/1 deletes the combo_map" do
+      combo_map = combo_map_fixture()
+      assert {:ok, %ComboMap{}} = BN.delete_combo_map(combo_map)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_combo_map!(combo_map.id) end
+    end
+
+    test "change_combo_map/1 returns a combo_map changeset" do
+      combo_map = combo_map_fixture()
+      assert %Ecto.Changeset{} = BN.change_combo_map(combo_map)
+    end
+  end
+
+  describe "discount_type" do
+    alias BoatNoodle.BN.DiscountType
+
+    @valid_attrs %{disctypeid: 42, disctypename: "some disctypename"}
+    @update_attrs %{disctypeid: 43, disctypename: "some updated disctypename"}
+    @invalid_attrs %{disctypeid: nil, disctypename: nil}
+
+    def discount_type_fixture(attrs \\ %{}) do
+      {:ok, discount_type} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_discount_type()
+
+      discount_type
+    end
+
+    test "list_discount_type/0 returns all discount_type" do
+      discount_type = discount_type_fixture()
+      assert BN.list_discount_type() == [discount_type]
+    end
+
+    test "get_discount_type!/1 returns the discount_type with given id" do
+      discount_type = discount_type_fixture()
+      assert BN.get_discount_type!(discount_type.id) == discount_type
+    end
+
+    test "create_discount_type/1 with valid data creates a discount_type" do
+      assert {:ok, %DiscountType{} = discount_type} = BN.create_discount_type(@valid_attrs)
+      assert discount_type.disctypeid == 42
+      assert discount_type.disctypename == "some disctypename"
+    end
+
+    test "create_discount_type/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_discount_type(@invalid_attrs)
+    end
+
+    test "update_discount_type/2 with valid data updates the discount_type" do
+      discount_type = discount_type_fixture()
+      assert {:ok, discount_type} = BN.update_discount_type(discount_type, @update_attrs)
+      assert %DiscountType{} = discount_type
+      assert discount_type.disctypeid == 43
+      assert discount_type.disctypename == "some updated disctypename"
+    end
+
+    test "update_discount_type/2 with invalid data returns error changeset" do
+      discount_type = discount_type_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_discount_type(discount_type, @invalid_attrs)
+      assert discount_type == BN.get_discount_type!(discount_type.id)
+    end
+
+    test "delete_discount_type/1 deletes the discount_type" do
+      discount_type = discount_type_fixture()
+      assert {:ok, %DiscountType{}} = BN.delete_discount_type(discount_type)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_discount_type!(discount_type.id) end
+    end
+
+    test "change_discount_type/1 returns a discount_type changeset" do
+      discount_type = discount_type_fixture()
+      assert %Ecto.Changeset{} = BN.change_discount_type(discount_type)
+    end
+  end
+
+  describe "item_customized" do
+    alias BoatNoodle.BN.ItemCustomized
+
+    @valid_attrs %{availability: "some availability", created_at: "2010-04-17 14:00:00.000000Z", customize_code: "some customize_code", customize_detail: "some customize_detail", itemcustomid: 42, price: "120.5", subcatid: "some subcatid", updated_at: "2010-04-17 14:00:00.000000Z"}
+    @update_attrs %{availability: "some updated availability", created_at: "2011-05-18 15:01:01.000000Z", customize_code: "some updated customize_code", customize_detail: "some updated customize_detail", itemcustomid: 43, price: "456.7", subcatid: "some updated subcatid", updated_at: "2011-05-18 15:01:01.000000Z"}
+    @invalid_attrs %{availability: nil, created_at: nil, customize_code: nil, customize_detail: nil, itemcustomid: nil, price: nil, subcatid: nil, updated_at: nil}
+
+    def item_customized_fixture(attrs \\ %{}) do
+      {:ok, item_customized} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_item_customized()
+
+      item_customized
+    end
+
+    test "list_item_customized/0 returns all item_customized" do
+      item_customized = item_customized_fixture()
+      assert BN.list_item_customized() == [item_customized]
+    end
+
+    test "get_item_customized!/1 returns the item_customized with given id" do
+      item_customized = item_customized_fixture()
+      assert BN.get_item_customized!(item_customized.id) == item_customized
+    end
+
+    test "create_item_customized/1 with valid data creates a item_customized" do
+      assert {:ok, %ItemCustomized{} = item_customized} = BN.create_item_customized(@valid_attrs)
+      assert item_customized.availability == "some availability"
+      assert item_customized.created_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert item_customized.customize_code == "some customize_code"
+      assert item_customized.customize_detail == "some customize_detail"
+      assert item_customized.itemcustomid == 42
+      assert item_customized.price == Decimal.new("120.5")
+      assert item_customized.subcatid == "some subcatid"
+      assert item_customized.updated_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+    end
+
+    test "create_item_customized/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_item_customized(@invalid_attrs)
+    end
+
+    test "update_item_customized/2 with valid data updates the item_customized" do
+      item_customized = item_customized_fixture()
+      assert {:ok, item_customized} = BN.update_item_customized(item_customized, @update_attrs)
+      assert %ItemCustomized{} = item_customized
+      assert item_customized.availability == "some updated availability"
+      assert item_customized.created_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert item_customized.customize_code == "some updated customize_code"
+      assert item_customized.customize_detail == "some updated customize_detail"
+      assert item_customized.itemcustomid == 43
+      assert item_customized.price == Decimal.new("456.7")
+      assert item_customized.subcatid == "some updated subcatid"
+      assert item_customized.updated_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+    end
+
+    test "update_item_customized/2 with invalid data returns error changeset" do
+      item_customized = item_customized_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_item_customized(item_customized, @invalid_attrs)
+      assert item_customized == BN.get_item_customized!(item_customized.id)
+    end
+
+    test "delete_item_customized/1 deletes the item_customized" do
+      item_customized = item_customized_fixture()
+      assert {:ok, %ItemCustomized{}} = BN.delete_item_customized(item_customized)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_item_customized!(item_customized.id) end
+    end
+
+    test "change_item_customized/1 returns a item_customized changeset" do
+      item_customized = item_customized_fixture()
+      assert %Ecto.Changeset{} = BN.change_item_customized(item_customized)
+    end
+  end
+
+  describe "migrations" do
+    alias BoatNoodle.BN.Migrations
+
+    @valid_attrs %{batch: 42, migration: "some migration"}
+    @update_attrs %{batch: 43, migration: "some updated migration"}
+    @invalid_attrs %{batch: nil, migration: nil}
+
+    def migrations_fixture(attrs \\ %{}) do
+      {:ok, migrations} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_migrations()
+
+      migrations
+    end
+
+    test "list_migrations/0 returns all migrations" do
+      migrations = migrations_fixture()
+      assert BN.list_migrations() == [migrations]
+    end
+
+    test "get_migrations!/1 returns the migrations with given id" do
+      migrations = migrations_fixture()
+      assert BN.get_migrations!(migrations.id) == migrations
+    end
+
+    test "create_migrations/1 with valid data creates a migrations" do
+      assert {:ok, %Migrations{} = migrations} = BN.create_migrations(@valid_attrs)
+      assert migrations.batch == 42
+      assert migrations.migration == "some migration"
+    end
+
+    test "create_migrations/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_migrations(@invalid_attrs)
+    end
+
+    test "update_migrations/2 with valid data updates the migrations" do
+      migrations = migrations_fixture()
+      assert {:ok, migrations} = BN.update_migrations(migrations, @update_attrs)
+      assert %Migrations{} = migrations
+      assert migrations.batch == 43
+      assert migrations.migration == "some updated migration"
+    end
+
+    test "update_migrations/2 with invalid data returns error changeset" do
+      migrations = migrations_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_migrations(migrations, @invalid_attrs)
+      assert migrations == BN.get_migrations!(migrations.id)
+    end
+
+    test "delete_migrations/1 deletes the migrations" do
+      migrations = migrations_fixture()
+      assert {:ok, %Migrations{}} = BN.delete_migrations(migrations)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_migrations!(migrations.id) end
+    end
+
+    test "change_migrations/1 returns a migrations changeset" do
+      migrations = migrations_fixture()
+      assert %Ecto.Changeset{} = BN.change_migrations(migrations)
+    end
+  end
+
+  describe "password_resets" do
+    alias BoatNoodle.BN.PasswordResets
+
+    @valid_attrs %{created_at: "2010-04-17 14:00:00.000000Z", email: "some email", token: "some token"}
+    @update_attrs %{created_at: "2011-05-18 15:01:01.000000Z", email: "some updated email", token: "some updated token"}
+    @invalid_attrs %{created_at: nil, email: nil, token: nil}
+
+    def password_resets_fixture(attrs \\ %{}) do
+      {:ok, password_resets} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_password_resets()
+
+      password_resets
+    end
+
+    test "list_password_resets/0 returns all password_resets" do
+      password_resets = password_resets_fixture()
+      assert BN.list_password_resets() == [password_resets]
+    end
+
+    test "get_password_resets!/1 returns the password_resets with given id" do
+      password_resets = password_resets_fixture()
+      assert BN.get_password_resets!(password_resets.id) == password_resets
+    end
+
+    test "create_password_resets/1 with valid data creates a password_resets" do
+      assert {:ok, %PasswordResets{} = password_resets} = BN.create_password_resets(@valid_attrs)
+      assert password_resets.created_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert password_resets.email == "some email"
+      assert password_resets.token == "some token"
+    end
+
+    test "create_password_resets/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_password_resets(@invalid_attrs)
+    end
+
+    test "update_password_resets/2 with valid data updates the password_resets" do
+      password_resets = password_resets_fixture()
+      assert {:ok, password_resets} = BN.update_password_resets(password_resets, @update_attrs)
+      assert %PasswordResets{} = password_resets
+      assert password_resets.created_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert password_resets.email == "some updated email"
+      assert password_resets.token == "some updated token"
+    end
+
+    test "update_password_resets/2 with invalid data returns error changeset" do
+      password_resets = password_resets_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_password_resets(password_resets, @invalid_attrs)
+      assert password_resets == BN.get_password_resets!(password_resets.id)
+    end
+
+    test "delete_password_resets/1 deletes the password_resets" do
+      password_resets = password_resets_fixture()
+      assert {:ok, %PasswordResets{}} = BN.delete_password_resets(password_resets)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_password_resets!(password_resets.id) end
+    end
+
+    test "change_password_resets/1 returns a password_resets changeset" do
+      password_resets = password_resets_fixture()
+      assert %Ecto.Changeset{} = BN.change_password_resets(password_resets)
+    end
+  end
+
+  describe "rpt_cashier_eod" do
+    alias BoatNoodle.BN.RPTCASHIEREOD
+
+    @valid_attrs %{branch_id: 42, branchcode: "some branchcode", cash: "120.5", cash_in: "120.5", close_amt: "120.5", deposit: "120.5", dinein: "120.5", drawamt: "120.5", duration: "some duration", exp_drw_amt: "120.5", extra: "120.5", floats: "120.5", open_amt: "120.5", paidout: "120.5", rptid: 42, staff_name: "some staff_name", takeaway: "120.5", time_end: "2010-04-17 14:00:00.000000Z", time_start: "2010-04-17 14:00:00.000000Z", total_cash: "120.5", total_changes: "120.5", total_disc: "120.5", total_pymt: "120.5", total_round: "120.5", total_sr: "120.5", totalpax: 42, totalsales: "120.5", totalsvc: "120.5", totaltax: "120.5", voiditem: 120.5, voidsales: 120.5}
+    @update_attrs %{branch_id: 43, branchcode: "some updated branchcode", cash: "456.7", cash_in: "456.7", close_amt: "456.7", deposit: "456.7", dinein: "456.7", drawamt: "456.7", duration: "some updated duration", exp_drw_amt: "456.7", extra: "456.7", floats: "456.7", open_amt: "456.7", paidout: "456.7", rptid: 43, staff_name: "some updated staff_name", takeaway: "456.7", time_end: "2011-05-18 15:01:01.000000Z", time_start: "2011-05-18 15:01:01.000000Z", total_cash: "456.7", total_changes: "456.7", total_disc: "456.7", total_pymt: "456.7", total_round: "456.7", total_sr: "456.7", totalpax: 43, totalsales: "456.7", totalsvc: "456.7", totaltax: "456.7", voiditem: 456.7, voidsales: 456.7}
+    @invalid_attrs %{branch_id: nil, branchcode: nil, cash: nil, cash_in: nil, close_amt: nil, deposit: nil, dinein: nil, drawamt: nil, duration: nil, exp_drw_amt: nil, extra: nil, floats: nil, open_amt: nil, paidout: nil, rptid: nil, staff_name: nil, takeaway: nil, time_end: nil, time_start: nil, total_cash: nil, total_changes: nil, total_disc: nil, total_pymt: nil, total_round: nil, total_sr: nil, totalpax: nil, totalsales: nil, totalsvc: nil, totaltax: nil, voiditem: nil, voidsales: nil}
+
+    def rptcashiereod_fixture(attrs \\ %{}) do
+      {:ok, rptcashiereod} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_rptcashiereod()
+
+      rptcashiereod
+    end
+
+    test "list_rpt_cashier_eod/0 returns all rpt_cashier_eod" do
+      rptcashiereod = rptcashiereod_fixture()
+      assert BN.list_rpt_cashier_eod() == [rptcashiereod]
+    end
+
+    test "get_rptcashiereod!/1 returns the rptcashiereod with given id" do
+      rptcashiereod = rptcashiereod_fixture()
+      assert BN.get_rptcashiereod!(rptcashiereod.id) == rptcashiereod
+    end
+
+    test "create_rptcashiereod/1 with valid data creates a rptcashiereod" do
+      assert {:ok, %RPTCASHIEREOD{} = rptcashiereod} = BN.create_rptcashiereod(@valid_attrs)
+      assert rptcashiereod.branch_id == 42
+      assert rptcashiereod.branchcode == "some branchcode"
+      assert rptcashiereod.cash == Decimal.new("120.5")
+      assert rptcashiereod.cash_in == Decimal.new("120.5")
+      assert rptcashiereod.close_amt == Decimal.new("120.5")
+      assert rptcashiereod.deposit == Decimal.new("120.5")
+      assert rptcashiereod.dinein == Decimal.new("120.5")
+      assert rptcashiereod.drawamt == Decimal.new("120.5")
+      assert rptcashiereod.duration == "some duration"
+      assert rptcashiereod.exp_drw_amt == Decimal.new("120.5")
+      assert rptcashiereod.extra == Decimal.new("120.5")
+      assert rptcashiereod.floats == Decimal.new("120.5")
+      assert rptcashiereod.open_amt == Decimal.new("120.5")
+      assert rptcashiereod.paidout == Decimal.new("120.5")
+      assert rptcashiereod.rptid == 42
+      assert rptcashiereod.staff_name == "some staff_name"
+      assert rptcashiereod.takeaway == Decimal.new("120.5")
+      assert rptcashiereod.time_end == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert rptcashiereod.time_start == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert rptcashiereod.total_cash == Decimal.new("120.5")
+      assert rptcashiereod.total_changes == Decimal.new("120.5")
+      assert rptcashiereod.total_disc == Decimal.new("120.5")
+      assert rptcashiereod.total_pymt == Decimal.new("120.5")
+      assert rptcashiereod.total_round == Decimal.new("120.5")
+      assert rptcashiereod.total_sr == Decimal.new("120.5")
+      assert rptcashiereod.totalpax == 42
+      assert rptcashiereod.totalsales == Decimal.new("120.5")
+      assert rptcashiereod.totalsvc == Decimal.new("120.5")
+      assert rptcashiereod.totaltax == Decimal.new("120.5")
+      assert rptcashiereod.voiditem == 120.5
+      assert rptcashiereod.voidsales == 120.5
+    end
+
+    test "create_rptcashiereod/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_rptcashiereod(@invalid_attrs)
+    end
+
+    test "update_rptcashiereod/2 with valid data updates the rptcashiereod" do
+      rptcashiereod = rptcashiereod_fixture()
+      assert {:ok, rptcashiereod} = BN.update_rptcashiereod(rptcashiereod, @update_attrs)
+      assert %RPTCASHIEREOD{} = rptcashiereod
+      assert rptcashiereod.branch_id == 43
+      assert rptcashiereod.branchcode == "some updated branchcode"
+      assert rptcashiereod.cash == Decimal.new("456.7")
+      assert rptcashiereod.cash_in == Decimal.new("456.7")
+      assert rptcashiereod.close_amt == Decimal.new("456.7")
+      assert rptcashiereod.deposit == Decimal.new("456.7")
+      assert rptcashiereod.dinein == Decimal.new("456.7")
+      assert rptcashiereod.drawamt == Decimal.new("456.7")
+      assert rptcashiereod.duration == "some updated duration"
+      assert rptcashiereod.exp_drw_amt == Decimal.new("456.7")
+      assert rptcashiereod.extra == Decimal.new("456.7")
+      assert rptcashiereod.floats == Decimal.new("456.7")
+      assert rptcashiereod.open_amt == Decimal.new("456.7")
+      assert rptcashiereod.paidout == Decimal.new("456.7")
+      assert rptcashiereod.rptid == 43
+      assert rptcashiereod.staff_name == "some updated staff_name"
+      assert rptcashiereod.takeaway == Decimal.new("456.7")
+      assert rptcashiereod.time_end == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert rptcashiereod.time_start == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert rptcashiereod.total_cash == Decimal.new("456.7")
+      assert rptcashiereod.total_changes == Decimal.new("456.7")
+      assert rptcashiereod.total_disc == Decimal.new("456.7")
+      assert rptcashiereod.total_pymt == Decimal.new("456.7")
+      assert rptcashiereod.total_round == Decimal.new("456.7")
+      assert rptcashiereod.total_sr == Decimal.new("456.7")
+      assert rptcashiereod.totalpax == 43
+      assert rptcashiereod.totalsales == Decimal.new("456.7")
+      assert rptcashiereod.totalsvc == Decimal.new("456.7")
+      assert rptcashiereod.totaltax == Decimal.new("456.7")
+      assert rptcashiereod.voiditem == 456.7
+      assert rptcashiereod.voidsales == 456.7
+    end
+
+    test "update_rptcashiereod/2 with invalid data returns error changeset" do
+      rptcashiereod = rptcashiereod_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_rptcashiereod(rptcashiereod, @invalid_attrs)
+      assert rptcashiereod == BN.get_rptcashiereod!(rptcashiereod.id)
+    end
+
+    test "delete_rptcashiereod/1 deletes the rptcashiereod" do
+      rptcashiereod = rptcashiereod_fixture()
+      assert {:ok, %RPTCASHIEREOD{}} = BN.delete_rptcashiereod(rptcashiereod)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_rptcashiereod!(rptcashiereod.id) end
+    end
+
+    test "change_rptcashiereod/1 returns a rptcashiereod changeset" do
+      rptcashiereod = rptcashiereod_fixture()
+      assert %Ecto.Changeset{} = BN.change_rptcashiereod(rptcashiereod)
+    end
+  end
+
+  describe "rpt_hourly_outlet" do
+    alias BoatNoodle.BN.RPTHOURLYOUTLET
+
+    @valid_attrs %{brachcode: "some brachcode", branchid: 42, branchname: "some branchname", integer: "some integer", pax: 42, sales: "120.5", salesdate: ~N[2010-04-17 14:00:00.000000], saleshour: 42, salesmonth: 42, salesquarter: 42, salesyear: 42, transaction: "some transaction"}
+    @update_attrs %{brachcode: "some updated brachcode", branchid: 43, branchname: "some updated branchname", integer: "some updated integer", pax: 43, sales: "456.7", salesdate: ~N[2011-05-18 15:01:01.000000], saleshour: 43, salesmonth: 43, salesquarter: 43, salesyear: 43, transaction: "some updated transaction"}
+    @invalid_attrs %{brachcode: nil, branchid: nil, branchname: nil, integer: nil, pax: nil, sales: nil, salesdate: nil, saleshour: nil, salesmonth: nil, salesquarter: nil, salesyear: nil, transaction: nil}
+
+    def rpthourlyoutlet_fixture(attrs \\ %{}) do
+      {:ok, rpthourlyoutlet} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_rpthourlyoutlet()
+
+      rpthourlyoutlet
+    end
+
+    test "list_rpt_hourly_outlet/0 returns all rpt_hourly_outlet" do
+      rpthourlyoutlet = rpthourlyoutlet_fixture()
+      assert BN.list_rpt_hourly_outlet() == [rpthourlyoutlet]
+    end
+
+    test "get_rpthourlyoutlet!/1 returns the rpthourlyoutlet with given id" do
+      rpthourlyoutlet = rpthourlyoutlet_fixture()
+      assert BN.get_rpthourlyoutlet!(rpthourlyoutlet.id) == rpthourlyoutlet
+    end
+
+    test "create_rpthourlyoutlet/1 with valid data creates a rpthourlyoutlet" do
+      assert {:ok, %RPTHOURLYOUTLET{} = rpthourlyoutlet} = BN.create_rpthourlyoutlet(@valid_attrs)
+      assert rpthourlyoutlet.brachcode == "some brachcode"
+      assert rpthourlyoutlet.branchid == 42
+      assert rpthourlyoutlet.branchname == "some branchname"
+      assert rpthourlyoutlet.integer == "some integer"
+      assert rpthourlyoutlet.pax == 42
+      assert rpthourlyoutlet.sales == Decimal.new("120.5")
+      assert rpthourlyoutlet.salesdate == ~N[2010-04-17 14:00:00.000000]
+      assert rpthourlyoutlet.saleshour == 42
+      assert rpthourlyoutlet.salesmonth == 42
+      assert rpthourlyoutlet.salesquarter == 42
+      assert rpthourlyoutlet.salesyear == 42
+      assert rpthourlyoutlet.transaction == "some transaction"
+    end
+
+    test "create_rpthourlyoutlet/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_rpthourlyoutlet(@invalid_attrs)
+    end
+
+    test "update_rpthourlyoutlet/2 with valid data updates the rpthourlyoutlet" do
+      rpthourlyoutlet = rpthourlyoutlet_fixture()
+      assert {:ok, rpthourlyoutlet} = BN.update_rpthourlyoutlet(rpthourlyoutlet, @update_attrs)
+      assert %RPTHOURLYOUTLET{} = rpthourlyoutlet
+      assert rpthourlyoutlet.brachcode == "some updated brachcode"
+      assert rpthourlyoutlet.branchid == 43
+      assert rpthourlyoutlet.branchname == "some updated branchname"
+      assert rpthourlyoutlet.integer == "some updated integer"
+      assert rpthourlyoutlet.pax == 43
+      assert rpthourlyoutlet.sales == Decimal.new("456.7")
+      assert rpthourlyoutlet.salesdate == ~N[2011-05-18 15:01:01.000000]
+      assert rpthourlyoutlet.saleshour == 43
+      assert rpthourlyoutlet.salesmonth == 43
+      assert rpthourlyoutlet.salesquarter == 43
+      assert rpthourlyoutlet.salesyear == 43
+      assert rpthourlyoutlet.transaction == "some updated transaction"
+    end
+
+    test "update_rpthourlyoutlet/2 with invalid data returns error changeset" do
+      rpthourlyoutlet = rpthourlyoutlet_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_rpthourlyoutlet(rpthourlyoutlet, @invalid_attrs)
+      assert rpthourlyoutlet == BN.get_rpthourlyoutlet!(rpthourlyoutlet.id)
+    end
+
+    test "delete_rpthourlyoutlet/1 deletes the rpthourlyoutlet" do
+      rpthourlyoutlet = rpthourlyoutlet_fixture()
+      assert {:ok, %RPTHOURLYOUTLET{}} = BN.delete_rpthourlyoutlet(rpthourlyoutlet)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_rpthourlyoutlet!(rpthourlyoutlet.id) end
+    end
+
+    test "change_rpthourlyoutlet/1 returns a rpthourlyoutlet changeset" do
+      rpthourlyoutlet = rpthourlyoutlet_fixture()
+      assert %Ecto.Changeset{} = BN.change_rpthourlyoutlet(rpthourlyoutlet)
+    end
+  end
+
+  describe "rpt_transaction" do
+    alias BoatNoodle.BN.RPTTRANSACTION
+
+    @valid_attrs %{after_disc: "some after_disc", branchcode: "some branchcode", branchid: 42, cash: "120.5", changes: "120.5", decimal: "some decimal", grand_total: "120.5", gst_charge: "some gst_charge", invoiceno: "some invoiceno", is_void: 42, pax: 42, payment_type: "some payment_type", quarter: 42, remark: "some remark", rounding: "120.5", salesdate: "2010-04-17 14:00:00.000000Z", saleshour: 42, salesid: "some salesid", salesmonth: 42, salestime: "2010-04-17 14:00:00.000000Z", salesyear: 42, service_charge: "120.5", staffid: 42, staffname: "some staffname", sub_total: "120.5", tbl_no: 42, type: "some type", void_by: "some void_by", voidreason: "some voidreason"}
+    @update_attrs %{after_disc: "some updated after_disc", branchcode: "some updated branchcode", branchid: 43, cash: "456.7", changes: "456.7", decimal: "some updated decimal", grand_total: "456.7", gst_charge: "some updated gst_charge", invoiceno: "some updated invoiceno", is_void: 43, pax: 43, payment_type: "some updated payment_type", quarter: 43, remark: "some updated remark", rounding: "456.7", salesdate: "2011-05-18 15:01:01.000000Z", saleshour: 43, salesid: "some updated salesid", salesmonth: 43, salestime: "2011-05-18 15:01:01.000000Z", salesyear: 43, service_charge: "456.7", staffid: 43, staffname: "some updated staffname", sub_total: "456.7", tbl_no: 43, type: "some updated type", void_by: "some updated void_by", voidreason: "some updated voidreason"}
+    @invalid_attrs %{after_disc: nil, branchcode: nil, branchid: nil, cash: nil, changes: nil, decimal: nil, grand_total: nil, gst_charge: nil, invoiceno: nil, is_void: nil, pax: nil, payment_type: nil, quarter: nil, remark: nil, rounding: nil, salesdate: nil, saleshour: nil, salesid: nil, salesmonth: nil, salestime: nil, salesyear: nil, service_charge: nil, staffid: nil, staffname: nil, sub_total: nil, tbl_no: nil, type: nil, void_by: nil, voidreason: nil}
+
+    def rpttransaction_fixture(attrs \\ %{}) do
+      {:ok, rpttransaction} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_rpttransaction()
+
+      rpttransaction
+    end
+
+    test "list_rpt_transaction/0 returns all rpt_transaction" do
+      rpttransaction = rpttransaction_fixture()
+      assert BN.list_rpt_transaction() == [rpttransaction]
+    end
+
+    test "get_rpttransaction!/1 returns the rpttransaction with given id" do
+      rpttransaction = rpttransaction_fixture()
+      assert BN.get_rpttransaction!(rpttransaction.id) == rpttransaction
+    end
+
+    test "create_rpttransaction/1 with valid data creates a rpttransaction" do
+      assert {:ok, %RPTTRANSACTION{} = rpttransaction} = BN.create_rpttransaction(@valid_attrs)
+      assert rpttransaction.after_disc == "some after_disc"
+      assert rpttransaction.branchcode == "some branchcode"
+      assert rpttransaction.branchid == 42
+      assert rpttransaction.cash == Decimal.new("120.5")
+      assert rpttransaction.changes == Decimal.new("120.5")
+      assert rpttransaction.decimal == "some decimal"
+      assert rpttransaction.grand_total == Decimal.new("120.5")
+      assert rpttransaction.gst_charge == "some gst_charge"
+      assert rpttransaction.invoiceno == "some invoiceno"
+      assert rpttransaction.is_void == 42
+      assert rpttransaction.pax == 42
+      assert rpttransaction.payment_type == "some payment_type"
+      assert rpttransaction.quarter == 42
+      assert rpttransaction.remark == "some remark"
+      assert rpttransaction.rounding == Decimal.new("120.5")
+      assert rpttransaction.salesdate == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert rpttransaction.saleshour == 42
+      assert rpttransaction.salesid == "some salesid"
+      assert rpttransaction.salesmonth == 42
+      assert rpttransaction.salestime == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert rpttransaction.salesyear == 42
+      assert rpttransaction.service_charge == Decimal.new("120.5")
+      assert rpttransaction.staffid == 42
+      assert rpttransaction.staffname == "some staffname"
+      assert rpttransaction.sub_total == Decimal.new("120.5")
+      assert rpttransaction.tbl_no == 42
+      assert rpttransaction.type == "some type"
+      assert rpttransaction.void_by == "some void_by"
+      assert rpttransaction.voidreason == "some voidreason"
+    end
+
+    test "create_rpttransaction/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_rpttransaction(@invalid_attrs)
+    end
+
+    test "update_rpttransaction/2 with valid data updates the rpttransaction" do
+      rpttransaction = rpttransaction_fixture()
+      assert {:ok, rpttransaction} = BN.update_rpttransaction(rpttransaction, @update_attrs)
+      assert %RPTTRANSACTION{} = rpttransaction
+      assert rpttransaction.after_disc == "some updated after_disc"
+      assert rpttransaction.branchcode == "some updated branchcode"
+      assert rpttransaction.branchid == 43
+      assert rpttransaction.cash == Decimal.new("456.7")
+      assert rpttransaction.changes == Decimal.new("456.7")
+      assert rpttransaction.decimal == "some updated decimal"
+      assert rpttransaction.grand_total == Decimal.new("456.7")
+      assert rpttransaction.gst_charge == "some updated gst_charge"
+      assert rpttransaction.invoiceno == "some updated invoiceno"
+      assert rpttransaction.is_void == 43
+      assert rpttransaction.pax == 43
+      assert rpttransaction.payment_type == "some updated payment_type"
+      assert rpttransaction.quarter == 43
+      assert rpttransaction.remark == "some updated remark"
+      assert rpttransaction.rounding == Decimal.new("456.7")
+      assert rpttransaction.salesdate == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert rpttransaction.saleshour == 43
+      assert rpttransaction.salesid == "some updated salesid"
+      assert rpttransaction.salesmonth == 43
+      assert rpttransaction.salestime == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert rpttransaction.salesyear == 43
+      assert rpttransaction.service_charge == Decimal.new("456.7")
+      assert rpttransaction.staffid == 43
+      assert rpttransaction.staffname == "some updated staffname"
+      assert rpttransaction.sub_total == Decimal.new("456.7")
+      assert rpttransaction.tbl_no == 43
+      assert rpttransaction.type == "some updated type"
+      assert rpttransaction.void_by == "some updated void_by"
+      assert rpttransaction.voidreason == "some updated voidreason"
+    end
+
+    test "update_rpttransaction/2 with invalid data returns error changeset" do
+      rpttransaction = rpttransaction_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_rpttransaction(rpttransaction, @invalid_attrs)
+      assert rpttransaction == BN.get_rpttransaction!(rpttransaction.id)
+    end
+
+    test "delete_rpttransaction/1 deletes the rpttransaction" do
+      rpttransaction = rpttransaction_fixture()
+      assert {:ok, %RPTTRANSACTION{}} = BN.delete_rpttransaction(rpttransaction)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_rpttransaction!(rpttransaction.id) end
+    end
+
+    test "change_rpttransaction/1 returns a rpttransaction changeset" do
+      rpttransaction = rpttransaction_fixture()
+      assert %Ecto.Changeset{} = BN.change_rpttransaction(rpttransaction)
+    end
+  end
+
+  describe "salesdetailcust" do
+    alias BoatNoodle.BN.SalesDetailCust
+
+    @valid_attrs %{created_at: "2010-04-17 14:00:00.000000Z", custom_name: "some custom_name", customer_price: "120.5", orderid: "some orderid", salescustid: 42, updated_at: "2010-04-17 14:00:00.000000Z"}
+    @update_attrs %{created_at: "2011-05-18 15:01:01.000000Z", custom_name: "some updated custom_name", customer_price: "456.7", orderid: "some updated orderid", salescustid: 43, updated_at: "2011-05-18 15:01:01.000000Z"}
+    @invalid_attrs %{created_at: nil, custom_name: nil, customer_price: nil, orderid: nil, salescustid: nil, updated_at: nil}
+
+    def sales_detail_cust_fixture(attrs \\ %{}) do
+      {:ok, sales_detail_cust} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_sales_detail_cust()
+
+      sales_detail_cust
+    end
+
+    test "list_salesdetailcust/0 returns all salesdetailcust" do
+      sales_detail_cust = sales_detail_cust_fixture()
+      assert BN.list_salesdetailcust() == [sales_detail_cust]
+    end
+
+    test "get_sales_detail_cust!/1 returns the sales_detail_cust with given id" do
+      sales_detail_cust = sales_detail_cust_fixture()
+      assert BN.get_sales_detail_cust!(sales_detail_cust.id) == sales_detail_cust
+    end
+
+    test "create_sales_detail_cust/1 with valid data creates a sales_detail_cust" do
+      assert {:ok, %SalesDetailCust{} = sales_detail_cust} = BN.create_sales_detail_cust(@valid_attrs)
+      assert sales_detail_cust.created_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert sales_detail_cust.custom_name == "some custom_name"
+      assert sales_detail_cust.customer_price == Decimal.new("120.5")
+      assert sales_detail_cust.orderid == "some orderid"
+      assert sales_detail_cust.salescustid == 42
+      assert sales_detail_cust.updated_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+    end
+
+    test "create_sales_detail_cust/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_sales_detail_cust(@invalid_attrs)
+    end
+
+    test "update_sales_detail_cust/2 with valid data updates the sales_detail_cust" do
+      sales_detail_cust = sales_detail_cust_fixture()
+      assert {:ok, sales_detail_cust} = BN.update_sales_detail_cust(sales_detail_cust, @update_attrs)
+      assert %SalesDetailCust{} = sales_detail_cust
+      assert sales_detail_cust.created_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert sales_detail_cust.custom_name == "some updated custom_name"
+      assert sales_detail_cust.customer_price == Decimal.new("456.7")
+      assert sales_detail_cust.orderid == "some updated orderid"
+      assert sales_detail_cust.salescustid == 43
+      assert sales_detail_cust.updated_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+    end
+
+    test "update_sales_detail_cust/2 with invalid data returns error changeset" do
+      sales_detail_cust = sales_detail_cust_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_sales_detail_cust(sales_detail_cust, @invalid_attrs)
+      assert sales_detail_cust == BN.get_sales_detail_cust!(sales_detail_cust.id)
+    end
+
+    test "delete_sales_detail_cust/1 deletes the sales_detail_cust" do
+      sales_detail_cust = sales_detail_cust_fixture()
+      assert {:ok, %SalesDetailCust{}} = BN.delete_sales_detail_cust(sales_detail_cust)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_sales_detail_cust!(sales_detail_cust.id) end
+    end
+
+    test "change_sales_detail_cust/1 returns a sales_detail_cust changeset" do
+      sales_detail_cust = sales_detail_cust_fixture()
+      assert %Ecto.Changeset{} = BN.change_sales_detail_cust(sales_detail_cust)
+    end
+  end
+
+  describe "staff_log_session" do
+    alias BoatNoodle.BN.StaffLogSession
+
+    @valid_attrs %{branch_id: 42, id: 42, log_id: 42, log_in: "2010-04-17 14:00:00.000000Z", log_out: "2010-04-17 14:00:00.000000Z", staff_id: 42}
+    @update_attrs %{branch_id: 43, id: 43, log_id: 43, log_in: "2011-05-18 15:01:01.000000Z", log_out: "2011-05-18 15:01:01.000000Z", staff_id: 43}
+    @invalid_attrs %{branch_id: nil, id: nil, log_id: nil, log_in: nil, log_out: nil, staff_id: nil}
+
+    def staff_log_session_fixture(attrs \\ %{}) do
+      {:ok, staff_log_session} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_staff_log_session()
+
+      staff_log_session
+    end
+
+    test "list_staff_log_session/0 returns all staff_log_session" do
+      staff_log_session = staff_log_session_fixture()
+      assert BN.list_staff_log_session() == [staff_log_session]
+    end
+
+    test "get_staff_log_session!/1 returns the staff_log_session with given id" do
+      staff_log_session = staff_log_session_fixture()
+      assert BN.get_staff_log_session!(staff_log_session.id) == staff_log_session
+    end
+
+    test "create_staff_log_session/1 with valid data creates a staff_log_session" do
+      assert {:ok, %StaffLogSession{} = staff_log_session} = BN.create_staff_log_session(@valid_attrs)
+      assert staff_log_session.branch_id == 42
+      assert staff_log_session.id == 42
+      assert staff_log_session.log_id == 42
+      assert staff_log_session.log_in == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert staff_log_session.log_out == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert staff_log_session.staff_id == 42
+    end
+
+    test "create_staff_log_session/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_staff_log_session(@invalid_attrs)
+    end
+
+    test "update_staff_log_session/2 with valid data updates the staff_log_session" do
+      staff_log_session = staff_log_session_fixture()
+      assert {:ok, staff_log_session} = BN.update_staff_log_session(staff_log_session, @update_attrs)
+      assert %StaffLogSession{} = staff_log_session
+      assert staff_log_session.branch_id == 43
+      assert staff_log_session.id == 43
+      assert staff_log_session.log_id == 43
+      assert staff_log_session.log_in == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert staff_log_session.log_out == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert staff_log_session.staff_id == 43
+    end
+
+    test "update_staff_log_session/2 with invalid data returns error changeset" do
+      staff_log_session = staff_log_session_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_staff_log_session(staff_log_session, @invalid_attrs)
+      assert staff_log_session == BN.get_staff_log_session!(staff_log_session.id)
+    end
+
+    test "delete_staff_log_session/1 deletes the staff_log_session" do
+      staff_log_session = staff_log_session_fixture()
+      assert {:ok, %StaffLogSession{}} = BN.delete_staff_log_session(staff_log_session)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_staff_log_session!(staff_log_session.id) end
+    end
+
+    test "change_staff_log_session/1 returns a staff_log_session changeset" do
+      staff_log_session = staff_log_session_fixture()
+      assert %Ecto.Changeset{} = BN.change_staff_log_session(staff_log_session)
+    end
+  end
+
+  describe "staff_type" do
+    alias BoatNoodle.BN.StaffType
+
+    @valid_attrs %{description: "some description", id: 42, name: "some name"}
+    @update_attrs %{description: "some updated description", id: 43, name: "some updated name"}
+    @invalid_attrs %{description: nil, id: nil, name: nil}
+
+    def staff_type_fixture(attrs \\ %{}) do
+      {:ok, staff_type} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_staff_type()
+
+      staff_type
+    end
+
+    test "list_staff_type/0 returns all staff_type" do
+      staff_type = staff_type_fixture()
+      assert BN.list_staff_type() == [staff_type]
+    end
+
+    test "get_staff_type!/1 returns the staff_type with given id" do
+      staff_type = staff_type_fixture()
+      assert BN.get_staff_type!(staff_type.id) == staff_type
+    end
+
+    test "create_staff_type/1 with valid data creates a staff_type" do
+      assert {:ok, %StaffType{} = staff_type} = BN.create_staff_type(@valid_attrs)
+      assert staff_type.description == "some description"
+      assert staff_type.id == 42
+      assert staff_type.name == "some name"
+    end
+
+    test "create_staff_type/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_staff_type(@invalid_attrs)
+    end
+
+    test "update_staff_type/2 with valid data updates the staff_type" do
+      staff_type = staff_type_fixture()
+      assert {:ok, staff_type} = BN.update_staff_type(staff_type, @update_attrs)
+      assert %StaffType{} = staff_type
+      assert staff_type.description == "some updated description"
+      assert staff_type.id == 43
+      assert staff_type.name == "some updated name"
+    end
+
+    test "update_staff_type/2 with invalid data returns error changeset" do
+      staff_type = staff_type_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_staff_type(staff_type, @invalid_attrs)
+      assert staff_type == BN.get_staff_type!(staff_type.id)
+    end
+
+    test "delete_staff_type/1 deletes the staff_type" do
+      staff_type = staff_type_fixture()
+      assert {:ok, %StaffType{}} = BN.delete_staff_type(staff_type)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_staff_type!(staff_type.id) end
+    end
+
+    test "change_staff_type/1 returns a staff_type changeset" do
+      staff_type = staff_type_fixture()
+      assert %Ecto.Changeset{} = BN.change_staff_type(staff_type)
+    end
+  end
+
+  describe "user_branch_access" do
+    alias BoatNoodle.BN.UserBranchAccess
+
+    @valid_attrs %{branchid: 42, userbranchid: 42, userid: 42}
+    @update_attrs %{branchid: 43, userbranchid: 43, userid: 43}
+    @invalid_attrs %{branchid: nil, userbranchid: nil, userid: nil}
+
+    def user_branch_access_fixture(attrs \\ %{}) do
+      {:ok, user_branch_access} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_user_branch_access()
+
+      user_branch_access
+    end
+
+    test "list_user_branch_access/0 returns all user_branch_access" do
+      user_branch_access = user_branch_access_fixture()
+      assert BN.list_user_branch_access() == [user_branch_access]
+    end
+
+    test "get_user_branch_access!/1 returns the user_branch_access with given id" do
+      user_branch_access = user_branch_access_fixture()
+      assert BN.get_user_branch_access!(user_branch_access.id) == user_branch_access
+    end
+
+    test "create_user_branch_access/1 with valid data creates a user_branch_access" do
+      assert {:ok, %UserBranchAccess{} = user_branch_access} = BN.create_user_branch_access(@valid_attrs)
+      assert user_branch_access.branchid == 42
+      assert user_branch_access.userbranchid == 42
+      assert user_branch_access.userid == 42
+    end
+
+    test "create_user_branch_access/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_user_branch_access(@invalid_attrs)
+    end
+
+    test "update_user_branch_access/2 with valid data updates the user_branch_access" do
+      user_branch_access = user_branch_access_fixture()
+      assert {:ok, user_branch_access} = BN.update_user_branch_access(user_branch_access, @update_attrs)
+      assert %UserBranchAccess{} = user_branch_access
+      assert user_branch_access.branchid == 43
+      assert user_branch_access.userbranchid == 43
+      assert user_branch_access.userid == 43
+    end
+
+    test "update_user_branch_access/2 with invalid data returns error changeset" do
+      user_branch_access = user_branch_access_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_user_branch_access(user_branch_access, @invalid_attrs)
+      assert user_branch_access == BN.get_user_branch_access!(user_branch_access.id)
+    end
+
+    test "delete_user_branch_access/1 deletes the user_branch_access" do
+      user_branch_access = user_branch_access_fixture()
+      assert {:ok, %UserBranchAccess{}} = BN.delete_user_branch_access(user_branch_access)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_user_branch_access!(user_branch_access.id) end
+    end
+
+    test "change_user_branch_access/1 returns a user_branch_access changeset" do
+      user_branch_access = user_branch_access_fixture()
+      assert %Ecto.Changeset{} = BN.change_user_branch_access(user_branch_access)
+    end
+  end
+
+  describe "user_pwd" do
+    alias BoatNoodle.BN.UserPwd
+
+    @valid_attrs %{name: "some name", pass: "some pass"}
+    @update_attrs %{name: "some updated name", pass: "some updated pass"}
+    @invalid_attrs %{name: nil, pass: nil}
+
+    def user_pwd_fixture(attrs \\ %{}) do
+      {:ok, user_pwd} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_user_pwd()
+
+      user_pwd
+    end
+
+    test "list_user_pwd/0 returns all user_pwd" do
+      user_pwd = user_pwd_fixture()
+      assert BN.list_user_pwd() == [user_pwd]
+    end
+
+    test "get_user_pwd!/1 returns the user_pwd with given id" do
+      user_pwd = user_pwd_fixture()
+      assert BN.get_user_pwd!(user_pwd.id) == user_pwd
+    end
+
+    test "create_user_pwd/1 with valid data creates a user_pwd" do
+      assert {:ok, %UserPwd{} = user_pwd} = BN.create_user_pwd(@valid_attrs)
+      assert user_pwd.name == "some name"
+      assert user_pwd.pass == "some pass"
+    end
+
+    test "create_user_pwd/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_user_pwd(@invalid_attrs)
+    end
+
+    test "update_user_pwd/2 with valid data updates the user_pwd" do
+      user_pwd = user_pwd_fixture()
+      assert {:ok, user_pwd} = BN.update_user_pwd(user_pwd, @update_attrs)
+      assert %UserPwd{} = user_pwd
+      assert user_pwd.name == "some updated name"
+      assert user_pwd.pass == "some updated pass"
+    end
+
+    test "update_user_pwd/2 with invalid data returns error changeset" do
+      user_pwd = user_pwd_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_user_pwd(user_pwd, @invalid_attrs)
+      assert user_pwd == BN.get_user_pwd!(user_pwd.id)
+    end
+
+    test "delete_user_pwd/1 deletes the user_pwd" do
+      user_pwd = user_pwd_fixture()
+      assert {:ok, %UserPwd{}} = BN.delete_user_pwd(user_pwd)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_user_pwd!(user_pwd.id) end
+    end
+
+    test "change_user_pwd/1 returns a user_pwd changeset" do
+      user_pwd = user_pwd_fixture()
+      assert %Ecto.Changeset{} = BN.change_user_pwd(user_pwd)
+    end
+  end
+
+  describe "user_role" do
+    alias BoatNoodle.BN.UserRole
+
+    @valid_attrs %{role_desc: "some role_desc", role_name: "some role_name", roleid: 42}
+    @update_attrs %{role_desc: "some updated role_desc", role_name: "some updated role_name", roleid: 43}
+    @invalid_attrs %{role_desc: nil, role_name: nil, roleid: nil}
+
+    def user_role_fixture(attrs \\ %{}) do
+      {:ok, user_role} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_user_role()
+
+      user_role
+    end
+
+    test "list_user_role/0 returns all user_role" do
+      user_role = user_role_fixture()
+      assert BN.list_user_role() == [user_role]
+    end
+
+    test "get_user_role!/1 returns the user_role with given id" do
+      user_role = user_role_fixture()
+      assert BN.get_user_role!(user_role.id) == user_role
+    end
+
+    test "create_user_role/1 with valid data creates a user_role" do
+      assert {:ok, %UserRole{} = user_role} = BN.create_user_role(@valid_attrs)
+      assert user_role.role_desc == "some role_desc"
+      assert user_role.role_name == "some role_name"
+      assert user_role.roleid == 42
+    end
+
+    test "create_user_role/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_user_role(@invalid_attrs)
+    end
+
+    test "update_user_role/2 with valid data updates the user_role" do
+      user_role = user_role_fixture()
+      assert {:ok, user_role} = BN.update_user_role(user_role, @update_attrs)
+      assert %UserRole{} = user_role
+      assert user_role.role_desc == "some updated role_desc"
+      assert user_role.role_name == "some updated role_name"
+      assert user_role.roleid == 43
+    end
+
+    test "update_user_role/2 with invalid data returns error changeset" do
+      user_role = user_role_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_user_role(user_role, @invalid_attrs)
+      assert user_role == BN.get_user_role!(user_role.id)
+    end
+
+    test "delete_user_role/1 deletes the user_role" do
+      user_role = user_role_fixture()
+      assert {:ok, %UserRole{}} = BN.delete_user_role(user_role)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_user_role!(user_role.id) end
+    end
+
+    test "change_user_role/1 returns a user_role changeset" do
+      user_role = user_role_fixture()
+      assert %Ecto.Changeset{} = BN.change_user_role(user_role)
+    end
+  end
+
+  describe "voiditems" do
+    alias BoatNoodle.BN.VoidItems
+
+    @valid_attrs %{discount: 120.5, discountitemsid: 42, displayprice: "some displayprice", is_print: 42, is_void: 42, itemcode: "some itemcode", itemid: 42, itemname: "some itemname", itempriceperqty: "120.5", orderid: "some orderid", price: "120.5", priceafterdiscount: "120.5", qtyafterdisc: 42, quantity: 42, remark: "some remark", tableid: 42, takeawayid: "some takeawayid", void_by: 42, voidreason: "some voidreason"}
+    @update_attrs %{discount: 456.7, discountitemsid: 43, displayprice: "some updated displayprice", is_print: 43, is_void: 43, itemcode: "some updated itemcode", itemid: 43, itemname: "some updated itemname", itempriceperqty: "456.7", orderid: "some updated orderid", price: "456.7", priceafterdiscount: "456.7", qtyafterdisc: 43, quantity: 43, remark: "some updated remark", tableid: 43, takeawayid: "some updated takeawayid", void_by: 43, voidreason: "some updated voidreason"}
+    @invalid_attrs %{discount: nil, discountitemsid: nil, displayprice: nil, is_print: nil, is_void: nil, itemcode: nil, itemid: nil, itemname: nil, itempriceperqty: nil, orderid: nil, price: nil, priceafterdiscount: nil, qtyafterdisc: nil, quantity: nil, remark: nil, tableid: nil, takeawayid: nil, void_by: nil, voidreason: nil}
+
+    def void_items_fixture(attrs \\ %{}) do
+      {:ok, void_items} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_void_items()
+
+      void_items
+    end
+
+    test "list_voiditems/0 returns all voiditems" do
+      void_items = void_items_fixture()
+      assert BN.list_voiditems() == [void_items]
+    end
+
+    test "get_void_items!/1 returns the void_items with given id" do
+      void_items = void_items_fixture()
+      assert BN.get_void_items!(void_items.id) == void_items
+    end
+
+    test "create_void_items/1 with valid data creates a void_items" do
+      assert {:ok, %VoidItems{} = void_items} = BN.create_void_items(@valid_attrs)
+      assert void_items.discount == 120.5
+      assert void_items.discountitemsid == 42
+      assert void_items.displayprice == "some displayprice"
+      assert void_items.is_print == 42
+      assert void_items.is_void == 42
+      assert void_items.itemcode == "some itemcode"
+      assert void_items.itemid == 42
+      assert void_items.itemname == "some itemname"
+      assert void_items.itempriceperqty == Decimal.new("120.5")
+      assert void_items.orderid == "some orderid"
+      assert void_items.price == Decimal.new("120.5")
+      assert void_items.priceafterdiscount == Decimal.new("120.5")
+      assert void_items.qtyafterdisc == 42
+      assert void_items.quantity == 42
+      assert void_items.remark == "some remark"
+      assert void_items.tableid == 42
+      assert void_items.takeawayid == "some takeawayid"
+      assert void_items.void_by == 42
+      assert void_items.voidreason == "some voidreason"
+    end
+
+    test "create_void_items/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_void_items(@invalid_attrs)
+    end
+
+    test "update_void_items/2 with valid data updates the void_items" do
+      void_items = void_items_fixture()
+      assert {:ok, void_items} = BN.update_void_items(void_items, @update_attrs)
+      assert %VoidItems{} = void_items
+      assert void_items.discount == 456.7
+      assert void_items.discountitemsid == 43
+      assert void_items.displayprice == "some updated displayprice"
+      assert void_items.is_print == 43
+      assert void_items.is_void == 43
+      assert void_items.itemcode == "some updated itemcode"
+      assert void_items.itemid == 43
+      assert void_items.itemname == "some updated itemname"
+      assert void_items.itempriceperqty == Decimal.new("456.7")
+      assert void_items.orderid == "some updated orderid"
+      assert void_items.price == Decimal.new("456.7")
+      assert void_items.priceafterdiscount == Decimal.new("456.7")
+      assert void_items.qtyafterdisc == 43
+      assert void_items.quantity == 43
+      assert void_items.remark == "some updated remark"
+      assert void_items.tableid == 43
+      assert void_items.takeawayid == "some updated takeawayid"
+      assert void_items.void_by == 43
+      assert void_items.voidreason == "some updated voidreason"
+    end
+
+    test "update_void_items/2 with invalid data returns error changeset" do
+      void_items = void_items_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_void_items(void_items, @invalid_attrs)
+      assert void_items == BN.get_void_items!(void_items.id)
+    end
+
+    test "delete_void_items/1 deletes the void_items" do
+      void_items = void_items_fixture()
+      assert {:ok, %VoidItems{}} = BN.delete_void_items(void_items)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_void_items!(void_items.id) end
+    end
+
+    test "change_void_items/1 returns a void_items changeset" do
+      void_items = void_items_fixture()
+      assert %Ecto.Changeset{} = BN.change_void_items(void_items)
+    end
+  end
+
+  describe "salespayment" do
+    alias BoatNoodle.BN.SalesPayment
+
+    @valid_attrs %{after_disc: "120.5", card_no: 42, cash: "120.5", changes: "120.5", created_at: "2010-04-17 14:00:00.000000Z", disc_amt: "120.5", discountid: "some discountid", grand_total: "120.5", gst_charge: "120.5", payment_code1: "some payment_code1", payment_code2: "some payment_code2", payment_type: "some payment_type", payment_type_am1: "120.5", payment_type_am2: "120.5", payment_type_id1: 42, payment_type_id2: 42, rounding: "120.5", salesid: "some salesid", salespay_id: 42, service_charge: "120.5", sub_total: "120.5", taxcode: "some taxcode", updated_at: "2010-04-17 14:00:00.000000Z", voucher_code: "some voucher_code"}
+    @update_attrs %{after_disc: "456.7", card_no: 43, cash: "456.7", changes: "456.7", created_at: "2011-05-18 15:01:01.000000Z", disc_amt: "456.7", discountid: "some updated discountid", grand_total: "456.7", gst_charge: "456.7", payment_code1: "some updated payment_code1", payment_code2: "some updated payment_code2", payment_type: "some updated payment_type", payment_type_am1: "456.7", payment_type_am2: "456.7", payment_type_id1: 43, payment_type_id2: 43, rounding: "456.7", salesid: "some updated salesid", salespay_id: 43, service_charge: "456.7", sub_total: "456.7", taxcode: "some updated taxcode", updated_at: "2011-05-18 15:01:01.000000Z", voucher_code: "some updated voucher_code"}
+    @invalid_attrs %{after_disc: nil, card_no: nil, cash: nil, changes: nil, created_at: nil, disc_amt: nil, discountid: nil, grand_total: nil, gst_charge: nil, payment_code1: nil, payment_code2: nil, payment_type: nil, payment_type_am1: nil, payment_type_am2: nil, payment_type_id1: nil, payment_type_id2: nil, rounding: nil, salesid: nil, salespay_id: nil, service_charge: nil, sub_total: nil, taxcode: nil, updated_at: nil, voucher_code: nil}
+
+    def sales_payment_fixture(attrs \\ %{}) do
+      {:ok, sales_payment} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_sales_payment()
+
+      sales_payment
+    end
+
+    test "list_salespayment/0 returns all salespayment" do
+      sales_payment = sales_payment_fixture()
+      assert BN.list_salespayment() == [sales_payment]
+    end
+
+    test "get_sales_payment!/1 returns the sales_payment with given id" do
+      sales_payment = sales_payment_fixture()
+      assert BN.get_sales_payment!(sales_payment.id) == sales_payment
+    end
+
+    test "create_sales_payment/1 with valid data creates a sales_payment" do
+      assert {:ok, %SalesPayment{} = sales_payment} = BN.create_sales_payment(@valid_attrs)
+      assert sales_payment.after_disc == Decimal.new("120.5")
+      assert sales_payment.card_no == 42
+      assert sales_payment.cash == Decimal.new("120.5")
+      assert sales_payment.changes == Decimal.new("120.5")
+      assert sales_payment.created_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert sales_payment.disc_amt == Decimal.new("120.5")
+      assert sales_payment.discountid == "some discountid"
+      assert sales_payment.grand_total == Decimal.new("120.5")
+      assert sales_payment.gst_charge == Decimal.new("120.5")
+      assert sales_payment.payment_code1 == "some payment_code1"
+      assert sales_payment.payment_code2 == "some payment_code2"
+      assert sales_payment.payment_type == "some payment_type"
+      assert sales_payment.payment_type_am1 == Decimal.new("120.5")
+      assert sales_payment.payment_type_am2 == Decimal.new("120.5")
+      assert sales_payment.payment_type_id1 == 42
+      assert sales_payment.payment_type_id2 == 42
+      assert sales_payment.rounding == Decimal.new("120.5")
+      assert sales_payment.salesid == "some salesid"
+      assert sales_payment.salespay_id == 42
+      assert sales_payment.service_charge == Decimal.new("120.5")
+      assert sales_payment.sub_total == Decimal.new("120.5")
+      assert sales_payment.taxcode == "some taxcode"
+      assert sales_payment.updated_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert sales_payment.voucher_code == "some voucher_code"
+    end
+
+    test "create_sales_payment/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_sales_payment(@invalid_attrs)
+    end
+
+    test "update_sales_payment/2 with valid data updates the sales_payment" do
+      sales_payment = sales_payment_fixture()
+      assert {:ok, sales_payment} = BN.update_sales_payment(sales_payment, @update_attrs)
+      assert %SalesPayment{} = sales_payment
+      assert sales_payment.after_disc == Decimal.new("456.7")
+      assert sales_payment.card_no == 43
+      assert sales_payment.cash == Decimal.new("456.7")
+      assert sales_payment.changes == Decimal.new("456.7")
+      assert sales_payment.created_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert sales_payment.disc_amt == Decimal.new("456.7")
+      assert sales_payment.discountid == "some updated discountid"
+      assert sales_payment.grand_total == Decimal.new("456.7")
+      assert sales_payment.gst_charge == Decimal.new("456.7")
+      assert sales_payment.payment_code1 == "some updated payment_code1"
+      assert sales_payment.payment_code2 == "some updated payment_code2"
+      assert sales_payment.payment_type == "some updated payment_type"
+      assert sales_payment.payment_type_am1 == Decimal.new("456.7")
+      assert sales_payment.payment_type_am2 == Decimal.new("456.7")
+      assert sales_payment.payment_type_id1 == 43
+      assert sales_payment.payment_type_id2 == 43
+      assert sales_payment.rounding == Decimal.new("456.7")
+      assert sales_payment.salesid == "some updated salesid"
+      assert sales_payment.salespay_id == 43
+      assert sales_payment.service_charge == Decimal.new("456.7")
+      assert sales_payment.sub_total == Decimal.new("456.7")
+      assert sales_payment.taxcode == "some updated taxcode"
+      assert sales_payment.updated_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert sales_payment.voucher_code == "some updated voucher_code"
+    end
+
+    test "update_sales_payment/2 with invalid data returns error changeset" do
+      sales_payment = sales_payment_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_sales_payment(sales_payment, @invalid_attrs)
+      assert sales_payment == BN.get_sales_payment!(sales_payment.id)
+    end
+
+    test "delete_sales_payment/1 deletes the sales_payment" do
+      sales_payment = sales_payment_fixture()
+      assert {:ok, %SalesPayment{}} = BN.delete_sales_payment(sales_payment)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_sales_payment!(sales_payment.id) end
+    end
+
+    test "change_sales_payment/1 returns a sales_payment changeset" do
+      sales_payment = sales_payment_fixture()
+      assert %Ecto.Changeset{} = BN.change_sales_payment(sales_payment)
+    end
+  end
 end

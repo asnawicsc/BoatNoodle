@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.TagItemsController do
   alias BoatNoodle.BN.TagItems
 
   def index(conn, _params) do
-    tag_items = BN.list_tag_items()
+    tag_items = Repo.all(TagItems)
     render(conn, "index.html", tag_items: tag_items)
   end
 

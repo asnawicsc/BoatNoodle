@@ -1,0 +1,22 @@
+<h2>Listing Combo map</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Subcatid</th>
+      <th>Linkid</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for combo_map <- @combo_map do %>
+    <tr>
+      <td><%= combo_map.subcatid %></td>
+      <td><%= combo_map.linkid %></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Combo map", to: combo_map_path(@conn, :new) %></span>

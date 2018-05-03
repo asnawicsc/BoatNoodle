@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.RemarkController do
   alias BoatNoodle.BN.Remark
 
   def index(conn, _params) do
-    remark = BN.list_remark()
+    remark = Repo.all(Remark)
     render(conn, "index.html", remark: remark)
   end
 

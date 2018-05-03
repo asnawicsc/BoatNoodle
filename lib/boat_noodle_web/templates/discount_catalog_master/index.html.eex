@@ -11,13 +11,8 @@
   <tbody>
 <%= for discount_catalog_master <- @discount_catalog_master do %>
     <tr>
-      <td><%= discount_catalog_master.catalog_name %></td>
+      <td><%= discount_catalog_master.discname %></td>
 
-      <td class="text-right">
-        <span><%= link "Show", to: discount_catalog_master_path(@conn, :show, discount_catalog_master), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: discount_catalog_master_path(@conn, :edit, discount_catalog_master), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: discount_catalog_master_path(@conn, :delete, discount_catalog_master), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
     </tr>
 <% end %>
   </tbody>

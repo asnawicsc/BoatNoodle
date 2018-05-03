@@ -1,4 +1,4 @@
-  <h2>Sales Chart</h2>
+  <%# <h2>Sales Chart</h2> %>
   <br>       
                   <div class="col-lg-12">
                     <div class="panel panel-default">
@@ -78,9 +78,14 @@
 <table class="table">
   <thead>
     <tr>
-     <%#  <th>Sales master</th>
-      <th>Item</th>
-      <th>Quantity</th> %>
+      <th>Sales ID</th>
+      <th>InvoiceNo</th>
+      <th>Sales Date</th>
+      <th>Table No</th>
+      <th>Pax</th>
+      <th>Branch ID</th>
+
+
 
       <th></th>
     </tr>
@@ -88,15 +93,13 @@
   <tbody>
 <%= for sales <- @sales do %>
     <tr>
-      <td><%= sales.sales_master_id %></td>
-      <td><%= sales.item_id %></td>
-      <td><%= sales.quantity %></td>
+      <td><%= sales.salesid %></td>
+      <td><%= sales.invoiceno %></td>
+      <td><%= sales.salesdate %></td>
+      <td><%= sales.tbl_no %></td>
+      <td><%= sales.pax %></td>
+      <td><%= sales.branchid %></td>
 
-      <td class="text-right">
-        <span><%= link "Show", to: sales_path(@conn, :show, sales), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: sales_path(@conn, :edit, sales), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: sales_path(@conn, :delete, sales), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
     </tr>
 <% end %>
   </tbody>

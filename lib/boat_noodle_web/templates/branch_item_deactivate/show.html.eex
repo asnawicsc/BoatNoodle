@@ -1,0 +1,28 @@
+<h2>Show Branch item deactivate</h2>
+
+<ul>
+
+  <li>
+    <strong>Id:</strong>
+    <%= @branch_item_deactivate.id %>
+  </li>
+
+  <li>
+    <strong>Branchid:</strong>
+    <%= @branch_item_deactivate.branchid %>
+  </li>
+
+  <li>
+    <strong>Itemid:</strong>
+    <%= @branch_item_deactivate.itemid %>
+  </li>
+
+  <li>
+    <strong>Is activate:</strong>
+    <%= @branch_item_deactivate.is_activate %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: branch_item_deactivate_path(@conn, :edit, @branch_item_deactivate) %></span>
+<span><%= link "Back", to: branch_item_deactivate_path(@conn, :index) %></span>

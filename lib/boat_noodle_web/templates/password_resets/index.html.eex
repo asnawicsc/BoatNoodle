@@ -1,0 +1,30 @@
+<h2>Listing Password resets</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Token</th>
+      <th>Created at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for password_resets <- @password_resets do %>
+    <tr>
+      <td><%= password_resets.email %></td>
+      <td><%= password_resets.token %></td>
+      <td><%= password_resets.created_at %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: password_resets_path(@conn, :show, password_resets), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: password_resets_path(@conn, :edit, password_resets), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: password_resets_path(@conn, :delete, password_resets), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Password resets", to: password_resets_path(@conn, :new) %></span>

@@ -1,0 +1,63 @@
+<h2>Show Combo details</h2>
+
+<ul>
+
+  <li>
+    <strong>Id:</strong>
+    <%= @combo_details.id %>
+  </li>
+
+  <li>
+    <strong>Menu cat:</strong>
+    <%= @combo_details.menu_cat_id %>
+  </li>
+
+  <li>
+    <strong>Combo:</strong>
+    <%= @combo_details.combo_id %>
+  </li>
+
+  <li>
+    <strong>Combo qty:</strong>
+    <%= @combo_details.combo_qty %>
+  </li>
+
+  <li>
+    <strong>Combo item:</strong>
+    <%= @combo_details.combo_item_id %>
+  </li>
+
+  <li>
+    <strong>Combo item name:</strong>
+    <%= @combo_details.combo_item_name %>
+  </li>
+
+  <li>
+    <strong>Combo item code:</strong>
+    <%= @combo_details.combo_item_code %>
+  </li>
+
+  <li>
+    <strong>Combo item qty:</strong>
+    <%= @combo_details.combo_item_qty %>
+  </li>
+
+  <li>
+    <strong>Update qty:</strong>
+    <%= @combo_details.update_qty %>
+  </li>
+
+  <li>
+    <strong>Unit price:</strong>
+    <%= @combo_details.unit_price %>
+  </li>
+
+  <li>
+    <strong>Top up:</strong>
+    <%= @combo_details.top_up %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: combo_details_path(@conn, :edit, @combo_details) %></span>
+<span><%= link "Back", to: combo_details_path(@conn, :index) %></span>

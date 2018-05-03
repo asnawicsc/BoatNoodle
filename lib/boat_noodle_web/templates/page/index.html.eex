@@ -12,7 +12,7 @@
                             <div class="row">
                            
                                 <div class="col-xs-12 text-right">
-                                    <div class="huge">26</div>
+                                    <div class="huge"><%= @grand_total %></div>
                                     <div>Nett Sales</div>
                                 </div>
                             </div>
@@ -26,7 +26,7 @@
                             <div class="row">
                            
                                 <div class="col-xs-12 text-right">
-                                    <div class="huge">26</div>
+                                    <div class="huge"><%= @tax %></div>
                                     <div>Taxes</div>
                                 </div>
                             </div>
@@ -40,7 +40,7 @@
                            <div class="row">
                            
                                 <div class="col-xs-12 text-right">
-                                    <div class="huge">26</div>
+                                    <div class="huge"></div>
                                     <div>Orders</div>
                                 </div>
                             </div>
@@ -54,7 +54,7 @@
                             <div class="row">
                            
                                 <div class="col-xs-12 text-right">
-                                    <div class="huge">26</div>
+                                    <div class="huge"></div>
                                     <div>Pax</div>
                                 </div>
                             </div>
@@ -67,7 +67,7 @@
                             <div class="row">
                            
                                 <div class="col-xs-12 text-right">
-                                    <div class="huge">26</div>
+                                    <div class="huge"><%= @trasaction %></div>
                                     <div>Transactions</div>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
                 </div>
             </div>
             <!-- /.row -->
-            <div class="row">
+<%#             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -212,4 +212,4 @@
            
                 </div>
             
-            </div>
+            </div> %>

@@ -1,0 +1,32 @@
+<h2>Listing Salesdetailcust</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Salescustid</th>
+      <th>Orderid</th>
+      <th>Custom name</th>
+      <th>Custom price</th>
+      <th>Updated at</th>
+      <th>Created at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for sales_detail_cust <- @salesdetailcust do %>
+    <tr>
+      <td><%= sales_detail_cust.salescustid %></td>
+      <td><%= sales_detail_cust.orderid %></td>
+      <td><%= sales_detail_cust.custom_name %></td>
+      <td><%= sales_detail_cust.custom_price %></td>
+      <td><%= sales_detail_cust.updated_at %></td>
+      <td><%= sales_detail_cust.created_at %></td>
+
+    
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Sales detail cust", to: sales_detail_cust_path(@conn, :new) %></span>

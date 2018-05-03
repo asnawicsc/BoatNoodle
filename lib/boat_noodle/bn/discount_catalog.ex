@@ -2,21 +2,20 @@ defmodule BoatNoodle.BN.DiscountCatalog do
   use Ecto.Schema
   import Ecto.Changeset
 
-
+@primary_key false
   schema "discount_catalog" do
-    field :discount_catalog_master_id, :integer
-    field :discount_categories, :string
-    field :discount_category, :string
-    field :discount_name, :string
+    field :id, :integer, primary_key: true
     field :name, :string
+    field :categories, :string
+    field :discounts, :string
+   
 
-    timestamps()
   end
 
   @doc false
   def changeset(discount_catalog, attrs) do
     discount_catalog
-    |> cast(attrs, [:discount_catalog_master_id, :name, :discount_categories, :discount_category, :discount_name])
-    |> validate_required([:discount_catalog_master_id, :name, :discount_categories, :discount_category, :discount_name])
+    |> cast(attrs, [:id, :name, :categories, :discounts])
+
   end
 end

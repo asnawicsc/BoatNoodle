@@ -1,0 +1,83 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :salesyear, class: "control-label" %>
+    <%= number_input f, :salesyear, class: "form-control" %>
+    <%= error_tag f, :salesyear %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :salesmonth, class: "control-label" %>
+    <%= number_input f, :salesmonth, class: "form-control" %>
+    <%= error_tag f, :salesmonth %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :salesquarter, class: "control-label" %>
+    <%= number_input f, :salesquarter, class: "form-control" %>
+    <%= error_tag f, :salesquarter %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :salesdate, class: "control-label" %>
+    <%= datetime_select f, :salesdate, class: "form-control" %>
+    <%= error_tag f, :salesdate %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branchid, class: "control-label" %>
+    <%= number_input f, :branchid, class: "form-control" %>
+    <%= error_tag f, :branchid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :brachcode, class: "control-label" %>
+    <%= text_input f, :brachcode, class: "form-control" %>
+    <%= error_tag f, :brachcode %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branchname, class: "control-label" %>
+    <%= text_input f, :branchname, class: "form-control" %>
+    <%= error_tag f, :branchname %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :saleshour, class: "control-label" %>
+    <%= number_input f, :saleshour, class: "form-control" %>
+    <%= error_tag f, :saleshour %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :sales, class: "control-label" %>
+    <%= number_input f, :sales, step: "any", class: "form-control" %>
+    <%= error_tag f, :sales %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :pax, class: "control-label" %>
+    <%= number_input f, :pax, class: "form-control" %>
+    <%= error_tag f, :pax %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :transaction, class: "control-label" %>
+    <%= text_input f, :transaction, class: "form-control" %>
+    <%= error_tag f, :transaction %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :integer, class: "control-label" %>
+    <%= text_input f, :integer, class: "form-control" %>
+    <%= error_tag f, :integer %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

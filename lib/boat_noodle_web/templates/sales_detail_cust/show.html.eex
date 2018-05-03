@@ -1,0 +1,38 @@
+<h2>Show Sales detail cust</h2>
+
+<ul>
+
+  <li>
+    <strong>Salescustid:</strong>
+    <%= @sales_detail_cust.salescustid %>
+  </li>
+
+  <li>
+    <strong>Orderid:</strong>
+    <%= @sales_detail_cust.orderid %>
+  </li>
+
+  <li>
+    <strong>Custom name:</strong>
+    <%= @sales_detail_cust.custom_name %>
+  </li>
+
+  <li>
+    <strong>Customer price:</strong>
+    <%= @sales_detail_cust.customer_price %>
+  </li>
+
+  <li>
+    <strong>Updated at:</strong>
+    <%= @sales_detail_cust.updated_at %>
+  </li>
+
+  <li>
+    <strong>Created at:</strong>
+    <%= @sales_detail_cust.created_at %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: sales_detail_cust_path(@conn, :edit, @sales_detail_cust) %></span>
+<span><%= link "Back", to: sales_detail_cust_path(@conn, :index) %></span>

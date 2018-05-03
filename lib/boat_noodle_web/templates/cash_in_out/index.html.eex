@@ -73,23 +73,19 @@
                                                   <th>Branch</th>
                                                   <th>Cash in</th>
                                                   <th>Cash out</th>
-                                                  <th>Open drawer</th>
+                                                  <th>Description</th>
                                                
                                                   </tr>
                                               </thead>
                                               <tbody>
                                               <%= for cash_in_out <- @cash_in_out do %>
                                                 <tr>
-                                                  <td><%= cash_in_out.branch %></td>
-                                                  <td><%= cash_in_out.cash_in %></td>
-                                                  <td><%= cash_in_out.cash_out %></td>
-                                                  <td><%= cash_in_out.open_drawer %></td>
+                                                  <td><%= cash_in_out.branch_id %></td>
+                                                  <td><%= cash_in_out.cashtype %></td>
+                                                  <td><%= cash_in_out.amount %></td>
+                                                  <td><%= cash_in_out.description %></td>
 
-                                                  <td class="text-right">
-                                                    <span><%= link "Show", to: cash_in_out_path(@conn, :show, cash_in_out), class: "btn btn-default btn-xs" %></span>
-                                                    <span><%= link "Edit", to: cash_in_out_path(@conn, :edit, cash_in_out), class: "btn btn-default btn-xs" %></span>
-                                                    <span><%= link "Delete", to: cash_in_out_path(@conn, :delete, cash_in_out), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-                                                  </td>
+                                                 
                                                 </tr>
                                             <% end %>
                                                

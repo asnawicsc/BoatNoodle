@@ -1,0 +1,5 @@
+<h2>Edit Migrations</h2>
+
+<%= render "form.html", Map.put(assigns, :action, migrations_path(@conn, :update, @migrations)) %>
+
+<span><%= link "Back", to: migrations_path(@conn, :index) %></span>

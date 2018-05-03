@@ -1,0 +1,103 @@
+<h2>Show Void items</h2>
+
+<ul>
+
+  <li>
+    <strong>Itemcode:</strong>
+    <%= @void_items.itemcode %>
+  </li>
+
+  <li>
+    <strong>Itemname:</strong>
+    <%= @void_items.itemname %>
+  </li>
+
+  <li>
+    <strong>Quantity:</strong>
+    <%= @void_items.quantity %>
+  </li>
+
+  <li>
+    <strong>Price:</strong>
+    <%= @void_items.price %>
+  </li>
+
+  <li>
+    <strong>Tableid:</strong>
+    <%= @void_items.tableid %>
+  </li>
+
+  <li>
+    <strong>Itemid:</strong>
+    <%= @void_items.itemid %>
+  </li>
+
+  <li>
+    <strong>Displayprice:</strong>
+    <%= @void_items.displayprice %>
+  </li>
+
+  <li>
+    <strong>Is print:</strong>
+    <%= @void_items.is_print %>
+  </li>
+
+  <li>
+    <strong>Discount:</strong>
+    <%= @void_items.discount %>
+  </li>
+
+  <li>
+    <strong>Priceafterdiscount:</strong>
+    <%= @void_items.priceafterdiscount %>
+  </li>
+
+  <li>
+    <strong>Qtyafterdisc:</strong>
+    <%= @void_items.qtyafterdisc %>
+  </li>
+
+  <li>
+    <strong>Itempriceperqty:</strong>
+    <%= @void_items.itempriceperqty %>
+  </li>
+
+  <li>
+    <strong>Takeawayid:</strong>
+    <%= @void_items.takeawayid %>
+  </li>
+
+  <li>
+    <strong>Discountitemsid:</strong>
+    <%= @void_items.discountitemsid %>
+  </li>
+
+  <li>
+    <strong>Remark:</strong>
+    <%= @void_items.remark %>
+  </li>
+
+  <li>
+    <strong>Is void:</strong>
+    <%= @void_items.is_void %>
+  </li>
+
+  <li>
+    <strong>Void by:</strong>
+    <%= @void_items.void_by %>
+  </li>
+
+  <li>
+    <strong>Voidreason:</strong>
+    <%= @void_items.voidreason %>
+  </li>
+
+  <li>
+    <strong>Orderid:</strong>
+    <%= @void_items.orderid %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: void_items_path(@conn, :edit, @void_items) %></span>
+<span><%= link "Back", to: void_items_path(@conn, :index) %></span>

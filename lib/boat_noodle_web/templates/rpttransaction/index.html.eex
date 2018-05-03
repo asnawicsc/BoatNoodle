@@ -1,0 +1,76 @@
+<h2>Listing Rpt transaction</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Salesid</th>
+      <th>Salesyear</th>
+      <th>Salesmonth</th>
+      <th>Salesdate</th>
+      <th>Saleshour</th>
+      <th>Salestime</th>
+      <th>Quarter</th>
+      <th>Branchid</th>
+      <th>Branchcode</th>
+      <th>Invoiceno</th>
+      <th>Sub total</th>
+      <th>After disc</th>
+      <th>Gst charge</th>
+      <th>Service charge</th>
+      <th>Rounding</th>
+      <th>Grand total</th>
+      <th>Pax</th>
+      <th>Payment type</th>
+      <th>Cash</th>
+      <th>Changes</th>
+      <th>Tbl no</th>
+      <th>Type</th>
+      <th>Staffid</th>
+      <th>Staffname</th>
+      <th>Is void</th>
+      <th>Void by</th>
+      <th>Voidreason</th>
+      <th>Remark</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for rpttransaction <- @rpt_transaction do %>
+    <tr>
+      <td><%= rpttransaction.salesid %></td>
+      <td><%= rpttransaction.salesyear %></td>
+      <td><%= rpttransaction.salesmonth %></td>
+      <td><%= rpttransaction.salesdate %></td>
+      <td><%= rpttransaction.saleshour %></td>
+      <td><%= rpttransaction.salestime %></td>
+      <td><%= rpttransaction.quarter %></td>
+      <td><%= rpttransaction.branchid %></td>
+      <td><%= rpttransaction.branchcode %></td>
+      <td><%= rpttransaction.invoiceno %></td>
+      <td><%= rpttransaction.sub_total %></td>
+      <td><%= rpttransaction.after_disc %></td>
+      <td><%= rpttransaction.gst_charge %></td>
+      <td><%= rpttransaction.service_charge %></td>
+      <td><%= rpttransaction.rounding %></td>
+      <td><%= rpttransaction.grand_total %></td>
+      <td><%= rpttransaction.pax %></td>
+      <td><%= rpttransaction.payment_type %></td>
+      <td><%= rpttransaction.cash %></td>
+      <td><%= rpttransaction.changes %></td>
+      <td><%= rpttransaction.tbl_no %></td>
+      <td><%= rpttransaction.type %></td>
+      <td><%= rpttransaction.staffid %></td>
+      <td><%= rpttransaction.staffname %></td>
+      <td><%= rpttransaction.is_void %></td>
+      <td><%= rpttransaction.void_by %></td>
+      <td><%= rpttransaction.voidreason %></td>
+      <td><%= rpttransaction.remark %></td>
+
+     
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Rpttransaction", to: rpttransaction_path(@conn, :new) %></span>

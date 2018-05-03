@@ -2,22 +2,23 @@ defmodule BoatNoodle.BN.Organization do
   use Ecto.Schema
   import Ecto.Changeset
 
-
-  schema "organization" do
+@primary_key false
+  schema "organisation" do
+    field :organisationid,:integer, primary_key: true
     field :address, :string
-    field :company_registration_number, :string
-    field :contact_number, :string
+    field :orgregid, :string
+    field :phone, :string
     field :country, :string
-    field :name, :string
-    field :tax_registration_number, :string
+    field :organisationname, :string
+    field :gst_reg_id, :string
+    field :updated_at, :utc_datetime
+    field :created_at, :utc_datetime
 
-    timestamps()
   end
 
   @doc false
   def changeset(organization, attrs) do
     organization
-    |> cast(attrs, [:name, :address, :company_registration_number, :tax_registration_number, :contact_number, :country])
-    |> validate_required([:name, :address, :company_registration_number, :tax_registration_number, :contact_number, :country])
-  end
+    |> cast(attrs, [:created_at,:updated_at,:id, :address, :orgregid, :gst_reg_id, :phone, :country,:organisationname])
+    end
 end

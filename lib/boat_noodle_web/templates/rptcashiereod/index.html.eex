@@ -1,0 +1,82 @@
+<h2>Listing Rpt cashier eod</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Rptid</th>
+      <th>Branch</th>
+      <th>Staff name</th>
+      <th>Time start</th>
+      <th>Time end</th>
+      <th>Duration</th>
+      <th>Open amt</th>
+      <th>Close amt</th>
+      <th>Totalpax</th>
+      <th>Totalsales</th>
+      <th>Voidsales</th>
+      <th>Voiditem</th>
+      <th>Totaltax</th>
+      <th>Totalsvc</th>
+      <th>Total round</th>
+      <th>Dinein</th>
+      <th>Takeaway</th>
+      <th>Total disc</th>
+      <th>Total pymt</th>
+      <th>Total cash</th>
+      <th>Total changes</th>
+      <th>Floats</th>
+      <th>Deposit</th>
+      <th>Cash in</th>
+      <th>Paidout</th>
+      <th>Cash</th>
+      <th>Drawamt</th>
+      <th>Exp drw amt</th>
+      <th>Total sr</th>
+      <th>Extra</th>
+      <th>Branchcode</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for rptcashiereod <- @rpt_cashier_eod do %>
+    <tr>
+      <td><%= rptcashiereod.rptid %></td>
+      <td><%= rptcashiereod.branch_id %></td>
+      <td><%= rptcashiereod.staff_name %></td>
+      <td><%= rptcashiereod.time_start %></td>
+      <td><%= rptcashiereod.time_end %></td>
+      <td><%= rptcashiereod.duration %></td>
+      <td><%= rptcashiereod.open_amt %></td>
+      <td><%= rptcashiereod.close_amt %></td>
+      <td><%= rptcashiereod.totalpax %></td>
+      <td><%= rptcashiereod.totalsales %></td>
+      <td><%= rptcashiereod.voidsales %></td>
+      <td><%= rptcashiereod.voiditem %></td>
+      <td><%= rptcashiereod.totaltax %></td>
+      <td><%= rptcashiereod.totalsvc %></td>
+      <td><%= rptcashiereod.total_round %></td>
+      <td><%= rptcashiereod.dinein %></td>
+      <td><%= rptcashiereod.takeaway %></td>
+      <td><%= rptcashiereod.total_disc %></td>
+      <td><%= rptcashiereod.total_pymt %></td>
+      <td><%= rptcashiereod.total_cash %></td>
+      <td><%= rptcashiereod.total_changes %></td>
+      <td><%= rptcashiereod.floats %></td>
+      <td><%= rptcashiereod.deposit %></td>
+      <td><%= rptcashiereod.cash_in %></td>
+      <td><%= rptcashiereod.paidout %></td>
+      <td><%= rptcashiereod.cash %></td>
+      <td><%= rptcashiereod.drawamt %></td>
+      <td><%= rptcashiereod.exp_drw_amt %></td>
+      <td><%= rptcashiereod.total_sr %></td>
+      <td><%= rptcashiereod.extra %></td>
+      <td><%= rptcashiereod.branchcode %></td>
+
+    
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Rptcashiereod", to: rptcashiereod_path(@conn, :new) %></span>

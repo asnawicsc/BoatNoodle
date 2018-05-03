@@ -1,0 +1,25 @@
+<h2>Listing User branch access</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Userbranchid</th>
+      <th>Userid</th>
+      <th>Branchid</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for user_branch_access <- @user_branch_access do %>
+    <tr>
+      <td><%= user_branch_access.userbranchid %></td>
+      <td><%= user_branch_access.userid %></td>
+      <td><%= user_branch_access.branchid %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New User branch access", to: user_branch_access_path(@conn, :new) %></span>

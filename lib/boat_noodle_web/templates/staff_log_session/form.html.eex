@@ -1,0 +1,47 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :log_id, class: "control-label" %>
+    <%= number_input f, :log_id, class: "form-control" %>
+    <%= error_tag f, :log_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :id, class: "control-label" %>
+    <%= number_input f, :id, class: "form-control" %>
+    <%= error_tag f, :id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :branch_id, class: "control-label" %>
+    <%= number_input f, :branch_id, class: "form-control" %>
+    <%= error_tag f, :branch_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :staff_id, class: "control-label" %>
+    <%= number_input f, :staff_id, class: "form-control" %>
+    <%= error_tag f, :staff_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :log_in, class: "control-label" %>
+    <%= datetime_select f, :log_in, class: "form-control" %>
+    <%= error_tag f, :log_in %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :log_out, class: "control-label" %>
+    <%= datetime_select f, :log_out, class: "form-control" %>
+    <%= error_tag f, :log_out %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

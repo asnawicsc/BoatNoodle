@@ -1,0 +1,24 @@
+<h2>Listing Migrations</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Migration</th>
+      <th>Batch</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for migrations <- @migrations do %>
+    <tr>
+      <td><%= migrations.migration %></td>
+      <td><%= migrations.batch %></td>
+
+    
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Migrations", to: migrations_path(@conn, :new) %></span>

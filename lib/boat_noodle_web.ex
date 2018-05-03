@@ -23,6 +23,11 @@ defmodule BoatNoodleWeb do
       import Plug.Conn
       import BoatNoodleWeb.Router.Helpers
       import BoatNoodleWeb.Gettext
+   
+      alias BoatNoodle.Repo
+      alias BoatNoodle.View
+      import Ecto.Query
+
     end
   end
 
@@ -40,6 +45,8 @@ defmodule BoatNoodleWeb do
       import BoatNoodleWeb.Router.Helpers
       import BoatNoodleWeb.ErrorHelpers
       import BoatNoodleWeb.Gettext
+      import Ecto.Query
+      alias BoatNoodle.Repo
     end
   end
 

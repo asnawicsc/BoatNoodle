@@ -9,8 +9,21 @@
                 <a class="navbar-brand" href="/index">Boat Noodle v2.0</a>
             </div>
             <!-- /.navbar-header -->
+             <ul class="nav navbar-top-links navbar-left" style="margin-left: 120px">
+                
+                 <select>
+
+                     <% branchs=Repo.all(from b in BoatNoodle.BN.Branch,select: %{branchid: b.branchid, branchname: b.branchname})  %>
+                    <%= for branch <- branchs do %>
+                      <option value="<%=branch.branchid%>"> <%= branch.branchname%></option>
+                   <%= end%>
+                          
+                        
+                </select>
+             </ul>
 
             <ul class="nav navbar-top-links navbar-right">
+               
                
                 <!-- /.dropdown -->
                 <li class="dropdown">

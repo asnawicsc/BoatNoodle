@@ -1,0 +1,73 @@
+<h2>Show Cashier session</h2>
+
+<ul>
+
+  <li>
+    <strong>Csid:</strong>
+    <%= @cashier_session.csid %>
+  </li>
+
+  <li>
+    <strong>Staffid:</strong>
+    <%= @cashier_session.staffid %>
+  </li>
+
+  <li>
+    <strong>Branchid:</strong>
+    <%= @cashier_session.branchid %>
+  </li>
+
+  <li>
+    <strong>Time start:</strong>
+    <%= @cashier_session.time_start %>
+  </li>
+
+  <li>
+    <strong>Time end:</strong>
+    <%= @cashier_session.time_end %>
+  </li>
+
+  <li>
+    <strong>Floatamt:</strong>
+    <%= @cashier_session.floatamt %>
+  </li>
+
+  <li>
+    <strong>Open amt:</strong>
+    <%= @cashier_session.open_amt %>
+  </li>
+
+  <li>
+    <strong>Close amt:</strong>
+    <%= @cashier_session.close_amt %>
+  </li>
+
+  <li>
+    <strong>Cash in:</strong>
+    <%= @cashier_session.cash_in %>
+  </li>
+
+  <li>
+    <strong>Cash out:</strong>
+    <%= @cashier_session.cash_out %>
+  </li>
+
+  <li>
+    <strong>Duration:</strong>
+    <%= @cashier_session.duration %>
+  </li>
+
+  <li>
+    <strong>Deposits:</strong>
+    <%= @cashier_session.deposits %>
+  </li>
+
+  <li>
+    <strong>Paidout:</strong>
+    <%= @cashier_session.paidout %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: cashier_session_path(@conn, :edit, @cashier_session) %></span>
+<span><%= link "Back", to: cashier_session_path(@conn, :index) %></span>

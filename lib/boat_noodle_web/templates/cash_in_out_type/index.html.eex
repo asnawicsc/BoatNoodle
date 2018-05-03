@@ -1,0 +1,25 @@
+<h2>Listing Cash in out type</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Cash type</th>
+      <th>Name</th>
+      <th>Description</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for cash_in_out_type <- @cash_in_out_type do %>
+    <tr>
+      <td><%= cash_in_out_type.cash_type_id %></td>
+      <td><%= cash_in_out_type.name %></td>
+      <td><%= cash_in_out_type.description %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Cash in out type", to: cash_in_out_type_path(@conn, :new) %></span>

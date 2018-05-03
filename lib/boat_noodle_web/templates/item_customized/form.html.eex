@@ -1,0 +1,59 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :itemcustomid, class: "control-label" %>
+    <%= number_input f, :itemcustomid, class: "form-control" %>
+    <%= error_tag f, :itemcustomid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :subcatid, class: "control-label" %>
+    <%= text_input f, :subcatid, class: "form-control" %>
+    <%= error_tag f, :subcatid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :customize_code, class: "control-label" %>
+    <%= text_input f, :customize_code, class: "form-control" %>
+    <%= error_tag f, :customize_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :customize_detail, class: "control-label" %>
+    <%= text_input f, :customize_detail, class: "form-control" %>
+    <%= error_tag f, :customize_detail %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :price, class: "control-label" %>
+    <%= number_input f, :price, step: "any", class: "form-control" %>
+    <%= error_tag f, :price %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :availability, class: "control-label" %>
+    <%= text_input f, :availability, class: "form-control" %>
+    <%= error_tag f, :availability %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :created_at, class: "control-label" %>
+    <%= datetime_select f, :created_at, class: "form-control" %>
+    <%= error_tag f, :created_at %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :updated_at, class: "control-label" %>
+    <%= datetime_select f, :updated_at, class: "form-control" %>
+    <%= error_tag f, :updated_at %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

@@ -48,10 +48,21 @@ config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
+# config :boat_noodle, BoatNoodle.Repo,
+#   adapter: Ecto.Adapters.Postgres,
+#   username: "postgres",
+#   password: "postgres",
+#   database: "boat_noodle_dev",
+#   hostname: "localhost",
+#   pool_size: 10
+
 config :boat_noodle, BoatNoodle.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "boat_noodle_dev",
-  hostname: "localhost",
-  pool_size: 10
+adapter: Ecto.Adapters.MySQL,
+hostname: "110.4.42.47",
+port: "15100",
+username: "nawi",
+password: "resertech2010",
+database: "BN",
+pool_size: 10,
+timeout: 10000
+

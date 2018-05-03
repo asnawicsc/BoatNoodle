@@ -3,13 +3,12 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Menu catalog master</th>
-      <th>Item code</th>
-      <th>Item name</th>
-      <th>Price code</th>
-      <th>Price</th>
-      <th>Active</th>
-      <th>Category item</th>
+      <th>Menu Catalog ID</th>
+      <th>Item Name</th>
+      <th>Categories</th>
+      <th>Items</th>
+      <th>Combo Items</th>
+    
 
       <th></th>
     </tr>
@@ -17,19 +16,13 @@
   <tbody>
 <%= for menu_catalog <- @menu_catalog do %>
     <tr>
-      <td><%= menu_catalog.menu_catalog_master_id %></td>
-      <td><%= menu_catalog.item_code %></td>
-      <td><%= menu_catalog.item_name %></td>
-      <td><%= menu_catalog.price_code %></td>
-      <td><%= menu_catalog.price %></td>
-      <td><%= menu_catalog.active %></td>
-      <td><%= menu_catalog.category_item %></td>
+      <td><%= menu_catalog.id %></td>
+      <td><%= menu_catalog.name %></td>
+      <td><%= menu_catalog.categories %></td>
+      <td><%= menu_catalog.items %></td>
+      <td><%= menu_catalog.combo_items %></td>
 
-      <td class="text-right">
-        <span><%= link "Show", to: menu_catalog_path(@conn, :show, menu_catalog), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: menu_catalog_path(@conn, :edit, menu_catalog), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: menu_catalog_path(@conn, :delete, menu_catalog), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
+
     </tr>
 <% end %>
   </tbody>

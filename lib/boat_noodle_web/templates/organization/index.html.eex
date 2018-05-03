@@ -3,6 +3,7 @@
 <table class="table">
   <thead>
     <tr>
+      <th>ID</th>
       <th>Name</th>
       <th>Address</th>
       <th>Company registration number</th>
@@ -16,21 +17,17 @@
   <tbody>
 <%= for organization <- @organization do %>
     <tr>
-      <td><%= organization.name %></td>
+      <td><%= organization.organisationid %></td>
+      <td><%= organization.organisationname %></td>
       <td><%= organization.address %></td>
-      <td><%= organization.company_registration_number %></td>
-      <td><%= organization.tax_registration_number %></td>
-      <td><%= organization.contact_number %></td>
+      <td><%= organization.orgregid %></td>
+      <td><%= organization.gst_reg_id %></td>
+      <td><%= organization.phone %></td>
       <td><%= organization.country %></td>
 
-      <td class="text-right">
-        <span><%= link "Show", to: organization_path(@conn, :show, organization), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: organization_path(@conn, :edit, organization), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: organization_path(@conn, :delete, organization), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
+     
     </tr>
 <% end %>
   </tbody>
 </table>
 
-<span><%= link "New Organization", to: organization_path(@conn, :new) %></span>

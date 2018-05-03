@@ -1,0 +1,5 @@
+<h2>Edit Staff type</h2>
+
+<%= render "form.html", Map.put(assigns, :action, staff_type_path(@conn, :update, @staff_type)) %>
+
+<span><%= link "Back", to: staff_type_path(@conn, :index) %></span>

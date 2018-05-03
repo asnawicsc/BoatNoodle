@@ -2,23 +2,23 @@ defmodule BoatNoodle.BN.Staff do
   use Ecto.Schema
   import Ecto.Changeset
 
-
-  schema "staff" do
-    field :branch, :string
-    field :contact_number, :string
-    field :email, :string
-    field :photo, :string
-    field :pin_number, :integer
+@primary_key false
+  schema "staffs" do
+    field :staff_id, :integer, primary_key: true
+    field :branchid, :string
+    field :staff_contact, :string
+    field :staff_email, :string
+    field :prof_img, :string
+    field :staff_pin, :integer
     field :staff_name, :string
-    field :staff_role, :string
+    field :staff_type_id, :integer
+    field :branch_access, :string
 
-    timestamps()
   end
 
   @doc false
-  def changeset(staff, attrs) do
-    staff
-    |> cast(attrs, [:staff_name, :contact_number, :email, :pin_number, :branch, :staff_role, :photo])
-    |> validate_required([:staff_name, :contact_number, :email, :pin_number, :branch, :staff_role, :photo])
+  def changeset(staffs, attrs) do
+    staffs
+    |> cast(attrs, [:staffid, :branch_access,:staff_name, :staff_contact, :staff_email, :staff_pin, :branchid, :staff_type_id, :prof_img])
   end
 end

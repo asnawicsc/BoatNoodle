@@ -1,0 +1,163 @@
+<h2>Show Rptcashiereod</h2>
+
+<ul>
+
+  <li>
+    <strong>Rptid:</strong>
+    <%= @rptcashiereod.rptid %>
+  </li>
+
+  <li>
+    <strong>Branch:</strong>
+    <%= @rptcashiereod.branch_id %>
+  </li>
+
+  <li>
+    <strong>Staff name:</strong>
+    <%= @rptcashiereod.staff_name %>
+  </li>
+
+  <li>
+    <strong>Time start:</strong>
+    <%= @rptcashiereod.time_start %>
+  </li>
+
+  <li>
+    <strong>Time end:</strong>
+    <%= @rptcashiereod.time_end %>
+  </li>
+
+  <li>
+    <strong>Duration:</strong>
+    <%= @rptcashiereod.duration %>
+  </li>
+
+  <li>
+    <strong>Open amt:</strong>
+    <%= @rptcashiereod.open_amt %>
+  </li>
+
+  <li>
+    <strong>Close amt:</strong>
+    <%= @rptcashiereod.close_amt %>
+  </li>
+
+  <li>
+    <strong>Totalpax:</strong>
+    <%= @rptcashiereod.totalpax %>
+  </li>
+
+  <li>
+    <strong>Totalsales:</strong>
+    <%= @rptcashiereod.totalsales %>
+  </li>
+
+  <li>
+    <strong>Voidsales:</strong>
+    <%= @rptcashiereod.voidsales %>
+  </li>
+
+  <li>
+    <strong>Voiditem:</strong>
+    <%= @rptcashiereod.voiditem %>
+  </li>
+
+  <li>
+    <strong>Totaltax:</strong>
+    <%= @rptcashiereod.totaltax %>
+  </li>
+
+  <li>
+    <strong>Totalsvc:</strong>
+    <%= @rptcashiereod.totalsvc %>
+  </li>
+
+  <li>
+    <strong>Total round:</strong>
+    <%= @rptcashiereod.total_round %>
+  </li>
+
+  <li>
+    <strong>Dinein:</strong>
+    <%= @rptcashiereod.dinein %>
+  </li>
+
+  <li>
+    <strong>Takeaway:</strong>
+    <%= @rptcashiereod.takeaway %>
+  </li>
+
+  <li>
+    <strong>Total disc:</strong>
+    <%= @rptcashiereod.total_disc %>
+  </li>
+
+  <li>
+    <strong>Total pymt:</strong>
+    <%= @rptcashiereod.total_pymt %>
+  </li>
+
+  <li>
+    <strong>Total cash:</strong>
+    <%= @rptcashiereod.total_cash %>
+  </li>
+
+  <li>
+    <strong>Total changes:</strong>
+    <%= @rptcashiereod.total_changes %>
+  </li>
+
+  <li>
+    <strong>Floats:</strong>
+    <%= @rptcashiereod.floats %>
+  </li>
+
+  <li>
+    <strong>Deposit:</strong>
+    <%= @rptcashiereod.deposit %>
+  </li>
+
+  <li>
+    <strong>Cash in:</strong>
+    <%= @rptcashiereod.cash_in %>
+  </li>
+
+  <li>
+    <strong>Paidout:</strong>
+    <%= @rptcashiereod.paidout %>
+  </li>
+
+  <li>
+    <strong>Cash:</strong>
+    <%= @rptcashiereod.cash %>
+  </li>
+
+  <li>
+    <strong>Drawamt:</strong>
+    <%= @rptcashiereod.drawamt %>
+  </li>
+
+  <li>
+    <strong>Exp drw amt:</strong>
+    <%= @rptcashiereod.exp_drw_amt %>
+  </li>
+
+  <li>
+    <strong>Total sr:</strong>
+    <%= @rptcashiereod.total_sr %>
+  </li>
+
+  <li>
+    <strong>Extra:</strong>
+    <%= @rptcashiereod.extra %>
+  </li>
+
+  <li>
+    <strong>Branchcode:</strong>
+    <%= @rptcashiereod.branchcode %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: rptcashiereod_path(@conn, :edit, @rptcashiereod) %></span>
+<span><%= link "Back", to: rptcashiereod_path(@conn, :index) %></span>

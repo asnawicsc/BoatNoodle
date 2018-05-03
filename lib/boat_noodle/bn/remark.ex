@@ -2,19 +2,19 @@ defmodule BoatNoodle.BN.Remark do
   use Ecto.Schema
   import Ecto.Changeset
 
+@primary_key false
+  schema "itemsremak" do
+    field :itemsremarkid, :integer, primary_key: true
+    field :remark, :string
+    field :target_cat, :integer
+    field :target_item, :integer
 
-  schema "remark" do
-    field :remark_description, :string
-    field :target_category, :string
-    field :target_item, :string
-
-    timestamps()
   end
 
   @doc false
   def changeset(remark, attrs) do
     remark
-    |> cast(attrs, [:remark_description, :target_category, :target_item])
-    |> validate_required([:remark_description, :target_category, :target_item])
+    |> cast(attrs, [:itemsremarkid, :remark, :target_cat,:target_item])
+    
   end
 end

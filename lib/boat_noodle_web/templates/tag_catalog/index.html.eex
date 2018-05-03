@@ -3,6 +3,7 @@
 <table class="table">
   <thead>
     <tr>
+      <th>ID</th>
       <th>Name</th>
       <th>Description</th>
       <th>Tag category</th>
@@ -14,16 +15,12 @@
   <tbody>
 <%= for tag_catalog <- @tag_catalog do %>
     <tr>
+       <td><%= tag_catalog.id %></td>
       <td><%= tag_catalog.name %></td>
       <td><%= tag_catalog.description %></td>
-      <td><%= tag_catalog.tag_category %></td>
-      <td><%= tag_catalog.tag_items %></td>
+      <td><%= tag_catalog.tags %></td>
+      <td><%= tag_catalog.tagitems %></td>
 
-      <td class="text-right">
-        <span><%= link "Show", to: tag_catalog_path(@conn, :show, tag_catalog), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: tag_catalog_path(@conn, :edit, tag_catalog), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: tag_catalog_path(@conn, :delete, tag_catalog), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
     </tr>
 <% end %>
   </tbody>

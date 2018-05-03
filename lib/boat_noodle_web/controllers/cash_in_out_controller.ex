@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.CashInOutController do
   alias BoatNoodle.BN.CashInOut
 
   def index(conn, _params) do
-    cash_in_out = BN.list_cash_in_out()
+    cash_in_out = Repo.all(from c in CashInOut, limit: 10)
     render(conn, "index.html", cash_in_out: cash_in_out)
   end
 

@@ -2,20 +2,22 @@ defmodule BoatNoodle.BN.CashInOut do
   use Ecto.Schema
   import Ecto.Changeset
 
-
+@primary_key false
   schema "cash_in_out" do
-    field :branch, :string
-    field :cash_in, :decimal
-    field :cash_out, :decimal
-    field :open_drawer, :integer
+    field :id, :integer, primary_key: true
+    field :branch_id, :integer
+    field :date_time, :utc_datetime
+    field :cashtype, :string
+    field :staffid, :integer
+    field :description, :string
+    field :amount, :decimal
 
-    timestamps()
+
   end
 
   @doc false
   def changeset(cash_in_out, attrs) do
     cash_in_out
-    |> cast(attrs, [:branch, :cash_in, :cash_out, :open_drawer])
-    |> validate_required([:branch, :cash_in, :cash_out, :open_drawer])
+    |> cast(attrs, [:amount,:id,:branch_id, :cashtype, :staffid, :description])
   end
 end

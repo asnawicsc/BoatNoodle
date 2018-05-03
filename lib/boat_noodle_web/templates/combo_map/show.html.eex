@@ -1,0 +1,18 @@
+<h2>Show Combo map</h2>
+
+<ul>
+
+  <li>
+    <strong>Subcatid:</strong>
+    <%= @combo_map.subcatid %>
+  </li>
+
+  <li>
+    <strong>Linkid:</strong>
+    <%= @combo_map.linkid %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: combo_map_path(@conn, :edit, @combo_map) %></span>
+<span><%= link "Back", to: combo_map_path(@conn, :index) %></span>

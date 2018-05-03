@@ -1,9 +1,9 @@
 <h2>Listing Menu item</h2>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem"><i class="fa fa-book" aria-hidden="true"></i> Add New Menu Item</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem" onclick="window.location.href='menu_item/new'"><i class="fa fa-book" aria-hidden="true"></i> Add New Menu Item</button>
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlUploadMenu"><i class="fa fa-upload" aria-hidden="true"></i> Upload Menus</button>
 <button type="button" class="btn btn-primary" id="btnAddCombo"><i class="fa fa-tags" aria-hidden="true"></i> Add New Combo</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat"><i class="fa fa-tags" aria-hidden="true"></i> Add New Category</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdlAddCat"  onclick="window.location.href='category/new'"><i class="fa fa-tags" aria-hidden="true"></i> Add New Category</button>
 <button id="btnDlMenu" type="button" class="btn btn-primary"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Download Menu list CSV</button>
 
 <br>
@@ -25,31 +25,27 @@
                                         <table class="table table-bordered table-hover table-striped">
                                             <thead>
                                                 <tr>
-                                                      <th>Item code</th>
-                                                      <th>Item Code</th>
-                                                      <th>Item name</th>
-                                                      <th>Price</th>
-                                                      <th>Category</th>
-                                                      <th>Active</th>
-                                                      <th>Action</th>
+                                                      <th>Item Cat ID</th>
+                                                      <th>Item Cat Code</th>
+                                                      <th>Item Cat name</th>
+                                                      <th>Item Cat Desc</th>
+                                                      <th>is default</th>
+                                                      <th>Category Type</th>
+                                                      <th>Is Delete</th>
                                              
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                <%= for menu_item <- @menu_item do %>
                                                   <tr>
-                                                    <td><%= menu_item.item_code %></td>
-                                                    <td><%= menu_item.item %></td>
-                                                    <td><%= menu_item.item_name %></td>
-                                                    <td><%= menu_item.price %></td>
-                                                    <td><%= menu_item.category %></td>
-                                                    <td><%= menu_item.active %></td>
-                                               
-                                                    <td class="text-right">
-                                                      <span><%= link "Show", to: menu_item_path(@conn, :show, menu_item), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Edit", to: menu_item_path(@conn, :edit, menu_item), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Delete", to: menu_item_path(@conn, :delete, menu_item), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-                                                    </td>
+                                                    <td><%= menu_item.itemcatid %></td>
+                                                    <td><%= menu_item.itemcatcode %></td>
+                                                    <td><%= menu_item.itemcatname %></td>
+                                                    <td><%= menu_item.itemcatdesc %></td>
+                                                    <td><%= menu_item.is_default %></td>
+                                                    <td><%= menu_item.category_type %></td>
+                                                    <td><%= menu_item.is_delete %>
+                                                    </td >
                                                   </tr>
                                               <% end %>
                                             </tbody>

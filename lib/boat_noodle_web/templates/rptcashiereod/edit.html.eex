@@ -1,0 +1,5 @@
+<h2>Edit Rptcashiereod</h2>
+
+<%= render "form.html", Map.put(assigns, :action, rptcashiereod_path(@conn, :update, @rptcashiereod)) %>
+
+<span><%= link "Back", to: rptcashiereod_path(@conn, :index) %></span>

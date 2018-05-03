@@ -1,0 +1,5 @@
+<h2>New Password resets</h2>
+
+<%= render "form.html", Map.put(assigns, :action, password_resets_path(@conn, :create)) %>
+
+<span><%= link "Back", to: password_resets_path(@conn, :index) %></span>

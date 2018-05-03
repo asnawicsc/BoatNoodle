@@ -2021,4 +2021,1924 @@ defmodule BoatNoodle.BN do
   def change_cash_in_out(%CashInOut{} = cash_in_out) do
     CashInOut.changeset(cash_in_out, %{})
   end
+
+  alias BoatNoodle.BN.BranchItemDeactivate
+
+  @doc """
+  Returns the list of branch_item_deactivate.
+
+  ## Examples
+
+      iex> list_branch_item_deactivate()
+      [%BranchItemDeactivate{}, ...]
+
+  """
+  def list_branch_item_deactivate do
+    Repo.all(BranchItemDeactivate)
+  end
+
+  @doc """
+  Gets a single branch_item_deactivate.
+
+  Raises `Ecto.NoResultsError` if the Branch item deactivate does not exist.
+
+  ## Examples
+
+      iex> get_branch_item_deactivate!(123)
+      %BranchItemDeactivate{}
+
+      iex> get_branch_item_deactivate!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_branch_item_deactivate!(id), do: Repo.get!(BranchItemDeactivate, id)
+
+  @doc """
+  Creates a branch_item_deactivate.
+
+  ## Examples
+
+      iex> create_branch_item_deactivate(%{field: value})
+      {:ok, %BranchItemDeactivate{}}
+
+      iex> create_branch_item_deactivate(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_branch_item_deactivate(attrs \\ %{}) do
+    %BranchItemDeactivate{}
+    |> BranchItemDeactivate.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a branch_item_deactivate.
+
+  ## Examples
+
+      iex> update_branch_item_deactivate(branch_item_deactivate, %{field: new_value})
+      {:ok, %BranchItemDeactivate{}}
+
+      iex> update_branch_item_deactivate(branch_item_deactivate, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_branch_item_deactivate(%BranchItemDeactivate{} = branch_item_deactivate, attrs) do
+    branch_item_deactivate
+    |> BranchItemDeactivate.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a BranchItemDeactivate.
+
+  ## Examples
+
+      iex> delete_branch_item_deactivate(branch_item_deactivate)
+      {:ok, %BranchItemDeactivate{}}
+
+      iex> delete_branch_item_deactivate(branch_item_deactivate)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_branch_item_deactivate(%BranchItemDeactivate{} = branch_item_deactivate) do
+    Repo.delete(branch_item_deactivate)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking branch_item_deactivate changes.
+
+  ## Examples
+
+      iex> change_branch_item_deactivate(branch_item_deactivate)
+      %Ecto.Changeset{source: %BranchItemDeactivate{}}
+
+  """
+  def change_branch_item_deactivate(%BranchItemDeactivate{} = branch_item_deactivate) do
+    BranchItemDeactivate.changeset(branch_item_deactivate, %{})
+  end
+
+  alias BoatNoodle.BN.CashierSession
+
+  @doc """
+  Returns the list of cashier_session.
+
+  ## Examples
+
+      iex> list_cashier_session()
+      [%CashierSession{}, ...]
+
+  """
+  def list_cashier_session do
+    Repo.all(CashierSession)
+  end
+
+  @doc """
+  Gets a single cashier_session.
+
+  Raises `Ecto.NoResultsError` if the Cashier session does not exist.
+
+  ## Examples
+
+      iex> get_cashier_session!(123)
+      %CashierSession{}
+
+      iex> get_cashier_session!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_cashier_session!(id), do: Repo.get!(CashierSession, id)
+
+  @doc """
+  Creates a cashier_session.
+
+  ## Examples
+
+      iex> create_cashier_session(%{field: value})
+      {:ok, %CashierSession{}}
+
+      iex> create_cashier_session(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_cashier_session(attrs \\ %{}) do
+    %CashierSession{}
+    |> CashierSession.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a cashier_session.
+
+  ## Examples
+
+      iex> update_cashier_session(cashier_session, %{field: new_value})
+      {:ok, %CashierSession{}}
+
+      iex> update_cashier_session(cashier_session, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_cashier_session(%CashierSession{} = cashier_session, attrs) do
+    cashier_session
+    |> CashierSession.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a CashierSession.
+
+  ## Examples
+
+      iex> delete_cashier_session(cashier_session)
+      {:ok, %CashierSession{}}
+
+      iex> delete_cashier_session(cashier_session)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_cashier_session(%CashierSession{} = cashier_session) do
+    Repo.delete(cashier_session)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking cashier_session changes.
+
+  ## Examples
+
+      iex> change_cashier_session(cashier_session)
+      %Ecto.Changeset{source: %CashierSession{}}
+
+  """
+  def change_cashier_session(%CashierSession{} = cashier_session) do
+    CashierSession.changeset(cashier_session, %{})
+  end
+
+  alias BoatNoodle.BN.CashInOutType
+
+  @doc """
+  Returns the list of cash_in_out_type.
+
+  ## Examples
+
+      iex> list_cash_in_out_type()
+      [%CashInOutType{}, ...]
+
+  """
+  def list_cash_in_out_type do
+    Repo.all(CashInOutType)
+  end
+
+  @doc """
+  Gets a single cash_in_out_type.
+
+  Raises `Ecto.NoResultsError` if the Cash in out type does not exist.
+
+  ## Examples
+
+      iex> get_cash_in_out_type!(123)
+      %CashInOutType{}
+
+      iex> get_cash_in_out_type!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_cash_in_out_type!(id), do: Repo.get!(CashInOutType, id)
+
+  @doc """
+  Creates a cash_in_out_type.
+
+  ## Examples
+
+      iex> create_cash_in_out_type(%{field: value})
+      {:ok, %CashInOutType{}}
+
+      iex> create_cash_in_out_type(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_cash_in_out_type(attrs \\ %{}) do
+    %CashInOutType{}
+    |> CashInOutType.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a cash_in_out_type.
+
+  ## Examples
+
+      iex> update_cash_in_out_type(cash_in_out_type, %{field: new_value})
+      {:ok, %CashInOutType{}}
+
+      iex> update_cash_in_out_type(cash_in_out_type, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_cash_in_out_type(%CashInOutType{} = cash_in_out_type, attrs) do
+    cash_in_out_type
+    |> CashInOutType.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a CashInOutType.
+
+  ## Examples
+
+      iex> delete_cash_in_out_type(cash_in_out_type)
+      {:ok, %CashInOutType{}}
+
+      iex> delete_cash_in_out_type(cash_in_out_type)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_cash_in_out_type(%CashInOutType{} = cash_in_out_type) do
+    Repo.delete(cash_in_out_type)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking cash_in_out_type changes.
+
+  ## Examples
+
+      iex> change_cash_in_out_type(cash_in_out_type)
+      %Ecto.Changeset{source: %CashInOutType{}}
+
+  """
+  def change_cash_in_out_type(%CashInOutType{} = cash_in_out_type) do
+    CashInOutType.changeset(cash_in_out_type, %{})
+  end
+
+  alias BoatNoodle.BN.ComboDetails
+
+  @doc """
+  Returns the list of combo_details.
+
+  ## Examples
+
+      iex> list_combo_details()
+      [%ComboDetails{}, ...]
+
+  """
+  def list_combo_details do
+    Repo.all(ComboDetails)
+  end
+
+  @doc """
+  Gets a single combo_details.
+
+  Raises `Ecto.NoResultsError` if the Combo details does not exist.
+
+  ## Examples
+
+      iex> get_combo_details!(123)
+      %ComboDetails{}
+
+      iex> get_combo_details!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_combo_details!(id), do: Repo.get!(ComboDetails, id)
+
+  @doc """
+  Creates a combo_details.
+
+  ## Examples
+
+      iex> create_combo_details(%{field: value})
+      {:ok, %ComboDetails{}}
+
+      iex> create_combo_details(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_combo_details(attrs \\ %{}) do
+    %ComboDetails{}
+    |> ComboDetails.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a combo_details.
+
+  ## Examples
+
+      iex> update_combo_details(combo_details, %{field: new_value})
+      {:ok, %ComboDetails{}}
+
+      iex> update_combo_details(combo_details, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_combo_details(%ComboDetails{} = combo_details, attrs) do
+    combo_details
+    |> ComboDetails.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ComboDetails.
+
+  ## Examples
+
+      iex> delete_combo_details(combo_details)
+      {:ok, %ComboDetails{}}
+
+      iex> delete_combo_details(combo_details)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_combo_details(%ComboDetails{} = combo_details) do
+    Repo.delete(combo_details)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking combo_details changes.
+
+  ## Examples
+
+      iex> change_combo_details(combo_details)
+      %Ecto.Changeset{source: %ComboDetails{}}
+
+  """
+  def change_combo_details(%ComboDetails{} = combo_details) do
+    ComboDetails.changeset(combo_details, %{})
+  end
+
+  alias BoatNoodle.BN.ComboMap
+
+  @doc """
+  Returns the list of combo_map.
+
+  ## Examples
+
+      iex> list_combo_map()
+      [%ComboMap{}, ...]
+
+  """
+  def list_combo_map do
+    Repo.all(ComboMap)
+  end
+
+  @doc """
+  Gets a single combo_map.
+
+  Raises `Ecto.NoResultsError` if the Combo map does not exist.
+
+  ## Examples
+
+      iex> get_combo_map!(123)
+      %ComboMap{}
+
+      iex> get_combo_map!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_combo_map!(id), do: Repo.get!(ComboMap, id)
+
+  @doc """
+  Creates a combo_map.
+
+  ## Examples
+
+      iex> create_combo_map(%{field: value})
+      {:ok, %ComboMap{}}
+
+      iex> create_combo_map(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_combo_map(attrs \\ %{}) do
+    %ComboMap{}
+    |> ComboMap.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a combo_map.
+
+  ## Examples
+
+      iex> update_combo_map(combo_map, %{field: new_value})
+      {:ok, %ComboMap{}}
+
+      iex> update_combo_map(combo_map, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_combo_map(%ComboMap{} = combo_map, attrs) do
+    combo_map
+    |> ComboMap.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ComboMap.
+
+  ## Examples
+
+      iex> delete_combo_map(combo_map)
+      {:ok, %ComboMap{}}
+
+      iex> delete_combo_map(combo_map)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_combo_map(%ComboMap{} = combo_map) do
+    Repo.delete(combo_map)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking combo_map changes.
+
+  ## Examples
+
+      iex> change_combo_map(combo_map)
+      %Ecto.Changeset{source: %ComboMap{}}
+
+  """
+  def change_combo_map(%ComboMap{} = combo_map) do
+    ComboMap.changeset(combo_map, %{})
+  end
+
+  alias BoatNoodle.BN.DiscountType
+
+  @doc """
+  Returns the list of discount_type.
+
+  ## Examples
+
+      iex> list_discount_type()
+      [%DiscountType{}, ...]
+
+  """
+  def list_discount_type do
+    Repo.all(DiscountType)
+  end
+
+  @doc """
+  Gets a single discount_type.
+
+  Raises `Ecto.NoResultsError` if the Discount type does not exist.
+
+  ## Examples
+
+      iex> get_discount_type!(123)
+      %DiscountType{}
+
+      iex> get_discount_type!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_discount_type!(id), do: Repo.get!(DiscountType, id)
+
+  @doc """
+  Creates a discount_type.
+
+  ## Examples
+
+      iex> create_discount_type(%{field: value})
+      {:ok, %DiscountType{}}
+
+      iex> create_discount_type(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_discount_type(attrs \\ %{}) do
+    %DiscountType{}
+    |> DiscountType.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a discount_type.
+
+  ## Examples
+
+      iex> update_discount_type(discount_type, %{field: new_value})
+      {:ok, %DiscountType{}}
+
+      iex> update_discount_type(discount_type, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_discount_type(%DiscountType{} = discount_type, attrs) do
+    discount_type
+    |> DiscountType.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a DiscountType.
+
+  ## Examples
+
+      iex> delete_discount_type(discount_type)
+      {:ok, %DiscountType{}}
+
+      iex> delete_discount_type(discount_type)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_discount_type(%DiscountType{} = discount_type) do
+    Repo.delete(discount_type)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking discount_type changes.
+
+  ## Examples
+
+      iex> change_discount_type(discount_type)
+      %Ecto.Changeset{source: %DiscountType{}}
+
+  """
+  def change_discount_type(%DiscountType{} = discount_type) do
+    DiscountType.changeset(discount_type, %{})
+  end
+
+  alias BoatNoodle.BN.ItemCustomized
+
+  @doc """
+  Returns the list of item_customized.
+
+  ## Examples
+
+      iex> list_item_customized()
+      [%ItemCustomized{}, ...]
+
+  """
+  def list_item_customized do
+    Repo.all(ItemCustomized)
+  end
+
+  @doc """
+  Gets a single item_customized.
+
+  Raises `Ecto.NoResultsError` if the Item customized does not exist.
+
+  ## Examples
+
+      iex> get_item_customized!(123)
+      %ItemCustomized{}
+
+      iex> get_item_customized!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_item_customized!(id), do: Repo.get!(ItemCustomized, id)
+
+  @doc """
+  Creates a item_customized.
+
+  ## Examples
+
+      iex> create_item_customized(%{field: value})
+      {:ok, %ItemCustomized{}}
+
+      iex> create_item_customized(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_item_customized(attrs \\ %{}) do
+    %ItemCustomized{}
+    |> ItemCustomized.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a item_customized.
+
+  ## Examples
+
+      iex> update_item_customized(item_customized, %{field: new_value})
+      {:ok, %ItemCustomized{}}
+
+      iex> update_item_customized(item_customized, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_item_customized(%ItemCustomized{} = item_customized, attrs) do
+    item_customized
+    |> ItemCustomized.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ItemCustomized.
+
+  ## Examples
+
+      iex> delete_item_customized(item_customized)
+      {:ok, %ItemCustomized{}}
+
+      iex> delete_item_customized(item_customized)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_item_customized(%ItemCustomized{} = item_customized) do
+    Repo.delete(item_customized)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking item_customized changes.
+
+  ## Examples
+
+      iex> change_item_customized(item_customized)
+      %Ecto.Changeset{source: %ItemCustomized{}}
+
+  """
+  def change_item_customized(%ItemCustomized{} = item_customized) do
+    ItemCustomized.changeset(item_customized, %{})
+  end
+
+  alias BoatNoodle.BN.Migrations
+
+  @doc """
+  Returns the list of migrations.
+
+  ## Examples
+
+      iex> list_migrations()
+      [%Migrations{}, ...]
+
+  """
+  def list_migrations do
+    Repo.all(Migrations)
+  end
+
+  @doc """
+  Gets a single migrations.
+
+  Raises `Ecto.NoResultsError` if the Migrations does not exist.
+
+  ## Examples
+
+      iex> get_migrations!(123)
+      %Migrations{}
+
+      iex> get_migrations!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_migrations!(id), do: Repo.get!(Migrations, id)
+
+  @doc """
+  Creates a migrations.
+
+  ## Examples
+
+      iex> create_migrations(%{field: value})
+      {:ok, %Migrations{}}
+
+      iex> create_migrations(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_migrations(attrs \\ %{}) do
+    %Migrations{}
+    |> Migrations.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a migrations.
+
+  ## Examples
+
+      iex> update_migrations(migrations, %{field: new_value})
+      {:ok, %Migrations{}}
+
+      iex> update_migrations(migrations, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_migrations(%Migrations{} = migrations, attrs) do
+    migrations
+    |> Migrations.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Migrations.
+
+  ## Examples
+
+      iex> delete_migrations(migrations)
+      {:ok, %Migrations{}}
+
+      iex> delete_migrations(migrations)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_migrations(%Migrations{} = migrations) do
+    Repo.delete(migrations)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking migrations changes.
+
+  ## Examples
+
+      iex> change_migrations(migrations)
+      %Ecto.Changeset{source: %Migrations{}}
+
+  """
+  def change_migrations(%Migrations{} = migrations) do
+    Migrations.changeset(migrations, %{})
+  end
+
+  alias BoatNoodle.BN.PasswordResets
+
+  @doc """
+  Returns the list of password_resets.
+
+  ## Examples
+
+      iex> list_password_resets()
+      [%PasswordResets{}, ...]
+
+  """
+  def list_password_resets do
+    Repo.all(PasswordResets)
+  end
+
+  @doc """
+  Gets a single password_resets.
+
+  Raises `Ecto.NoResultsError` if the Password resets does not exist.
+
+  ## Examples
+
+      iex> get_password_resets!(123)
+      %PasswordResets{}
+
+      iex> get_password_resets!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_password_resets!(id), do: Repo.get!(PasswordResets, id)
+
+  @doc """
+  Creates a password_resets.
+
+  ## Examples
+
+      iex> create_password_resets(%{field: value})
+      {:ok, %PasswordResets{}}
+
+      iex> create_password_resets(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_password_resets(attrs \\ %{}) do
+    %PasswordResets{}
+    |> PasswordResets.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a password_resets.
+
+  ## Examples
+
+      iex> update_password_resets(password_resets, %{field: new_value})
+      {:ok, %PasswordResets{}}
+
+      iex> update_password_resets(password_resets, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_password_resets(%PasswordResets{} = password_resets, attrs) do
+    password_resets
+    |> PasswordResets.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a PasswordResets.
+
+  ## Examples
+
+      iex> delete_password_resets(password_resets)
+      {:ok, %PasswordResets{}}
+
+      iex> delete_password_resets(password_resets)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_password_resets(%PasswordResets{} = password_resets) do
+    Repo.delete(password_resets)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking password_resets changes.
+
+  ## Examples
+
+      iex> change_password_resets(password_resets)
+      %Ecto.Changeset{source: %PasswordResets{}}
+
+  """
+  def change_password_resets(%PasswordResets{} = password_resets) do
+    PasswordResets.changeset(password_resets, %{})
+  end
+
+  alias BoatNoodle.BN.RPTCASHIEREOD
+
+  @doc """
+  Returns the list of rpt_cashier_eod.
+
+  ## Examples
+
+      iex> list_rpt_cashier_eod()
+      [%RPTCASHIEREOD{}, ...]
+
+  """
+  def list_rpt_cashier_eod do
+    Repo.all(RPTCASHIEREOD)
+  end
+
+  @doc """
+  Gets a single rptcashiereod.
+
+  Raises `Ecto.NoResultsError` if the Rptcashiereod does not exist.
+
+  ## Examples
+
+      iex> get_rptcashiereod!(123)
+      %RPTCASHIEREOD{}
+
+      iex> get_rptcashiereod!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_rptcashiereod!(id), do: Repo.get!(RPTCASHIEREOD, id)
+
+  @doc """
+  Creates a rptcashiereod.
+
+  ## Examples
+
+      iex> create_rptcashiereod(%{field: value})
+      {:ok, %RPTCASHIEREOD{}}
+
+      iex> create_rptcashiereod(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_rptcashiereod(attrs \\ %{}) do
+    %RPTCASHIEREOD{}
+    |> RPTCASHIEREOD.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a rptcashiereod.
+
+  ## Examples
+
+      iex> update_rptcashiereod(rptcashiereod, %{field: new_value})
+      {:ok, %RPTCASHIEREOD{}}
+
+      iex> update_rptcashiereod(rptcashiereod, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_rptcashiereod(%RPTCASHIEREOD{} = rptcashiereod, attrs) do
+    rptcashiereod
+    |> RPTCASHIEREOD.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a RPTCASHIEREOD.
+
+  ## Examples
+
+      iex> delete_rptcashiereod(rptcashiereod)
+      {:ok, %RPTCASHIEREOD{}}
+
+      iex> delete_rptcashiereod(rptcashiereod)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_rptcashiereod(%RPTCASHIEREOD{} = rptcashiereod) do
+    Repo.delete(rptcashiereod)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking rptcashiereod changes.
+
+  ## Examples
+
+      iex> change_rptcashiereod(rptcashiereod)
+      %Ecto.Changeset{source: %RPTCASHIEREOD{}}
+
+  """
+  def change_rptcashiereod(%RPTCASHIEREOD{} = rptcashiereod) do
+    RPTCASHIEREOD.changeset(rptcashiereod, %{})
+  end
+
+  alias BoatNoodle.BN.RPTHOURLYOUTLET
+
+  @doc """
+  Returns the list of rpt_hourly_outlet.
+
+  ## Examples
+
+      iex> list_rpt_hourly_outlet()
+      [%RPTHOURLYOUTLET{}, ...]
+
+  """
+  def list_rpt_hourly_outlet do
+    Repo.all(RPTHOURLYOUTLET)
+  end
+
+  @doc """
+  Gets a single rpthourlyoutlet.
+
+  Raises `Ecto.NoResultsError` if the Rpthourlyoutlet does not exist.
+
+  ## Examples
+
+      iex> get_rpthourlyoutlet!(123)
+      %RPTHOURLYOUTLET{}
+
+      iex> get_rpthourlyoutlet!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_rpthourlyoutlet!(id), do: Repo.get!(RPTHOURLYOUTLET, id)
+
+  @doc """
+  Creates a rpthourlyoutlet.
+
+  ## Examples
+
+      iex> create_rpthourlyoutlet(%{field: value})
+      {:ok, %RPTHOURLYOUTLET{}}
+
+      iex> create_rpthourlyoutlet(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_rpthourlyoutlet(attrs \\ %{}) do
+    %RPTHOURLYOUTLET{}
+    |> RPTHOURLYOUTLET.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a rpthourlyoutlet.
+
+  ## Examples
+
+      iex> update_rpthourlyoutlet(rpthourlyoutlet, %{field: new_value})
+      {:ok, %RPTHOURLYOUTLET{}}
+
+      iex> update_rpthourlyoutlet(rpthourlyoutlet, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_rpthourlyoutlet(%RPTHOURLYOUTLET{} = rpthourlyoutlet, attrs) do
+    rpthourlyoutlet
+    |> RPTHOURLYOUTLET.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a RPTHOURLYOUTLET.
+
+  ## Examples
+
+      iex> delete_rpthourlyoutlet(rpthourlyoutlet)
+      {:ok, %RPTHOURLYOUTLET{}}
+
+      iex> delete_rpthourlyoutlet(rpthourlyoutlet)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_rpthourlyoutlet(%RPTHOURLYOUTLET{} = rpthourlyoutlet) do
+    Repo.delete(rpthourlyoutlet)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking rpthourlyoutlet changes.
+
+  ## Examples
+
+      iex> change_rpthourlyoutlet(rpthourlyoutlet)
+      %Ecto.Changeset{source: %RPTHOURLYOUTLET{}}
+
+  """
+  def change_rpthourlyoutlet(%RPTHOURLYOUTLET{} = rpthourlyoutlet) do
+    RPTHOURLYOUTLET.changeset(rpthourlyoutlet, %{})
+  end
+
+  alias BoatNoodle.BN.RPTTRANSACTION
+
+  @doc """
+  Returns the list of rpt_transaction.
+
+  ## Examples
+
+      iex> list_rpt_transaction()
+      [%RPTTRANSACTION{}, ...]
+
+  """
+  def list_rpt_transaction do
+    Repo.all(RPTTRANSACTION)
+  end
+
+  @doc """
+  Gets a single rpttransaction.
+
+  Raises `Ecto.NoResultsError` if the Rpttransaction does not exist.
+
+  ## Examples
+
+      iex> get_rpttransaction!(123)
+      %RPTTRANSACTION{}
+
+      iex> get_rpttransaction!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_rpttransaction!(id), do: Repo.get!(RPTTRANSACTION, id)
+
+  @doc """
+  Creates a rpttransaction.
+
+  ## Examples
+
+      iex> create_rpttransaction(%{field: value})
+      {:ok, %RPTTRANSACTION{}}
+
+      iex> create_rpttransaction(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_rpttransaction(attrs \\ %{}) do
+    %RPTTRANSACTION{}
+    |> RPTTRANSACTION.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a rpttransaction.
+
+  ## Examples
+
+      iex> update_rpttransaction(rpttransaction, %{field: new_value})
+      {:ok, %RPTTRANSACTION{}}
+
+      iex> update_rpttransaction(rpttransaction, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_rpttransaction(%RPTTRANSACTION{} = rpttransaction, attrs) do
+    rpttransaction
+    |> RPTTRANSACTION.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a RPTTRANSACTION.
+
+  ## Examples
+
+      iex> delete_rpttransaction(rpttransaction)
+      {:ok, %RPTTRANSACTION{}}
+
+      iex> delete_rpttransaction(rpttransaction)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_rpttransaction(%RPTTRANSACTION{} = rpttransaction) do
+    Repo.delete(rpttransaction)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking rpttransaction changes.
+
+  ## Examples
+
+      iex> change_rpttransaction(rpttransaction)
+      %Ecto.Changeset{source: %RPTTRANSACTION{}}
+
+  """
+  def change_rpttransaction(%RPTTRANSACTION{} = rpttransaction) do
+    RPTTRANSACTION.changeset(rpttransaction, %{})
+  end
+
+  alias BoatNoodle.BN.SalesDetailCust
+
+  @doc """
+  Returns the list of salesdetailcust.
+
+  ## Examples
+
+      iex> list_salesdetailcust()
+      [%SalesDetailCust{}, ...]
+
+  """
+  def list_salesdetailcust do
+    Repo.all(SalesDetailCust)
+  end
+
+  @doc """
+  Gets a single sales_detail_cust.
+
+  Raises `Ecto.NoResultsError` if the Sales detail cust does not exist.
+
+  ## Examples
+
+      iex> get_sales_detail_cust!(123)
+      %SalesDetailCust{}
+
+      iex> get_sales_detail_cust!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_sales_detail_cust!(id), do: Repo.get!(SalesDetailCust, id)
+
+  @doc """
+  Creates a sales_detail_cust.
+
+  ## Examples
+
+      iex> create_sales_detail_cust(%{field: value})
+      {:ok, %SalesDetailCust{}}
+
+      iex> create_sales_detail_cust(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_sales_detail_cust(attrs \\ %{}) do
+    %SalesDetailCust{}
+    |> SalesDetailCust.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a sales_detail_cust.
+
+  ## Examples
+
+      iex> update_sales_detail_cust(sales_detail_cust, %{field: new_value})
+      {:ok, %SalesDetailCust{}}
+
+      iex> update_sales_detail_cust(sales_detail_cust, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_sales_detail_cust(%SalesDetailCust{} = sales_detail_cust, attrs) do
+    sales_detail_cust
+    |> SalesDetailCust.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a SalesDetailCust.
+
+  ## Examples
+
+      iex> delete_sales_detail_cust(sales_detail_cust)
+      {:ok, %SalesDetailCust{}}
+
+      iex> delete_sales_detail_cust(sales_detail_cust)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_sales_detail_cust(%SalesDetailCust{} = sales_detail_cust) do
+    Repo.delete(sales_detail_cust)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking sales_detail_cust changes.
+
+  ## Examples
+
+      iex> change_sales_detail_cust(sales_detail_cust)
+      %Ecto.Changeset{source: %SalesDetailCust{}}
+
+  """
+  def change_sales_detail_cust(%SalesDetailCust{} = sales_detail_cust) do
+    SalesDetailCust.changeset(sales_detail_cust, %{})
+  end
+
+  alias BoatNoodle.BN.StaffLogSession
+
+  @doc """
+  Returns the list of staff_log_session.
+
+  ## Examples
+
+      iex> list_staff_log_session()
+      [%StaffLogSession{}, ...]
+
+  """
+  def list_staff_log_session do
+    Repo.all(StaffLogSession)
+  end
+
+  @doc """
+  Gets a single staff_log_session.
+
+  Raises `Ecto.NoResultsError` if the Staff log session does not exist.
+
+  ## Examples
+
+      iex> get_staff_log_session!(123)
+      %StaffLogSession{}
+
+      iex> get_staff_log_session!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_staff_log_session!(id), do: Repo.get!(StaffLogSession, id)
+
+  @doc """
+  Creates a staff_log_session.
+
+  ## Examples
+
+      iex> create_staff_log_session(%{field: value})
+      {:ok, %StaffLogSession{}}
+
+      iex> create_staff_log_session(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_staff_log_session(attrs \\ %{}) do
+    %StaffLogSession{}
+    |> StaffLogSession.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a staff_log_session.
+
+  ## Examples
+
+      iex> update_staff_log_session(staff_log_session, %{field: new_value})
+      {:ok, %StaffLogSession{}}
+
+      iex> update_staff_log_session(staff_log_session, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_staff_log_session(%StaffLogSession{} = staff_log_session, attrs) do
+    staff_log_session
+    |> StaffLogSession.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a StaffLogSession.
+
+  ## Examples
+
+      iex> delete_staff_log_session(staff_log_session)
+      {:ok, %StaffLogSession{}}
+
+      iex> delete_staff_log_session(staff_log_session)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_staff_log_session(%StaffLogSession{} = staff_log_session) do
+    Repo.delete(staff_log_session)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking staff_log_session changes.
+
+  ## Examples
+
+      iex> change_staff_log_session(staff_log_session)
+      %Ecto.Changeset{source: %StaffLogSession{}}
+
+  """
+  def change_staff_log_session(%StaffLogSession{} = staff_log_session) do
+    StaffLogSession.changeset(staff_log_session, %{})
+  end
+
+  alias BoatNoodle.BN.StaffType
+
+  @doc """
+  Returns the list of staff_type.
+
+  ## Examples
+
+      iex> list_staff_type()
+      [%StaffType{}, ...]
+
+  """
+  def list_staff_type do
+    Repo.all(StaffType)
+  end
+
+  @doc """
+  Gets a single staff_type.
+
+  Raises `Ecto.NoResultsError` if the Staff type does not exist.
+
+  ## Examples
+
+      iex> get_staff_type!(123)
+      %StaffType{}
+
+      iex> get_staff_type!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_staff_type!(id), do: Repo.get!(StaffType, id)
+
+  @doc """
+  Creates a staff_type.
+
+  ## Examples
+
+      iex> create_staff_type(%{field: value})
+      {:ok, %StaffType{}}
+
+      iex> create_staff_type(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_staff_type(attrs \\ %{}) do
+    %StaffType{}
+    |> StaffType.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a staff_type.
+
+  ## Examples
+
+      iex> update_staff_type(staff_type, %{field: new_value})
+      {:ok, %StaffType{}}
+
+      iex> update_staff_type(staff_type, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_staff_type(%StaffType{} = staff_type, attrs) do
+    staff_type
+    |> StaffType.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a StaffType.
+
+  ## Examples
+
+      iex> delete_staff_type(staff_type)
+      {:ok, %StaffType{}}
+
+      iex> delete_staff_type(staff_type)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_staff_type(%StaffType{} = staff_type) do
+    Repo.delete(staff_type)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking staff_type changes.
+
+  ## Examples
+
+      iex> change_staff_type(staff_type)
+      %Ecto.Changeset{source: %StaffType{}}
+
+  """
+  def change_staff_type(%StaffType{} = staff_type) do
+    StaffType.changeset(staff_type, %{})
+  end
+
+  alias BoatNoodle.BN.UserBranchAccess
+
+  @doc """
+  Returns the list of user_branch_access.
+
+  ## Examples
+
+      iex> list_user_branch_access()
+      [%UserBranchAccess{}, ...]
+
+  """
+  def list_user_branch_access do
+    Repo.all(UserBranchAccess)
+  end
+
+  @doc """
+  Gets a single user_branch_access.
+
+  Raises `Ecto.NoResultsError` if the User branch access does not exist.
+
+  ## Examples
+
+      iex> get_user_branch_access!(123)
+      %UserBranchAccess{}
+
+      iex> get_user_branch_access!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user_branch_access!(id), do: Repo.get!(UserBranchAccess, id)
+
+  @doc """
+  Creates a user_branch_access.
+
+  ## Examples
+
+      iex> create_user_branch_access(%{field: value})
+      {:ok, %UserBranchAccess{}}
+
+      iex> create_user_branch_access(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_user_branch_access(attrs \\ %{}) do
+    %UserBranchAccess{}
+    |> UserBranchAccess.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a user_branch_access.
+
+  ## Examples
+
+      iex> update_user_branch_access(user_branch_access, %{field: new_value})
+      {:ok, %UserBranchAccess{}}
+
+      iex> update_user_branch_access(user_branch_access, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_user_branch_access(%UserBranchAccess{} = user_branch_access, attrs) do
+    user_branch_access
+    |> UserBranchAccess.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a UserBranchAccess.
+
+  ## Examples
+
+      iex> delete_user_branch_access(user_branch_access)
+      {:ok, %UserBranchAccess{}}
+
+      iex> delete_user_branch_access(user_branch_access)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_user_branch_access(%UserBranchAccess{} = user_branch_access) do
+    Repo.delete(user_branch_access)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking user_branch_access changes.
+
+  ## Examples
+
+      iex> change_user_branch_access(user_branch_access)
+      %Ecto.Changeset{source: %UserBranchAccess{}}
+
+  """
+  def change_user_branch_access(%UserBranchAccess{} = user_branch_access) do
+    UserBranchAccess.changeset(user_branch_access, %{})
+  end
+
+  alias BoatNoodle.BN.UserPwd
+
+  @doc """
+  Returns the list of user_pwd.
+
+  ## Examples
+
+      iex> list_user_pwd()
+      [%UserPwd{}, ...]
+
+  """
+  def list_user_pwd do
+    Repo.all(UserPwd)
+  end
+
+  @doc """
+  Gets a single user_pwd.
+
+  Raises `Ecto.NoResultsError` if the User pwd does not exist.
+
+  ## Examples
+
+      iex> get_user_pwd!(123)
+      %UserPwd{}
+
+      iex> get_user_pwd!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user_pwd!(id), do: Repo.get!(UserPwd, id)
+
+  @doc """
+  Creates a user_pwd.
+
+  ## Examples
+
+      iex> create_user_pwd(%{field: value})
+      {:ok, %UserPwd{}}
+
+      iex> create_user_pwd(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_user_pwd(attrs \\ %{}) do
+    %UserPwd{}
+    |> UserPwd.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a user_pwd.
+
+  ## Examples
+
+      iex> update_user_pwd(user_pwd, %{field: new_value})
+      {:ok, %UserPwd{}}
+
+      iex> update_user_pwd(user_pwd, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_user_pwd(%UserPwd{} = user_pwd, attrs) do
+    user_pwd
+    |> UserPwd.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a UserPwd.
+
+  ## Examples
+
+      iex> delete_user_pwd(user_pwd)
+      {:ok, %UserPwd{}}
+
+      iex> delete_user_pwd(user_pwd)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_user_pwd(%UserPwd{} = user_pwd) do
+    Repo.delete(user_pwd)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking user_pwd changes.
+
+  ## Examples
+
+      iex> change_user_pwd(user_pwd)
+      %Ecto.Changeset{source: %UserPwd{}}
+
+  """
+  def change_user_pwd(%UserPwd{} = user_pwd) do
+    UserPwd.changeset(user_pwd, %{})
+  end
+
+  alias BoatNoodle.BN.UserRole
+
+  @doc """
+  Returns the list of user_role.
+
+  ## Examples
+
+      iex> list_user_role()
+      [%UserRole{}, ...]
+
+  """
+  def list_user_role do
+    Repo.all(UserRole)
+  end
+
+  @doc """
+  Gets a single user_role.
+
+  Raises `Ecto.NoResultsError` if the User role does not exist.
+
+  ## Examples
+
+      iex> get_user_role!(123)
+      %UserRole{}
+
+      iex> get_user_role!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user_role!(id), do: Repo.get!(UserRole, id)
+
+  @doc """
+  Creates a user_role.
+
+  ## Examples
+
+      iex> create_user_role(%{field: value})
+      {:ok, %UserRole{}}
+
+      iex> create_user_role(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_user_role(attrs \\ %{}) do
+    %UserRole{}
+    |> UserRole.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a user_role.
+
+  ## Examples
+
+      iex> update_user_role(user_role, %{field: new_value})
+      {:ok, %UserRole{}}
+
+      iex> update_user_role(user_role, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_user_role(%UserRole{} = user_role, attrs) do
+    user_role
+    |> UserRole.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a UserRole.
+
+  ## Examples
+
+      iex> delete_user_role(user_role)
+      {:ok, %UserRole{}}
+
+      iex> delete_user_role(user_role)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_user_role(%UserRole{} = user_role) do
+    Repo.delete(user_role)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking user_role changes.
+
+  ## Examples
+
+      iex> change_user_role(user_role)
+      %Ecto.Changeset{source: %UserRole{}}
+
+  """
+  def change_user_role(%UserRole{} = user_role) do
+    UserRole.changeset(user_role, %{})
+  end
+
+  alias BoatNoodle.BN.VoidItems
+
+  @doc """
+  Returns the list of voiditems.
+
+  ## Examples
+
+      iex> list_voiditems()
+      [%VoidItems{}, ...]
+
+  """
+  def list_voiditems do
+    Repo.all(VoidItems)
+  end
+
+  @doc """
+  Gets a single void_items.
+
+  Raises `Ecto.NoResultsError` if the Void items does not exist.
+
+  ## Examples
+
+      iex> get_void_items!(123)
+      %VoidItems{}
+
+      iex> get_void_items!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_void_items!(id), do: Repo.get!(VoidItems, id)
+
+  @doc """
+  Creates a void_items.
+
+  ## Examples
+
+      iex> create_void_items(%{field: value})
+      {:ok, %VoidItems{}}
+
+      iex> create_void_items(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_void_items(attrs \\ %{}) do
+    %VoidItems{}
+    |> VoidItems.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a void_items.
+
+  ## Examples
+
+      iex> update_void_items(void_items, %{field: new_value})
+      {:ok, %VoidItems{}}
+
+      iex> update_void_items(void_items, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_void_items(%VoidItems{} = void_items, attrs) do
+    void_items
+    |> VoidItems.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a VoidItems.
+
+  ## Examples
+
+      iex> delete_void_items(void_items)
+      {:ok, %VoidItems{}}
+
+      iex> delete_void_items(void_items)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_void_items(%VoidItems{} = void_items) do
+    Repo.delete(void_items)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking void_items changes.
+
+  ## Examples
+
+      iex> change_void_items(void_items)
+      %Ecto.Changeset{source: %VoidItems{}}
+
+  """
+  def change_void_items(%VoidItems{} = void_items) do
+    VoidItems.changeset(void_items, %{})
+  end
+
+  alias BoatNoodle.BN.SalesPayment
+
+  @doc """
+  Returns the list of salespayment.
+
+  ## Examples
+
+      iex> list_salespayment()
+      [%SalesPayment{}, ...]
+
+  """
+  def list_salespayment do
+    Repo.all(SalesPayment)
+  end
+
+  @doc """
+  Gets a single sales_payment.
+
+  Raises `Ecto.NoResultsError` if the Sales payment does not exist.
+
+  ## Examples
+
+      iex> get_sales_payment!(123)
+      %SalesPayment{}
+
+      iex> get_sales_payment!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_sales_payment!(id), do: Repo.get!(SalesPayment, id)
+
+  @doc """
+  Creates a sales_payment.
+
+  ## Examples
+
+      iex> create_sales_payment(%{field: value})
+      {:ok, %SalesPayment{}}
+
+      iex> create_sales_payment(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_sales_payment(attrs \\ %{}) do
+    %SalesPayment{}
+    |> SalesPayment.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a sales_payment.
+
+  ## Examples
+
+      iex> update_sales_payment(sales_payment, %{field: new_value})
+      {:ok, %SalesPayment{}}
+
+      iex> update_sales_payment(sales_payment, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_sales_payment(%SalesPayment{} = sales_payment, attrs) do
+    sales_payment
+    |> SalesPayment.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a SalesPayment.
+
+  ## Examples
+
+      iex> delete_sales_payment(sales_payment)
+      {:ok, %SalesPayment{}}
+
+      iex> delete_sales_payment(sales_payment)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_sales_payment(%SalesPayment{} = sales_payment) do
+    Repo.delete(sales_payment)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking sales_payment changes.
+
+  ## Examples
+
+      iex> change_sales_payment(sales_payment)
+      %Ecto.Changeset{source: %SalesPayment{}}
+
+  """
+  def change_sales_payment(%SalesPayment{} = sales_payment) do
+    SalesPayment.changeset(sales_payment, %{})
+  end
 end

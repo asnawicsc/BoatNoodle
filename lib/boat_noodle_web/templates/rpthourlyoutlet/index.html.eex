@@ -1,0 +1,43 @@
+<h2>Listing Rpt hourly outlet</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Salesyear</th>
+      <th>Salesmonth</th>
+      <th>Salesquarter</th>
+      <th>Salesdate</th>
+      <th>Branchid</th>
+      <th>Branchcode</th>
+      <th>Branchname</th>
+      <th>Saleshour</th>
+      <th>Sales</th>
+      <th>Pax</th>
+      <th>Transaction</th>
+
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for rpthourlyoutlet <- @rpt_hourly_outlet do %>
+    <tr>
+      <td><%= rpthourlyoutlet.salesyear %></td>
+      <td><%= rpthourlyoutlet.salesmonth %></td>
+      <td><%= rpthourlyoutlet.salesquarter %></td>
+      <td><%= rpthourlyoutlet.salesdate %></td>
+      <td><%= rpthourlyoutlet.branchid %></td>
+      <td><%= rpthourlyoutlet.branchcode %></td>
+      <td><%= rpthourlyoutlet.branchname %></td>
+      <td><%= rpthourlyoutlet.saleshour %></td>
+      <td><%= rpthourlyoutlet.sales %></td>
+      <td><%= rpthourlyoutlet.pax %></td>
+      <td><%= rpthourlyoutlet.transaction %></td>
+
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Rpthourlyoutlet", to: rpthourlyoutlet_path(@conn, :new) %></span>
