@@ -3,9 +3,11 @@ defmodule BoatNoodleWeb.MenuItemController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.MenuItem
+  require IEx
 
   def index(conn, _params) do
     menu_item = Repo.all(MenuItem)
+    # IEx.pry()
     render(conn, "index.html", menu_item: menu_item)
   end
 
@@ -20,6 +22,7 @@ defmodule BoatNoodleWeb.MenuItemController do
         conn
         |> put_flash(:info, "Menu item created successfully.")
         |> redirect(to: menu_item_path(conn, :show, menu_item))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +47,7 @@ defmodule BoatNoodleWeb.MenuItemController do
         conn
         |> put_flash(:info, "Menu item updated successfully.")
         |> redirect(to: menu_item_path(conn, :show, menu_item))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", menu_item: menu_item, changeset: changeset)
     end

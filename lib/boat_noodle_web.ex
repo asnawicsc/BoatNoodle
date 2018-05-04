@@ -23,18 +23,18 @@ defmodule BoatNoodleWeb do
       import Plug.Conn
       import BoatNoodleWeb.Router.Helpers
       import BoatNoodleWeb.Gettext
-   
+
       alias BoatNoodle.Repo
       alias BoatNoodle.View
       import Ecto.Query
-
     end
   end
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/boat_noodle_web/templates",
-                        namespace: BoatNoodleWeb
+      use Phoenix.View,
+        root: "lib/boat_noodle_web/templates",
+        namespace: BoatNoodleWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
@@ -62,6 +62,8 @@ defmodule BoatNoodleWeb do
     quote do
       use Phoenix.Channel
       import BoatNoodleWeb.Gettext
+      alias BoatNoodle.Repo
+      import Ecto.Query
     end
   end
 

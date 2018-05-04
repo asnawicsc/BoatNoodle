@@ -3,6 +3,7 @@ defmodule BoatNoodleWeb.UserSocket do
 
   ## Channels
   # channel "room:*", BoatNoodleWeb.RoomChannel
+  channel "user:*", BoatNoodleWeb.UserChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

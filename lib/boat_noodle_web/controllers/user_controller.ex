@@ -3,6 +3,7 @@ defmodule BoatNoodleWeb.UserController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.User
+  require(IEx)
 
   def index(conn, _params) do
     user = Repo.all(User)
@@ -20,6 +21,7 @@ defmodule BoatNoodleWeb.UserController do
         conn
         |> put_flash(:info, "User created successfully.")
         |> redirect(to: user_path(conn, :show, user))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -30,8 +32,7 @@ defmodule BoatNoodleWeb.UserController do
     render(conn, "show.html", user: user)
   end
 
-   def edit_user(conn, params) do
-
+  def edit_user(conn, params) do
     render(conn, "edit_user.html")
   end
 
@@ -49,6 +50,7 @@ defmodule BoatNoodleWeb.UserController do
         conn
         |> put_flash(:info, "User updated successfully.")
         |> redirect(to: user_path(conn, :show, user))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user: user, changeset: changeset)
     end
@@ -61,5 +63,33 @@ defmodule BoatNoodleWeb.UserController do
     conn
     |> put_flash(:info, "User deleted successfully.")
     |> redirect(to: user_path(conn, :index))
+  end
+
+  def login(conn, params) do
+    render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "login.html"})
+  end
+
+  def authenticate_login(conn, %{"username" => username, "password" => password}) do
+    # IEx.pry()
+
+    user = Repo.get_by(User, username: username)
+
+    if user != nil do
+      conn
+      |> put_session(:user_id, user.id)
+      |> put_flash(:info, "Login.")
+      |> redirect(to: page_path(conn, :index))
+    else
+      conn
+      |> put_flash(:info, "User not found.")
+      |> redirect(to: user_path(conn, :login))
+    end
+  end
+
+  def logout(conn, _params) do
+    conn
+    |> delete_session(:user_id)
+    |> put_flash(:info, "User not found.")
+    |> redirect(to: user_path(conn, :login))
   end
 end

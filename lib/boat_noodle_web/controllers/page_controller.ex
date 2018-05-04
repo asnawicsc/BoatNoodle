@@ -14,9 +14,8 @@ require IEx
     # where: s.branchid== "1",
     # select: %{ orderid: sm.orderid})
     # order=Enum.map(total_order,fn x -> x.orderid end)|>Enum.count()
-
-    total_transaction=Repo.all(from sp in BoatNoodle.BN.SalesPayment,
-    left_join: s in BoatNoodle.BN.Sales,on: sp.salesid==s.salesid, where: s.branchid== "1")
+# IEx.pry
+    total_transaction=Repo.all(from sp in BoatNoodle.BN.SalesPayment, left_join: s in BoatNoodle.BN.Sales,on: sp.salesid==s.salesid, where: s.branchid == ^"1" and s.salesdate == ^"2016-12-07")
 
 
     trasaction=Enum.map(total_transaction,fn x -> x.salesid end)|>Enum.count()
