@@ -1,6 +1,4 @@
- </script><script type="text/javascript" src="/js/jquery.min.js"></script>
-<script type="text/javascript" src="/js/moment.min.js"></script>
-<script type="text/javascript" src="/js/daterangepicker.min.js"></script>
+
 
  <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
@@ -33,36 +31,7 @@
                 </li>
                 <!-- /.dropdown -->
             </ul>
-            <table>            
-            <form action="/get_hourly_sales" method="post">
-                 <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
-                 
-                 <td><input type="text" name="daterange" value="01/01/2018 - 01/15/2018" /></td>      
-                             <td ><select name="branchid" id="branch_list">
-                                <% branchs=Repo.all(from s in BoatNoodle.BN.Branch) %>
-                                <%= for branch <- branchs do %>
-                                <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
-                                <% end %>
-                              </select>
-                           
-                 </td>
-                 <td><input type="submit" value="Submit" /></td>  
-             
-                         </form> 
-               </table>
-
-                
-
-
-<script>
-$('input[name="daterange"]').daterangepicker({
-    "startDate": "05/09/2018",
-    "endDate": "05/15/2018"
-}, function(start, end, label) {
-  console.log('New date range selected: ' + start.format('DD/MM/YYYY') + ' to ' + end.format('DD/MM/YYYY') + ' (predefined range: ' + label + ')');
-}); 
-</script>
-
+          
 
            
             <!-- /.navbar-top-links -->
