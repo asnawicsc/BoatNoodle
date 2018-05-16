@@ -36,6 +36,33 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
+  def handle_in("sales_transaction", payload, socket) do
+    sales_data =
+      Repo.all(
+        from(
+          sp in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: s.salesid == sp.salesid,
+          left_join: st in BoatNoodle.BN.Staff,
+          on: s.staffid == st.staff_id,
+          where: s.branchid == "1",
+          select: %{
+            salesdatetime: s.salesdatetime,
+            invoiceno: s.invoiceno,
+            payment_type: sp.payment_type,
+            grand_total: sp.grand_total,
+            tbl_no: s.tbl_no,
+            pax: s.pax,
+            staff_name: st.staff_name
+          },
+          limit: 10
+        )
+      )
+
+    broadcast(socket, "populate_table_sales_transaction", %{sales_data: sales_data})
+    {:noreply, socket}
+  end
+
   defp authorized?(_payload) do
     true
   end

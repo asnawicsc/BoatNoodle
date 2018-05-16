@@ -40,5 +40,29 @@ $(document).ready(function(){
 			});
 		})
 
+
+  $("button#sales_transaction").click(function(){
+
+    channel.push("sales_transaction", {user_id: window.currentUser})
+  })
+
+  channel.on("populate_table_sales_transaction", payload => {
+    console.log(payload.sales_data)
+    var data = payload.sales_data
+
+    $("table#sales_transaction").DataTable({
+      destroy: true,
+      data: data,
+      columns: [
+      {data: 'grand_total'},
+      {data: 'invoiceno'},
+      {data: 'pax'},
+      {data: 'payment_type'},
+      {data: 'salesdatetime'},
+      {data: 'staff_name'},
+      {data: 'tbl_no'},
+      ]
+      });
+    })
 });
 

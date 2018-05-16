@@ -1,6 +1,4 @@
-
-<br>
-</script><script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/moment.min.js"></script>
 <script type="text/javascript" src="/js/daterangepicker.min.js"></script>
 
@@ -13,7 +11,7 @@
              </div>
             <div class="form-group">
              <select name="branchid" id="branch_list" class="form-control xs">
-                <%= for branch <- @branchs do %>
+                <%= for branch <- @branches do %>
                 <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
                 <% end %>
               </select>

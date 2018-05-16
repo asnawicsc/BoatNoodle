@@ -78,7 +78,7 @@ defmodule BoatNoodleWeb.UserController do
       conn
       |> put_session(:user_id, user.id)
       |> put_flash(:info, "Login.")
-      |> redirect(to: page_path(conn, :index))
+      |> redirect(to: user_path(conn, :index))
     else
       conn
       |> put_flash(:info, "User not found.")
