@@ -1,0 +1,38 @@
+<h2>Listing Itemcat</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Itemcatid</th>
+      <th>Itemcatcode</th>
+      <th>Itemcatname</th>
+      <th>Itemcatdesc</th>
+      <th>Is default</th>
+      <th>Category type</th>
+      <th>Is delete</th>
+      <th>Created at</th>
+      <th>Updated at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for item_cat <- @itemcat do %>
+    <tr>
+      <td><%= item_cat.itemcatid %></td>
+      <td><%= item_cat.itemcatcode %></td>
+      <td><%= item_cat.itemcatname %></td>
+      <td><%= item_cat.itemcatdesc %></td>
+      <td><%= item_cat.is_default %></td>
+      <td><%= item_cat.category_type %></td>
+      <td><%= item_cat.is_delete %></td>
+      <td><%= item_cat.created_at %></td>
+      <td><%= item_cat.updated_at %></td>
+
+     
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Item cat", to: item_cat_path(@conn, :new) %></span>

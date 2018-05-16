@@ -1,3 +1,7 @@
+ </script><script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/moment.min.js"></script>
+<script type="text/javascript" src="/js/daterangepicker.min.js"></script>
+
  <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -9,19 +13,7 @@
                 <a class="navbar-brand" href="/index">Boat Noodle v2.0</a>
             </div>
             <!-- /.navbar-header -->
-             <ul class="nav navbar-top-links navbar-left" style="margin-left: 120px">
-                
-                 <select>
-
-                     <% branchs=Repo.all(from b in BoatNoodle.BN.Branch,select: %{branchid: b.branchid, branchname: b.branchname})  %>
-                    <%= for branch <- branchs do %>
-                      <option value="<%=branch.branchid%>"> <%= branch.branchname%></option>
-                   <%= end%>
-                          
-                        
-                </select>
-             </ul>
-
+   
             <ul class="nav navbar-top-links navbar-right">
                
                
@@ -41,6 +33,38 @@
                 </li>
                 <!-- /.dropdown -->
             </ul>
+            <table>            
+            <form action="/get_hourly_sales" method="post">
+                 <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
+                 
+                 <td><input type="text" name="daterange" value="01/01/2018 - 01/15/2018" /></td>      
+                             <td ><select name="branchid" id="branch_list">
+                                <% branchs=Repo.all(from s in BoatNoodle.BN.Branch) %>
+                                <%= for branch <- branchs do %>
+                                <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+                                <% end %>
+                              </select>
+                           
+                 </td>
+                 <td><input type="submit" value="Submit" /></td>  
+             
+                         </form> 
+               </table>
+
+                
+
+
+<script>
+$('input[name="daterange"]').daterangepicker({
+    "startDate": "05/09/2018",
+    "endDate": "05/15/2018"
+}, function(start, end, label) {
+  console.log('New date range selected: ' + start.format('DD/MM/YYYY') + ' to ' + end.format('DD/MM/YYYY') + ' (predefined range: ' + label + ')');
+}); 
+</script>
+
+
+           
             <!-- /.navbar-top-links -->
 
             <div class="navbar-default sidebar" role="navigation">
@@ -54,10 +78,10 @@
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Reports<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="/sales_master">Sales</a>
+                                    <a href="/sales">Sales</a>
                                 </li>
                                 <li>
-                                    <a href="/sales">Sales Charts</a>
+                                    <a href="/sales_master">Sales Charts</a>
                                 </li>
                                 <li>
                                     <a href="/tax">Taxes</a>

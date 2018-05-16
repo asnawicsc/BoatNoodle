@@ -17,6 +17,8 @@ defmodule BoatNoodleWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/index", PageController, :index
+    post "/sales_graph_by_year", PageController, :sales_graph_by_year
+    post "/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year
 
     resources "/menu_item", MenuItemController
     resources "/category", CategoryController
@@ -40,6 +42,29 @@ defmodule BoatNoodleWeb.Router do
     resources "/payment_type", PaymentTypeController
     resources "/sales_master", SalesMasterController
     resources "/sales", SalesController
+
+    get "/transaction", SalesController, :transaction
+
+    get "/hourly_pax_summary", SalesController, :hourly_pax_summary
+    post "/get_date", SalesController, :get_date
+    post "/get_hourly_sales", SalesController, :get_hourly_sales
+    post "/get_hourly_transaction", SalesController, :get_hourly_transaction
+
+
+
+
+    get "/hourly_sales_summary", SalesController, :hourly_sales_summary
+    get "/hourly_transaction_summary", SalesController, :hourly_transaction_summary
+
+    get "/item_sold", SalesController, :item_sold
+    get "/item_sales_detail", SalesController, :item_sales_detail
+    get "/:id/detail_invoice", SalesController, :detail_invoice
+
+    get "/discount", SalesController, :discount
+    get "/discount_summary", SalesController, :discount_summary
+
+    get "/voided_order", SalesController, :voided_order
+
     resources "/tax", TaxController
     resources "/cash_in_out", CashInOutController
     resources "/branch_item_deactivate", BranchItemDeactivateController
@@ -62,6 +87,9 @@ defmodule BoatNoodleWeb.Router do
     resources "/user_role", UserRoleController
     resources "/voiditems", VoidItemsController
     resources "/salespayment", SalesPaymentController
+    resources "/item_subcat", ItemSubcatController
+    resources "/itemcat", ItemCatController
+
 
   end
 

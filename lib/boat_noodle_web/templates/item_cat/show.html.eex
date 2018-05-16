@@ -1,0 +1,53 @@
+<h2>Show Item cat</h2>
+
+<ul>
+
+  <li>
+    <strong>Itemcatid:</strong>
+    <%= @item_cat.itemcatid %>
+  </li>
+
+  <li>
+    <strong>Itemcatcode:</strong>
+    <%= @item_cat.itemcatcode %>
+  </li>
+
+  <li>
+    <strong>Itemcatname:</strong>
+    <%= @item_cat.itemcatname %>
+  </li>
+
+  <li>
+    <strong>Itemcatdesc:</strong>
+    <%= @item_cat.itemcatdesc %>
+  </li>
+
+  <li>
+    <strong>Is default:</strong>
+    <%= @item_cat.is_default %>
+  </li>
+
+  <li>
+    <strong>Category type:</strong>
+    <%= @item_cat.category_type %>
+  </li>
+
+  <li>
+    <strong>Is delete:</strong>
+    <%= @item_cat.is_delete %>
+  </li>
+
+  <li>
+    <strong>Created at:</strong>
+    <%= @item_cat.created_at %>
+  </li>
+
+  <li>
+    <strong>Updated at:</strong>
+    <%= @item_cat.updated_at %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: item_cat_path(@conn, :edit, @item_cat) %></span>
+<span><%= link "Back", to: item_cat_path(@conn, :index) %></span>

@@ -77,20 +77,16 @@
                                                   </tr>
                                               </thead>
                                               <tbody>
-                                                <%= for tax <- @tax do %>
+                                                
                                                   <tr>
                                                       <td>3326</td>
                                                       <td>10/21/2013</td>
                                                       <td>3:29 PM</td>
                                                       <td>$321.33</td>
-                                                      <td class="text-right">
-                                                      <span><%= link "Show", to: tax_path(@conn, :show, tax), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Edit", to: tax_path(@conn, :edit, tax), class: "btn btn-default btn-xs" %></span>
-                                                      <span><%= link "Delete", to: tax_path(@conn, :delete, tax), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-                                                    </td>
+                                                     
                                                   </tr>
 
-                                                  <%end%>
+                                                  
                                                
                                               </tbody>
                                           </table>
@@ -101,4 +97,3 @@
              
   </div>
 
-<span><%= link "New Tax", to: tax_path(@conn, :new) %></span>

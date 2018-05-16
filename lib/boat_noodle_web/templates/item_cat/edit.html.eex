@@ -1,0 +1,5 @@
+<h2>Edit Item cat</h2>
+
+<%= render "form.html", Map.put(assigns, :action, item_cat_path(@conn, :update, @item_cat)) %>
+
+<span><%= link "Back", to: item_cat_path(@conn, :index) %></span>

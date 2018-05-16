@@ -3941,4 +3941,196 @@ defmodule BoatNoodle.BN do
   def change_sales_payment(%SalesPayment{} = sales_payment) do
     SalesPayment.changeset(sales_payment, %{})
   end
+
+  alias BoatNoodle.BN.ItemSubcat
+
+  @doc """
+  Returns the list of item_subcat.
+
+  ## Examples
+
+      iex> list_item_subcat()
+      [%ItemSubcat{}, ...]
+
+  """
+  def list_item_subcat do
+    Repo.all(ItemSubcat)
+  end
+
+  @doc """
+  Gets a single item_subcat.
+
+  Raises `Ecto.NoResultsError` if the Item subcat does not exist.
+
+  ## Examples
+
+      iex> get_item_subcat!(123)
+      %ItemSubcat{}
+
+      iex> get_item_subcat!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_item_subcat!(id), do: Repo.get!(ItemSubcat, id)
+
+  @doc """
+  Creates a item_subcat.
+
+  ## Examples
+
+      iex> create_item_subcat(%{field: value})
+      {:ok, %ItemSubcat{}}
+
+      iex> create_item_subcat(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_item_subcat(attrs \\ %{}) do
+    %ItemSubcat{}
+    |> ItemSubcat.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a item_subcat.
+
+  ## Examples
+
+      iex> update_item_subcat(item_subcat, %{field: new_value})
+      {:ok, %ItemSubcat{}}
+
+      iex> update_item_subcat(item_subcat, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_item_subcat(%ItemSubcat{} = item_subcat, attrs) do
+    item_subcat
+    |> ItemSubcat.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ItemSubcat.
+
+  ## Examples
+
+      iex> delete_item_subcat(item_subcat)
+      {:ok, %ItemSubcat{}}
+
+      iex> delete_item_subcat(item_subcat)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_item_subcat(%ItemSubcat{} = item_subcat) do
+    Repo.delete(item_subcat)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking item_subcat changes.
+
+  ## Examples
+
+      iex> change_item_subcat(item_subcat)
+      %Ecto.Changeset{source: %ItemSubcat{}}
+
+  """
+  def change_item_subcat(%ItemSubcat{} = item_subcat) do
+    ItemSubcat.changeset(item_subcat, %{})
+  end
+
+  alias BoatNoodle.BN.ItemCat
+
+  @doc """
+  Returns the list of itemcat.
+
+  ## Examples
+
+      iex> list_itemcat()
+      [%ItemCat{}, ...]
+
+  """
+  def list_itemcat do
+    Repo.all(ItemCat)
+  end
+
+  @doc """
+  Gets a single item_cat.
+
+  Raises `Ecto.NoResultsError` if the Item cat does not exist.
+
+  ## Examples
+
+      iex> get_item_cat!(123)
+      %ItemCat{}
+
+      iex> get_item_cat!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_item_cat!(id), do: Repo.get!(ItemCat, id)
+
+  @doc """
+  Creates a item_cat.
+
+  ## Examples
+
+      iex> create_item_cat(%{field: value})
+      {:ok, %ItemCat{}}
+
+      iex> create_item_cat(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_item_cat(attrs \\ %{}) do
+    %ItemCat{}
+    |> ItemCat.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a item_cat.
+
+  ## Examples
+
+      iex> update_item_cat(item_cat, %{field: new_value})
+      {:ok, %ItemCat{}}
+
+      iex> update_item_cat(item_cat, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_item_cat(%ItemCat{} = item_cat, attrs) do
+    item_cat
+    |> ItemCat.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ItemCat.
+
+  ## Examples
+
+      iex> delete_item_cat(item_cat)
+      {:ok, %ItemCat{}}
+
+      iex> delete_item_cat(item_cat)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_item_cat(%ItemCat{} = item_cat) do
+    Repo.delete(item_cat)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking item_cat changes.
+
+  ## Examples
+
+      iex> change_item_cat(item_cat)
+      %Ecto.Changeset{source: %ItemCat{}}
+
+  """
+  def change_item_cat(%ItemCat{} = item_cat) do
+    ItemCat.changeset(item_cat, %{})
+  end
 end
