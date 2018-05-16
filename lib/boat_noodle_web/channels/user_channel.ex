@@ -37,6 +37,8 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("sales_transaction", payload, socket) do
+    IEx.pry()
+
     sales_data =
       Repo.all(
         from(

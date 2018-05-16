@@ -41,6 +41,8 @@
               <i class="fa fa-calendar"></i>&nbsp;
               <span></span> <i class="fa fa-caret-down"></i>
             </div>
+            <input type="hidden" name="start_date">
+            <input type="hidden" name="end_date">
           </div>
         </div>
 
@@ -87,8 +89,9 @@
 
       function cb(start, end) {
           $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-          console.log(start)
-          console.log(end)
+
+          $("input[name='start_date']").val(start.format('YYYY-MM-D'))
+          $("input[name='end_date']").val(end.format('YYYY-MM-D'))
       }
 
       $('#reportrange').daterangepicker({

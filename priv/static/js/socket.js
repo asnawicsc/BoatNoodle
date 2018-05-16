@@ -42,8 +42,10 @@ $(document).ready(function(){
 
 
   $("button#sales_transaction").click(function(){
-
-    channel.push("sales_transaction", {user_id: window.currentUser})
+var b_id = $("select#branch_list").val()
+var s_date =  $("input[name='start_date']").val()
+var e_date =  $("input[name='end_date']").val()
+    channel.push("sales_transaction", {user_id: window.currentUser, branch_id: b_id, s_date: s_date, e_date: e_date})
   })
 
   channel.on("populate_table_sales_transaction", payload => {
