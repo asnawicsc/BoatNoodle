@@ -9,7 +9,7 @@ defmodule BoatNoodleWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/", from: :boat_noodle, gzip: false,
-    only: ~w(highchartjs data dist legit remote add origin http://localhost/nawi/boat_noodle.gitss vendor bootstrap bootsraptables-plugin datatables-responsive flot float-tooltip font-awesome jquery metisMenu morrisjs raphael css fonts images js favicon.ico robots.txt)
+    only: ~w(datatables datatables-plugins datatables-responsive highchartjs data dist legit remote add origin http://localhost/nawi/boat_noodle.gitss vendor bootstrap bootsraptables-plugin datatables-responsive flot float-tooltip font-awesome jquery metisMenu morrisjs raphael css fonts images js favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

@@ -3142,4 +3142,180 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_sales_payment(sales_payment)
     end
   end
+
+  describe "item_subcat" do
+    alias BoatNoodle.BN.ItemSubcat
+
+    @valid_attrs %{created_at: "2010-04-17 14:00:00.000000Z", enable_disc: 42, include_spend: 42, integer: "some integer", is_active: 42, is_categorize: 42, is_combo: 42, is_default_combo: 42, is_delete: 42, is_print: 42, itemcatid: "some itemcatid", itemcode: "some itemcode", itemdesc: "some itemdesc", itemimage: "some itemimage", itemname: "some itemname", itemprice: "120.5", part_code: "some part_code", price_code: "some price_code", product_code: "some product_code", subcatid: "some subcatid", updated_at: "2010-04-17 14:00:00.000000Z"}
+    @update_attrs %{created_at: "2011-05-18 15:01:01.000000Z", enable_disc: 43, include_spend: 43, integer: "some updated integer", is_active: 43, is_categorize: 43, is_combo: 43, is_default_combo: 43, is_delete: 43, is_print: 43, itemcatid: "some updated itemcatid", itemcode: "some updated itemcode", itemdesc: "some updated itemdesc", itemimage: "some updated itemimage", itemname: "some updated itemname", itemprice: "456.7", part_code: "some updated part_code", price_code: "some updated price_code", product_code: "some updated product_code", subcatid: "some updated subcatid", updated_at: "2011-05-18 15:01:01.000000Z"}
+    @invalid_attrs %{created_at: nil, enable_disc: nil, include_spend: nil, integer: nil, is_active: nil, is_categorize: nil, is_combo: nil, is_default_combo: nil, is_delete: nil, is_print: nil, itemcatid: nil, itemcode: nil, itemdesc: nil, itemimage: nil, itemname: nil, itemprice: nil, part_code: nil, price_code: nil, product_code: nil, subcatid: nil, updated_at: nil}
+
+    def item_subcat_fixture(attrs \\ %{}) do
+      {:ok, item_subcat} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_item_subcat()
+
+      item_subcat
+    end
+
+    test "list_item_subcat/0 returns all item_subcat" do
+      item_subcat = item_subcat_fixture()
+      assert BN.list_item_subcat() == [item_subcat]
+    end
+
+    test "get_item_subcat!/1 returns the item_subcat with given id" do
+      item_subcat = item_subcat_fixture()
+      assert BN.get_item_subcat!(item_subcat.id) == item_subcat
+    end
+
+    test "create_item_subcat/1 with valid data creates a item_subcat" do
+      assert {:ok, %ItemSubcat{} = item_subcat} = BN.create_item_subcat(@valid_attrs)
+      assert item_subcat.created_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert item_subcat.enable_disc == 42
+      assert item_subcat.include_spend == 42
+      assert item_subcat.integer == "some integer"
+      assert item_subcat.is_active == 42
+      assert item_subcat.is_categorize == 42
+      assert item_subcat.is_combo == 42
+      assert item_subcat.is_default_combo == 42
+      assert item_subcat.is_delete == 42
+      assert item_subcat.is_print == 42
+      assert item_subcat.itemcatid == "some itemcatid"
+      assert item_subcat.itemcode == "some itemcode"
+      assert item_subcat.itemdesc == "some itemdesc"
+      assert item_subcat.itemimage == "some itemimage"
+      assert item_subcat.itemname == "some itemname"
+      assert item_subcat.itemprice == Decimal.new("120.5")
+      assert item_subcat.part_code == "some part_code"
+      assert item_subcat.price_code == "some price_code"
+      assert item_subcat.product_code == "some product_code"
+      assert item_subcat.subcatid == "some subcatid"
+      assert item_subcat.updated_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+    end
+
+    test "create_item_subcat/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_item_subcat(@invalid_attrs)
+    end
+
+    test "update_item_subcat/2 with valid data updates the item_subcat" do
+      item_subcat = item_subcat_fixture()
+      assert {:ok, item_subcat} = BN.update_item_subcat(item_subcat, @update_attrs)
+      assert %ItemSubcat{} = item_subcat
+      assert item_subcat.created_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert item_subcat.enable_disc == 43
+      assert item_subcat.include_spend == 43
+      assert item_subcat.integer == "some updated integer"
+      assert item_subcat.is_active == 43
+      assert item_subcat.is_categorize == 43
+      assert item_subcat.is_combo == 43
+      assert item_subcat.is_default_combo == 43
+      assert item_subcat.is_delete == 43
+      assert item_subcat.is_print == 43
+      assert item_subcat.itemcatid == "some updated itemcatid"
+      assert item_subcat.itemcode == "some updated itemcode"
+      assert item_subcat.itemdesc == "some updated itemdesc"
+      assert item_subcat.itemimage == "some updated itemimage"
+      assert item_subcat.itemname == "some updated itemname"
+      assert item_subcat.itemprice == Decimal.new("456.7")
+      assert item_subcat.part_code == "some updated part_code"
+      assert item_subcat.price_code == "some updated price_code"
+      assert item_subcat.product_code == "some updated product_code"
+      assert item_subcat.subcatid == "some updated subcatid"
+      assert item_subcat.updated_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+    end
+
+    test "update_item_subcat/2 with invalid data returns error changeset" do
+      item_subcat = item_subcat_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_item_subcat(item_subcat, @invalid_attrs)
+      assert item_subcat == BN.get_item_subcat!(item_subcat.id)
+    end
+
+    test "delete_item_subcat/1 deletes the item_subcat" do
+      item_subcat = item_subcat_fixture()
+      assert {:ok, %ItemSubcat{}} = BN.delete_item_subcat(item_subcat)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_item_subcat!(item_subcat.id) end
+    end
+
+    test "change_item_subcat/1 returns a item_subcat changeset" do
+      item_subcat = item_subcat_fixture()
+      assert %Ecto.Changeset{} = BN.change_item_subcat(item_subcat)
+    end
+  end
+
+  describe "itemcat" do
+    alias BoatNoodle.BN.ItemCat
+
+    @valid_attrs %{category_type: "some category_type", created_at: "2010-04-17 14:00:00.000000Z", is_default: 42, is_delete: 42, itemcatcode: "some itemcatcode", itemcatdesc: "some itemcatdesc", itemcatid: 42, itemcatname: "some itemcatname", updated_at: "2010-04-17 14:00:00.000000Z"}
+    @update_attrs %{category_type: "some updated category_type", created_at: "2011-05-18 15:01:01.000000Z", is_default: 43, is_delete: 43, itemcatcode: "some updated itemcatcode", itemcatdesc: "some updated itemcatdesc", itemcatid: 43, itemcatname: "some updated itemcatname", updated_at: "2011-05-18 15:01:01.000000Z"}
+    @invalid_attrs %{category_type: nil, created_at: nil, is_default: nil, is_delete: nil, itemcatcode: nil, itemcatdesc: nil, itemcatid: nil, itemcatname: nil, updated_at: nil}
+
+    def item_cat_fixture(attrs \\ %{}) do
+      {:ok, item_cat} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_item_cat()
+
+      item_cat
+    end
+
+    test "list_itemcat/0 returns all itemcat" do
+      item_cat = item_cat_fixture()
+      assert BN.list_itemcat() == [item_cat]
+    end
+
+    test "get_item_cat!/1 returns the item_cat with given id" do
+      item_cat = item_cat_fixture()
+      assert BN.get_item_cat!(item_cat.id) == item_cat
+    end
+
+    test "create_item_cat/1 with valid data creates a item_cat" do
+      assert {:ok, %ItemCat{} = item_cat} = BN.create_item_cat(@valid_attrs)
+      assert item_cat.category_type == "some category_type"
+      assert item_cat.created_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert item_cat.is_default == 42
+      assert item_cat.is_delete == 42
+      assert item_cat.itemcatcode == "some itemcatcode"
+      assert item_cat.itemcatdesc == "some itemcatdesc"
+      assert item_cat.itemcatid == 42
+      assert item_cat.itemcatname == "some itemcatname"
+      assert item_cat.updated_at == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+    end
+
+    test "create_item_cat/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_item_cat(@invalid_attrs)
+    end
+
+    test "update_item_cat/2 with valid data updates the item_cat" do
+      item_cat = item_cat_fixture()
+      assert {:ok, item_cat} = BN.update_item_cat(item_cat, @update_attrs)
+      assert %ItemCat{} = item_cat
+      assert item_cat.category_type == "some updated category_type"
+      assert item_cat.created_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert item_cat.is_default == 43
+      assert item_cat.is_delete == 43
+      assert item_cat.itemcatcode == "some updated itemcatcode"
+      assert item_cat.itemcatdesc == "some updated itemcatdesc"
+      assert item_cat.itemcatid == 43
+      assert item_cat.itemcatname == "some updated itemcatname"
+      assert item_cat.updated_at == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+    end
+
+    test "update_item_cat/2 with invalid data returns error changeset" do
+      item_cat = item_cat_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_item_cat(item_cat, @invalid_attrs)
+      assert item_cat == BN.get_item_cat!(item_cat.id)
+    end
+
+    test "delete_item_cat/1 deletes the item_cat" do
+      item_cat = item_cat_fixture()
+      assert {:ok, %ItemCat{}} = BN.delete_item_cat(item_cat)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_item_cat!(item_cat.id) end
+    end
+
+    test "change_item_cat/1 returns a item_cat changeset" do
+      item_cat = item_cat_fixture()
+      assert %Ecto.Changeset{} = BN.change_item_cat(item_cat)
+    end
+  end
 end

@@ -1,0 +1,44 @@
+<br>
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Discounts
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped">
+                                        <thead>
+                                          <tr>
+                                            <th>Date</th>
+                                            <th>Item Name</th>
+                                            <th>Item Price</th>
+                                            
+                                          
+
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                      <%= for voided <- @voided_order do %>
+                                          <tr>
+                                            <td></td>
+                                            <td><%= voided.itemname %></td>
+                                            <td><%= voided.itempriceperqty %></td>
+                                           
+                                           
+
+                                           
+
+                                          </tr>
+                                      <% end %>
+                                        </tbody>
+                                        </table>
+                                    </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>

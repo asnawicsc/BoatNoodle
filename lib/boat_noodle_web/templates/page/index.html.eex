@@ -1,1 +1,517 @@
 
+   <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Dashboard</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                     
+                                <div class="col-xs-12 text-right">
+                                    <div class="huge"><%= @t %></div>
+                                    <div>Nett Sales</div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                           
+                                <div class="col-xs-12 text-right">
+                                    <div class="huge"><%= @tax %></div>
+                                    <div>Taxes</div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                           <div class="row">
+                           
+                                <div class="col-xs-12 text-right">
+                                    <div class="huge"><%= @order %></div>
+                                    <div>Orders</div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-red">
+                       <div class="panel-heading">
+                            <div class="row">
+                           
+                                <div class="col-xs-12 text-right">
+                                    <div class="huge"><%= @pax %></div>
+                                    <div>Pax</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel" style="background-color: #9932CC">
+                       <div class="panel-heading">
+                            <div class="row">
+                           
+                                <div class="col-xs-12 text-right">
+                                    <div class="huge"><%= @transaction %></div>
+                                    <div>Transactions</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                   
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="line_graph_daily_sales_summary"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+                </div>
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Outlet Sales Information 
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                           <table width="100%" class="table table-striped table-bordered table-hover" id="osi">
+                                            <thead>
+                                                <tr>
+                                                    <th>Branch Name</th>
+                                                    <th>Gross Sales</th>
+                                                    <th>Service Charge</th>
+                                                    <th>GST</th>
+                                                    <th>Discount Amt</th>
+                                                    <th>Nett Sales</th>
+                                                    <th>Roundings</th>
+                                                    <th>Total Sales</th>
+                                                    <th>Pax</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <%= for osi <- @outlet_sales_information do %>
+                                                <tr>
+                                                    <th><%=osi.branchname%></th>
+                                                    <th><%=osi.sub_total%></th>
+                                                    <th><%=osi.service_charge%></th>
+                                                    <th><%=osi.gst_charge%></th>
+                                              <% g= Decimal.to_float(osi.sub_total) %>
+                                              <% h= Decimal.to_float(osi.after_disc)%>
+                                              <% disc_amt= h-g%>
+                                                    <th><%= :erlang.float_to_binary(disc_amt,decimals: 2)%></th>
+                                              <% a= Decimal.to_float(osi.grand_total) %>
+                                              <% b= Decimal.to_float(osi.gst_charge)%>
+                                              <% nettsell= a-b%>
+                                                    
+                                                    <th><%= nettsell%> </th>
+                                                    <th><%=osi.rounding%></th>
+                                                    <th><%=osi.grand_total%></th>
+                                                    <th><%=osi.pax%></th>
+                                                </tr>
+                                             <% end %>
+                                            </tbody>
+                                          </table>
+                                      
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+                </div>
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Top Selling Item
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="top_10_sales_item"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+                </div>
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Top Selling Item by Revenue
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="top_10_sales_by_revenue"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+                </div>
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Top Selling Item by Category
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="item_sales_by_category"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+                </div>
+                  <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Month to Month Comparison
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                             <%= form_for @conn, page_path(@conn, :sales_graph_by_year), fn f -> %>
+                              <div class="form-group">
+                                
+                                <%= select f, :year, @year_range , class: "form-control" %>
+                              </div>
+                             <div class="form-group">
+                              <%= submit "Submit", class: "btn btn-primary" %>
+                            </div>
+                            <% end %>
+                            <div id="month_to_month_comparison_chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+           
+                </div>
+            
+            </div>
+
+   <script src="/highchartjs/highcharts.js"></script>
+    <script src="/highchartjs/highcharts-3d.js"></script>
+    <script src="/highchartjs/series-label.js"></script>
+    <script src="/highchartjs/exporting.js"></script>
+    <script src="/highchartjs/export-data.js"></script>
+
+
+  
+
+<script type="text/javascript">
+ 
+Highcharts.chart("line_graph_daily_sales_summary", {
+
+  
+
+  title: {
+    text: 'Branch Daily Sales Summary'
+  },
+
+  subtitle: {
+    text: 'Summarize sales details of branch'
+  },
+
+  yAxis: {
+    title: {
+      text: 'Values'
+    }
+  },
+  legend: {
+    layout: 'horizontal',
+    align: 'center',
+    verticalAlign: 'bottom'
+  },
+
+  plotOptions: {
+    series: {
+      label: {
+        connectorAllowed: false
+      },
+      pointStart: <%= @date %>
+    }
+  },
+  series: [{
+    name: 'Sales',
+    data: [<%= @sales_graph %>]
+  }, {
+    name: 'Taxes',
+    data: [<%= @tax_graph %>]
+  }, {
+
+    name: 'Discounts',
+    data: [<%= @discount_graph %>]
+  }, {
+    name: 'Service Charge',
+    data: [<%= @service_graph %>]
+  }, {
+    name: 'Transaction',
+    data: [<%= @transaction_graph %>]
+  }],
+
+  responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+      },
+      chartOptions: {
+        legend: {
+          layout: 'horizontal',
+          align: 'center',
+          verticalAlign: 'bottom'
+        }
+      }
+    }]
+  }
+
+});
+
+Highcharts.chart('month_to_month_comparison_chart', {
+
+  title: {
+    text: 'Month to Month Comparison Chart'
+  },
+
+  subtitle: {
+    text: 'Montly comparison Sales, Taxed and Visits'
+  },
+
+  yAxis: {
+    title: {
+      text: 'Number of Employees'
+    }
+  },
+   xAxis: {
+    categories: [<%= for s <- @month_all do %>
+        ['<%= s %>'],
+  <% end %>]
+  },
+  legend: {
+    layout: 'horizontal',
+    align: 'center',
+    verticalAlign: 'bottom'
+  },
+
+  plotOptions: {
+    series: {
+      label: { connectorAllowed: false},
+
+    }
+  },
+
+  series: [{
+    name: 'Sales',
+    data: [<%= for s <- @totals do %> 
+    <%= s.sum%>,
+    <% end %>]
+
+  },
+  {
+    name: 'Tax',
+    data: [<%= for s <- @totals1 do %> 
+    <%= s.sum %>,
+    <% end %>],
+    
+  },
+  {
+    name: 'Total Visits',
+    data: [<%= for s <- @totals2 do %> 
+    <%= s.sum %>,
+    <% end %>],
+    
+  }],
+
+  responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+      },
+      chartOptions: {
+        legend: {
+          layout: 'horizontal',
+          align: 'center',
+          verticalAlign: 'bottom'
+        }
+      }
+    }]
+  }
+
+});
+
+
+Highcharts.chart('top_10_sales_item', {
+  chart: {
+    type: 'pie',
+    options3d: {
+      enabled: true,
+      alpha: 45,
+      beta: 0
+    }
+  },
+  title: {
+    text: 'Top 10 Sales Item'
+  },
+  tooltip: {
+    pointFormat: '<b>{point.percentage:.1f}%</b>'
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      depth: 35,
+      dataLabels: {
+         enabled: true,
+                format: '{point.percentage:.1f}%'
+
+      },
+       showInLegend: true
+    }
+  },
+
+  
+  series: [{ 
+    type: 'pie',
+    name: '',
+    data: [
+        <%= for s <- @p do %>
+        ['<b><%= elem(s,0) %></b>',<%= elem(s,1) %>],
+        <% end %>
+        
+      
+    ]
+
+  }]
+});
+
+
+Highcharts.chart('top_10_sales_by_revenue', {
+  chart: {
+    type: 'pie',
+    options3d: {
+      enabled: true,
+      alpha: 45,
+      beta: 0
+    }
+  },
+  title: {
+    text: 'Top 10 Sales item by revenue'
+  },
+  tooltip: {
+    pointFormat: '<b>{point.percentage:.1f}%</b>'
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      depth: 35,
+      dataLabels: {
+         enabled: true,
+                format: '{point.percentage:.1f}%'
+
+      },
+       showInLegend: true
+    }
+  },
+
+  series: [{
+    type: 'pie',
+    name: '',
+    data:  [
+        <%= for s <- @p do %>
+        ['<b><%= elem(s,0) %></b>',<%= elem(s,1) %>],
+        <% end %>
+        
+      
+    ]
+  }]
+});
+
+Highcharts.chart('item_sales_by_category', {
+  chart: {
+    type: 'pie',
+    options3d: {
+      enabled: true,
+      alpha: 45,
+      beta: 0
+    }
+  },
+  title: {
+    text: 'Item Sold By Category'
+  },
+  tooltip: {
+    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      depth: 35,
+      dataLabels: {
+         enabled: true,
+                format: '{point.percentage:.1f}%'
+      },
+       showInLegend: true
+    }
+  },
+
+  series: [{
+    type: 'pie',
+    name: '',
+    data: [
+       <%= for s <- @cat do %>
+        ['<b><%= elem(s,0) %></b>',<%= elem(s,1) %>],
+        <% end %>
+    ]
+  }]
+});
+
+</script>
+

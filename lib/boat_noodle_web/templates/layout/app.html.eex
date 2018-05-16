@@ -3,93 +3,79 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <title>Boat Noodle</title>
+  <title>Boat Noodle</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Core CSS -->
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- MetisMenu CSS -->
-    <link href="/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+  <!-- MetisMenu CSS -->
+  <link href="/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link href="/dist/css/sb-admin-2.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="/dist/css/sb-admin-2.css" rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link href="/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom Fonts -->
+  <link href="/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- DataTables CSS -->
-    <link href="/vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+  <!-- DataTables CSS -->
+  <link href="/vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
-    <!-- DataTables Responsive CSS -->
-    <link href="/vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+  <!-- DataTables Responsive CSS -->
+  <link href="/vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
 
-    <script>window.userToken = "<%= assigns[:user_token] %>";</script>
-    <%= if @conn.private.plug_session["user_id"] == nil do %>
-        <script>window.currentUser = "lobby";</script>
+  <script>
+    window.userToken = "<%= assigns[:user_token] %>";
+  </script>
+  <%= if @conn.private.plug_session["user_id"] == nil do %>
+    <script>
+      window.currentUser = "lobby";
+    </script>
     <% else %>
-        <script>window.currentUser = "<%=  @conn.private.plug_session["user_id"] %>";</script>
-    <% end %>
+      <script>
+        window.currentUser = "<%=  @conn.private.plug_session["
+        user_id "] %>";
+      </script>
+      <% end %>
 
 </head>
 
 <body>
 
-    <div id="wrapper">
-        <!-- Navigation -->
-       <%= render("nav.html", conn: @conn)%>
+  <div id="wrapper">
+    <!-- Navigation -->
+    <%= render("nav.html", conn: @conn)%>
 
-        <div id="page-wrapper">
-          
-          <%= render @view_module, @view_template, assigns %>
-          
-            <!-- /.row -->
-        </div>
-        <!-- /#page-wrapper -->
-    
-    </div>
-    <!-- /#wrapper -->
+      <div id="page-wrapper">
 
-    <!-- jQuery -->
-    <script src="/vendor/jquery/jquery.min.js"></script>
+        <%= render @view_module, @view_template, assigns %>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+          <!-- /.row -->
+      </div>
+      <!-- /#page-wrapper -->
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="/vendor/metisMenu/metisMenu.min.js"></script>
+  </div>
+  <!-- /#wrapper -->
 
-    <!-- Custom Theme JavaScript -->
-    <script src="/dist/js/sb-admin-2.js"></script>
-    <!-- DataTables JavaScript -->
-    <script src="/vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
-    <script src="/vendor/datatables-responsive/dataTables.responsive.js"></script>
-   <script src="/js/phoenix.js"></script>
-   <script src="/js/socket.js"></script>
+  <!-- jQuery -->
+  <script src="/vendor/jquery/jquery.min.js"></script>
 
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Modal title</h4>
-          </div>
-          <div class="modal-body">
-            <p>One fine body&hellip;</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+  <!-- Bootstrap Core JavaScript -->
+  <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- Metis Menu Plugin JavaScript -->
+  <script src="/vendor/metisMenu/metisMenu.min.js"></script>
+
+  <!-- Custom Theme JavaScript -->
+  <script src="/dist/js/sb-admin-2.js"></script>
+
+  <script src="/js/phoenix.js"></script>
+  <script src="/js/socket.js"></script>
 
 </body>
 

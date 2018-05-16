@@ -1,0 +1,113 @@
+<h2>Show Item subcat</h2>
+
+<ul>
+
+  <li>
+    <strong>Subcatid:</strong>
+    <%= @item_subcat.subcatid %>
+  </li>
+
+  <li>
+    <strong>Integer:</strong>
+    <%= @item_subcat.integer %>
+  </li>
+
+  <li>
+    <strong>Itemcatid:</strong>
+    <%= @item_subcat.itemcatid %>
+  </li>
+
+  <li>
+    <strong>Itemname:</strong>
+    <%= @item_subcat.itemname %>
+  </li>
+
+  <li>
+    <strong>Itemcode:</strong>
+    <%= @item_subcat.itemcode %>
+  </li>
+
+  <li>
+    <strong>Product code:</strong>
+    <%= @item_subcat.product_code %>
+  </li>
+
+  <li>
+    <strong>Price code:</strong>
+    <%= @item_subcat.price_code %>
+  </li>
+
+  <li>
+    <strong>Part code:</strong>
+    <%= @item_subcat.part_code %>
+  </li>
+
+  <li>
+    <strong>Itemdesc:</strong>
+    <%= @item_subcat.itemdesc %>
+  </li>
+
+  <li>
+    <strong>Itemprice:</strong>
+    <%= @item_subcat.itemprice %>
+  </li>
+
+  <li>
+    <strong>Itemimage:</strong>
+    <%= @item_subcat.itemimage %>
+  </li>
+
+  <li>
+    <strong>Is categorize:</strong>
+    <%= @item_subcat.is_categorize %>
+  </li>
+
+  <li>
+    <strong>Is active:</strong>
+    <%= @item_subcat.is_active %>
+  </li>
+
+  <li>
+    <strong>Is combo:</strong>
+    <%= @item_subcat.is_combo %>
+  </li>
+
+  <li>
+    <strong>Is default combo:</strong>
+    <%= @item_subcat.is_default_combo %>
+  </li>
+
+  <li>
+    <strong>Is delete:</strong>
+    <%= @item_subcat.is_delete %>
+  </li>
+
+  <li>
+    <strong>Enable disc:</strong>
+    <%= @item_subcat.enable_disc %>
+  </li>
+
+  <li>
+    <strong>Include spend:</strong>
+    <%= @item_subcat.include_spend %>
+  </li>
+
+  <li>
+    <strong>Is print:</strong>
+    <%= @item_subcat.is_print %>
+  </li>
+
+  <li>
+    <strong>Updated at:</strong>
+    <%= @item_subcat.updated_at %>
+  </li>
+
+  <li>
+    <strong>Created at:</strong>
+    <%= @item_subcat.created_at %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: item_subcat_path(@conn, :edit, @item_subcat) %></span>
+<span><%= link "Back", to: item_subcat_path(@conn, :index) %></span>

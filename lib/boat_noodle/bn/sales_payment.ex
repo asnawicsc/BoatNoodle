@@ -8,7 +8,7 @@ defmodule BoatNoodle.BN.SalesPayment do
     field :card_no, :integer
     field :cash, :decimal
     field :changes, :decimal
-    field :created_at, :utc_datetime
+    field :created_at, :string
     field :disc_amt, :decimal
     field :discountid, :string
     field :grand_total, :decimal
@@ -26,7 +26,7 @@ defmodule BoatNoodle.BN.SalesPayment do
     field :service_charge, :decimal
     field :sub_total, :decimal
     field :taxcode, :string
-    field :updated_at, :utc_datetime
+    field :updated_at, :string
     field :voucher_code, :string
 
   end

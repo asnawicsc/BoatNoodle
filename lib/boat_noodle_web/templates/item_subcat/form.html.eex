@@ -1,0 +1,137 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :subcatid, class: "control-label" %>
+    <%= text_input f, :subcatid, class: "form-control" %>
+    <%= error_tag f, :subcatid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :integer, class: "control-label" %>
+    <%= text_input f, :integer, class: "form-control" %>
+    <%= error_tag f, :integer %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemcatid, class: "control-label" %>
+    <%= text_input f, :itemcatid, class: "form-control" %>
+    <%= error_tag f, :itemcatid %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemname, class: "control-label" %>
+    <%= text_input f, :itemname, class: "form-control" %>
+    <%= error_tag f, :itemname %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemcode, class: "control-label" %>
+    <%= text_input f, :itemcode, class: "form-control" %>
+    <%= error_tag f, :itemcode %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :product_code, class: "control-label" %>
+    <%= text_input f, :product_code, class: "form-control" %>
+    <%= error_tag f, :product_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :price_code, class: "control-label" %>
+    <%= text_input f, :price_code, class: "form-control" %>
+    <%= error_tag f, :price_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :part_code, class: "control-label" %>
+    <%= text_input f, :part_code, class: "form-control" %>
+    <%= error_tag f, :part_code %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemdesc, class: "control-label" %>
+    <%= text_input f, :itemdesc, class: "form-control" %>
+    <%= error_tag f, :itemdesc %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemprice, class: "control-label" %>
+    <%= number_input f, :itemprice, step: "any", class: "form-control" %>
+    <%= error_tag f, :itemprice %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemimage, class: "control-label" %>
+    <%= text_input f, :itemimage, class: "form-control" %>
+    <%= error_tag f, :itemimage %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_categorize, class: "control-label" %>
+    <%= number_input f, :is_categorize, class: "form-control" %>
+    <%= error_tag f, :is_categorize %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_active, class: "control-label" %>
+    <%= number_input f, :is_active, class: "form-control" %>
+    <%= error_tag f, :is_active %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_combo, class: "control-label" %>
+    <%= number_input f, :is_combo, class: "form-control" %>
+    <%= error_tag f, :is_combo %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_default_combo, class: "control-label" %>
+    <%= number_input f, :is_default_combo, class: "form-control" %>
+    <%= error_tag f, :is_default_combo %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_delete, class: "control-label" %>
+    <%= number_input f, :is_delete, class: "form-control" %>
+    <%= error_tag f, :is_delete %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :enable_disc, class: "control-label" %>
+    <%= number_input f, :enable_disc, class: "form-control" %>
+    <%= error_tag f, :enable_disc %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :include_spend, class: "control-label" %>
+    <%= number_input f, :include_spend, class: "form-control" %>
+    <%= error_tag f, :include_spend %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_print, class: "control-label" %>
+    <%= number_input f, :is_print, class: "form-control" %>
+    <%= error_tag f, :is_print %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :updated_at, class: "control-label" %>
+    <%= datetime_select f, :updated_at, class: "form-control" %>
+    <%= error_tag f, :updated_at %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :created_at, class: "control-label" %>
+    <%= datetime_select f, :created_at, class: "form-control" %>
+    <%= error_tag f, :created_at %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

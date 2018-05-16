@@ -1,0 +1,59 @@
+<h2>Listing Item subcat</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Subcatid</th>
+      <th>Itemcatid</th>
+      <th>Itemname</th>
+      <th>Itemcode</th>
+      <th>Product code</th>
+      <th>Price code</th>
+      <th>Part code</th>
+      <th>Itemdesc</th>
+      <th>Itemprice</th>
+      <th>Itemimage</th>
+      <th>Is categorize</th>
+      <th>Is active</th>
+      <th>Is combo</th>
+      <th>Is default combo</th>
+      <th>Is delete</th>
+      <th>Enable disc</th>
+      <th>Include spend</th>
+      <th>Is print</th>
+      <th>Updated at</th>
+      <th>Created at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for item_subcat <- @item_subcat do %>
+    <tr>
+      <td><%= item_subcat.subcatid %></td>
+      <td><%= item_subcat.itemcatid %></td>
+      <td><%= item_subcat.itemname %></td>
+      <td><%= item_subcat.itemcode %></td>
+      <td><%= item_subcat.product_code %></td>
+      <td><%= item_subcat.price_code %></td>
+      <td><%= item_subcat.part_code %></td>
+      <td><%= item_subcat.itemdesc %></td>
+      <td><%= item_subcat.itemprice %></td>
+      <td><%= item_subcat.itemimage %></td>
+      <td><%= item_subcat.is_categorize %></td>
+      <td><%= item_subcat.is_activate %></td>
+      <td><%= item_subcat.is_combo %></td>
+      <td><%= item_subcat.is_default_combo %></td>
+      <td><%= item_subcat.is_delete %></td>
+      <td><%= item_subcat.enable_disc %></td>
+      <td><%= item_subcat.include_spend %></td>
+      <td><%= item_subcat.is_print %></td>
+      <td><%= item_subcat.updated_at %></td>
+      <td><%= item_subcat.created_at %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Item subcat", to: item_subcat_path(@conn, :new) %></span>
