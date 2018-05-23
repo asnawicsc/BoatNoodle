@@ -1,6 +1,28 @@
-<h2>Listing Payment type</h2>
 <br>
 
+        <div class="row" >
+          <div class="col-sm-4">
+            <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+              <i class="fa fa-calendar"></i>&nbsp;
+              <span></span> <i class="fa fa-caret-down"></i>
+            </div>
+            <input type="hidden" name="start_date">
+            <input type="hidden" name="end_date">
+          </div>
+           <div class="col-sm-4">
+            
+             <select name="branchid" id="branch_list" class="form-control xs">
+                <%= for branch <- @branches do %>
+                <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+                <% end %>
+              </select>
+          </div>
+          <div class="col-sm-2">
+             <button type="button" class="btn btn-primary btn-primary" id="payment_type">Submit</button>
+          </div>
+        </div>
+
+  <br> 
   <div class="col-lg-6">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
@@ -13,7 +35,11 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <center>123213123</center>
+                            <center>
+                              <h3>
+                                <div class="payment" id="payment_type1"></div>
+                              </h3>
+                            </center>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -31,7 +57,11 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                          <center>1231313</center>
+                          <center>
+                              <h3>
+                                <div class="payment" id="payment_type2"></div>
+                              </h3>
+                            </center>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -49,15 +79,15 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div id="daily_sales"></div>
+                            <div id="payment_type_graph"></div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
   </div>
-  <div class="col-lg-12">
+   <div class="col-lg-12">
                       <div class="panel panel-default">
                           <div class="panel-heading">
-                              <i class="fa fa-bar-chart-o fa-fw"></i> Payment type details  
+                              <i class="fa fa-bar-chart-o fa-fw"></i> Tax Details 
                               <div class="pull-right">
                                   <div class="btn-group">
                                     
@@ -65,33 +95,69 @@
                               </div>
                           </div>
                           <!-- /.panel-heading -->
-                          <div class="panel-body">
-                              <div class="table-responsive">
-                                          <table class="table table-bordered table-hover table-striped">
-                                              <thead>
-                                                  <tr>
-                                                      <th>Payment name</th>
-                                                      <th>Receipt No</th>
-                                                      
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-                                              <%= for payment_type <- @payment_type do %>
-                                                <tr>
-                                                  <td><%= payment_type.payment_type_name %></td>
-                                                  <td>123</td>
-
-                                                 
-                                                </tr>
-                                              <% end %>
-                                               
-                                              </tbody>
-                                          </table>
-                                      </div>
-                          </div>
-                          <!-- /.panel-body -->
-                      </div>
+                      
+                    <div class="panel-body"  id="payment_type">
+                      <table id="payment_type" class="table">
+                        <thead>
+                          <tr>
+                            <th>Payment Type</th>
+                            <th>Sales Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
              
   </div>
 
-<span><%= link "New Payment type", to: payment_type_path(@conn, :new) %></span>
+    <script src="/highchartjs/highcharts.js"></script>
+    <script src="/highchartjs/highcharts-3d.js"></script>
+    <script src="/highchartjs/series-label.js"></script>
+    <script src="/highchartjs/exporting.js"></script>
+    <script src="/highchartjs/export-data.js"></script>
+
+<script>
+  $(document).ready(function(){
+
+ 
+
+      var start = moment().subtract(29, 'days');
+      var end = moment();
+
+      function cb(start, end) {
+          $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+          $("input[name='start_date']").val(start.format('YYYY-MM-DD'))
+          $("input[name='end_date']").val(end.format('YYYY-MM-DD'))
+      }
+
+      $('#reportrange').daterangepicker({
+          startDate: start,
+          endDate: end,
+          ranges: {
+             'Today': [moment(), moment()],
+             'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+             'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+             'This Month': [moment().startOf('month'), moment().endOf('month')],
+             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          }
+      }, cb);
+
+      cb(start, end);
+
+
+
+    
+  })
+
+
+
+
+</script>
+

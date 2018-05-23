@@ -31,6 +31,8 @@ defmodule BoatNoodleWeb.Router do
     resources("/discount_item", DiscountItemController)
     resources("/discount_catalog_master", DiscountCatalogMasterController)
     resources("/discount_catalog", DiscountCatalogController)
+    resources "/discount", DiscountController
+
     resources("/tag", TagController)
     resources("/tag_catalog", TagCatalogController)
     resources("/tag_items", TagItemsController)

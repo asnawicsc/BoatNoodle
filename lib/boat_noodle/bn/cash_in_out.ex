@@ -6,7 +6,7 @@ defmodule BoatNoodle.BN.CashInOut do
   schema "cash_in_out" do
     field :id, :integer, primary_key: true
     field :branch_id, :integer
-    field :date_time, :utc_datetime
+    field :date_time, :string
     field :cashtype, :string
     field :staffid, :integer
     field :description, :string

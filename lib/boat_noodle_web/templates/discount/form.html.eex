@@ -1,0 +1,83 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :discount_id, class: "control-label" %>
+    <%= number_input f, :discount_id, class: "form-control" %>
+    <%= error_tag f, :discount_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :discname, class: "control-label" %>
+    <%= text_input f, :discname, class: "form-control" %>
+    <%= error_tag f, :discname %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :descriptions, class: "control-label" %>
+    <%= text_input f, :descriptions, class: "form-control" %>
+    <%= error_tag f, :descriptions %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :discamtpercentage, class: "control-label" %>
+    <%= number_input f, :discamtpercentage, step: "any", class: "form-control" %>
+    <%= error_tag f, :discamtpercentage %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :target_cat, class: "control-label" %>
+    <%= number_input f, :target_cat, class: "form-control" %>
+    <%= error_tag f, :target_cat %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_used, class: "control-label" %>
+    <%= number_input f, :is_used, class: "form-control" %>
+    <%= error_tag f, :is_used %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :disc_qty, class: "control-label" %>
+    <%= number_input f, :disc_qty, class: "form-control" %>
+    <%= error_tag f, :disc_qty %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :targer_itemcode, class: "control-label" %>
+    <%= text_input f, :targer_itemcode, class: "form-control" %>
+    <%= error_tag f, :targer_itemcode %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :disctype, class: "control-label" %>
+    <%= text_input f, :disctype, class: "form-control" %>
+    <%= error_tag f, :disctype %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_categorize, class: "control-label" %>
+    <%= number_input f, :is_categorize, class: "form-control" %>
+    <%= error_tag f, :is_categorize %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_visible, class: "control-label" %>
+    <%= number_input f, :is_visible, class: "form-control" %>
+    <%= error_tag f, :is_visible %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_delete, class: "control-label" %>
+    <%= number_input f, :is_delete, class: "form-control" %>
+    <%= error_tag f, :is_delete %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

@@ -4,11 +4,11 @@ defmodule BoatNoodleWeb.PaymentTypeController do
   alias BoatNoodle.BN
   alias BoatNoodle.BN.PaymentType
 
-  def index(conn, _params) do
-    payment_type = BN.list_payment_type()
-    render(conn, "index.html", payment_type: payment_type)
+   def index(conn, _params) do
+    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
+    render(conn, "index.html", branches: branches)
   end
-
+  
   def new(conn, _params) do
     changeset = BN.change_payment_type(%PaymentType{})
     render(conn, "new.html", changeset: changeset)

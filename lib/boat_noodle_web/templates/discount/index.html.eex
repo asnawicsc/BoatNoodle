@@ -1,0 +1,43 @@
+<h2>Listing Discount</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Discount</th>
+      <th>Discname</th>
+      <th>Descriptions</th>
+      <th>Discamtpercentage</th>
+      <th>Target cat</th>
+      <th>Is used</th>
+      <th>Disc qty</th>
+      <th>Targer itemcode</th>
+      <th>Disctype</th>
+      <th>Is categorize</th>
+      <th>Is visible</th>
+      <th>Is delete</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for discount <- @discount do %>
+    <tr>
+      <td><%= discount.discountid %></td>
+      <td><%= discount.discname %></td>
+      <td><%= discount.descriptions %></td>
+      <td><%= discount.discamtpercentage %></td>
+      <td><%= discount.target_cat %></td>
+      <td><%= discount.is_used %></td>
+      <td><%= discount.disc_qty %></td>
+      <td><%= discount.target_itemcode %></td>
+      <td><%= discount.disctype %></td>
+      <td><%= discount.is_categorize %></td>
+      <td><%= discount.is_visable %></td>
+      <td><%= discount.is_delete %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Discount", to: discount_path(@conn, :new) %></span>

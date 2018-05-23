@@ -9,7 +9,6 @@ defmodule BoatNoodle.BN.Tax do
     field :standard_supply_rate, :decimal
     field :tax, :decimal
 
-    timestamps()
   end
 
   @doc false

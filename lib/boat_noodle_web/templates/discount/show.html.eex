@@ -1,0 +1,68 @@
+<h2>Show Discount</h2>
+
+<ul>
+
+  <li>
+    <strong>Discount:</strong>
+    <%= @discount.discount_id %>
+  </li>
+
+  <li>
+    <strong>Discname:</strong>
+    <%= @discount.discname %>
+  </li>
+
+  <li>
+    <strong>Descriptions:</strong>
+    <%= @discount.descriptions %>
+  </li>
+
+  <li>
+    <strong>Discamtpercentage:</strong>
+    <%= @discount.discamtpercentage %>
+  </li>
+
+  <li>
+    <strong>Target cat:</strong>
+    <%= @discount.target_cat %>
+  </li>
+
+  <li>
+    <strong>Is used:</strong>
+    <%= @discount.is_used %>
+  </li>
+
+  <li>
+    <strong>Disc qty:</strong>
+    <%= @discount.disc_qty %>
+  </li>
+
+  <li>
+    <strong>Targer itemcode:</strong>
+    <%= @discount.targer_itemcode %>
+  </li>
+
+  <li>
+    <strong>Disctype:</strong>
+    <%= @discount.disctype %>
+  </li>
+
+  <li>
+    <strong>Is categorize:</strong>
+    <%= @discount.is_categorize %>
+  </li>
+
+  <li>
+    <strong>Is visible:</strong>
+    <%= @discount.is_visible %>
+  </li>
+
+  <li>
+    <strong>Is delete:</strong>
+    <%= @discount.is_delete %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: discount_path(@conn, :edit, @discount) %></span>
+<span><%= link "Back", to: discount_path(@conn, :index) %></span>

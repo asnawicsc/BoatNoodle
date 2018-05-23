@@ -3318,4 +3318,86 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_item_cat(item_cat)
     end
   end
+
+  describe "discount" do
+    alias BoatNoodle.BN.Discount
+
+    @valid_attrs %{descriptions: "some descriptions", disc_qty: 42, discamtpercentage: "120.5", discname: "some discname", discount_id: 42, disctype: "some disctype", is_categorize: 42, is_delete: 42, is_used: 42, is_visible: 42, targer_itemcode: "some targer_itemcode", target_cat: 42}
+    @update_attrs %{descriptions: "some updated descriptions", disc_qty: 43, discamtpercentage: "456.7", discname: "some updated discname", discount_id: 43, disctype: "some updated disctype", is_categorize: 43, is_delete: 43, is_used: 43, is_visible: 43, targer_itemcode: "some updated targer_itemcode", target_cat: 43}
+    @invalid_attrs %{descriptions: nil, disc_qty: nil, discamtpercentage: nil, discname: nil, discount_id: nil, disctype: nil, is_categorize: nil, is_delete: nil, is_used: nil, is_visible: nil, targer_itemcode: nil, target_cat: nil}
+
+    def discount_fixture(attrs \\ %{}) do
+      {:ok, discount} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_discount()
+
+      discount
+    end
+
+    test "list_discount/0 returns all discount" do
+      discount = discount_fixture()
+      assert BN.list_discount() == [discount]
+    end
+
+    test "get_discount!/1 returns the discount with given id" do
+      discount = discount_fixture()
+      assert BN.get_discount!(discount.id) == discount
+    end
+
+    test "create_discount/1 with valid data creates a discount" do
+      assert {:ok, %Discount{} = discount} = BN.create_discount(@valid_attrs)
+      assert discount.descriptions == "some descriptions"
+      assert discount.disc_qty == 42
+      assert discount.discamtpercentage == Decimal.new("120.5")
+      assert discount.discname == "some discname"
+      assert discount.discount_id == 42
+      assert discount.disctype == "some disctype"
+      assert discount.is_categorize == 42
+      assert discount.is_delete == 42
+      assert discount.is_used == 42
+      assert discount.is_visible == 42
+      assert discount.targer_itemcode == "some targer_itemcode"
+      assert discount.target_cat == 42
+    end
+
+    test "create_discount/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_discount(@invalid_attrs)
+    end
+
+    test "update_discount/2 with valid data updates the discount" do
+      discount = discount_fixture()
+      assert {:ok, discount} = BN.update_discount(discount, @update_attrs)
+      assert %Discount{} = discount
+      assert discount.descriptions == "some updated descriptions"
+      assert discount.disc_qty == 43
+      assert discount.discamtpercentage == Decimal.new("456.7")
+      assert discount.discname == "some updated discname"
+      assert discount.discount_id == 43
+      assert discount.disctype == "some updated disctype"
+      assert discount.is_categorize == 43
+      assert discount.is_delete == 43
+      assert discount.is_used == 43
+      assert discount.is_visible == 43
+      assert discount.targer_itemcode == "some updated targer_itemcode"
+      assert discount.target_cat == 43
+    end
+
+    test "update_discount/2 with invalid data returns error changeset" do
+      discount = discount_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_discount(discount, @invalid_attrs)
+      assert discount == BN.get_discount!(discount.id)
+    end
+
+    test "delete_discount/1 deletes the discount" do
+      discount = discount_fixture()
+      assert {:ok, %Discount{}} = BN.delete_discount(discount)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_discount!(discount.id) end
+    end
+
+    test "change_discount/1 returns a discount changeset" do
+      discount = discount_fixture()
+      assert %Ecto.Changeset{} = BN.change_discount(discount)
+    end
+  end
 end

@@ -100,6 +100,8 @@ defmodule BoatNoodleWeb.SalesController do
       end
       |> List.flatten()
 
+      IEx.pry
+
     ranges = 1..24
 
     render(conn, "get_date.html", totals: totals, date_range: date_range)
@@ -160,7 +162,7 @@ defmodule BoatNoodleWeb.SalesController do
 
     years = list_year |> Map.keys()
 
-    totals =
+    totals_o =
       for year <- years do
         month_map = list_year[year] |> Enum.group_by(fn x -> x.month end)
         months = month_map |> Map.keys()
@@ -193,7 +195,11 @@ defmodule BoatNoodleWeb.SalesController do
           end
         end
       end
+      IEx.pry
+
+      totals = totals_o
       |> List.flatten()
+
 
     ranges = 1..24
 
@@ -336,9 +342,9 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def hourly_sales_summary(conn, _params) do
-    branchs = Repo.all(from(s in BoatNoodle.BN.Branch))
+    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
 
-    render(conn, "hourly_sales_summary.html", branchs: branchs)
+    render(conn, "hourly_sales_summary.html", branches: branches)
   end
 
   def hourly_transaction_summary(conn, _params) do
@@ -420,7 +426,9 @@ defmodule BoatNoodleWeb.SalesController do
           left_join: i in BoatNoodle.BN.ItemSubcat,
           on: sd.itemid == i.subcatid,
           where: s.invoiceno == ^id and s.branchid == "1",
-          select: %{itemname: i.itemname, qty: sd.qty, afterdisc: sd.afterdisc}
+          select: %{itemname: i.itemname, 
+          qty: sd.qty,
+           afterdisc: sd.afterdisc}
         )
       )
 

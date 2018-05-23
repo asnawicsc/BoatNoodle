@@ -4133,4 +4133,100 @@ defmodule BoatNoodle.BN do
   def change_item_cat(%ItemCat{} = item_cat) do
     ItemCat.changeset(item_cat, %{})
   end
+
+  alias BoatNoodle.BN.Discount
+
+  @doc """
+  Returns the list of discount.
+
+  ## Examples
+
+      iex> list_discount()
+      [%Discount{}, ...]
+
+  """
+  def list_discount do
+    Repo.all(Discount)
+  end
+
+  @doc """
+  Gets a single discount.
+
+  Raises `Ecto.NoResultsError` if the Discount does not exist.
+
+  ## Examples
+
+      iex> get_discount!(123)
+      %Discount{}
+
+      iex> get_discount!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_discount!(id), do: Repo.get!(Discount, id)
+
+  @doc """
+  Creates a discount.
+
+  ## Examples
+
+      iex> create_discount(%{field: value})
+      {:ok, %Discount{}}
+
+      iex> create_discount(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_discount(attrs \\ %{}) do
+    %Discount{}
+    |> Discount.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a discount.
+
+  ## Examples
+
+      iex> update_discount(discount, %{field: new_value})
+      {:ok, %Discount{}}
+
+      iex> update_discount(discount, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_discount(%Discount{} = discount, attrs) do
+    discount
+    |> Discount.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Discount.
+
+  ## Examples
+
+      iex> delete_discount(discount)
+      {:ok, %Discount{}}
+
+      iex> delete_discount(discount)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_discount(%Discount{} = discount) do
+    Repo.delete(discount)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking discount changes.
+
+  ## Examples
+
+      iex> change_discount(discount)
+      %Ecto.Changeset{source: %Discount{}}
+
+  """
+  def change_discount(%Discount{} = discount) do
+    Discount.changeset(discount, %{})
+  end
 end
