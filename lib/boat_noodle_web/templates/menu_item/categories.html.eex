@@ -1,0 +1,32 @@
+                  <div class="tab-pane" id="menu_categories">
+                    <div class="card">
+                      <div class="card-header">
+                        <h4 class="card-title">
+                        	<div class="row">
+                        		<div class="col-sm-4">
+                        			
+                        Categories
+                        		</div>
+                        		<div class="col-sm-4">
+                        			
+                        		</div>
+                        		<div class="col-sm-4">
+                        			<button class="btn btn-rose btn-round" aria-label="add_new_item">
+						                      <i class="material-icons">add_box</i> New Categories
+						                    <div class="ripple-container"></div>
+						                  </button>
+                        		</div>
+                        	</div>
+                      </h4>
+                        <p class="card-category">
+                          More information here
+                        </p>
+                        <div>
+                        	
+                        </div>
+                      </div>
+                      <div class="card-body">
+										  	
+                      </div>
+                    </div>
+                  </div>

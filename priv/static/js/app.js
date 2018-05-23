@@ -59,6 +59,13 @@
                 p.toggleClass("active")
                 break;
 
+            case "/menu_item":
+                $("a[href='#menus']").click()
+                var p = $("a[href='/menu_item']").parent("li.nav-item").eq(0)
+                p.toggleClass("active")
+                $("a[href='#menu_item']").click()
+                break;
+
 
    
             default:
@@ -66,7 +73,23 @@
         }
 
 
+        var title = $("h1.page-header").html()
+        var rw =  $("h1.page-header").parent(".col-lg-12") 
+        var dv =  $("h1.page-header").parent(".row") 
+        $("a.navbar-brand").html(title)
+        rw.remove()
+        dv.remove()
 
+
+        $("button[aria-label='add_new_item']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeOut()
+          $("div[aria-label='add_new_item']").fadeIn()
+        })
+
+        $("input[name='previous']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeIn()
+          $("div[aria-label='add_new_item']").fadeOut()
+        })
 
 
       })

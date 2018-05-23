@@ -1,0 +1,32 @@
+                  <div class="tab-pane" id="combo">
+                    <div class="card">
+                      <div class="card-header">
+                        <h4 class="card-title">
+                        	<div class="row">
+                        		<div class="col-sm-4">
+                        			
+                        Combo
+                        		</div>
+                        		<div class="col-sm-4">
+                        			
+                        		</div>
+                        		<div class="col-sm-4">
+                        			<button class="btn btn-rose btn-round" aria-label="add_new_item">
+						                      <i class="material-icons">add_box</i> New Combo
+						                    <div class="ripple-container"></div>
+						                  </button>
+                        		</div>
+                        	</div>
+                      </h4>
+                        <p class="card-category">
+                          More information here
+                        </p>
+                        <div>
+                        	
+                        </div>
+                      </div>
+                      <div class="card-body">
+										  	
+                      </div>
+                    </div>
+                  </div>
