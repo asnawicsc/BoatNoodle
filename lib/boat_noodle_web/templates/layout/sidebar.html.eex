@@ -1,0 +1,181 @@
+    <div class="sidebar" data-color="rose" data-background-color="black" data-image="/assets/img/sidebar-1.jpg">
+              <!--
+                Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+                Tip 2: you can also add an image using data-image tag
+              -->
+      <div class="logo">
+        <a href="http://www.creative-tim.com" class="simple-text logo-mini">
+          V2
+        </a>
+        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+          Gummy POS
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <div class="user">
+          <div class="photo">
+            <img src="/assets/img/faces/avatar.jpg" />
+          </div>
+          <div class="user-info">
+            <a data-toggle="collapse" href="#collapseExample" class="username">
+              <span>
+                Tania Andrew
+                <b class="caret"></b>
+              </span>
+            </a>
+            <div class="collapse" id="collapseExample">
+              <ul class="nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">
+                    <span class="sidebar-mini"> MP </span>
+                    <span class="sidebar-normal"> My Profile </span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">
+                    <span class="sidebar-mini"> EP </span>
+                    <span class="sidebar-normal"> Edit Profile </span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">
+                    <span class="sidebar-mini"> S </span>
+                    <span class="sidebar-normal"> Settings </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="material-icons">dashboard</i>
+              <p> Dashboard </p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" data-toggle="collapse" href="#sales">
+              <i class="material-icons">assignment</i>
+              <p> Reports
+                <b class="caret"></b>
+              </p>
+            </a>
+            <div class="collapse" id="sales">
+              <ul class="nav">
+                <li class="nav-item ">
+                  <a class="nav-link" href="/sales">
+                    <span class="sidebar-mini"> S </span>
+                    <span class="sidebar-normal"> Sales </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/sales_chart">
+                    <span class="sidebar-mini"> SC </span>
+                    <span class="sidebar-normal"> Sales Chart </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/tax">
+                    <span class="sidebar-mini"> T </span>
+                    <span class="sidebar-normal"> Taxes </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/salespayment">
+                    <span class="sidebar-mini"> P </span>
+                    <span class="sidebar-normal"> Payments </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/cash_in_out">
+                    <span class="sidebar-mini"> C </span>
+                    <span class="sidebar-normal"> Cash In/Out </span>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" data-toggle="collapse" href="#menus">
+              <i class="material-icons">chrome_reader_mode</i>
+              <p> Menu
+                <b class="caret"></b>
+              </p>
+            </a>
+            <div class="collapse" id="menus">
+              <ul class="nav">
+                <li class="nav-item ">
+                  <a class="nav-link" href="/menu_item">
+                    <span class="sidebar-mini"> I </span>
+                    <span class="sidebar-normal"> Item </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/discount">
+                    <span class="sidebar-mini"> D </span>
+                    <span class="sidebar-normal"> Discount </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/tag">
+                    <span class="sidebar-mini"> T </span>
+                    <span class="sidebar-normal"> Tags </span>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" data-toggle="collapse" href="#staff">
+              <i class="material-icons">group</i>
+              <p> Staff
+                <b class="caret"></b>
+              </p>
+            </a>
+            <div class="collapse" id="staff">
+              <ul class="nav">
+                <li class="nav-item ">
+                  <a class="nav-link" href="/staff">
+                    <span class="sidebar-mini"> MS </span>
+                    <span class="sidebar-normal"> Manage Staff </span>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" data-toggle="collapse" href="#settings">
+              <i class="material-icons">settings</i>
+              <p> Settings
+                <b class="caret"></b>
+              </p>
+            </a>
+            <div class="collapse" id="settings">
+              <ul class="nav">
+                <li class="nav-item ">
+                  <a class="nav-link" href="/branch">
+                    <span class="sidebar-mini"> MB </span>
+                    <span class="sidebar-normal"> Manage Branch </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/user">
+                    <span class="sidebar-mini"> MU </span>
+                    <span class="sidebar-normal"> Manage User </span>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+          </li>
+     
+        
+        </ul>
+      </div>
+    </div>
+

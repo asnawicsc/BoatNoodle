@@ -66,22 +66,20 @@ defmodule BoatNoodleWeb.UserController do
   end
 
   def login(conn, params) do
-    render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "login.html"})
+    render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "full_bg.html"})
   end
 
   def authenticate_login(conn, %{"username" => username, "password" => password}) do
-    # IEx.pry()
-
     user = Repo.get_by(User, username: username)
 
     if user != nil do
       conn
       |> put_session(:user_id, user.id)
-      |> put_flash(:info, "Login.")
-      |> redirect(to: user_path(conn, :index))
+      |> put_flash(:info, "Login successfully")
+      |> redirect(to: page_path(conn, :index))
     else
       conn
-      |> put_flash(:info, "User not found.")
+      |> put_flash(:error, "User not found")
       |> redirect(to: user_path(conn, :login))
     end
   end
@@ -89,7 +87,7 @@ defmodule BoatNoodleWeb.UserController do
   def logout(conn, _params) do
     conn
     |> delete_session(:user_id)
-    |> put_flash(:info, "User not found.")
+    |> put_flash(:info, "Logout successfully")
     |> redirect(to: user_path(conn, :login))
   end
 end
