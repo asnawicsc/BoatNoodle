@@ -18,7 +18,7 @@ defmodule BoatNoodleWeb.Router do
     # Use the default browser stack
     pipe_through(:browser)
 
-    get("/index", PageController, :index)
+    get("/", PageController, :index)
     post("/sales_graph_by_year", PageController, :sales_graph_by_year)
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
 
@@ -118,6 +118,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/user_role", UserRoleController)
     resources("/voiditems", VoidItemsController)
     resources("/salespayment", SalesPaymentController)
+    get("/*path", PageController, :no_page_found)
   end
 
   # Other scopes may use custom stacks.

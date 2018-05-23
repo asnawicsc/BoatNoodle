@@ -57,12 +57,11 @@ config :phoenix, :stacktrace_depth, 20
 #   pool_size: 10
 
 config :boat_noodle, BoatNoodle.Repo,
-adapter: Ecto.Adapters.MySQL,
-hostname: "110.4.42.47",
-port: "15100",
-username: "phoenix_bn",
-password: "123123",
-database: "BN",
-pool_size: 10,
-timeout: 90000
-
+  adapter: Ecto.Adapters.MySQL,
+  hostname: "110.4.42.47",
+  port: "15100",
+  username: "phoenix_bn",
+  password: "123123",
+  database: "BN",
+  pool_size: 10,
+  timeout: 90000
