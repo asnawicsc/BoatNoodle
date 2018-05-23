@@ -66,7 +66,7 @@ defmodule BoatNoodleWeb.UserController do
   end
 
   def login(conn, params) do
-    render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "login.html"})
+    render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "full_bg.html"})
   end
 
   def authenticate_login(conn, %{"username" => username, "password" => password}) do
