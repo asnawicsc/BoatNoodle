@@ -50,24 +50,10 @@ defmodule BoatNoodleWeb.Router do
     resources("/sales_master", SalesMasterController)
     resources("/sales", SalesController)
 
-    get("/transaction", SalesController, :transaction)
-
-    get("/hourly_pax_summary", SalesController, :hourly_pax_summary)
-    post("/get_date", SalesController, :get_date)
-    post("/get_hourly_sales", SalesController, :get_hourly_sales)
-    post("/get_hourly_transaction", SalesController, :get_hourly_transaction)
-
-    get("/hourly_sales_summary", SalesController, :hourly_sales_summary)
-    get("/hourly_transaction_summary", SalesController, :hourly_transaction_summary)
-
-    get("/item_sold", SalesController, :item_sold)
-    get("/item_sales_detail", SalesController, :item_sales_detail)
-    get("/:id/detail_invoice", SalesController, :detail_invoice)
-
-    get("/discount", SalesController, :discount)
-    get("/discount_summary", SalesController, :discount_summary)
-
-    get("/voided_order", SalesController, :voided_order)
+    get("/summary", SalesController, :summary)
+    get("/item_sales", SalesController, :item_sales)
+    get("/discounts", SalesController, :discounts)
+    get("/voided", SalesController, :voided)
 
     resources("/tax", TaxController)
     resources("/cash_in_out", CashInOutController)

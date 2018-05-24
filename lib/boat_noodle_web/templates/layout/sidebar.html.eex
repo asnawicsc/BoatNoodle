@@ -62,12 +62,43 @@
                 <b class="caret"></b>
               </p>
             </a>
+
             <div class="collapse" id="sales">
               <ul class="nav">
                 <li class="nav-item ">
                   <a class="nav-link" href="/sales">
+                    <span class="sidebar-mini"> T </span>
+                    <span class="sidebar-normal"> Transactions </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/item_sales">
+                    <span class="sidebar-mini"> IS </span>
+                    <span class="sidebar-normal"> Item Sales </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/discounts">
+                    <span class="sidebar-mini"> D </span>
+                    <span class="sidebar-normal"> Discounts </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/tables">
+                    <span class="sidebar-mini"> T </span>
+                    <span class="sidebar-normal"> Tables </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/voided">
+                    <span class="sidebar-mini"> V </span>
+                    <span class="sidebar-normal"> Voided </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/summary">
                     <span class="sidebar-mini"> S </span>
-                    <span class="sidebar-normal"> Sales </span>
+                    <span class="sidebar-normal"> Summary </span>
                   </a>
                 </li>
                 <li class="nav-item ">
@@ -83,7 +114,7 @@
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/salespayment">
+                  <a class="nav-link" href="/payment_type">
                     <span class="sidebar-mini"> P </span>
                     <span class="sidebar-normal"> Payments </span>
                   </a>

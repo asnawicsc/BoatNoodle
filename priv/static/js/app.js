@@ -1,26 +1,67 @@
-// for phoenix_html support, including form and button helpers
-// copy the following scripts into your javascript bundle:
-// * https://raw.githubusercontent.com/phoenixframework/phoenix_html/v2.10.0/priv/static/phoenix_html.js
+
+  $(document).ready(function(){
+
+    var start = moment().subtract(29, 'days');
+    var end = moment();
+
+      function cb(start, end) {
+          $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+          $("input[name='start_date']").val(start.format('YYYY-MM-DD'))
+          $("input[name='end_date']").val(end.format('YYYY-MM-DD'))
+      }
 
 
-      $(document).ready(function(){
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+
+        }
+    }, cb);
+
+    cb(start, end);
 
 
-         $('.datepicker').datetimepicker({
-            format: 'YYYY-MM-DD',
-            icons: {
-                time: "fa fa-clock-o",
-                date: "fa fa-calendar",
-                up: "fa fa-chevron-up",
-                down: "fa fa-chevron-down",
-                previous: 'fa fa-chevron-left',
-                next: 'fa fa-chevron-right',
-                today: 'fa fa-screenshot',
-                clear: 'fa fa-trash',
-                close: 'fa fa-remove'
-            }
-         });
 
+
+
+
+        var title = $("h1.page-header").html()
+        var rw =  $("h1.page-header").parent(".col-lg-12") 
+        var dv =  $("h1.page-header").parent(".row") 
+        $("a.navbar-brand").html(title)
+        rw.remove()
+        dv.remove()
+
+
+        $("button[aria-label='add_new_item']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeOut()
+          $("div[aria-label='add_new_item']").fadeIn()
+        })
+
+        $("input[name='previous_item']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeIn()
+          $("div[aria-label='add_new_item']").fadeOut()
+        })
+
+        $("button[aria-label='add_new_category']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeOut()
+          $("div[aria-label='add_new_category']").fadeIn()
+        })
+
+        $("input[name='previous_category']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeIn()
+          $("div[aria-label='add_new_category']").fadeOut()
+        })
+
+    
         var pathname = window.location.pathname;
         switch(pathname) {
             case "/":
@@ -70,37 +111,6 @@
    
             default:
                 console.log("default")
-        }
+              }
+});
 
-
-        var title = $("h1.page-header").html()
-        var rw =  $("h1.page-header").parent(".col-lg-12") 
-        var dv =  $("h1.page-header").parent(".row") 
-        $("a.navbar-brand").html(title)
-        rw.remove()
-        dv.remove()
-
-
-        $("button[aria-label='add_new_item']").click(function(){
-          $("div[aria-label='menu_item_content']").fadeOut()
-          $("div[aria-label='add_new_item']").fadeIn()
-        })
-
-        $("input[name='previous_item']").click(function(){
-          $("div[aria-label='menu_item_content']").fadeIn()
-          $("div[aria-label='add_new_item']").fadeOut()
-        })
-
-        $("button[aria-label='add_new_category']").click(function(){
-          $("div[aria-label='menu_item_content']").fadeOut()
-          $("div[aria-label='add_new_category']").fadeIn()
-        })
-
-        $("input[name='previous_category']").click(function(){
-          $("div[aria-label='menu_item_content']").fadeIn()
-          $("div[aria-label='add_new_category']").fadeOut()
-        })
-
-
-
-      })

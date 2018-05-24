@@ -47,7 +47,22 @@
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Reports<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="/sales">Sales</a>
+                                    <a href="/sales">Transactions</a>
+                                </li>
+                                <li>
+                                    <a href="/item_sales">Item Sales</a>
+                                </li>
+                                <li>
+                                    <a href="/sales">Discounts</a>
+                                </li>
+                                <li>
+                                    <a href="/tables">Tables</a>
+                                </li>
+                                <li>
+                                    <a href="/voided">Voided</a>
+                                </li>
+                                <li>
+                                    <a href="/summary">Summary</a>
                                 </li>
                                 <li>
                                     <a href="/sales_master">Sales Charts</a>

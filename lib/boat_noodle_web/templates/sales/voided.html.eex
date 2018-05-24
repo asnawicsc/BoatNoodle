@@ -52,24 +52,14 @@
               <div class="page-categories">
                 <br />
                 <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
-                  <li class="nav-item" id="">
-                    <a class="nav-link " data-toggle="tab" id="sales_transaction" href="" role="tablist">
-                      <i class="material-icons">info</i> Transactions
+                  <li class="nav-item" id="morning_sales_summary">
+                    <a class="nav-link active" data-toggle="tab" id="voided_receipt" href="" role="tablist">
+                      <i class="material-icons">info</i> Voided Receipt
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="hourly_pax_summary" href="" role="tablist">
-                      <i class="material-icons">location_on</i> Hourly Pax Summary
-                    </a>
-                  </li>
-                  <li class="nav-item" id="">
-                    <a class="nav-link " data-toggle="tab" id="hourly_sales_summary" href="" role="tablist">
-                      <i class="material-icons">info</i> Hourly Sales Summary
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="hourly_transaction_summary" href="" role="tablist">
-                      <i class="material-icons">location_on</i> Hourly Transaction Summary
+                    <a class="nav-link" data-toggle="tab" id="voided_order" href="" role="tablist">
+                      <i class="material-icons">location_on</i> Voided Order
                     </a>
                   </li>
                 </ul>
