@@ -3,16 +3,22 @@
     <div class="card-header">
       <h4 class="card-title">
       	<div class="row">
-      		<div class="col-sm-4">
+      		<div class="col-sm-6">
       			
       Categories
       		</div>
-      		<div class="col-sm-4">
-      			
-      		</div>
-      		<div class="col-sm-4">
+   
+      		<div class="col-sm-6">
       			<button class="btn btn-rose btn-round" aria-label="add_new_category">
                 <i class="material-icons">add_box</i> New Categories
+              <div class="ripple-container"></div>
+            </button>
+            <button class="btn btn-danger btn-round" aria-label="delete_category">
+                <i class="material-icons">close</i> Delete Selected
+              <div class="ripple-container"></div>
+            </button>
+            <button class="btn btn-warning btn-round" aria-label="delete_category">
+                <i class="material-icons">create</i> Edit Selected
               <div class="ripple-container"></div>
             </button>
       		</div>
@@ -28,6 +34,12 @@
     <div class="card-body" >
 	  	<div class="row">
         <div class="col-lg-12">
+          <style type="text/css">
+            tr.selected {
+              background-color: grey;
+              color: white;
+            }
+          </style>
               <table aria-label="categories_body" class="table">
                 <thead>
                   <tr>
@@ -38,8 +50,8 @@
 
                     <th>Type</th>
                     <th>Default</th>
-                    <th>Delete</th>
-                    <th>Edit</th>
+       
+     
 
                   </tr>
                 </thead>
@@ -52,8 +64,7 @@
 
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
+           
                   </tr>
                 </tbody>
               </table>

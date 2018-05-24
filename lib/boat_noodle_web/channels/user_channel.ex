@@ -10,6 +10,14 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+  def handle_in("delete_item_category", %{"cat_id" => cat_id}, socket) do
+    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+
+    Repo.delete(cat)
+
+    {:noreply, socket}
+  end
+
   def handle_in("submit_item_form", %{"map" => map}, socket) do
     item_subcat_params =
       map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)

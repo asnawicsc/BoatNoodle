@@ -23,6 +23,9 @@ channel.join()
 
 $(document).ready(function() {
 
+
+
+
   $("input[name='item_create']").click(function(){
     var fr = $("form[aria-label='item_form']").serializeArray();
     channel.push("submit_item_form", {map: fr})
@@ -46,9 +49,14 @@ $(document).ready(function() {
     
     var data = payload.categories
 
-          $("div[aria-label='add_new_category']").fadeOut()
-          $("a[href='#menu_categories']").click()
-           $("div[aria-label='menu_item_content']").fadeIn()
+      $("div[aria-label='add_new_category']").fadeOut()
+      $("a[href='#menu_categories']").click()
+      $("div[aria-label='menu_item_content']").fadeIn()
+
+    $("button.delete_cat").click(function(){
+      var cat_id = $(this).attr("id")
+      alert(cat_id)
+    })
   })
 
   $("a[href='#menu_categories']").click(function(){
@@ -57,10 +65,9 @@ $(document).ready(function() {
 
   channel.on("dt_show_categories", payload => {
 
-   
     var data = payload.categories
 
-    $("table[aria-label='categories_body']").DataTable({
+     var table = $("table[aria-label='categories_body']").DataTable({
             ordering: true,  // Column ordering
             order: [0, 'desc'],
       destroy: true,
@@ -72,12 +79,53 @@ $(document).ready(function() {
       {data: 'itemcatdesc'},
       {data: 'category_type'},
       {data: 'is_default'},
-      {data: 'itemcatid', render: function ( data, type, row, meta ) { return '<button class="btn btn-danger btn-sm" id="'+data+'"><i class="material-icons">close</i> Delete<div class="ripple-container"></div></button>';}},
-      {data: 'itemcatid', render: function ( data, type, row, meta ) { return '<button class="btn btn-warning btn-sm" id="'+data+'"><i class="material-icons">create</i> Edit<div class="ripple-container"></div></button>';}}
+
 
       ]
     }); 
+
+
+
+
   });
+
+
+  $("table[aria-label='categories_body']").on( "click", "tr", function () {
+    var table = $("table[aria-label='categories_body']").DataTable()
+      if ( $(this).hasClass("selected") ) {
+          $(this).removeClass("selected");
+      }
+      else {
+          table.$("tr.selected").removeClass("selected");
+          $(this).addClass("selected");
+      }
+  });
+
+
+    $('button[aria-label="delete_category"]').click( function () {
+      var table = $("table[aria-label='categories_body']").DataTable()
+        
+        if ($("table[aria-label='categories_body']").find("tr.selected").length == 1) {
+          var rw = $("table[aria-label='categories_body']").find("tr.selected")
+          
+          var cat_id = rw.find("td:first").html()
+          channel.push("delete_item_category", {cat_id: cat_id})
+          $.notify({
+              icon: "notifications",
+              message: "Category removed."
+
+          }, {
+              type: 'rose',
+              timer: 100,
+              placement: {
+                  from: 'bottom',
+                  align: 'right'
+              }
+          });
+          table.row('.selected').remove().draw( false );
+        }
+
+    });
 
 
     $("button#dashboard").click(function() {
