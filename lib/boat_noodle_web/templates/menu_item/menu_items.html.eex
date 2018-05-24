@@ -1,67 +1,67 @@
-                  <div class="tab-pane" id="menu_item">
-                    <div class="card">
-                      <div class="card-header">
-                        <h4 class="card-title">
-                        	<div class="row">
-                        		<div class="col-sm-4">
-                        			
-                        Menu Items
-                        		</div>
-                        		<div class="col-sm-4">
-                        			
-                        		</div>
-                        		<div class="col-sm-4">
-                        			<button class="btn btn-rose btn-round" aria-label="add_new_item">
-						                      <i class="material-icons">add_box</i> New Item
-						                    <div class="ripple-container"></div>
-						                  </button>
-                        		</div>
-                        	</div>
-                      </h4>
-                        <p class="card-category">
-                          More information here
-                        </p>
-                        <div>
-                        	
-                        </div>
-                      </div>
-                      <div class="card-body">
-										  	
-												<div class="row">
-													<div class="col-lg-2">
+<div class="tab-pane" id="menu_item">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">
+      	<div class="row">
+      		<div class="col-sm-4">
+      			
+      Menu Items
+      		</div>
+      		<div class="col-sm-4">
+      			
+      		</div>
+      		<div class="col-sm-4">
+      			<button class="btn btn-rose btn-round" aria-label="add_new_item">
+                <i class="material-icons">add_box</i> New Item
+              <div class="ripple-container"></div>
+            </button>
+      		</div>
+      	</div>
+    </h4>
+      <p class="card-category">
+        More information here
+      </p>
+      <div>
+      	
+      </div>
+    </div>
+    <div class="card-body">
+	  	
+			<div class="row">
+				<div class="col-lg-2">
 
-																<%= for cat <- @menu_item do %>
-																<button type="button" class="btn btn-primary btn-round item_cat" id="<%= cat.itemcatid %>" style="width: 200px;"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</button>
-																<% end %>
+							<%= for cat <- @menu_item do %>
+							<button type="button" class="btn btn-primary btn-round item_cat" id="<%= cat.itemcatid %>" style="width: 200px;"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</button>
+							<% end %>
 
-													</div>
-													<div class="col-lg-10">
-																<table id="items" class="table">
-																	<thead>
-																		<tr>
-																			<th>Code</th>
-																			<th>Product Code</th>
-																			<th>Name</th>
-																			<th>Price</th>
-																			<th>Status</th>
+				</div>
+				<div class="col-lg-10">
+							<table id="items" class="table">
+								<thead>
+									<tr>
+										<th>Code</th>
+										<th>Product Code</th>
+										<th>Name</th>
+										<th>Price</th>
+										<th>Status</th>
 
-																		</tr>
-																	</thead>
-																	<tbody>
-																		<tr>
-																			<td></td>
-																			<td></td>
-																			<td></td>
-																			<td></td>
-																			<td></td>
-																		</tr>
-																	</tbody>
-																</table>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
 
-													</div>
-												</div>
-                      </div>
-                    </div>
-                  </div>
+				</div>
+			</div>
+    </div>
+  </div>
+</div>
 
 

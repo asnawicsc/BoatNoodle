@@ -86,10 +86,21 @@
           $("div[aria-label='add_new_item']").fadeIn()
         })
 
-        $("input[name='previous']").click(function(){
+        $("input[name='previous_item']").click(function(){
           $("div[aria-label='menu_item_content']").fadeIn()
           $("div[aria-label='add_new_item']").fadeOut()
         })
+
+        $("button[aria-label='add_new_category']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeOut()
+          $("div[aria-label='add_new_category']").fadeIn()
+        })
+
+        $("input[name='previous_category']").click(function(){
+          $("div[aria-label='menu_item_content']").fadeIn()
+          $("div[aria-label='add_new_category']").fadeOut()
+        })
+
 
 
       })

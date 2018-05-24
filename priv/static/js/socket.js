@@ -17,6 +17,62 @@ channel.join()
 
 $(document).ready(function(){
 
+  $("input[name='item_create']").click(function(){
+    var fr = $("form[aria-label='item_form']").serializeArray();
+    channel.push("submit_item_form", {map: fr})
+  })
+
+  channel.on("inserted_item_subcat", payload => {
+    
+    var data = payload.categories
+
+          $("div[aria-label='add_new_item']").fadeOut()
+          $("a[href='#menu_item']").click()
+           $("div[aria-label='menu_item_content']").fadeIn()
+  })
+
+  $("input[name='category_create']").click(function(){
+    var fr = $("form[aria-label='category_form']").serializeArray();
+    channel.push("submit_category_form", {map: fr})
+  })
+
+  channel.on("inserted_item_cat", payload => {
+    
+    var data = payload.categories
+
+          $("div[aria-label='add_new_category']").fadeOut()
+          $("a[href='#menu_categories']").click()
+           $("div[aria-label='menu_item_content']").fadeIn()
+  })
+
+  $("a[href='#menu_categories']").click(function(){
+    channel.push("load_all_categories", {user_id: window.currentUser})
+  })
+
+  channel.on("dt_show_categories", payload => {
+
+   
+    var data = payload.categories
+
+    $("table[aria-label='categories_body']").DataTable({
+            ordering: true,  // Column ordering
+            order: [0, 'desc'],
+      destroy: true,
+      data: data,
+      columns: [
+      {data: 'itemcatid'},
+      {data: 'itemcatname'},
+      {data: 'itemcatcode'},
+      {data: 'itemcatdesc'},
+      {data: 'category_type'},
+      {data: 'is_default'},
+      {data: 'itemcatid', render: function ( data, type, row, meta ) { return '<button class="btn btn-danger btn-sm" id="'+data+'"><i class="material-icons">close</i> Delete<div class="ripple-container"></div></button>';}},
+      {data: 'itemcatid', render: function ( data, type, row, meta ) { return '<button class="btn btn-warning btn-sm" id="'+data+'"><i class="material-icons">create</i> Edit<div class="ripple-container"></div></button>';}}
+
+      ]
+    }); 
+  });
+
   $("button#dashboard").click(function(){
 
     var b_id = $("select#branch_list").val()

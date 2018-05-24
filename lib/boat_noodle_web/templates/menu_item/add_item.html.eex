@@ -10,19 +10,19 @@
         </div>
 
         <div class="card-body">     
-          <form method="get" action="/" class="form-horizontal">
+          <form method="get" action="/" class="form-horizontal" aria-label="item_form">
 
             <div class="row">
               <div class="col-sm-4">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Name</label>
-                  <input class="form-control" type="text">
+                  <input name="itemname" class="form-control" type="text">
                 </div>
               </div>
               <div class="col-sm-8">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Description</label>
-                  <input class="form-control" type="text">
+                  <input name="itemdesc" class="form-control" type="text">
                 </div>
                 
               </div>
@@ -31,24 +31,24 @@
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Code</label>
-                  <input class="form-control" type="text">
+                  <input name="itemcode" class="form-control" type="text">
                 </div>
               </div>
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Part Code</label>
-                  <input class="form-control" type="text">
+                  <input name="part_code" class="form-control" type="text">
                 </div>
               </div>
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Price Code</label>
-                  <input class="form-control" type="text">
+                  <input name="price_code" class="form-control" type="text">
                 </div>
               </div>
               <div class="col-sm-3">
               
-                  <select class="selectpicker" data-style="btn select-with-transition"  title="Choose Category" data-size="10">
+                  <select name="itemcatid" class="selectpicker" data-style="btn select-with-transition"  title="Choose Category" data-size="10">
                           <%= for cat <- @menu_item do %>
                             <option value="<%= cat.itemcatid %>"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</option>
                           <% end %>
@@ -63,7 +63,7 @@
                 
               <div class="form-group bmd-form-group">
                 <label class="bmd-label-floating">Price</label>
-                <input class="form-control" type="number">
+                <input name="itemprice" class="form-control" type="number">
               </div>
               <div class="form-group bmd-form-group">
                 <label class="bmd-label-floating">Image</label>
@@ -72,7 +72,7 @@
               
               <div class="form-check">
                 <label class="form-check-label">
-                  <input class="form-check-input" value="" type="checkbox"> Enable Discount?
+                  <input name="enable_disc" class="form-check-input" value="" type="checkbox"> Enable Discount?
                   <span class="form-check-sign">
                     <span class="check"></span>
                   </span>
@@ -80,7 +80,7 @@
               </div>
               <div class="form-check">
                 <label class="form-check-label">
-                  <input class="form-check-input" value="" type="checkbox"> Is included in minimum spend?
+                  <input name="include_spend" class="form-check-input" value="" type="checkbox"> Is included in minimum spend?
                   <span class="form-check-sign">
                     <span class="check"></span>
                   </span>
@@ -88,7 +88,7 @@
               </div>
               <div class="form-check">
                 <label class="form-check-label">
-                  <input class="form-check-input" value="" type="checkbox"> Activate?
+                  <input name="is_activate" class="form-check-input" value="" type="checkbox"> Activate?
                   <span class="form-check-sign">
                     <span class="check"></span>
                   </span>
@@ -99,10 +99,10 @@
         </div>
         <div class="card-footer">
         <div class="mr-auto">
-                      <input class="btn btn-previous btn-fill btn-default btn-wd" name="previous" value="Previous" type="button">
+                      <input class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Previous" type="button">
                     </div>
           <div class="ml-auto">
-            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="item_create" value="Create" type="submit">
            
           </div>
           <div class="clearfix"></div>

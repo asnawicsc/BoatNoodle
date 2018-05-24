@@ -51,3 +51,4 @@
 </div>
 
 <%= render("add_item.html", menu_item: @menu_item) %>
+<%= render("add_category.html") %>
