@@ -488,20 +488,20 @@ defmodule BoatNoodleWeb.UserChannel do
 
 
           s_date=payload["s_date"]
-      e_date=payload["e_date"]
+          e_date=payload["e_date"]
 
 
-      a=Date.from_iso8601!(s_date)
-      b=Date.from_iso8601!(e_date)
+         a=Date.from_iso8601!(s_date)
+         b=Date.from_iso8601!(e_date)
 
 
-      date_data = Date.range(a, b)|>Enum.map(fn x -> Date.to_string(x) end)
+         date_data = Date.range(a, b)|>Enum.map(fn x -> Date.to_string(x) end)
 
-      luck =for date <- date_data do
+         luck =for date <- date_data do
 
-        test =
-        Repo.all(
-        from(
+         test =
+         Repo.all(
+         from(
           sp in BoatNoodle.BN.SalesPayment,
           left_join: s in BoatNoodle.BN.Sales,
           on: s.salesid == sp.salesid,
@@ -514,52 +514,49 @@ defmodule BoatNoodleWeb.UserChannel do
             pax: sum(s.pax),
             grand_total: sum(sp.grand_total)
           }
-        )
-       )
+          )
+          )
+ 
+          pax=test|>Enum.map(fn x -> Decimal.to_float(x.pax) end)|>Enum.sum
+          grand_total=test|>Enum.map(fn x -> Decimal.to_float(x.grand_total)end)|>Enum.sum
 
-        pax=test|>Enum.map(fn x -> Decimal.to_float(x.pax) end)|>Enum.sum
-        grand_total=test|>Enum.map(fn x -> Decimal.to_float(x.grand_total)end)|>Enum.sum
+           if grand_total == 0 do
+            grand_total = 0
+            else
+          grand_total =  :erlang.float_to_binary(grand_total,decimals: 2)
+          end
+         
 
-         if grand_total == 0 do
-          grand_total = 0
-          else
-        grand_total =  :erlang.float_to_binary(grand_total,decimals: 2)
-        end
-       
+          h1=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 1 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h2=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 2 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h3=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 3 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h4=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 4 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h5=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 5 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h6=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 6 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h7=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 7 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h8=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 8 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h9=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 9 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h10=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 10 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h11=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 11 end)|>Enum.map(fn x ->x.salesid end)|>Enum.count
+          h12=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 12 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h13=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 13 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h14=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 14 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h15=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 15 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h16=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 16 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h17=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 17 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h18=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 18 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h19=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 19 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h20=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 20 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h21=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 21 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h22=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 22 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h23=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 23 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          h24=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 24 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
 
-        h1=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 1 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h2=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 2 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h3=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 3 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h4=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 4 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h5=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 5 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h6=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 6 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h7=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 7 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h8=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 8 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h9=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 9 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h10=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 10 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h11=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 11 end)|>Enum.map(fn x ->x.salesid end)|>Enum.count
-        h12=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 12 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h13=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 13 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h14=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 14 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h15=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 15 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h16=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 16 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h17=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 17 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h18=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 18 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h19=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 19 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h20=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 20 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h21=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 21 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h22=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 22 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h23=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 23 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
-        h24=test|>List.flatten|>Enum.filter(fn x -> x.salesdatetime.hour == 24 end)|>Enum.map(fn x -> x.salesid end)|>Enum.count
+          %{date: date,pax: pax,grand_total: grand_total,h1: h1, h2: h2, h3: h3,h4: h4,h5: h5,h6: h6,h7: h7,h8: h8,h9: h9,h10: h10,h11: h11,h12: h12,h13: h13,h14: h14,h15: h15,h16: h16,h17: h17,h18: h18,h19: h19,h20: h20,h21: h21,h22: h22,h23: h23,h24: h24}
+          end
 
-        %{date: date,pax: pax,grand_total: grand_total,h1: h1, h2: h2, h3: h3,h4: h4,h5: h5,h6: h6,h7: h7,h8: h8,h9: h9,h10: h10,h11: h11,h12: h12,h13: h13,h14: h14,h15: h15,h16: h16,h17: h17,h18: h18,h19: h19,h20: h20,h21: h21,h22: h22,h23: h23,h24: h24}
-      end
-
-  broadcast(socket, "populate_table_hourly_transaction_summary", %{luck: luck})
-    {:noreply, socket}
-
-   
-
+          broadcast(socket, "populate_table_hourly_transaction_summary", %{luck: luck})
+          {:noreply, socket}
   end
 
   def handle_in("item_sold", payload, socket) do

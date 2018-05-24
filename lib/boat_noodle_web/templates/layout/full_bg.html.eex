@@ -60,16 +60,16 @@
   </div>
 </body>
 <!--   Core JS Files   -->
-<script src="/assets/js/core/jquery.min.js"></script>
+
 <script src="/assets/js/core/popper.min.js"></script>
 <script src="/assets/js/bootstrap-material-design.js"></script>
 <script src="/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
 <!--  Google Maps Plugin  -->
 
 <!--  Plugin for Date Time Picker and Full Calendar Plugin  -->
-<script src="/assets/js/plugins/moment.min.js"></script>
+<%# <script src="/assets/js/plugins/moment.min.js"></script> %>
 <!--	Plugin for the Datepicker, full documentation here: https://github.com/Eonasdan/bootstrap-datetimepicker -->
-<script src="/assets/js/plugins/bootstrap-datetimepicker.min.js"></script>
+<%# <script src="/assets/js/plugins/bootstrap-datetimepicker.min.js"></script> %>
 <!--	Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
 <script src="/assets/js/plugins/nouislider.min.js"></script>
 <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
@@ -109,7 +109,7 @@
 <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
 <script src="/assets/js/plugins/jasny-bootstrap.min.js"></script>
 <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
-<script src="/assets/js/plugins/fullcalendar.min.js"></script>
+<%# <script src="/assets/js/plugins/fullcalendar.min.js"></script> %>
 <!-- demo init -->
 <script src="/assets/js/plugins/demo.js"></script>
 <script type="text/javascript">
