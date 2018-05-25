@@ -6,22 +6,32 @@
 use Mix.Config
 
 # General application configuration
-config :boat_noodle,
-  ecto_repos: [BoatNoodle.Repo]
+config :boat_noodle, ecto_repos: [BoatNoodle.Repo]
 
 # Configures the endpoint
 config :boat_noodle, BoatNoodleWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "DYMS+BAX/beJI31z9VqOJBg04C8fYM4KjD1iD5j8As6qoSDAWIkWNhkR7D9isPiN",
   render_errors: [view: BoatNoodleWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: BoatNoodle.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: BoatNoodle.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
+config :boat_noodle, BoatNoodle.Mailer,
+  adapter: Bamboo.SMTPAdapter,
+  server: "smtp.sendgrid.net",
+  port: 587,
+  # can be `:always` or `:never`
+  tls: :if_available,
+  # can be `true`
+  ssl: false,
+  retries: 1,
+  username: "resertech",
+  password: "resertech123"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

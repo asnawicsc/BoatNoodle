@@ -17,15 +17,7 @@
     <%= @user.email %>
   </li>
 
-  <li>
-    <strong>User role:</strong>
-    <%= @user.user_role %>
-  </li>
-
-  <li>
-    <strong>Branch access:</strong>
-    <%= @user.branch_access %>
-  </li>
+    
 
 </ul>
 
