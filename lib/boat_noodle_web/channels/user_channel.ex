@@ -10,6 +10,40 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+  def handle_in("update_category_form", %{"map" => map, "cat_id" => cat_id}, socket) do
+    item_cat_params =
+      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
+      |> Enum.into(%{})
+
+    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+
+    cg = BoatNoodle.BN.ItemCat.changeset(cat, item_cat_params)
+
+    case Repo.update(cg) do
+      {:ok, item_cat} ->
+        broadcast(socket, "updated_item_cat", %{categories: all_categories()})
+
+      true ->
+        IO.puts("error in inserting item cat")
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_in("edit_item_category", %{"cat_id" => cat_id}, socket) do
+    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+
+    broadcast(socket, "open_edit_category", %{
+      itemcatcode: cat.itemcatcode,
+      itemcatname: cat.itemcatname,
+      itemcatdesc: cat.itemcatdesc,
+      category_type: cat.category_type,
+      itemcatid: cat.itemcatid
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_in("delete_item_category", %{"cat_id" => cat_id}, socket) do
     cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
 
@@ -64,24 +98,25 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  def handle_in("load_all_categories", %{"user_id" => user_id}, socket) do
-    categories =
-      Repo.all(
-        from(
-          i in BoatNoodle.BN.ItemCat,
-          select: %{
-            itemcatid: i.itemcatid,
-            itemcatname: i.itemcatname,
-            itemcatcode: i.itemcatcode,
-            itemcatdesc: i.itemcatdesc,
-            category_type: i.category_type,
-            is_default: i.is_default,
-            is_delete: i.is_delete
-          }
-        )
+  defp all_categories() do
+    Repo.all(
+      from(
+        i in BoatNoodle.BN.ItemCat,
+        select: %{
+          itemcatid: i.itemcatid,
+          itemcatname: i.itemcatname,
+          itemcatcode: i.itemcatcode,
+          itemcatdesc: i.itemcatdesc,
+          category_type: i.category_type,
+          is_default: i.is_default,
+          is_delete: i.is_delete
+        }
       )
+    )
+  end
 
-    broadcast(socket, "dt_show_categories", %{categories: categories})
+  def handle_in("load_all_categories", %{"user_id" => user_id}, socket) do
+    broadcast(socket, "dt_show_categories", %{categories: all_categories()})
     {:noreply, socket}
   end
 
