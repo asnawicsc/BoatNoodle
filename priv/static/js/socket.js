@@ -20,3 +20,18 @@ channel.join()
         console.log("Unable to join topic", topic)
     })
 
+var topic2 = "menu_item:" + window.currentUser
+// Join the topic
+let channel2 = socket.channel(topic2, {})
+channel2.join()
+
+
+    .receive("ok", data => {
+        console.log("Joined topic", topic2)
+    })
+
+
+    .receive("error", resp => {
+        console.log("Unable to join topic", topic2)
+    })
+

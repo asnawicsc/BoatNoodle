@@ -75,44 +75,7 @@ $(document).ready(function() {
 
 
 
-    $("button.item_cat").click(function() {
 
-        $("#backdrop").fadeIn()
-
-        var item_cat_id = $(this).attr("id")
-        console.log("item category id = " + item_cat_id)
-        channel.push("list_items", {
-            item_cat_id: item_cat_id
-        })
-    })
-
-    channel.on("populate_table_items", payload => {
-        console.log(payload.items)
-        var data = payload.items
-
-        $("table#items").DataTable({
-            destroy: true,
-            data: data,
-            columns: [{
-                    data: 'itemcode'
-                },
-                {
-                    data: 'product_code'
-                },
-                {
-                    data: 'itemname'
-                },
-                {
-                    data: 'itemprice'
-                },
-                {
-                    data: 'is_activate'
-                }
-            ]
-        });
-
-        $("#backdrop").delay(500).fadeOut()
-    })
 
 
     $(".panel-body#sales_transaction").hide();
