@@ -51,9 +51,14 @@ defmodule BoatNoodleWeb.Router do
     resources("/sales", SalesController)
 
     get("/summary", SalesController, :summary)
+    get("/summary2", SalesController, :summary2)
     get("/item_sales", SalesController, :item_sales)
     get("/discounts", SalesController, :discounts)
     get("/voided", SalesController, :voided)
+
+
+    get("/csv_compare_category_qty", SalesController, :csv_compare_category_qty)
+    post("/create_cv", SalesController, :create_cv)
 
     resources("/tax", TaxController)
     resources("/cash_in_out", CashInOutController)

@@ -238,6 +238,12 @@ $(document).ready(function() {
     $(".panel-body#dinner_sales_summary").hide();
     $("table#dinner_sales_summary").hide();
 
+    $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
 
 
 
@@ -287,6 +293,13 @@ $(document).ready(function() {
 
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -382,6 +395,13 @@ $(document).ready(function() {
 
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -535,6 +555,13 @@ $(document).ready(function() {
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
 
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
@@ -687,6 +714,13 @@ $(document).ready(function() {
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
 
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
@@ -838,6 +872,13 @@ $(document).ready(function() {
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
 
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
+
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -921,6 +962,13 @@ $(document).ready(function() {
 
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
+
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
 
 
 
@@ -1020,6 +1068,13 @@ $(document).ready(function() {
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
 
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
+
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -1106,6 +1161,13 @@ $(document).ready(function() {
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
 
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
+
 
 
         var b_id = $("select#branch_list").val()
@@ -1187,6 +1249,13 @@ $(document).ready(function() {
 
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
+
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -1277,6 +1346,13 @@ $(document).ready(function() {
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
 
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
+
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
@@ -1366,6 +1442,13 @@ $(document).ready(function() {
 
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
+
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -1460,6 +1543,13 @@ $(document).ready(function() {
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
 
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
+
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
@@ -1553,6 +1643,13 @@ $(document).ready(function() {
 
         $(".panel-body#dinner_sales_summary").hide();
         $("table#dinner_sales_summary").hide();
+
+            $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -1687,6 +1784,199 @@ $(document).ready(function() {
                 },
                 {
                     data: 'salesdate'
+                }
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+
+    $(".nav-link#sales_summary").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        $(".panel-body#sales_transaction").hide();
+        $("table#sales_transaction").hide();
+
+        $(".panel-body#hourly_pax_summary").hide();
+        $("table#hourly_pax_summary").hide();
+
+        $(".panel-body#hourly_sales_summary").hide();
+        $("table#hourly_sales_summary").hide();
+
+        $(".panel-body#hourly_transaction_summary").hide();
+        $("table#hourly_transaction_summary").hide();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").hide();
+        $("table#voided_receipt").hide();
+
+        $(".panel-body#voided_order").hide();
+        $("table#voided_order").hide();
+
+        $(".panel-body#morning_sales_summary").hide();
+        $("table#morning_sales_summary").hide();
+
+        $(".panel-body#lunch_sales_summary").hide();
+        $("table#lunch_sales_summary").hide();
+
+        $(".panel-body#idle_sales_summary").hide();
+        $("table#idle_sales_summary").hide();
+
+        $(".panel-body#dinner_sales_summary").hide();
+        $("table#dinner_sales_summary").hide();
+
+        $(".panel-body#sales_summary").show();
+        $("table#sales_summary").show();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+        var b_id = $("select#branch_list").val()
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("sales_summary", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date
+        })
+    })
+
+    channel.on("populate_table_sales_summary", payload => {
+        console.log(payload.luck)
+        var data = payload.luck
+
+      
+        $("table#sales_summary").DataTable({
+            destroy: true,
+            data: data,
+            columns: [{
+                    data: 'date'
+                },
+                {
+                    data: 'grand_total'
+                },
+                {
+                    data: 'morning'
+                },
+                {
+                    data: 'lunch'
+                },
+                {
+                    data: 'idle'
+                },
+                {   data: 'dinner'
+                }
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+
+    $(".nav-link#pax_summary").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        $(".panel-body#sales_transaction").hide();
+        $("table#sales_transaction").hide();
+
+        $(".panel-body#hourly_pax_summary").hide();
+        $("table#hourly_pax_summary").hide();
+
+        $(".panel-body#hourly_sales_summary").hide();
+        $("table#hourly_sales_summary").hide();
+
+        $(".panel-body#hourly_transaction_summary").hide();
+        $("table#hourly_transaction_summary").hide();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").hide();
+        $("table#voided_receipt").hide();
+
+        $(".panel-body#voided_order").hide();
+        $("table#voided_order").hide();
+
+        $(".panel-body#morning_sales_summary").hide();
+        $("table#morning_sales_summary").hide();
+
+        $(".panel-body#lunch_sales_summary").hide();
+        $("table#lunch_sales_summary").hide();
+
+        $(".panel-body#idle_sales_summary").hide();
+        $("table#idle_sales_summary").hide();
+
+        $(".panel-body#dinner_sales_summary").hide();
+        $("table#dinner_sales_summary").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").show();
+        $("table#pax_summary").show();
+
+        var b_id = $("select#branch_list").val()
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("pax_summary", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date
+        })
+    })
+
+    channel.on("populate_table_pax_summary", payload => {
+        console.log(payload.luck)
+        var data = payload.luck
+
+       
+        $("table#pax_summary").DataTable({
+            destroy: true,
+            data: data,
+            columns: [{
+                    data: 'date'
+                },
+                {
+                    data: 'pax'
+                },
+                {
+                    data: 'morning'
+                },
+                {
+                    data: 'lunch'
+                },
+                {
+                    data: 'idle'
+                },
+                {
+                    data: 'dinner'
                 }
             ]
         });

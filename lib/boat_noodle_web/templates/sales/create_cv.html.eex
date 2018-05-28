@@ -1,0 +1,117 @@
+
+                      <table class="table" border="1">
+                        <thead>
+                        </thead>
+                         <tr>
+
+                          </tr>
+                        <tbody>
+
+                          <tr>
+                            <td>Category</td>
+                             <td></td>
+                            <%= for item <- @try2 do %>
+                            <td><%= item.month %></td>
+                           <% end %>
+                          </tr>
+                          <tr>
+                            <td>F_Noodle</td>
+                            <td></td>
+                            <%= for item <- @try2 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                           
+                          </tr>
+                          <tr>
+                            <td>F_Beverages</td>
+                            <td>Combo</td>
+                            <%= for item <- @try5 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td></td>
+                            <td>Individual</td>
+                            <%= for item <- @try4 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td>F_Breakfast</td>
+                            <td>Combo</td>
+                            <%= for item <- @try8 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td></td>
+                            <td>Individual</td>
+                            <%= for item <- @try7 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                          <tr>
+                            <td>F_Noodle</td>
+                            <td>Combo</td>
+                            <%= for item <- @try11 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td></td>
+                            <td>Individual</td>
+                            <%= for item <- @try10 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                          <tr>
+                            <td>F_Rice</td>
+                            <td>Combo</td>
+                            <%= for item <- @try14 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td></td>
+                            <td>Individual</td>
+                            <%= for item <- @try13 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                          <tr>
+                            <td>F_SideDish</td>
+                            <td>Combo</td>
+                            <%= for item <- @try17 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td></td>
+                            <td>Individual</td>
+                            <%= for item <- @try16 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                          <tr>
+                            <td>Toppings</td>
+                            <td>Combo</td>
+                            <%= for item <- @try20 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td></td>
+                            <td>Individual</td>
+                            <%= for item <- @try19 do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                           <tr>
+                            <td>Grand Total</td>
+                            <td></td>
+                            <%= for item <- @grand_total do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+                        </tbody>
+                      </table>

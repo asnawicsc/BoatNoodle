@@ -102,6 +102,12 @@
                   </a>
                 </li>
                 <li class="nav-item ">
+                  <a class="nav-link" href="/summary2">
+                    <span class="sidebar-mini"> S </span>
+                    <span class="sidebar-normal"> Summary2 </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
                   <a class="nav-link" href="/sales_chart">
                     <span class="sidebar-mini"> SC </span>
                     <span class="sidebar-normal"> Sales Chart </span>
