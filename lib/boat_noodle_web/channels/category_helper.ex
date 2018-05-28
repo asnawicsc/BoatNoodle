@@ -72,34 +72,6 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-  def handle_in("submit_item_form", %{"map" => map}, socket) do
-    item_subcat_params =
-      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
-      |> Enum.into(%{})
-
-    cat_id = item_subcat_params["itemcatid"]
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
-
-    item_subcat_params =
-      Map.put(
-        item_subcat_params,
-        "product_code",
-        cat.itemcatcode <> item_subcat_params["part_code"] <> item_subcat_params["price_code"]
-      )
-
-    cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_subcat_params)
-
-    case Repo.insert(cg) do
-      {:ok, item_cat} ->
-        broadcast(socket, "inserted_item_subcat", %{})
-
-      true ->
-        IO.puts("error in inserting item subcat")
-    end
-
-    {:noreply, socket}
-  end
-
   def handle_in("submit_category_form", %{"map" => map}, socket) do
     item_cat_params =
       map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
@@ -154,12 +126,13 @@ defmodule BoatNoodleWeb.CategoryHelper do
       Repo.all(
         from(
           i in BoatNoodle.BN.ItemSubcat,
-          where: i.itemcatid == ^item_cat_id,
+          where:
+            i.itemcatid == ^item_cat_id and i.is_delete == 0 and i.is_combo != 1 and
+              i.is_comboitem != 1,
+          group_by: [i.itemcode, i.itemname, i.is_activate],
           select: %{
             itemcode: i.itemcode,
-            product_code: i.product_code,
             itemname: i.itemname,
-            itemprice: i.itemprice,
             is_activate: i.is_activate
           }
         )

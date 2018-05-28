@@ -5,20 +5,21 @@ defmodule BoatNoodle.BN.ItemSubcat do
   @primary_key false
   schema "item_subcat" do
     field(:created_at, :utc_datetime)
-    field(:enable_disc, :integer)
-    field(:include_spend, :integer)
+    field(:enable_disc, :integer, default: 1)
+    field(:include_spend, :integer, default: 1)
     field(:is_activate, :integer, default: 1)
-    field(:is_categorize, :integer, default: 1)
-    field(:is_combo, :integer)
-    field(:is_default_combo, :integer)
-    field(:is_delete, :integer)
+    field(:is_categorize, :integer, default: 0)
+    field(:is_combo, :integer, default: 0)
+    field(:is_comboitem, :integer, default: 0)
+    field(:is_default_combo, :integer, default: 0)
+    field(:is_delete, :integer, default: 0)
     field(:is_print, :integer)
     field(:itemcatid, :string)
     field(:itemcode, :string)
     field(:itemdesc, :string)
     field(:itemimage, :string)
     field(:itemname, :string)
-    field(:itemprice, :decimal)
+    field(:itemprice, :decimal, default: 0)
     field(:part_code, :string)
     field(:price_code, :string)
     field(:product_code, :string)
@@ -43,6 +44,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
       :is_categorize,
       :is_activate,
       :is_combo,
+      :is_comboitem,
       :is_default_combo,
       :is_delete,
       :enable_disc,

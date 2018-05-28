@@ -13,39 +13,6 @@
           <form method="get" action="/" class="form-horizontal" aria-label="item_form">
 
             <div class="row">
-              <div class="col-sm-4">
-                <div class="form-group bmd-form-group">
-                  <label class="bmd-label-floating">Name</label>
-                  <input name="itemname" class="form-control" type="text">
-                </div>
-              </div>
-              <div class="col-sm-8">
-                <div class="form-group bmd-form-group">
-                  <label class="bmd-label-floating">Description</label>
-                  <input name="itemdesc" class="form-control" type="text">
-                </div>
-                
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-3">
-                <div class="form-group bmd-form-group">
-                  <label class="bmd-label-floating">Code</label>
-                  <input name="itemcode" class="form-control" type="text">
-                </div>
-              </div>
-              <div class="col-sm-3">
-                <div class="form-group bmd-form-group">
-                  <label class="bmd-label-floating">Part Code</label>
-                  <input name="part_code" class="form-control" type="text">
-                </div>
-              </div>
-              <div class="col-sm-3">
-                <div class="form-group bmd-form-group">
-                  <label class="bmd-label-floating">Price Code</label>
-                  <input name="price_code" class="form-control" type="text">
-                </div>
-              </div>
               <div class="col-sm-3">
               
                   <select name="itemcatid" class="selectpicker" data-style="btn select-with-transition"  title="Choose Category" data-size="10">
@@ -55,45 +22,26 @@
                           </select>
              
               </div>
+              <div class="col-sm-3">
+                <div class="form-group bmd-form-group">
+                  <label class="bmd-label-floating">Item Code</label>
+                  <input name="itemcode" class="form-control" type="text">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group bmd-form-group">
+                  <label class="bmd-label-floating">Description</label>
+                  <input name="itemdesc" class="form-control" type="text">
+                </div>
+                
+              </div>
             </div>
+
               
                 
                 
-                
-                
-              <div class="form-group bmd-form-group">
-                <label class="bmd-label-floating">Price</label>
-                <input name="itemprice" class="form-control" type="number">
-              </div>
-              <div class="form-group bmd-form-group">
-                <label class="bmd-label-floating">Image</label>
-                <input class="form-control" type="text">
-              </div>
-              
-              <div class="form-check">
-                <label class="form-check-label">
-                  <input name="enable_disc" class="form-check-input" value="" type="checkbox"> Enable Discount?
-                  <span class="form-check-sign">
-                    <span class="check"></span>
-                  </span>
-                </label>
-              </div>
-              <div class="form-check">
-                <label class="form-check-label">
-                  <input name="include_spend" class="form-check-input" value="" type="checkbox"> Is included in minimum spend?
-                  <span class="form-check-sign">
-                    <span class="check"></span>
-                  </span>
-                </label>
-              </div>
-              <div class="form-check">
-                <label class="form-check-label">
-                  <input name="is_activate" class="form-check-input" value="" type="checkbox"> Activate?
-                  <span class="form-check-sign">
-                    <span class="check"></span>
-                  </span>
-                </label>
-              </div>
+
+   
           </form>
              
         </div>

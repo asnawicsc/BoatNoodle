@@ -38,9 +38,9 @@
 								<thead>
 									<tr>
 										<th>Code</th>
-										<th>Product Code</th>
+								
 										<th>Name</th>
-										<th>Price</th>
+								
 										<th>Status</th>
 
 									</tr>
@@ -48,9 +48,9 @@
 								<tbody>
 									<tr>
 										<td></td>
+					
 										<td></td>
-										<td></td>
-										<td></td>
+	
 										<td></td>
 									</tr>
 								</tbody>

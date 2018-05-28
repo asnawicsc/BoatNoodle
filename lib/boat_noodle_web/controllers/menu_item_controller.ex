@@ -6,7 +6,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   require IEx
 
   def index(conn, _params) do
-    menu_item = Repo.all(MenuItem)
+    menu_item = Repo.all(MenuItem) |> Enum.reject(fn x -> x.category_type == "COMBO" end)
     # IEx.pry()
     render(conn, "index.html", menu_item: menu_item)
   end
