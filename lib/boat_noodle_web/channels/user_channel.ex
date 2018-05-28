@@ -21,7 +21,16 @@ defmodule BoatNoodleWeb.UserChannel do
 
     case Repo.update(cg) do
       {:ok, item_cat} ->
-        broadcast(socket, "updated_item_cat", %{categories: all_categories()})
+        menu_item = Repo.all(BoatNoodle.BN.MenuItem)
+
+        html =
+          Phoenix.View.render_to_string(
+            BoatNoodleWeb.MenuItemView,
+            "category_sidebar.html",
+            menu_item: menu_item
+          )
+
+        broadcast(socket, "updated_item_cat", %{categories: all_categories(), html: html})
 
       true ->
         IO.puts("error in inserting item cat")

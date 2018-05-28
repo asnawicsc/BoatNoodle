@@ -39,7 +39,6 @@ $(document).ready(function() {
         var cat_id = rw.find("td:first").html()
         channel.push("edit_item_category", {cat_id: cat_id})
       }
-
   });
 
   channel.on("open_edit_category", payload => {
@@ -52,9 +51,6 @@ $(document).ready(function() {
     $("form[aria-label='edit_category_form'] input[name='itemcatname']").val( payload.itemcatname)
     $("form[aria-label='edit_category_form'] input[name='itemcatdesc']").val( payload.itemcatdesc)
     $("form[aria-label='edit_category_form'] .selectpicker").selectpicker('val', payload.category_type);
-
-
-
   })
 
 
@@ -90,19 +86,31 @@ $(document).ready(function() {
       ]
     }); 
 
-          $.notify({
-              icon: "notifications",
-              message: "Category updated!"
+    $.notify({
+        icon: "notifications",
+        message: "Category updated!"
 
-          }, {
-              type: 'success',
-              timer: 100,
-              placement: {
-                  from: 'bottom',
-                  align: 'right'
-              }
-          });
+    }, {
+        type: 'success',
+        timer: 100,
+        placement: {
+            from: 'bottom',
+            align: 'right'
+        }
+    });
 
+    $("div#category_sidebar").html(payload.html)
+
+    $("button.item_cat").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        var item_cat_id = $(this).attr("id")
+        console.log("item category id = " + item_cat_id)
+        channel.push("list_items", {
+            item_cat_id: item_cat_id
+        })
+    })
   });
 
 
@@ -143,7 +151,6 @@ $(document).ready(function() {
                   align: 'right'
               }
           });
-
   })
 
   $("a[href='#menu_categories']").click(function(){
@@ -167,7 +174,6 @@ $(document).ready(function() {
       {data: 'is_default'},
       ]
     }); 
-
   });
 
 
