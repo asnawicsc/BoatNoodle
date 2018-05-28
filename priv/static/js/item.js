@@ -13,7 +13,7 @@ $(document).ready(function() {
 
     $("button.item_cat").click(function() {
 
-        $("#backdrop").fadeIn()
+
 
         var item_cat_id = $(this).attr("id")
         console.log("item category id = " + item_cat_id)
@@ -51,7 +51,7 @@ $(document).ready(function() {
             ]
         });
 
-        $("#backdrop").delay(500).fadeOut()
+      
     })
 
 });

@@ -36,7 +36,7 @@
               
                   <select class="selectpicker" data-style="btn select-with-transition" name="category_type" title="Choose Category" data-size="10">
                          <option value="FOOD">FOOD</option>
-                         <option value="DRINK">DRINK</option>
+                         <option value="DRINKS">DRINKS</option>
                          <option value="COMBO">COMBO</option>
                   </select>
              

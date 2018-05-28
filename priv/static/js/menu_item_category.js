@@ -1,9 +1,9 @@
 $(document).ready(function() {
 
   $("input[name='previous_category']").click(function(){
-    $("div[aria-label='add_new_category']").fadeOut()
-    $("div[aria-label='edit_new_category']").fadeOut()
-    $("div[aria-label='menu_item_content']").fadeIn()
+    $("div[aria-label='add_new_category']").hide()
+    $("div[aria-label='edit_new_category']").hide()
+    $("div[aria-label='menu_item_content']").show()
   })
 
 
@@ -19,14 +19,16 @@ $(document).ready(function() {
 
   channel2.on("open_edit_category", payload => {
     
-    $("div[aria-label='menu_item_content']").fadeOut()
-    $("div[aria-label='edit_new_category']").fadeIn()
+    $("div[aria-label='menu_item_content']").hide()
+    $("div[aria-label='edit_new_category']").show()
 
     $("input[name='category_update']").attr("id", payload.itemcatid)
     $("form[aria-label='edit_category_form'] input[name='itemcatcode']").val( payload.itemcatcode)
     $("form[aria-label='edit_category_form'] input[name='itemcatname']").val( payload.itemcatname)
     $("form[aria-label='edit_category_form'] input[name='itemcatdesc']").val( payload.itemcatdesc)
     $("form[aria-label='edit_category_form'] .selectpicker").selectpicker('val', payload.category_type);
+
+    $("form[aria-label='edit_category_form'] input[name='itemcatcode']").focus()
   })
 
 
@@ -38,8 +40,8 @@ $(document).ready(function() {
 
   channel2.on("updated_item_cat", payload => {
 
-    $("div[aria-label='edit_new_category']").fadeOut()
-    $("div[aria-label='menu_item_content']").fadeIn()
+    $("div[aria-label='edit_new_category']").hide()
+    $("div[aria-label='menu_item_content']").show()
 
     $("form[aria-label='edit_category_form'] input[name='itemcatcode']").val("")
     $("form[aria-label='edit_category_form'] input[name='itemcatname']").val("")
@@ -79,7 +81,7 @@ $(document).ready(function() {
 
     $("button.item_cat").click(function() {
 
-        $("#backdrop").fadeIn()
+        $("#backdrop").show()
 
         var item_cat_id = $(this).attr("id")
         console.log("item category id = " + item_cat_id)
@@ -102,9 +104,9 @@ $(document).ready(function() {
     $("form[aria-label='category_form'] input[name='itemcatname']").val("")
     $("form[aria-label='category_form'] input[name='itemcatdesc']").val("")
     $("form[aria-label='category_form'] .selectpicker").selectpicker('val', 'none');
-    $("div[aria-label='add_new_category']").fadeOut()
+    $("div[aria-label='add_new_category']").hide()
     $("a[href='#menu_categories']").click()
-    $("div[aria-label='menu_item_content']").fadeIn()
+    $("div[aria-label='menu_item_content']").show()
           $.notify({
               icon: "notifications",
               message: "Category created!"
@@ -122,7 +124,7 @@ $(document).ready(function() {
 
     $("button.item_cat").click(function() {
 
-        $("#backdrop").fadeIn()
+    
 
         var item_cat_id = $(this).attr("id")
         console.log("item category id = " + item_cat_id)
@@ -201,7 +203,7 @@ $(document).ready(function() {
 
     $("button.item_cat").click(function() {
 
-        $("#backdrop").fadeIn()
+ 
 
         var item_cat_id = $(this).attr("id")
         console.log("item category id = " + item_cat_id)
@@ -212,5 +214,37 @@ $(document).ready(function() {
 
   })
 
+
+    channel2.on("populate_table_items", payload => {
+        console.log(payload.items)
+        var data = payload.items
+
+        $("table#items").DataTable({
+            destroy: true,
+            data: data,
+            columns: [{
+                    data: 'itemcode'
+                },
+                
+                {
+                    data: 'itemname'
+                },
+                
+                {
+                    data: 'is_activate',
+                    render: function(data, type, row, meta){
+                      if (data == "1") {
+                        var html = '<span class="badge badge-success">Activated</span>'
+                      } else {
+                        var html = '<span class="badge badge-danger">Deactivated</span>'
+                      }
+                    return html
+                    } 
+                }
+            ]
+        });
+
+
+    })
 
 });
