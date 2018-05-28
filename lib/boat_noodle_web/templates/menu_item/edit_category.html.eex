@@ -1,16 +1,16 @@
-<div class="col-md-8 mr-auto ml-auto" aria-label="add_new_category" style="display: none;">
+<div class="col-md-8 mr-auto ml-auto" aria-label="edit_new_category" style="display: none;">
 
     <div class="card " data-color="rose" >
      
         <div class="card-header text-center">
           <h3 class="card-title item_cat">
-            Add New Category
+            Edit Category
           </h3>
 
         </div>
 
         <div class="card-body">     
-          <form method="get" action="/" class="form-horizontal" aria-label="category_form">
+          <form method="get" action="/" class="form-horizontal" aria-label="edit_category_form">
 
   
             <div class="row">
@@ -52,7 +52,7 @@
                       <input class="btn btn-previous btn-fill btn-default btn-wd" name="previous_category" value="Previous" type="button">
                     </div>
           <div class="ml-auto">
-            <input class="btn btn-next btn-fill btn-rose btn-wd" name="category_create" value="Create" type="submit">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="category_update" id="" value="Update" type="submit">
            
           </div>
           <div class="clearfix"></div>

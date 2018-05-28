@@ -28,11 +28,9 @@
     <div class="card-body">
 	  	
 			<div class="row">
-				<div class="col-lg-2">
+				<div class="col-lg-2" id="category_sidebar">
 
-							<%= for cat <- @menu_item do %>
-							<button type="button" class="btn btn-primary btn-round item_cat" id="<%= cat.itemcatid %>" style="width: 200px;"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</button>
-							<% end %>
+					<%= render("category_sidebar.html", menu_item: @menu_item)%>
 
 				</div>
 				<div class="col-lg-10">
