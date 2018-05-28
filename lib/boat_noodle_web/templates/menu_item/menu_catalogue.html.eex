@@ -1,15 +1,71 @@
 <div class="tab-pane" id="menu_catalogue">
   <div class="card">
     <div class="card-header">
-      <h4 class="card-title">Legal info of the product</h4>
+      <h4 class="card-title">Menu Catalogue</h4>
       <p class="card-category">
         More information here
       </p>
     </div>
     <div class="card-body">
-      Completely synergize resource taxing relationships via premier niche markets. Professionally cultivate one-to-one customer service with robust ideas.
-      <br>
-      <br>Dynamically innovate resource-leveling customer service for state of the art customer service.
+
+
+<div class="row">
+<div class="col-md-2">
+  <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+<%= for menu_catalog <- @menu_catalogs do %>
+
+    <li class="nav-item">
+      <a class="nav-link menu_catalog_item" data-toggle="tab" href="#<%= menu_catalog.id %>" aria-label="<%= menu_catalog.id %>" role="tablist">
+        <%= menu_catalog.name %>
+      </a>
+    </li>
+<% end %>
+
+  </ul>
+</div>
+<div class="col-md-10">
+  <div class="tab-content">
+    <%= for menu_catalog <- @menu_catalogs do %>
+    <div class="tab-pane menu_catalog_item" id="<%= menu_catalog.id%>">
+      <div class="row">
+        
+        <% items =  item_subcats(menu_catalog.items)  %>
+        <% cats = items |> Map.keys()%>
+        <%= for cat <- cats do %>
+   
+
+          <div class="col-md-3">
+            <div class="card card-product" data-count="3">
+              <div class="card-header" data-header-animation="true">
+   
+              </div>
+              <div class="card-body">
+              
+                <h4 class="card-title">
+                  <a href="#pablo">     <%= cat %></a>
+                </h4>
+                <div class="card-description">
+                  <ul>
+                    
+                    <%= for item <- items[cat] do %>
+                      <li><%= item.itemname %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <% end %>
+
+
+  </div>
+</div>
+</div>
     </div>
   </div>
 </div>
+

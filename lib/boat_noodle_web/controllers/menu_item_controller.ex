@@ -3,12 +3,15 @@ defmodule BoatNoodleWeb.MenuItemController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.MenuItem
+  alias BoatNoodle.BN.MenuCatalog
   require IEx
 
   def index(conn, _params) do
     menu_item = Repo.all(MenuItem) |> Enum.reject(fn x -> x.category_type == "COMBO" end)
+    menu_catalog = Repo.all(from(m in MenuCatalog))
+
     # IEx.pry()
-    render(conn, "index.html", menu_item: menu_item)
+    render(conn, "index.html", menu_item: menu_item, menu_catalog: menu_catalog)
   end
 
   def new(conn, _params) do

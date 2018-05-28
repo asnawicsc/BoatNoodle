@@ -41,7 +41,7 @@
 									<%= render("categories.html")%>
 									<%= render("item_remark.html")%>
 									<%= render("combo.html")%>
-									<%= render("menu_catalogue.html")%>
+									<%= render("menu_catalogue.html", menu_catalogs: @menu_catalog)%>
 
                   
                  
