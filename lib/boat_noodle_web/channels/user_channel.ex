@@ -58,6 +58,17 @@ defmodule BoatNoodleWeb.UserChannel do
 
     Repo.delete(cat)
 
+    menu_item = Repo.all(BoatNoodle.BN.MenuItem)
+
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.MenuItemView,
+        "category_sidebar.html",
+        menu_item: menu_item
+      )
+
+    broadcast(socket, "deleted_category", %{html: html})
+
     {:noreply, socket}
   end
 
@@ -98,7 +109,16 @@ defmodule BoatNoodleWeb.UserChannel do
 
     case Repo.insert(cg) do
       {:ok, item_cat} ->
-        broadcast(socket, "inserted_item_cat", %{})
+        menu_item = Repo.all(BoatNoodle.BN.MenuItem)
+
+        html =
+          Phoenix.View.render_to_string(
+            BoatNoodleWeb.MenuItemView,
+            "category_sidebar.html",
+            menu_item: menu_item
+          )
+
+        broadcast(socket, "inserted_item_cat", %{html: html})
 
       true ->
         IO.puts("error in inserting item cat")
