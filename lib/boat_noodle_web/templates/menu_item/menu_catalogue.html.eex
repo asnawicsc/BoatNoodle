@@ -27,37 +27,85 @@
   <div class="tab-content">
     <%= for menu_catalog <- @menu_catalogs do %>
     <div class="tab-pane menu_catalog_item" id="<%= menu_catalog.id%>">
-      <div class="row">
-        
-        <% items =  item_subcats(menu_catalog.items)  %>
-        <% cats = items |> Map.keys()%>
-        <%= for cat <- cats do %>
-   
-
-          <div class="col-md-3">
-            <div class="card card-product" data-count="3">
-              <div class="card-header" data-header-animation="true">
-   
-              </div>
-              <div class="card-body">
-              
-                <h4 class="card-title">
-                  <a href="#pablo">     <%= cat %></a>
-                </h4>
-                <div class="card-description">
-                  <ul>
-                    
-                    <%= for item <- items[cat] do %>
-                      <li><%= item.itemname %></li>
-                    <% end %>
+            <div class="col-md-12">
+              <div class="card ">
+                <div class="card-header ">
+                  <h4 class="card-title">Navigation Pills -
+                    <small class="description">Horizontal Tabs</small>
+                  </h4>
+                </div>
+                <div class="card-body ">
+                  <ul class="nav nav-pills nav-pills-warning" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active show" data-toggle="tab" href="#link1" role="tablist">
+                        Profile
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                        Settings
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
+                        Options
+                      </a>
+                    </li>
                   </ul>
+                  <div class="tab-content tab-space">
+                    <div class="tab-pane active show" id="link1">
+                      <% items =  item_subcats(menu_catalog.items)  %>         
+                                 
+                      <div class="row">
+                        <div class="col-lg-12">
+                          <table class="table data">
+                            <thead>
+                              <tr>
+                                <th>Category</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              
+                                  
+                                          <%= for item <- items do %>
+                              <tr>
+                                <td><%= item.catname %></td>
+                                <td><%= item.itemname %></td>
+                                <td><%= item.itemprice %></td>
+                                <td><%= item.subcatid %></td>
+                              </tr>              
+                                   
+
+                                      
+                                          <% end %>
+                            </tbody>
+                          </table>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="link2">
+                      Efficiently unleash cross-media information without cross-media value. Quickly maximize timely deliverables for real-time schemas.
+                      <br>
+                      <br>Dramatically maintain clicks-and-mortar solutions without functional solutions.
+                    </div>
+                    <div class="tab-pane" id="link3">
+                      Completely synergize resource taxing relationships via premier niche markets. Professionally cultivate one-to-one customer service with robust ideas.
+                      <br>
+                      <br>Dynamically innovate resource-leveling customer service for state of the art customer service.
+                    </div>
+                  </div>
                 </div>
               </div>
-
             </div>
-          </div>
-        <% end %>
-      </div>
+        
+
+
+
+    
     </div>
     <% end %>
 

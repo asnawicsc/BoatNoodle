@@ -112,5 +112,7 @@ $(document).ready(function(){
       $(".menu_catalog_item.tab-pane").attr("class", "menu_catalog_item tab-pane")
       $("div#"+id+".menu_catalog_item.tab-pane").toggleClass("active show")
     })
+
+    $("table.data").DataTable()
 });
 
