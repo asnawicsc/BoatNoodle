@@ -10,6 +10,68 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+  def handle_in("update_category_form", %{"map" => map, "cat_id" => cat_id}, socket) do
+    item_cat_params =
+      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
+      |> Enum.into(%{})
+
+    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+
+    cg = BoatNoodle.BN.ItemCat.changeset(cat, item_cat_params)
+
+    case Repo.update(cg) do
+      {:ok, item_cat} ->
+        menu_item = Repo.all(BoatNoodle.BN.MenuItem)
+
+        html =
+          Phoenix.View.render_to_string(
+            BoatNoodleWeb.MenuItemView,
+            "category_sidebar.html",
+            menu_item: menu_item
+          )
+
+        broadcast(socket, "updated_item_cat", %{categories: all_categories(), html: html})
+
+      true ->
+        IO.puts("error in inserting item cat")
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_in("edit_item_category", %{"cat_id" => cat_id}, socket) do
+    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+
+    broadcast(socket, "open_edit_category", %{
+      itemcatcode: cat.itemcatcode,
+      itemcatname: cat.itemcatname,
+      itemcatdesc: cat.itemcatdesc,
+      category_type: cat.category_type,
+      itemcatid: cat.itemcatid
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("delete_item_category", %{"cat_id" => cat_id}, socket) do
+    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+
+    Repo.delete(cat)
+
+    menu_item = Repo.all(BoatNoodle.BN.MenuItem)
+
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.MenuItemView,
+        "category_sidebar.html",
+        menu_item: menu_item
+      )
+
+    broadcast(socket, "deleted_category", %{html: html})
+
+    {:noreply, socket}
+  end
+
   def handle_in("submit_item_form", %{"map" => map}, socket) do
     item_subcat_params =
       map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
@@ -47,7 +109,16 @@ defmodule BoatNoodleWeb.UserChannel do
 
     case Repo.insert(cg) do
       {:ok, item_cat} ->
-        broadcast(socket, "inserted_item_cat", %{})
+        menu_item = Repo.all(BoatNoodle.BN.MenuItem)
+
+        html =
+          Phoenix.View.render_to_string(
+            BoatNoodleWeb.MenuItemView,
+            "category_sidebar.html",
+            menu_item: menu_item
+          )
+
+        broadcast(socket, "inserted_item_cat", %{html: html})
 
       true ->
         IO.puts("error in inserting item cat")
@@ -56,24 +127,25 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  def handle_in("load_all_categories", %{"user_id" => user_id}, socket) do
-    categories =
-      Repo.all(
-        from(
-          i in BoatNoodle.BN.ItemCat,
-          select: %{
-            itemcatid: i.itemcatid,
-            itemcatname: i.itemcatname,
-            itemcatcode: i.itemcatcode,
-            itemcatdesc: i.itemcatdesc,
-            category_type: i.category_type,
-            is_default: i.is_default,
-            is_delete: i.is_delete
-          }
-        )
+  defp all_categories() do
+    Repo.all(
+      from(
+        i in BoatNoodle.BN.ItemCat,
+        select: %{
+          itemcatid: i.itemcatid,
+          itemcatname: i.itemcatname,
+          itemcatcode: i.itemcatcode,
+          itemcatdesc: i.itemcatdesc,
+          category_type: i.category_type,
+          is_default: i.is_default,
+          is_delete: i.is_delete
+        }
       )
+    )
+  end
 
-    broadcast(socket, "dt_show_categories", %{categories: categories})
+  def handle_in("load_all_categories", %{"user_id" => user_id}, socket) do
+    broadcast(socket, "dt_show_categories", %{categories: all_categories()})
     {:noreply, socket}
   end
 
@@ -1424,202 +1496,6 @@ defmodule BoatNoodleWeb.UserChannel do
       )
 
     broadcast(socket, "populate_table_voided_order_data", %{voided_order_data: voided_order_data})
-    {:noreply, socket}
-  end
-
-  def handle_in("morning_sales_summary", payload, socket) do
-    s_date = payload["s_date"]
-    e_date = payload["e_date"]
-
-    a = Date.from_iso8601!(s_date)
-    b = Date.from_iso8601!(e_date)
-
-    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
-
-    morning_sales_summary =
-      for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
-          )
-        )
-      end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 0 && x.salesdatetime.hour <= 10
-      end)
-
-    total_sales =
-      morning_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = morning_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_morning_sales_summary_data", %{
-      morning_sales_summary: morning_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_in("lunch_sales_summary", payload, socket) do
-    s_date = payload["s_date"]
-    e_date = payload["e_date"]
-
-    a = Date.from_iso8601!(s_date)
-    b = Date.from_iso8601!(e_date)
-
-    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
-
-    lunch_sales_summary =
-      for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
-          )
-        )
-      end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 11 && x.salesdatetime.hour <= 14
-      end)
-
-    total_sales =
-      lunch_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = lunch_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_lunch_sales_summary_data", %{
-      lunch_sales_summary: lunch_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_in("idle_sales_summary", payload, socket) do
-    s_date = payload["s_date"]
-    e_date = payload["e_date"]
-
-    a = Date.from_iso8601!(s_date)
-    b = Date.from_iso8601!(e_date)
-
-    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
-
-    idle_sales_summary =
-      for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
-          )
-        )
-      end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 15 && x.salesdatetime.hour <= 17
-      end)
-
-    total_sales =
-      idle_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = idle_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_idle_sales_summary_data", %{
-      idle_sales_summary: idle_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_in("dinner_sales_summary", payload, socket) do
-    s_date = payload["s_date"]
-    e_date = payload["e_date"]
-
-    a = Date.from_iso8601!(s_date)
-    b = Date.from_iso8601!(e_date)
-
-    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
-
-    dinner_sales_summary =
-      for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
-          )
-        )
-      end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 18 && x.salesdatetime.hour <= 24
-      end)
-
-    total_sales =
-      dinner_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = dinner_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_dinner_sales_summary_data", %{
-      dinner_sales_summary: dinner_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
     {:noreply, socket}
   end
 

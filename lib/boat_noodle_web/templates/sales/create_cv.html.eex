@@ -1,117 +1,148 @@
 
-                      <table class="table" border="1">
+                      <table class="" border="1">
                         <thead>
                         </thead>
                          <tr>
 
                           </tr>
                         <tbody>
+                          <tr>
+                            <td colspan="2"></td>
+                            <td colspan="<%= @count_month %>">Quantity</td>
+                          </tr>
 
                           <tr>
-                            <td>Category</td>
-                             <td></td>
-                            <%= for item <- @try2 do %>
-                            <td><%= item.month %></td>
+                            <td >Category</td>
+                            <td >Combo Name</td>
+                            <%= for item <- @month do %>
+                            <td><%= item %></td>
                            <% end %>
                           </tr>
+
                           <tr>
-                            <td>F_Noodle</td>
+                            <td>F_AddOn</td>
+                            <td>Individual</td>
+                            <%= for item <- @addon_qty_ind do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+
+                          <tr>
+                            <td>F_Beverages</td>
+                            <td>Combo</td>
+                            <%= for item <- @beverages_qty_com do %> 
+                            <td><%= item.sum %></td>
+                           <% end %>
+                          </tr>
+
+                           <tr>
                             <td></td>
-                            <%= for item <- @try2 do %> 
+                            <td>Individual</td>
+                            <%= for item <- @beverages_qty_ind do %> 
                             <td><%= item.sum %></td>
                            <% end %>
                            
                           </tr>
-                          <tr>
-                            <td>F_Beverages</td>
-                            <td>Combo</td>
-                            <%= for item <- @try5 do %> 
-                            <td><%= item.sum %></td>
-                           <% end %>
-                          </tr>
-                           <tr>
-                            <td></td>
-                            <td>Individual</td>
-                            <%= for item <- @try4 do %> 
-                            <td><%= item.sum %></td>
-                           <% end %>
-                          </tr>
+
                            <tr>
                             <td>F_Breakfast</td>
                             <td>Combo</td>
-                            <%= for item <- @try8 do %> 
+                            <%= for item <- @breakfast_qty_com do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                               
                           </tr>
+
                            <tr>
                             <td></td>
                             <td>Individual</td>
-                            <%= for item <- @try7 do %> 
+                            <%= for item <- @breakfast_qty_ind do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                              
                           </tr>
+
                           <tr>
                             <td>F_Noodle</td>
                             <td>Combo</td>
-                            <%= for item <- @try11 do %> 
+                            <%= for item <- @noodle_qty_com do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                           
                           </tr>
+
                            <tr>
                             <td></td>
                             <td>Individual</td>
-                            <%= for item <- @try10 do %> 
+                            <%= for item <- @noodle_qty_ind do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                           
                           </tr>
+
                           <tr>
                             <td>F_Rice</td>
                             <td>Combo</td>
-                            <%= for item <- @try14 do %> 
+                            <%= for item <- @rice_qty_com do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                          
                           </tr>
+
                            <tr>
                             <td></td>
                             <td>Individual</td>
-                            <%= for item <- @try13 do %> 
+                            <%= for item <- @rice_qty_ind do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                           
                           </tr>
+
                           <tr>
                             <td>F_SideDish</td>
                             <td>Combo</td>
-                            <%= for item <- @try17 do %> 
+                            <%= for item <- @sidedish_qty_com do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                           
                           </tr>
+
                            <tr>
                             <td></td>
                             <td>Individual</td>
-                            <%= for item <- @try16 do %> 
+                            <%= for item <- @sidedish_qty_ind do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                          
                           </tr>
+
                           <tr>
                             <td>Toppings</td>
                             <td>Combo</td>
-                            <%= for item <- @try20 do %> 
+                            <%= for item <- @toppings_qty_com do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                          
                           </tr>
+
                            <tr>
                             <td></td>
                             <td>Individual</td>
-                            <%= for item <- @try19 do %> 
+                            <%= for item <- @toppings_qty_ind do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                           
                           </tr>
+
                            <tr>
                             <td>Grand Total</td>
                             <td></td>
                             <%= for item <- @grand_total do %> 
                             <td><%= item.sum %></td>
                            <% end %>
+                        
                           </tr>
                         </tbody>
                       </table>
+
+<br>

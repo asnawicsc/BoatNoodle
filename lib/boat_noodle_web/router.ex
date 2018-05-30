@@ -31,7 +31,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/discount_item", DiscountItemController)
     resources("/discount_catalog_master", DiscountCatalogMasterController)
     resources("/discount_catalog", DiscountCatalogController)
-    resources "/discount", DiscountController
+    resources("/discount", DiscountController)
 
     resources("/tag", TagController)
     resources("/tag_catalog", TagCatalogController)
@@ -43,6 +43,10 @@ defmodule BoatNoodleWeb.Router do
     get("/login", UserController, :login)
     post("/authenticate_login", UserController, :authenticate_login)
     get("/logout", UserController, :logout)
+    get("/edit_profile/:id", UserController, :edit)
+    post("/update_profile", UserController, :update_profile)
+    get("/forget_password", UserController, :forget_password)
+    post("/forget_password_email", UserController, :forget_password_email)
 
     resources("/organization", OrganizationController)
     resources("/branch", BranchController)
@@ -51,7 +55,6 @@ defmodule BoatNoodleWeb.Router do
     resources("/sales", SalesController)
 
     get("/summary", SalesController, :summary)
-    get("/summary2", SalesController, :summary2)
     get("/item_sales", SalesController, :item_sales)
     get("/discounts", SalesController, :discounts)
     get("/voided", SalesController, :voided)

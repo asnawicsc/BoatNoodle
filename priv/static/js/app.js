@@ -1,5 +1,4 @@
-
-  $(document).ready(function(){
+$(document).ready(function(){
 
     var start = moment().subtract(29, 'days');
     var end = moment();
@@ -27,10 +26,6 @@
     }, cb);
 
     cb(start, end);
-
-
-
-
 
 
         var title = $("h1.page-header").html()
@@ -106,8 +101,6 @@
                 p.toggleClass("active")
                 $("a[href='#menu_item']").click()
                 break;
-
-
    
             default:
                 console.log("default")

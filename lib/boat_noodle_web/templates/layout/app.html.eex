@@ -26,7 +26,7 @@
 
 <body class="">
   <div class="wrapper">
-        <%= render("sidebar.html")%>
+        <%= render("sidebar.html", conn: @conn)%>
     <div class="main-panel">
         <%= render("nav_metro.html")%>
 <style type="text/css">
@@ -203,7 +203,13 @@ $(document).ready(function(){
 </script>
 
 
-<script src="/js/app.js"></script>
 <script src="/js/phoenix.js"></script>
+
 <script src="/js/socket.js"></script>
+
+<script src="/js/app.js"></script>
+
+<script src="/js/sales.js"></script>
+
+<script src="/js/menu_item_category.js"></script>
 </html>

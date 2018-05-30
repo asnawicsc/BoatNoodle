@@ -5,9 +5,13 @@ defmodule BoatNoodleWeb.SalesController do
   alias BoatNoodle.BN.Sales
   require IEx
 
+  defp branches() do
+    Repo.all(from(s in BoatNoodle.BN.Branch, order_by: [asc: s.branchname]))
+    |> Enum.reject(fn x -> x.branchid == 0 end)
+  end
+
   def index(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "index.html", branches: branches)
+    render(conn, "index.html", branches: branches())
   end
 
   def new(conn, _params) do
@@ -16,29 +20,28 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def summary(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "summary.html",branches: branches)
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch))
+    render(conn, "summary.html", branches: branches())
   end
 
-  def summary2(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "summary2.html",branches: branches)
-  end
+
 
   def item_sales(conn, _params) do
-   branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "item_sales.html",branches: branches)
+    render(conn, "item_sales.html", branches: branches())
   end
+
 
   def discounts(conn, _params) do  
    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
     render(conn, "discounts.html",branches: branches)
+
   end
 
-
   def voided(conn, _params) do
+
     branches = Repo.all(from(s in BoatNoodle.BN.Branch))
     render(conn, "voided.html",branches: branches)
+
   end
 
   def csv_compare_category_qty(conn, _params) do
@@ -58,8 +61,6 @@ defmodule BoatNoodleWeb.SalesController do
     date_data1 = Date.range(a, b) |> Enum.map(fn x -> %{date: x} end)|>Enum.group_by(fn x->Integer.to_string(x.date.month) end)|>Map.keys
     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
   
-
-
   
       try1=Repo.all(
           from(
@@ -72,22 +73,29 @@ defmodule BoatNoodleWeb.SalesController do
             select: %{
               total: sd.qty,
               date: s.salesdate,
+              price: sd.order_price,
               itemcatname: ic.itemcatname,
               category_type: ic.category_type
             }
           )
-        )
-  
+      )
 
-      try2=for item <- date_data1 do
+
+      month=for item <- date_data1 do
+
+      item|>String.to_integer|>Timex.month_name() 
+      end
+
+      addon_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.itemcatname=="F_AddOn" end)|>Enum.map(fn x-> x.total end)|>Enum.sum
-        %{month: item,sum: a}
+        %{sum: a}
 
       end
 
-      try4=for item <- date_data1 do
+
+      beverages_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Beverages"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -95,7 +103,8 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
-      try5=for item <- date_data1 do
+
+      beverages_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Beverages" end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -104,7 +113,8 @@ defmodule BoatNoodleWeb.SalesController do
       end
 
 
-      try7=for item <- date_data1 do
+
+      breakfast_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Breakfast"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -112,7 +122,9 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
-      try8=for item <- date_data1 do
+
+
+      breakfast_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Breakfast"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -120,7 +132,8 @@ defmodule BoatNoodleWeb.SalesController do
       end
 
 
-      try10=for item <- date_data1 do
+
+      noodle_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Noodle"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -128,7 +141,8 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
-      try11=for item <- date_data1 do
+
+      noodle_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Noodle" end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -137,7 +151,7 @@ defmodule BoatNoodleWeb.SalesController do
       end
 
 
-      try13=for item <- date_data1 do
+      rice_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Rice"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -145,7 +159,9 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
-      try14=for item <- date_data1 do
+
+
+      rice_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Rice"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -154,7 +170,7 @@ defmodule BoatNoodleWeb.SalesController do
       end
 
 
-      try16=for item <- date_data1 do
+      sidedish_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_SideDish"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -162,7 +178,8 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
-      try17=for item <- date_data1 do
+
+      sidedish_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_SideDish"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -170,7 +187,8 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
-      try19=for item <- date_data1 do
+
+      toppings_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO"  and x.itemcatname=="Toppings"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -178,7 +196,8 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
-      try20=for item <- date_data1 do
+
+      toppings_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item and  x.category_type =="COMBO" and x.itemcatname=="Toppings"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
@@ -186,15 +205,26 @@ defmodule BoatNoodleWeb.SalesController do
 
       end
 
+
+
       grand_total=for item <- date_data1 do
 
         item= String.to_integer(item)
         a=Enum.filter(try1, fn x -> x.date.month == item end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{month: item,sum: a}
-
+      
       end
 
-     render(conn, "create_cv.html",try2: try2,try4: try4,try5: try5,try7: try7,try8: try8,try10: try10,try11: try11,try13: try13,try14: try14,try16: try16,try17: try17,try19: try19,try20: try20,grand_total: grand_total)
+
+
+
+
+
+      count_month=Enum.count(date_data1)
+
+     render(conn, "create_cv.html",count_month: count_month,month: month,grand_total: grand_total,addon_qty_ind: addon_qty_ind,beverages_qty_ind: beverages_qty_ind,beverages_qty_com: beverages_qty_com,
+      breakfast_qty_ind: breakfast_qty_ind,breakfast_qty_com: breakfast_qty_com,noodle_qty_ind: noodle_qty_ind, noodle_qty_com: noodle_qty_com,rice_qty_ind: rice_qty_ind,
+      rice_qty_com: rice_qty_com,sidedish_qty_ind: sidedish_qty_ind,sidedish_qty_com: sidedish_qty_com,toppings_qty_ind: toppings_qty_ind,toppings_qty_com: toppings_qty_com)
   end
 
   def create(conn, %{"sales" => sales_params}) do
