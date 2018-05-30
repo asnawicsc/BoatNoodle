@@ -62,6 +62,6 @@ config :boat_noodle, BoatNoodle.Repo,
   port: "15100",
   username: "phoenix_bn",
   password: "123123",
-  database: "BN",
+  database: "posgb_boatnoodle",
   pool_size: 10,
   timeout: 90000

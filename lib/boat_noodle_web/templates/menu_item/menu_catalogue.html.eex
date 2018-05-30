@@ -7,100 +7,86 @@
       </p>
     </div>
     <div class="card-body">
+      <% require IEx %>
 
+        <div class="row">
+          <div class="col-md-12" style="width: 100%;">
 
-<div class="row">
-<div class="col-md-2">
-  <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
-<%= for menu_catalog <- @menu_catalogs do %>
+              <table style="float: left;">
 
-    <li class="nav-item">
-      <a class="nav-link menu_catalog_item" data-toggle="tab" href="#c<%= menu_catalog.id %>" aria-label="<%= menu_catalog.id %>" role="tablist">
-        <%= menu_catalog.name %>
-      </a>
-    </li>
-<% end %>
+                <tr style="height: 27px;">
+                  <th  class="headcol"  ></th>
+ 
+                </tr>
+                <%= for menu_catalog <- @menu_catalogs do %>
+                 
 
-  </ul>
-</div>
-<div class="col-md-10">
-  <div class="tab-content">
-    <%= for menu_catalog <- @menu_catalogs do %>
-    <div class="tab-pane menu_catalog_item" id="c<%= menu_catalog.id%>">
-            <div class="col-md-12">
-              <div class="card ">
-               
-                <div class="card-body ">
-                  <ul class="nav nav-pills nav-pills-warning" role="tablist">
-                    <li class="nav-item">
-                      <a class="nav-link active show" data-toggle="tab" href="#link1" role="tablist">
-                        All
-                      </a>
-                    </li>
-           
-                  </ul>
-                  <div class="tab-content tab-space">
-                    <div class="tab-pane active show" id="link1">
-                      <% items =  item_subcats(menu_catalog.items)  %>         
-                                 
-                      <div class="row">
-                        <div class="col-lg-12">
-                          <table class="table data">
-                            <thead>
-                              <tr>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Category</th>
-                                <th>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              
-                                  
-                                          <%= for item <- items do %>
-                              <tr>
-                                <td><%= item.itemname %></td>
-                                <td><%= item.itemprice %></td>
-                                <td><%= item.catname %></td>
-                                <td><%= item.subcatid %></td>
-                              </tr>              
-                                   
+                    <tr style="height: 27px;">
 
-                                      
-                                          <% end %>
-                            </tbody>
-                          </table>
-                        </div>
+                      <th class="headcol" >
+                        <%= menu_catalog.name %>
+                      </th>
+ 
+                    </tr>
 
-                      </div>
-                    </div>
-                    <div class="tab-pane" id="link2">
-                      Efficiently unleash cross-media information without cross-media value. Quickly maximize timely deliverables for real-time schemas.
-                      <br>
-                      <br>Dramatically maintain clicks-and-mortar solutions without functional solutions.
-                    </div>
-                    <div class="tab-pane" id="link3">
-                      Completely synergize resource taxing relationships via premier niche markets. Professionally cultivate one-to-one customer service with robust ideas.
-                      <br>
-                      <br>Dynamically innovate resource-leveling customer service for state of the art customer service.
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    <% end %>
+              </table>
+            <div style="overflow-x: scroll;">
+              
+              <table style="table-layout: fixed;width: 5000px;margin-left: 20px;">
+
+                <tr>
+                  <th  class="headcol"  style="display: none;"></th>
+                  <%= for itemcode <- @itemcodes do %>
+                    <th>
+                      <%= itemcode %>
+                    </th>
+                    <% end %>
+                </tr>
+                <%= for menu_catalog <- @menu_catalogs do %>
+                  <% ids = String.split(menu_catalog.items, ",") |> Enum.reject(fn x -> x == "" end) |> Enum.map(fn x -> String.to_integer(x) end) %>
+
+                    <tr>
+
+                      <th class="headcol" style="display: none;">
+                        <%= menu_catalog.name %>
+                      </th>
+                      <%= for itemcode <- @itemcodes do %>
+                        <td style="border: black 1px solid; text-align: right; padding-right: 5px;">
+                          <% data = @arranged_items[itemcode] %>
+
+                            <%= for d <- data do %>
+
+                              <%= if Enum.any?(ids, fn x -> x == d.subcatid end) do %>
+                                 <% case d.price_code do 
+                                 "A" ->
+                                    style = "primary"
+                                  "B" ->
+                                    style = "warning"
+                                  "C" ->
+                                    style = "success"
+                                  "D" ->
+                                    style = "info"
+                                  "E" ->
+                                    style = "rose"
+                                  _ ->
+                                    style = "danger"
+                                  end %>
+                              <span class="badge badge-<%= style %>"><%= d.itemprice %></span>
+                                
+                              <% end %>
+                            <% end %>
+
+                        </td>
+                      <% end %>
+                    </tr>
+
+                    <% end %>
+              </table>
             </div>
-        
+          </div>
 
-
-
-    
-    </div>
-    <% end %>
-
-
-  </div>
-</div>
-</div>
+        </div>
     </div>
   </div>
 </div>
-

@@ -52,6 +52,7 @@ defmodule BoatNoodleWeb.UserController do
           email: params["email"]
         }
 
+        IEx.pry()
         bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
         crypted_password = Plug.Crypto.MessageEncryptor.encrypt(params["new_pass"], bin, bin)
         user_params = Map.put(user_params, :password_v2, crypted_password)
@@ -124,10 +125,15 @@ defmodule BoatNoodleWeb.UserController do
     user = Repo.get_by(User, username: username)
 
     if user != nil do
-      bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
-      {:ok, saved_password} = Plug.Crypto.MessageEncryptor.decrypt(user.password_v2, bin, bin)
+      # bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
 
-      if password_v2 == saved_password do
+      # {:ok, saved_password} = Plug.Crypto.MessageEncryptor.decrypt(user.password_v2, bin, bin)
+
+      p2 = String.replace(user.password, "$2y", "$2b")
+
+      if Comeonin.Bcrypt.checkpw(password_v2, p2) do
+        # IEx.pry()
+
         conn
         |> put_session(:user_id, user.id)
         |> put_flash(:info, "Login successfully")
@@ -181,6 +187,7 @@ defmodule BoatNoodleWeb.UserController do
 
         BoatNoodle.Email.forget_password(
           user.email,
+          # "yithanglee@gmail.com",
           preset_password,
           user.username,
           password_not_set
