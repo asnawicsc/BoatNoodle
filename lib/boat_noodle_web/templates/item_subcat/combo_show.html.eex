@@ -1,4 +1,4 @@
-<h2>Show Item subcat</h2>
+<h2>Show Combo</h2>
 
 
 
@@ -14,11 +14,6 @@
       <h3 class="card-title"><%= @item_subcat.itemname %></h3>
     </div>
     <div class="card-body">
-
-
-  
-    </div>
-    <div class="card-footer">
       <table class="table">
         <thead>
           <tr>
@@ -44,7 +39,7 @@
           </tr>
         </thead>
         <tbody>
-
+          <% ci = @combo_items |> Enum.group_by(fn x -> x.combo_id end) %>
           <%= for same_item <- @same_items do %>
           <tr>
             <td><%= same_item.price_code %></td>
@@ -67,9 +62,52 @@
             <td><%= same_item.is_print %></td>
             <td><%= same_item.subcatid %></td>
           </tr>
+            <%= if @combo_items != [] do %>
+          <tr>
+            <td colspan="13">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Combo Qty</th>
+                    <th>Item Qty</th>
+                    <th>Unit Price</th>
+                    <th>Code</th>
+                    <th>ItemSubcat ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+              <%= for combo_item <- ci[same_item.subcatid]  do %>
+              
+                  <tr>
+                    <td><%= combo_item.combo_item_name %></td>
+                    <td><%= combo_item.combo_qty %></td>
+                    <td><%= combo_item.combo_item_qty %></td>
+                    <td><%= combo_item.unit_price %></td>
+                    <td><%= combo_item.combo_item_code %></td>
+                    <td>
+                      
+                      <% codes =  String.split(Integer.to_string(combo_item.combo_item_id), "") |> Enum.reject(fn x -> x == "" end) |> Enum.chunk_every(3)%>
+                      <%= for code <- codes do %>
+                      <%= Enum.join(code) %>,
+                      <% end %>
+                    </td>
+                  </tr>
+              <% end %>
+                </tbody>
+              </table>
+
+            </td>
+          </tr>
+            <% end %>
           <% end %>
         </tbody>
       </table>
+
+  
+    </div>
+
+    <div class="card-footer">
 
     </div>
   </div>

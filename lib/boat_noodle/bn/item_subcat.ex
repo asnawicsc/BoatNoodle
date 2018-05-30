@@ -4,6 +4,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
 
   @primary_key false
   schema "item_subcat" do
+    field(:subcatid, :integer, primary_key: true)
     field(:created_at, :utc_datetime)
     field(:enable_disc, :integer, default: 1)
     field(:include_spend, :integer, default: 1)
@@ -23,7 +24,6 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:part_code, :string)
     field(:price_code, :string)
     field(:product_code, :string)
-    field(:subcatid, :integer, primary_key: true)
     field(:updated_at, :utc_datetime)
   end
 
