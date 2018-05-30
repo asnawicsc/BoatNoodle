@@ -17,7 +17,7 @@
                 <i class="material-icons">close</i> Delete Selected
               <div class="ripple-container"></div>
             </button>
-            <button class="btn btn-warning btn-round" aria-label="delete_category">
+            <button class="btn btn-warning btn-round" aria-label="edit_category">
                 <i class="material-icons">create</i> Edit Selected
               <div class="ripple-container"></div>
             </button>

@@ -1,0 +1,3 @@
+<%= for cat <- @menu_item do %>
+	<button type="button" class="btn btn-primary btn-round item_cat" id="<%= cat.itemcatid %>" style="width: 100%;"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</button>
+<% end %>

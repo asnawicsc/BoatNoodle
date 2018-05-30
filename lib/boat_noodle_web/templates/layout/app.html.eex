@@ -203,7 +203,14 @@ $(document).ready(function(){
 </script>
 
 
-<script src="/js/app.js"></script>
 <script src="/js/phoenix.js"></script>
+
 <script src="/js/socket.js"></script>
+
+<script src="/js/app.js"></script>
+
+<script src="/js/sales.js"></script>
+
+<script src="/js/menu_item_category.js"></script>
+<script src="/js/item.js"></script>
 </html>

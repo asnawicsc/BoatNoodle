@@ -1,5 +1,4 @@
-
-  $(document).ready(function(){
+$(document).ready(function(){
 
     var start = moment().subtract(29, 'days');
     var end = moment();
@@ -27,10 +26,6 @@
     }, cb);
 
     cb(start, end);
-
-
-
-
 
 
         var title = $("h1.page-header").html()
@@ -106,11 +101,18 @@
                 p.toggleClass("active")
                 $("a[href='#menu_item']").click()
                 break;
-
-
    
             default:
                 console.log("default")
               }
+
+    $("a.menu_catalog_item").click(function(){
+
+      var id = $(this).attr("aria-label")
+      $(".menu_catalog_item.tab-pane").attr("class", "menu_catalog_item tab-pane")
+      $("div#"+id+".menu_catalog_item.tab-pane").toggleClass("active show")
+    })
+
+    $("table.data").DataTable()
 });
 

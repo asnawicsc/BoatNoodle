@@ -5,9 +5,13 @@ defmodule BoatNoodleWeb.SalesController do
   alias BoatNoodle.BN.Sales
   require IEx
 
+  defp branches() do
+    Repo.all(from(s in BoatNoodle.BN.Branch, order_by: [asc: s.branchname]))
+    |> Enum.reject(fn x -> x.branchid == 0 end)
+  end
+
   def index(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "index.html", branches: branches)
+    render(conn, "index.html", branches: branches())
   end
 
   def new(conn, _params) do
@@ -16,25 +20,19 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def summary(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "summary.html",branches: branches)
+    render(conn, "summary.html", branches: branches())
   end
 
   def item_sales(conn, _params) do
-   branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "item_sales.html",branches: branches)
+    render(conn, "item_sales.html", branches: branches())
   end
 
   def discounts(conn, _params) do
-    
-branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "discounts.html",branches: branches)
+    render(conn, "discounts.html", branches: branches())
   end
 
-
   def voided(conn, _params) do
-branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "voided.html",branches: branches)
+    render(conn, "voided.html", branches: branches())
   end
 
   def create(conn, %{"sales" => sales_params}) do

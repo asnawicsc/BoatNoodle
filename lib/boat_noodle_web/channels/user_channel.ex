@@ -10,81 +10,6 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
-  def handle_in("delete_item_category", %{"cat_id" => cat_id}, socket) do
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
-
-    Repo.delete(cat)
-
-    {:noreply, socket}
-  end
-
-  def handle_in("submit_item_form", %{"map" => map}, socket) do
-    item_subcat_params =
-      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
-      |> Enum.into(%{})
-
-    cat_id = item_subcat_params["itemcatid"]
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
-
-    item_subcat_params =
-      Map.put(
-        item_subcat_params,
-        "product_code",
-        cat.itemcatcode <> item_subcat_params["part_code"] <> item_subcat_params["price_code"]
-      )
-
-    cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_subcat_params)
-
-    case Repo.insert(cg) do
-      {:ok, item_cat} ->
-        broadcast(socket, "inserted_item_subcat", %{})
-
-      true ->
-        IO.puts("error in inserting item subcat")
-    end
-
-    {:noreply, socket}
-  end
-
-  def handle_in("submit_category_form", %{"map" => map}, socket) do
-    item_cat_params =
-      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
-      |> Enum.into(%{})
-
-    cg = BoatNoodle.BN.ItemCat.changeset(%BoatNoodle.BN.ItemCat{}, item_cat_params)
-
-    case Repo.insert(cg) do
-      {:ok, item_cat} ->
-        broadcast(socket, "inserted_item_cat", %{})
-
-      true ->
-        IO.puts("error in inserting item cat")
-    end
-
-    {:noreply, socket}
-  end
-
-  def handle_in("load_all_categories", %{"user_id" => user_id}, socket) do
-    categories =
-      Repo.all(
-        from(
-          i in BoatNoodle.BN.ItemCat,
-          select: %{
-            itemcatid: i.itemcatid,
-            itemcatname: i.itemcatname,
-            itemcatcode: i.itemcatcode,
-            itemcatdesc: i.itemcatdesc,
-            category_type: i.category_type,
-            is_default: i.is_default,
-            is_delete: i.is_delete
-          }
-        )
-      )
-
-    broadcast(socket, "dt_show_categories", %{categories: categories})
-    {:noreply, socket}
-  end
-
   def handle_in("dashboard", payload, socket) do
     branchid = payload["branch_id"]
 
@@ -228,26 +153,6 @@ defmodule BoatNoodleWeb.UserChannel do
 
   def handle_in("open_login_modal", payload, socket) do
     broadcast(socket, "open_login_modal", payload)
-    {:noreply, socket}
-  end
-
-  def handle_in("list_items", %{"item_cat_id" => item_cat_id}, socket) do
-    items =
-      Repo.all(
-        from(
-          i in BoatNoodle.BN.ItemSubcat,
-          where: i.itemcatid == ^item_cat_id,
-          select: %{
-            itemcode: i.itemcode,
-            product_code: i.product_code,
-            itemname: i.itemname,
-            itemprice: i.itemprice,
-            is_activate: i.is_activate
-          }
-        )
-      )
-
-    broadcast(socket, "populate_table_items", %{items: items, item_cat_id: item_cat_id})
     {:noreply, socket}
   end
 
