@@ -43,7 +43,8 @@ defmodule BoatNoodle.Mixfile do
       {:cowboy, "~> 1.0"},
       {:timex, "~> 3.0"},
       {:bamboo, "~> 0.8"},
-      {:bamboo_smtp, "~> 1.4.0"}
+      {:bamboo_smtp, "~> 1.4.0"},
+      {:mogrify, "~> 0.6.1"}
     ]
   end
 

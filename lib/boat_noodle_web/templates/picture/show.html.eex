@@ -1,0 +1,38 @@
+<h2>Show Picture</h2>
+
+<ul>
+
+  <li>
+    <strong>Id:</strong>
+    <%= @picture.id %>
+  </li>
+
+  <li>
+    <strong>Filename:</strong>
+    <%= @picture.filename %>
+  </li>
+
+  <li>
+    <strong>File type:</strong>
+    <%= @picture.file_type %>
+  </li>
+
+  <li>
+    <strong>Bin:</strong>
+    <%= @picture.bin %>
+  </li>
+
+  <li>
+    <strong>Url:</strong>
+    <%= @picture.url %>
+  </li>
+
+  <li>
+    <strong>Gallery:</strong>
+    <%= @picture.gallery_id %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: picture_path(@conn, :edit, @picture) %></span>
+<span><%= link "Back", to: picture_path(@conn, :index) %></span>

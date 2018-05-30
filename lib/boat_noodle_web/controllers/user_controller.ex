@@ -3,6 +3,8 @@ defmodule BoatNoodleWeb.UserController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.User
+  alias BoatNoodle.Images
+  alias BoatNoodle.Images.{Gallery, Picture}
   require(IEx)
 
   def index(conn, _params) do
@@ -39,7 +41,17 @@ defmodule BoatNoodleWeb.UserController do
   def edit(conn, %{"id" => id}) do
     user = BN.get_user!(id)
     changeset = BN.change_user(user)
-    render(conn, "edit.html", user: user, changeset: changeset)
+    gallery = Repo.get(Gallery, user.gall_id)
+    picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
+
+    render(
+      conn,
+      "edit.html",
+      user: user,
+      changeset: changeset,
+      gallery: gallery,
+      picture: picture
+    )
   end
 
   def update_profile(conn, params) do
@@ -93,6 +105,53 @@ defmodule BoatNoodleWeb.UserController do
     end
   end
 
+  def update_profile_picture(conn, params) do
+    user = Repo.get(User, params["user_id"])
+
+    if params["user"]["image"] == nil do
+      conn
+      |> put_flash(:error, "No image found!")
+      |> redirect(to: user_path(conn, :edit, params["user_id"]))
+    else
+      if user.gall_id == nil do
+        {:ok, gallery} = Images.create_gallery(%{})
+        {:ok, user} = BN.update_user(user, %{gall_id: gallery.id})
+
+        case Images.upload(params["user"]["image"]) do
+          {:ok, picture} ->
+            Images.update_picture(picture, %{
+              gallery_id: gallery.id,
+              file_type: "profile_picture"
+            })
+        end
+
+        conn
+        |> put_flash(:info, "Profile picture updated successfully.")
+        |> redirect(to: user_path(conn, :edit, params["user_id"]))
+      else
+        gallery = Repo.get(Gallery, user.gall_id)
+
+        old_pic = Repo.get_by(Picture, gallery_id: gallery.id, file_type: "profile_picture")
+
+        if old_pic != nil do
+          Images.delete_picture(old_pic)
+        end
+
+        case Images.upload(params["user"]["image"]) do
+          {:ok, picture} ->
+            Images.update_picture(picture, %{
+              gallery_id: gallery.id,
+              file_type: "profile_picture"
+            })
+        end
+
+        conn
+        |> put_flash(:info, "Profile picture updated successfully.")
+        |> redirect(to: user_path(conn, :edit, params["user_id"]))
+      end
+    end
+  end
+
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = BN.get_user!(id)
 
@@ -135,7 +194,7 @@ defmodule BoatNoodleWeb.UserController do
       else
         conn
         |> put_flash(:error, "Wrong password!")
-        |> redirect(to: user_path(conn, :login))
+        |> redirect(to: user_path(conn, :login, username: username))
       end
     else
       conn

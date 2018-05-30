@@ -11,6 +11,7 @@
                   </h4>
                 </div>
                 <br>
+
                 <div class="card-body">
 
                   <form action="/update_profile" method="post">
@@ -59,6 +60,47 @@
                 </div>
               </div>
             </div>
+
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header card-header-icon card-header-rose">
+                  <div class="card-icon">
+                    <i class="material-icons">perm_identity</i>
+                  </div>
+                  <h4 class="card-title">Edit Profile Picture
+                  </h4>
+                </div>
+                <br>
+
+                <div class="card-body">
+
+                  <%= form_for @changeset, user_path(@conn, :update_profile_picture, @user.id), [method: :post, multipart: true], fn f -> %>
+                    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
+                    <input type="hidden" name="user_id" value="<%= @user.id %>">
+                    <div class="row">
+                      <div class="fileinput fileinput-new text-center" data-provides="fileinput" >
+                            <div  class="fileinput-new thumbnail img-circle">
+                                <img  src="data:image/png;base64, <%= @picture.bin %>" alt="...">
+                            </div>
+                            <div class="fileinput-preview fileinput-exists thumbnail img-circle" style=""></div>
+                            
+                            <div style="padding-left: 15%">
+                              <%= file_input f, :image, accept: ".png, .jpg, .jpeg", id: "imgInp1"%>
+                            </div>
+                              <button type="submit" class="btn btn-round btn-rose btn-file">Upload Photo</button> 
+                      </div>
+                    </div>
+                    <div class="clearfix"></div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
         </div>
+                                
+                                
+                          
+                   
+
+                                
 
 
