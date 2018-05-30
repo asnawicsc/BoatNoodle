@@ -194,7 +194,7 @@ defmodule BoatNoodleWeb.UserController do
       else
         conn
         |> put_flash(:error, "Wrong password!")
-        |> redirect(to: user_path(conn, :login, username: username))
+        |> redirect(to: user_path(conn, :login))
       end
     else
       conn
