@@ -41,17 +41,29 @@ defmodule BoatNoodleWeb.UserController do
   def edit(conn, %{"id" => id}) do
     user = BN.get_user!(id)
     changeset = BN.change_user(user)
-    gallery = Repo.get(Gallery, user.gall_id)
-    picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
+    if user.gall_id == nil do
+      picture = %{bin: ""}
+      render(
+        conn,
+        "edit.html",
+        user: user,
+        changeset: changeset,
+   
+        picture: picture
+      )
+      else 
+      gallery = Repo.get(Gallery, user.gall_id)
+      picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
 
-    render(
-      conn,
-      "edit.html",
-      user: user,
-      changeset: changeset,
-      gallery: gallery,
-      picture: picture
-    )
+      render(
+        conn,
+        "edit.html",
+        user: user,
+        changeset: changeset,
+        gallery: gallery,
+        picture: picture
+      )
+    end
   end
 
   def update_profile(conn, params) do
@@ -64,6 +76,7 @@ defmodule BoatNoodleWeb.UserController do
           email: params["email"]
         }
 
+        IEx.pry()
         bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
         crypted_password = Plug.Crypto.MessageEncryptor.encrypt(params["new_pass"], bin, bin)
         user_params = Map.put(user_params, :password_v2, crypted_password)
@@ -183,10 +196,15 @@ defmodule BoatNoodleWeb.UserController do
     user = Repo.get_by(User, username: username)
 
     if user != nil do
-      bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
-      {:ok, saved_password} = Plug.Crypto.MessageEncryptor.decrypt(user.password_v2, bin, bin)
+      # bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
 
-      if password_v2 == saved_password do
+      # {:ok, saved_password} = Plug.Crypto.MessageEncryptor.decrypt(user.password_v2, bin, bin)
+
+      p2 = String.replace(user.password, "$2y", "$2b")
+
+      if Comeonin.Bcrypt.checkpw(password_v2, p2) do
+        # IEx.pry()
+
         conn
         |> put_session(:user_id, user.id)
         |> put_flash(:info, "Login successfully")
@@ -240,6 +258,7 @@ defmodule BoatNoodleWeb.UserController do
 
         BoatNoodle.Email.forget_password(
           user.email,
+          # "yithanglee@gmail.com",
           preset_password,
           user.username,
           password_not_set

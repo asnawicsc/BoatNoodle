@@ -4,10 +4,8 @@ defmodule BoatNoodleWeb.PageController do
   require IEx
 
   def index(conn, _params) do
-    render(
-      conn,
-      "index.html"
-    )
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch))
+    render(conn,"index.html",branches: branches)
   end
 
   def no_page_found(conn, _params) do

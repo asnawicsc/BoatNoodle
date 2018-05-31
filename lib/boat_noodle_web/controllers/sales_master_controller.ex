@@ -103,8 +103,7 @@ year=time.year
            final = month_map[month] |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
            %{year: q_date, month: month, sum: final}
            end
-
-         
+      
     month_map1 = year_map1[q_date] |> Enum.group_by(fn x -> x.month end)
     months1 = month_map1 |> Map.keys
 

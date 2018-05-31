@@ -1,113 +1,77 @@
 <h2>Show Item subcat</h2>
 
-<ul>
 
-  <li>
-    <strong>Subcatid:</strong>
-    <%= @item_subcat.subcatid %>
-  </li>
 
-  <li>
-    <strong>Integer:</strong>
-    <%= @item_subcat.integer %>
-  </li>
 
-  <li>
-    <strong>Itemcatid:</strong>
-    <%= @item_subcat.itemcatid %>
-  </li>
+<div class="row">
+<div class="col-lg-12">
+  <div class="card card-stats">
+    <div class="card-header card-header-warning card-header-icon">
+      <div class="card-icon">
+        <i class="material-icons">fastfood</i>
+      </div>
+      <p class="card-category"></p>
+      <h3 class="card-title"><%= @item_subcat.itemname %></h3>
+    </div>
+    <div class="card-body">
 
-  <li>
-    <strong>Itemname:</strong>
-    <%= @item_subcat.itemname %>
-  </li>
 
-  <li>
-    <strong>Itemcode:</strong>
-    <%= @item_subcat.itemcode %>
-  </li>
+  
+    </div>
+    <div class="card-footer">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Price Code</th>
+            <th>Cat id</th>
+  
+            <th>Code</th>
+            <th>Product Code</th>
+            <th>Part Code</th>
+      
+            <th>Price</th>
+            <th>Categorize?</th>
 
-  <li>
-    <strong>Product code:</strong>
-    <%= @item_subcat.product_code %>
-  </li>
+            <th>Activate?</th>
+          
+         
+            <th>Deleted?</th>
+            <th>Enable Disc?</th>
+            <th>Include spend?</th>
+            <th>Is print?</th>
 
-  <li>
-    <strong>Price code:</strong>
-    <%= @item_subcat.price_code %>
-  </li>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody>
 
-  <li>
-    <strong>Part code:</strong>
-    <%= @item_subcat.part_code %>
-  </li>
+          <%= for same_item <- @same_items do %>
+          <tr>
+            <td><%= same_item.price_code %></td>
+            <td><%= same_item.itemcatid %></td>
+       
+            <td><%= same_item.itemcode %></td>
+            <td><%= same_item.product_code %></td>
+            <td><%= same_item.part_code %></td>
+    
+            <td><%= same_item.itemprice %></td>
+            <td><%= same_item.is_categorize %></td>
 
-  <li>
-    <strong>Itemdesc:</strong>
-    <%= @item_subcat.itemdesc %>
-  </li>
 
-  <li>
-    <strong>Itemprice:</strong>
-    <%= @item_subcat.itemprice %>
-  </li>
+            <td><%= same_item.is_activate %></td>
+   
+     
+            <td><%= same_item.is_delete %></td>
+            <td><%= same_item.enable_disc %></td>
+            <td><%= same_item.include_spend %></td>
+            <td><%= same_item.is_print %></td>
+            <td><%= same_item.subcatid %></td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
 
-  <li>
-    <strong>Itemimage:</strong>
-    <%= @item_subcat.itemimage %>
-  </li>
-
-  <li>
-    <strong>Is categorize:</strong>
-    <%= @item_subcat.is_categorize %>
-  </li>
-
-  <li>
-    <strong>Is active:</strong>
-    <%= @item_subcat.is_active %>
-  </li>
-
-  <li>
-    <strong>Is combo:</strong>
-    <%= @item_subcat.is_combo %>
-  </li>
-
-  <li>
-    <strong>Is default combo:</strong>
-    <%= @item_subcat.is_default_combo %>
-  </li>
-
-  <li>
-    <strong>Is delete:</strong>
-    <%= @item_subcat.is_delete %>
-  </li>
-
-  <li>
-    <strong>Enable disc:</strong>
-    <%= @item_subcat.enable_disc %>
-  </li>
-
-  <li>
-    <strong>Include spend:</strong>
-    <%= @item_subcat.include_spend %>
-  </li>
-
-  <li>
-    <strong>Is print:</strong>
-    <%= @item_subcat.is_print %>
-  </li>
-
-  <li>
-    <strong>Updated at:</strong>
-    <%= @item_subcat.updated_at %>
-  </li>
-
-  <li>
-    <strong>Created at:</strong>
-    <%= @item_subcat.created_at %>
-  </li>
-
-</ul>
-
-<span><%= link "Edit", to: item_subcat_path(@conn, :edit, @item_subcat) %></span>
-<span><%= link "Back", to: item_subcat_path(@conn, :index) %></span>
+    </div>
+  </div>
+</div>
+</div>

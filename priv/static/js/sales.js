@@ -1,5 +1,143 @@
 $(document).ready(function() {
 
+if ($("div#simpleBarChart").length == 1) {
+    
+    if (localStorage.getItem("sales_data") == null) {
+
+        channel.push("generate_all_branch_sales_data", {})
+        channel.on("save_local_storage", payload => {
+        localStorage.setItem("sales_data", payload.map);
+
+            var maps = JSON.parse(localStorage.getItem("sales_data"))
+            var branches = []
+            var trx = []
+            $(maps).each(function(){ branches.push(this.branch_name) })
+            $(maps).each(function(){ trx.push(this.grand_total) })
+            Highcharts.chart('simpleBarChart', {
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Current Month Sales(RM)'
+                },
+
+                xAxis: {
+                    categories: branches,
+                    title: {
+                        text: null
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Sales (RM)',
+                        align: 'high'
+                    },
+                    labels: {
+                        overflow: 'justify'
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Branch Monthly Sales",
+                    data: trx
+                }]
+            });
+
+
+        })
+    } else {
+
+
+            // var dataSimpleBarChart = {
+            //     labels: branches,
+            //     series: [trx]
+            // };
+
+            // var optionsSimpleBarChart = {
+            //   seriesBarDistance: 10,
+            //   reverseData: true,
+            //   horizontalBars: true,
+            //   axisY: {
+            //     offset: 300
+            //   }, 
+            //   min: 100000,
+            //   labelDirection: 'implode'
+
+            // };
+
+            // var responsiveOptionsSimpleBarChart = [
+            //     ['screen and (max-width: 320px)', {
+            //         seriesBarDistance: 5,
+            //         axisX: {
+            //             labelInterpolationFnc: function(value) {
+            //                 return value[0];
+            //             }
+            //         }
+            //     }]
+            // ];
+
+            // var simpleBarChart = Chartist.Bar('#simpleBarChart', dataSimpleBarChart, optionsSimpleBarChart, responsiveOptionsSimpleBarChart);
+    
+            var maps = JSON.parse(localStorage.getItem("sales_data"))
+            var branches = []
+            var trx = []
+            $(maps).each(function(){ branches.push(this.branch_name) })
+            $(maps).each(function(){ trx.push(this.grand_total) })
+            Highcharts.chart('simpleBarChart', {
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Current Month Sales(RM)'
+                },
+
+                xAxis: {
+                    categories: branches,
+                    title: {
+                        text: null
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Sales (RM)',
+                        align: 'high'
+                    },
+                    labels: {
+                        overflow: 'justify'
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Branch Monthly Sales",
+                    data: trx
+                }]
+            });
+
+    }
+}
+
 
     $("button#dashboard").click(function() {
 
@@ -73,11 +211,6 @@ $(document).ready(function() {
         });
     })
 
-
-
-
-
-
     $(".panel-body#sales_transaction").hide();
     $("table#sales_transaction").hide();
 
@@ -96,7 +229,6 @@ $(document).ready(function() {
     $(".panel-body#item_sales_detail").hide();
     $("table#item_sales_detail").hide();
 
-
     $(".panel-body#discount_receipt").hide();
     $("table#discount_receipt").hide();
 
@@ -109,18 +241,11 @@ $(document).ready(function() {
     $(".panel-body#voided_order").hide();
     $("table#voided_order").hide();
 
-    $(".panel-body#morning_sales_summary").hide();
-    $("table#morning_sales_summary").hide();
+    $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
 
-    $(".panel-body#lunch_sales_summary").hide();
-    $("table#lunch_sales_summary").hide();
-
-
-    $(".panel-body#idle_sales_summary").hide();
-    $("table#idle_sales_summary").hide();
-
-    $(".panel-body#dinner_sales_summary").hide();
-    $("table#dinner_sales_summary").hide();
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
 
 
 
@@ -160,17 +285,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -255,17 +375,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -407,17 +522,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -559,17 +669,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -710,17 +815,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
 
         var b_id = $("select#branch_list").val()
@@ -794,17 +894,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
 
 
@@ -892,17 +987,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
 
         var b_id = $("select#branch_list").val()
@@ -978,17 +1068,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
 
 
@@ -1060,17 +1145,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -1149,17 +1229,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").show();
         $("table#voided_order").show();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -1238,18 +1313,12 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").show();
-        $("table#morning_sales_summary").show();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
-
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
@@ -1262,42 +1331,7 @@ $(document).ready(function() {
         })
     })
 
-    channel.on("populate_table_morning_sales_summary_data", payload => {
-        console.log(payload.morning_sales_summary)
-        var data = payload.morning_sales_summary
-
-        var total_pax = payload.total_pax
-        var total_sales = payload.total_sales
-
-        $(".morning#total_pax").html(total_pax);
-
-        $(".morning#total_sales").html(total_sales);
-
-        $("table#morning_sales_summary").DataTable({
-            destroy: true,
-            data: data,
-            columns: [{
-                    data: 'branchname'
-                },
-                {
-                    data: 'pax'
-                },
-                {
-                    data: 'totalprice'
-                },
-                {
-                    data: 'type'
-                },
-                {
-                    data: 'salesdatetime'
-                }
-            ]
-        });
-
-        $("#backdrop").delay(500).fadeOut()
-    })
-
-    $(".nav-link#lunch_sales_summary").click(function() {
+    $(".nav-link#sales_summary").click(function() {
 
         $("#backdrop").fadeIn()
 
@@ -1332,22 +1366,16 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
+        $(".panel-body#sales_summary").show();
+        $("table#sales_summary").show();
 
-        $(".panel-body#lunch_sales_summary").show();
-        $("table#lunch_sales_summary").show();
-
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
-        channel.push("lunch_sales_summary", {
+        channel.push("sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
@@ -1355,34 +1383,30 @@ $(document).ready(function() {
         })
     })
 
-    channel.on("populate_table_lunch_sales_summary_data", payload => {
-        console.log(payload.lunch_sales_summary)
-        var data = payload.lunch_sales_summary
+    channel.on("populate_table_sales_summary", payload => {
+        console.log(payload.luck)
+        var data = payload.luck
 
-        var total_pax = payload.total_pax
-        var total_sales = payload.total_sales
-
-        $(".lunch#total_pax").html(total_pax);
-
-        $(".lunch#total_sales").html(total_sales);
-
-        $("table#lunch_sales_summary").DataTable({
+      
+        $("table#sales_summary").DataTable({
             destroy: true,
             data: data,
             columns: [{
-                    data: 'branchname'
+                    data: 'date'
                 },
                 {
-                    data: 'pax'
+                    data: 'grand_total'
                 },
                 {
-                    data: 'totalprice'
+                    data: 'morning'
                 },
                 {
-                    data: 'type'
+                    data: 'lunch'
                 },
                 {
-                    data: 'salesdate'
+                    data: 'idle'
+                },
+                {   data: 'dinner'
                 }
             ]
         });
@@ -1391,7 +1415,7 @@ $(document).ready(function() {
     })
 
 
-    $(".nav-link#idle_sales_summary").click(function() {
+    $(".nav-link#pax_summary").click(function() {
 
         $("#backdrop").fadeIn()
 
@@ -1426,22 +1450,17 @@ $(document).ready(function() {
         $(".panel-body#voided_order").hide();
         $("table#voided_order").hide();
 
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
 
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
 
-        $(".panel-body#idle_sales_summary").show();
-        $("table#idle_sales_summary").show();
-
-        $(".panel-body#dinner_sales_summary").hide();
-        $("table#dinner_sales_summary").hide();
+        $(".panel-body#pax_summary").show();
+        $("table#pax_summary").show();
 
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
-        channel.push("idle_sales_summary", {
+        channel.push("pax_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
@@ -1449,128 +1468,31 @@ $(document).ready(function() {
         })
     })
 
-    channel.on("populate_table_idle_sales_summary_data", payload => {
-        console.log(payload.idle_sales_summary)
-        var data = payload.idle_sales_summary
+    channel.on("populate_table_pax_summary", payload => {
+        console.log(payload.luck)
+        var data = payload.luck
 
-        var total_pax = payload.total_pax
-        var total_sales = payload.total_sales
-
-        $(".idle#total_pax").html(total_pax);
-
-        $(".idle#total_sales").html(total_sales);
-
-        $("table#idle_sales_summary").DataTable({
+       
+        $("table#pax_summary").DataTable({
             destroy: true,
             data: data,
             columns: [{
-                    data: 'branchname'
+                    data: 'date'
                 },
                 {
                     data: 'pax'
                 },
                 {
-                    data: 'totalprice'
+                    data: 'morning'
                 },
                 {
-                    data: 'type'
+                    data: 'lunch'
                 },
                 {
-                    data: 'salesdate'
-                }
-            ]
-        });
-
-        $("#backdrop").delay(500).fadeOut()
-    })
-
-
-    $(".nav-link#dinner_sales_summary").click(function() {
-
-        $("#backdrop").fadeIn()
-
-        $(".panel-body#sales_transaction").hide();
-        $("table#sales_transaction").hide();
-
-        $(".panel-body#hourly_pax_summary").hide();
-        $("table#hourly_pax_summary").hide();
-
-        $(".panel-body#hourly_sales_summary").hide();
-        $("table#hourly_sales_summary").hide();
-
-        $(".panel-body#hourly_transaction_summary").hide();
-        $("table#hourly_transaction_summary").hide();
-
-        $(".panel-body#item_sold").hide();
-        $("table#item_sold").hide();
-
-        $(".panel-body#item_sales_detail").hide();
-        $("table#item_sales_detail").hide();
-
-
-        $(".panel-body#discount_receipt").hide();
-        $("table#discount_receipt").hide();
-
-        $(".panel-body#discount_summary").hide();
-        $("table#discount_summary").hide();
-
-        $(".panel-body#voided_receipt").hide();
-        $("table#voided_receipt").hide();
-
-        $(".panel-body#voided_order").hide();
-        $("table#voided_order").hide();
-
-        $(".panel-body#morning_sales_summary").hide();
-        $("table#morning_sales_summary").hide();
-
-        $(".panel-body#lunch_sales_summary").hide();
-        $("table#lunch_sales_summary").hide();
-
-        $(".panel-body#idle_sales_summary").hide();
-        $("table#idle_sales_summary").hide();
-
-        $(".panel-body#dinner_sales_summary").show();
-        $("table#dinner_sales_summary").show();
-
-        var b_id = $("select#branch_list").val()
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
-        channel.push("dinner_sales_summary", {
-            user_id: window.currentUser,
-            branch_id: b_id,
-            s_date: s_date,
-            e_date: e_date
-        })
-    })
-
-    channel.on("populate_table_dinner_sales_summary_data", payload => {
-        console.log(payload.dinner_sales_summary)
-        var data = payload.dinner_sales_summary
-
-        var total_pax = payload.total_pax
-        var total_sales = payload.total_sales
-
-        $(".dinner#total_pax").html(total_pax);
-
-        $(".dinner#total_sales").html(total_sales);
-
-        $("table#dinner_sales_summary").DataTable({
-            destroy: true,
-            data: data,
-            columns: [{
-                    data: 'branchname'
+                    data: 'idle'
                 },
                 {
-                    data: 'pax'
-                },
-                {
-                    data: 'totalprice'
-                },
-                {
-                    data: 'type'
-                },
-                {
-                    data: 'salesdate'
+                    data: 'dinner'
                 }
             ]
         });
@@ -1639,60 +1561,6 @@ $(document).ready(function() {
 
         $("#backdrop").delay(500).fadeOut()
 
-
-        Highcharts.chart("monthly_tax", {
-
-            title: {
-                text: 'Tax Report'
-            },
-
-            subtitle: {
-                text: 'Tax and Sales before Tax'
-            },
-
-            yAxis: {
-                title: {
-                    text: 'Values'
-                }
-            },
-            legend: {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom'
-            },
-
-            plotOptions: {
-                series: {
-                    label: {
-                        connectorAllowed: false
-                    },
-                    pointStart: ['dates', ]
-                }
-            },
-            series: [{
-                name: 'Tax',
-                data: ['<%=cash_in_graph%>', ]
-            }, {
-                name: 'Amount after Tax',
-                data: ['<%=cash_out_graph%>', ]
-            }],
-
-            responsive: {
-                rules: [{
-                    condition: {
-                        maxWidth: 500
-                    },
-                    chartOptions: {
-                        legend: {
-                            layout: 'horizontal',
-                            align: 'center',
-                            verticalAlign: 'bottom'
-                        }
-                    }
-                }]
-            }
-
-        });
     })
 
 

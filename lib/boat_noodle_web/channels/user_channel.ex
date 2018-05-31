@@ -10,6 +10,52 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+  def handle_in("generate_all_branch_sales_data", payload, socket) do
+
+    branches = Repo.all(from b in BoatNoodle.BN.Branch, select: %{name: b.branchname, id: b.branchid}) 
+    map = 
+    for branch <- branches do
+      sales_data(branch.name, Integer.to_string(branch.id))
+    end 
+    |> Enum.sort_by(fn x -> x.grand_total end)
+    |> Enum.reverse()
+    |> Enum.reject(fn x -> x.grand_total == 0.00 end)
+
+
+      broadcast(socket, "save_local_storage", %{map: Poison.encode!(map)})
+    {:noreply, socket}
+  end
+
+  defp sales_data(branch_name, branch_id) do
+      s_date = Timex.beginning_of_month(Date.utc_today)
+      e_date = Timex.end_of_month(Date.utc_today)
+      total_transaction =
+        Repo.all(
+          from(
+            sp in BoatNoodle.BN.SalesPayment,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
+            where:
+              s.branchid == ^branch_id and s.salesdate >= ^s_date and
+                s.salesdate <= ^e_date,
+            select: %{
+              gst_charge: sp.gst_charge,
+              grand_total: sp.grand_total,
+              salesid: s.salesid,
+              pax: s.pax
+            }
+          )
+        )
+
+      res = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum() 
+      if res == 0 do
+        res = 0.00
+        else
+         res = res |> Float.round(2)
+      end
+      %{branch_name: branch_name, grand_total: res}
+  end
+
   def handle_in("dashboard", payload, socket) do
     branchid = payload["branch_id"]
 
@@ -201,6 +247,8 @@ defmodule BoatNoodleWeb.UserChannel do
           )
         )
     end
+
+     
 
     broadcast(socket, "populate_table_sales_transaction", %{sales_data: sales_data})
     {:noreply, socket}
@@ -1338,7 +1386,7 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  def handle_in("morning_sales_summary", payload, socket) do
+  def handle_in("sales_summary", payload, socket) do
     s_date = payload["s_date"]
     e_date = payload["e_date"]
 
@@ -1347,47 +1395,101 @@ defmodule BoatNoodleWeb.UserChannel do
 
     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
 
-    morning_sales_summary =
+    luck =
       for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
+        test =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
+              group_by: [s.salesdatetime, s.salesdate],
+              select: %{
+                salesdatetime: s.salesdatetime,
+                salesdate: s.salesdate,
+                grand_total: sum(sp.grand_total)
+              }
+            )
           )
-        )
+
+        grand_total = test |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+
+        if grand_total == 0 do
+          grand_total = 0.00
+        else
+          grand_total = :erlang.float_to_binary(grand_total, decimals: 2)
+        end
+
+        morning =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 1 && x.salesdatetime.hour <= 10 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+          |> Enum.sum()
+
+        lunch =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 11 && x.salesdatetime.hour <= 14 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+          |> Enum.sum()
+
+        idle =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 15 && x.salesdatetime.hour <= 17 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+          |> Enum.sum()
+
+        dinner =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 18 && x.salesdatetime.hour <= 24 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+          |> Enum.sum()
+
+
+
+        if morning == 0 do
+          morning = 0.0
+        else
+          morning = :erlang.float_to_binary(morning, decimals: 2)
+        end
+
+        if lunch == 0 do
+          lunch = 0.0
+        else
+          lunch = :erlang.float_to_binary(lunch, decimals: 2)
+        end
+
+        if idle == 0 do
+          idle = 0.0
+        else
+          idle = :erlang.float_to_binary(idle, decimals: 2)
+        end
+
+        if dinner == 0 do
+          dinner = 0.0
+        else
+          dinner = :erlang.float_to_binary(dinner, decimals: 2)
+        end
+
+
+        %{
+          date: date,
+          grand_total: grand_total,
+          morning: morning,
+          lunch: lunch,
+          idle: idle,
+          dinner: dinner
+        }
       end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 0 && x.salesdatetime.hour <= 10
-      end)
-
-    total_sales =
-      morning_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = morning_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_morning_sales_summary_data", %{
-      morning_sales_summary: morning_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
+    broadcast(socket, "populate_table_sales_summary", %{luck: luck})
     {:noreply, socket}
   end
 
-  def handle_in("lunch_sales_summary", payload, socket) do
+  def handle_in("pax_summary", payload, socket) do
     s_date = payload["s_date"]
     e_date = payload["e_date"]
 
@@ -1396,143 +1498,71 @@ defmodule BoatNoodleWeb.UserChannel do
 
     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
 
-    lunch_sales_summary =
+    luck =
       for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
+        test =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
+              group_by: [s.salesdatetime, s.salesdate],
+              select: %{
+                salesdatetime: s.salesdatetime,
+                salesdate: s.salesdate,
+                pax: sum(s.pax)
+              }
+            )
           )
-        )
+
+        pax = test |> Enum.map(fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
+
+
+
+        morning =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 1 && x.salesdatetime.hour <= 10 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.pax) end)
+          |> Enum.sum()
+
+        lunch =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 11 && x.salesdatetime.hour <= 14 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.pax) end)
+          |> Enum.sum()
+
+        idle =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 15 && x.salesdatetime.hour <= 17 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.pax) end)
+          |> Enum.sum()
+
+        dinner =
+          test
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdatetime.hour >= 18 && x.salesdatetime.hour <= 24 end)
+          |> Enum.map(fn x -> Decimal.to_float(x.pax) end)
+          |> Enum.sum()
+
+
+
+        %{
+          date: date,
+          pax: pax,
+          morning: morning,
+          lunch: lunch,
+          idle: idle,
+          dinner: dinner
+        }
       end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 11 && x.salesdatetime.hour <= 14
-      end)
-
-    total_sales =
-      lunch_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = lunch_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_lunch_sales_summary_data", %{
-      lunch_sales_summary: lunch_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
+    broadcast(socket, "populate_table_pax_summary", %{luck: luck})
     {:noreply, socket}
   end
 
-  def handle_in("idle_sales_summary", payload, socket) do
-    s_date = payload["s_date"]
-    e_date = payload["e_date"]
-
-    a = Date.from_iso8601!(s_date)
-    b = Date.from_iso8601!(e_date)
-
-    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
-
-    idle_sales_summary =
-      for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
-          )
-        )
-      end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 15 && x.salesdatetime.hour <= 17
-      end)
-
-    total_sales =
-      idle_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = idle_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_idle_sales_summary_data", %{
-      idle_sales_summary: idle_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_in("dinner_sales_summary", payload, socket) do
-    s_date = payload["s_date"]
-    e_date = payload["e_date"]
-
-    a = Date.from_iso8601!(s_date)
-    b = Date.from_iso8601!(e_date)
-
-    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
-
-    dinner_sales_summary =
-      for date <- date_data do
-        Repo.all(
-          from(
-            v in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == v.salesid,
-            left_join: g in BoatNoodle.BN.Branch,
-            on: g.branchid == ^payload["branch_id"],
-            where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
-            select: %{
-              salesdatetime: s.salesdatetime,
-              salesdate: s.salesdate,
-              branchname: g.branchname,
-              pax: s.pax,
-              type: s.type,
-              totalprice: v.grand_total
-            }
-          )
-        )
-      end
-      |> List.flatten()
-      |> Enum.filter(fn x ->
-        x.salesdatetime != nil && x.salesdatetime.hour >= 18 && x.salesdatetime.hour <= 24
-      end)
-
-    total_sales =
-      dinner_sales_summary |> Enum.map(fn x -> Decimal.to_float(x.totalprice) end) |> Enum.sum()
-
-    total_pax = dinner_sales_summary |> Enum.map(fn x -> x.pax end) |> Enum.sum()
-
-    broadcast(socket, "populate_table_dinner_sales_summary_data", %{
-      dinner_sales_summary: dinner_sales_summary,
-      total_sales: :erlang.float_to_binary(total_sales, decimals: 2),
-      total_pax: total_pax
-    })
-
-    {:noreply, socket}
-  end
 
   def handle_in("tax", payload, socket) do
     tax_data =
