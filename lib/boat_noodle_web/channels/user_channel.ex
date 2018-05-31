@@ -16,7 +16,11 @@ defmodule BoatNoodleWeb.UserChannel do
     map = 
     for branch <- branches do
       sales_data(branch.name, Integer.to_string(branch.id))
-    end |> Enum.sort_by(fn x -> x.grand_total end)
+    end 
+    |> Enum.sort_by(fn x -> x.grand_total end)
+    |> Enum.reverse()
+    |> Enum.reject(fn x -> x.grand_total == 0.00 end)
+
 
       broadcast(socket, "save_local_storage", %{map: Poison.encode!(map)})
     {:noreply, socket}
@@ -43,13 +47,13 @@ defmodule BoatNoodleWeb.UserChannel do
           )
         )
 
-      res_ori = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum() 
-      if res_ori == 0 do
-        res = "0.00"
+      res = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum() 
+      if res == 0 do
+        res = 0.00
         else
-         res = res_ori |> :erlang.float_to_binary(decimals: 2)
+         res = res |> Float.round(2)
       end
-      %{branch_name: branch_name, grand_total: res_ori, grand_total_str: res}
+      %{branch_name: branch_name, grand_total: res}
   end
 
   def handle_in("dashboard", payload, socket) do

@@ -1,49 +1,142 @@
 $(document).ready(function() {
 
+if ($("div#simpleBarChart").length == 1) {
+    
     if (localStorage.getItem("sales_data") == null) {
 
         channel.push("generate_all_branch_sales_data", {})
         channel.on("save_local_storage", payload => {
-            localStorage.setItem("sales_data", payload.map);
+        localStorage.setItem("sales_data", payload.map);
 
-        })
-    } else {
             var maps = JSON.parse(localStorage.getItem("sales_data"))
             var branches = []
             var trx = []
             $(maps).each(function(){ branches.push(this.branch_name) })
             $(maps).each(function(){ trx.push(this.grand_total) })
+            Highcharts.chart('simpleBarChart', {
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Current Month Sales(RM)'
+                },
 
-            var dataSimpleBarChart = {
-                labels: branches,
-                series: [trx]
-            };
-
-            var optionsSimpleBarChart = {
-  seriesBarDistance: 10,
-  reverseData: true,
-  horizontalBars: true,
-  axisY: {
-    offset: 300
-  }
-            };
-
-            var responsiveOptionsSimpleBarChart = [
-                ['screen and (max-width: 1280px)', {
-                    seriesBarDistance: 5,
-                    axisX: {
-                        labelInterpolationFnc: function(value) {
-                            return value[0];
+                xAxis: {
+                    categories: branches,
+                    title: {
+                        text: null
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Sales (RM)',
+                        align: 'high'
+                    },
+                    labels: {
+                        overflow: 'justify'
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
                         }
                     }
+                },
+
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Branch Monthly Sales",
+                    data: trx
                 }]
-            ];
+            });
 
-            var simpleBarChart = Chartist.Bar('#simpleBarChart', dataSimpleBarChart, optionsSimpleBarChart, responsiveOptionsSimpleBarChart);
+
+        })
+    } else {
+
+
+            // var dataSimpleBarChart = {
+            //     labels: branches,
+            //     series: [trx]
+            // };
+
+            // var optionsSimpleBarChart = {
+            //   seriesBarDistance: 10,
+            //   reverseData: true,
+            //   horizontalBars: true,
+            //   axisY: {
+            //     offset: 300
+            //   }, 
+            //   min: 100000,
+            //   labelDirection: 'implode'
+
+            // };
+
+            // var responsiveOptionsSimpleBarChart = [
+            //     ['screen and (max-width: 320px)', {
+            //         seriesBarDistance: 5,
+            //         axisX: {
+            //             labelInterpolationFnc: function(value) {
+            //                 return value[0];
+            //             }
+            //         }
+            //     }]
+            // ];
+
+            // var simpleBarChart = Chartist.Bar('#simpleBarChart', dataSimpleBarChart, optionsSimpleBarChart, responsiveOptionsSimpleBarChart);
     
+            var maps = JSON.parse(localStorage.getItem("sales_data"))
+            var branches = []
+            var trx = []
+            $(maps).each(function(){ branches.push(this.branch_name) })
+            $(maps).each(function(){ trx.push(this.grand_total) })
+            Highcharts.chart('simpleBarChart', {
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Current Month Sales(RM)'
+                },
+
+                xAxis: {
+                    categories: branches,
+                    title: {
+                        text: null
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Sales (RM)',
+                        align: 'high'
+                    },
+                    labels: {
+                        overflow: 'justify'
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Branch Monthly Sales",
+                    data: trx
+                }]
+            });
+
     }
-
-
+}
 
 
     $("button#dashboard").click(function() {
