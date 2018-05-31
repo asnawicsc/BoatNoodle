@@ -58,6 +58,7 @@ defmodule BoatNoodleWeb.Router do
     get("/item_sales", SalesController, :item_sales)
     get("/discounts", SalesController, :discounts)
     get("/voided", SalesController, :voided)
+    get("/sales_chart", SalesController, :sales_chart)
 
     resources("/gallery", GalleryController)
     resources("/picture", PictureController)

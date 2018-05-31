@@ -1,0 +1,21 @@
+<div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-icon card-header-rose">
+                  <div class="card-icon">
+                    <i class="material-icons">insert_chart</i>
+                  </div>
+                  <h4 class="card-title">Multiple Bars Chart
+                      <small>- Bar Chart</small>
+                  </h4>
+                </div>
+                <div class="card-body">
+                  <div id="multipleBarsChart" class="ct-chart">
+                  	<svg xmlns:ct="http://gionkunz.github.com/chartist-js/ct" width="100%" height="100%" class="ct-chart-bar" style="width: 100%; height: 100%;">
+                  		<g class="ct-grids">
+
+                  		</g>
+                  	</svg>
+                  </div>
+                </div>
+            </div>
+        </div>

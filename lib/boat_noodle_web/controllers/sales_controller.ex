@@ -35,6 +35,10 @@ defmodule BoatNoodleWeb.SalesController do
     render(conn, "voided.html", branches: branches())
   end
 
+  def sales_chart(conn, params) do
+    render(conn, "sales_chart.html", branches: branches())
+  end
+
   def create(conn, %{"sales" => sales_params}) do
     case BN.create_sales(sales_params) do
       {:ok, sales} ->

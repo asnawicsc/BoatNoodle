@@ -33,11 +33,11 @@
                                 <h4 class="card-title">Branch</h4>
                               </div>
                               <div class="card-body ">
-                                        <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
-                                          <%= for branch <- @branches do %>
-                                            <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
-                                          <% end %>
-                                        </select>
+                                  <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                                    <%= for branch <- @branches do %>
+                                      <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+                                    <% end %>
+                                  </select>
                               </div>
                             </div>
                           </div>

@@ -1794,4 +1794,24 @@ $(document).ready(function() {
 
         $("#backdrop").delay(500).fadeOut()
     })
+
+    $("button#generate_sales_charts").click(function(){
+
+
+
+        var b_id = $("select#branch_list").val()
+        var year = $("select#year").val()
+
+        channel.push("generate_sales_charts", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            year: year
+        })
+    })
+
+    channel.on("show_sales_chart", payload => {
+        console.log("hi")
+        $("div#show_sales_chart").html(payload.html)
+    })
+
 });

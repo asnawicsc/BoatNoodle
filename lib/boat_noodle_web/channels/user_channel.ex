@@ -1843,6 +1843,46 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+  def handle_in("generate_sales_charts", payload, socket) do
+    year = payload["year"]
+    month = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+
+    monthly_sales =
+      for each_month <- month do
+        start_date = Date.from_iso8601!(year <> "-" <> each_month <> "-01")
+        last_day = Date.days_in_month(start_date) |> to_string()
+        end_date = Date.from_iso8601!(year <> "-" <> each_month <> "-" <> last_day)
+
+        Repo.all(
+          from(
+            p in BoatNoodle.BN.SalesPayment,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: p.salesid == s.salesid,
+            where:
+              s.branchid == ^payload["branch_id"] and s.salesdate >= ^start_date and
+                s.salesdate <= ^end_date,
+            select: %{
+              grand_total: sum(p.grand_total),
+              sales_date: s.salesdate
+            }
+          )
+        )
+      end
+      |> List.flatten()
+
+    IEx.pry()
+
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.SalesView,
+        "sales_chart_template.html",
+        conn: socket
+      )
+
+    broadcast(socket, "show_sales_chart", %{html: html})
+    {:noreply, socket}
+  end
+
   defp authorized?(_payload) do
     true
   end
