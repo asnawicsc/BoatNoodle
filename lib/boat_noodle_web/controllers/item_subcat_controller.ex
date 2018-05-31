@@ -5,6 +5,47 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   alias BoatNoodle.BN.{MenuItem, ItemSubcat, ComboDetails}
   require IEx
 
+  def combo_create(conn, params) do
+
+    ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
+    itemname = params["itemcode"]<>" "<>params["itemdesc"]
+    params = Map.put(params, "itemname", itemname)
+    prev_subcatid = Repo.all(from c in ItemSubcat, 
+      select: %{subcatid: c.subcatid}) 
+    |> Enum.map(fn x -> Integer.to_string(x.subcatid) end) 
+    |> Enum.filter(fn x -> String.length(x) == 6 end) 
+    |> Enum.sort() 
+    |> List.last
+
+    subcatid = String.to_integer(prev_subcatid) + 1
+    params = Map.put(params, "subcatid", subcatid)
+    cg = ItemSubcat.changeset(%ItemSubcat{}, params)
+
+    case Repo.insert(cg) do
+      {:ok, cg} ->
+      comboitems = Repo.all(from s in ItemSubcat, where: s.itemcode in ^ala_cart_ids, group_by: [s.itemcode],select: %{itemcode: s.itemcode, itemname: s.itemname, itemprice: s.itemprice, subcatid: s.subcatid, pricecode: s.price_code, itemdesc: s.itemdesc})
+      for comboitem <- comboitems do
+        sci = Integer.to_string(subcatid)<>Integer.to_string(comboitem.subcatid)
+        comboitem = Map.put(comboitem, :subcatid, String.to_integer(sci))
+        comboitem = Map.put(comboitem, :is_comboitem, 1)
+        comboitem = Map.put(comboitem, :itemcatid, Integer.to_string(subcatid))
+        comboitem = Map.delete(comboitem, :itemprice)
+        cg2 = ItemSubcat.changeset(%ItemSubcat{}, comboitem)
+ 
+        Repo.insert(cg2)
+      end
+      conn
+      |> put_flash(:info, "combo created")
+      |> redirect(to: menu_item_path(conn, :index))
+
+      _ ->
+      conn
+      |> put_flash(:error, "combo not created")
+      |> redirect(to: menu_item_path(conn, :index))
+        
+    end
+  end
+
   def combo_new(conn, _params) do
     menu_item = Repo.all(from i in MenuItem, where: i.category_type == ^"COMBO")
 
