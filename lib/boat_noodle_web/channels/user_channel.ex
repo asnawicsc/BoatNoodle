@@ -11,49 +11,50 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("generate_all_branch_sales_data", payload, socket) do
+    branches =
+      Repo.all(from(b in BoatNoodle.BN.Branch, select: %{name: b.branchname, id: b.branchid}))
 
-    branches = Repo.all(from b in BoatNoodle.BN.Branch, select: %{name: b.branchname, id: b.branchid}) 
-    map = 
-    for branch <- branches do
-      sales_data(branch.name, Integer.to_string(branch.id))
-    end 
-    |> Enum.sort_by(fn x -> x.grand_total end)
-    |> Enum.reverse()
-    |> Enum.reject(fn x -> x.grand_total == 0.00 end)
+    map =
+      for branch <- branches do
+        sales_data(branch.name, Integer.to_string(branch.id))
+      end
+      |> Enum.sort_by(fn x -> x.grand_total end)
+      |> Enum.reverse()
+      |> Enum.reject(fn x -> x.grand_total == 0.00 end)
 
-
-      broadcast(socket, "save_local_storage", %{map: Poison.encode!(map)})
+    broadcast(socket, "save_local_storage", %{map: Poison.encode!(map)})
     {:noreply, socket}
   end
 
   defp sales_data(branch_name, branch_id) do
-      s_date = Timex.beginning_of_month(Date.utc_today)
-      e_date = Timex.end_of_month(Date.utc_today)
-      total_transaction =
-        Repo.all(
-          from(
-            sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: sp.salesid == s.salesid,
-            where:
-              s.branchid == ^branch_id and s.salesdate >= ^s_date and
-                s.salesdate <= ^e_date,
-            select: %{
-              gst_charge: sp.gst_charge,
-              grand_total: sp.grand_total,
-              salesid: s.salesid,
-              pax: s.pax
-            }
-          )
-        )
+    s_date = Timex.beginning_of_month(Date.utc_today())
+    e_date = Timex.end_of_month(Date.utc_today())
 
-      res = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum() 
-      if res == 0 do
-        res = 0.00
-        else
-         res = res |> Float.round(2)
-      end
-      %{branch_name: branch_name, grand_total: res}
+    total_transaction =
+      Repo.all(
+        from(
+          sp in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: sp.salesid == s.salesid,
+          where: s.branchid == ^branch_id and s.salesdate >= ^s_date and s.salesdate <= ^e_date,
+          select: %{
+            gst_charge: sp.gst_charge,
+            grand_total: sp.grand_total,
+            salesid: s.salesid,
+            pax: s.pax
+          }
+        )
+      )
+
+    res = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+
+    if res == 0 do
+      res = 0.00
+    else
+      res = res |> Float.round(2)
+    end
+
+    %{branch_name: branch_name, grand_total: res}
   end
 
   def handle_in("dashboard", payload, socket) do
@@ -247,8 +248,6 @@ defmodule BoatNoodleWeb.UserChannel do
           )
         )
     end
-
-     
 
     broadcast(socket, "populate_table_sales_transaction", %{sales_data: sales_data})
     {:noreply, socket}
@@ -1449,8 +1448,6 @@ defmodule BoatNoodleWeb.UserChannel do
           |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
           |> Enum.sum()
 
-
-
         if morning == 0 do
           morning = 0.0
         else
@@ -1475,7 +1472,6 @@ defmodule BoatNoodleWeb.UserChannel do
           dinner = :erlang.float_to_binary(dinner, decimals: 2)
         end
 
-
         %{
           date: date,
           grand_total: grand_total,
@@ -1485,6 +1481,7 @@ defmodule BoatNoodleWeb.UserChannel do
           dinner: dinner
         }
       end
+
     broadcast(socket, "populate_table_sales_summary", %{luck: luck})
     {:noreply, socket}
   end
@@ -1518,8 +1515,6 @@ defmodule BoatNoodleWeb.UserChannel do
 
         pax = test |> Enum.map(fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
-
-
         morning =
           test
           |> List.flatten()
@@ -1548,8 +1543,6 @@ defmodule BoatNoodleWeb.UserChannel do
           |> Enum.map(fn x -> Decimal.to_float(x.pax) end)
           |> Enum.sum()
 
-
-
         %{
           date: date,
           pax: pax,
@@ -1559,10 +1552,10 @@ defmodule BoatNoodleWeb.UserChannel do
           dinner: dinner
         }
       end
+
     broadcast(socket, "populate_table_pax_summary", %{luck: luck})
     {:noreply, socket}
   end
-
 
   def handle_in("tax", payload, socket) do
     tax_data =
@@ -1876,6 +1869,7 @@ defmodule BoatNoodleWeb.UserChannel do
   def handle_in("generate_sales_charts", payload, socket) do
     year = payload["year"]
     month = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    branch = Repo.get(BoatNoodle.BN.Branch, payload["branch_id"])
 
     monthly_sales =
       for each_month <- month do
@@ -1899,8 +1893,13 @@ defmodule BoatNoodleWeb.UserChannel do
         )
       end
       |> List.flatten()
-
-    IEx.pry()
+      |> Enum.reject(fn x -> x.grand_total == nil end)
+      |> Enum.map(fn x ->
+        %{
+          grand_total: Decimal.to_float(x.grand_total),
+          month: Timex.month_name(x.sales_date.month)
+        }
+      end)
 
     html =
       Phoenix.View.render_to_string(
@@ -1909,7 +1908,13 @@ defmodule BoatNoodleWeb.UserChannel do
         conn: socket
       )
 
-    broadcast(socket, "show_sales_chart", %{html: html})
+    broadcast(socket, "show_sales_chart", %{
+      html: html,
+      monthly_sales: Poison.encode!(monthly_sales),
+      branchname: branch.branchname,
+      year: year
+    })
+
     {:noreply, socket}
   end
 
