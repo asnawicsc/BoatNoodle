@@ -92,6 +92,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/salespayment", SalesPaymentController)
     resources("/item_subcat", ItemSubcatController)
     get("/items/:subcatid", ItemSubcatController, :item_show)
+    get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid", ItemSubcatController, :combo_show)
     resources("/itemcat", ItemCatController)
     resources("/organization", OrganizationController)

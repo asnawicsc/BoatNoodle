@@ -2,8 +2,25 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{ItemSubcat, ComboDetails}
+  alias BoatNoodle.BN.{MenuItem, ItemSubcat, ComboDetails}
   require IEx
+
+  def combo_new(conn, _params) do
+    menu_item = Repo.all(from i in MenuItem, where: i.category_type == ^"COMBO")
+
+    ala_carte = Repo.all(from s in ItemSubcat, left_join: i in MenuItem, on: i.itemcatid == s.itemcatid, where: i.category_type != ^"COMBO", group_by: [s.itemcode], select: %{
+      subcatid: s.subcatid,
+      itemname: s.itemname,
+      itemdesc: s.itemdesc,
+      itemcode: s.itemcode
+      }, order_by: [asc: s.itemcode])
+# IEx.pry
+    render(
+      conn,
+      "combo_new.html",
+      menu_item: menu_item,ala_carte: ala_carte
+    )
+  end
 
   def combo_show(conn, %{"subcatid" => id}) do
     item_subcat = BN.get_item_subcat!(id)

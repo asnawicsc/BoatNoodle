@@ -114,5 +114,29 @@ $(document).ready(function(){
     })
 
     $("table.data").DataTable()
+
+
+  // $( "ol.item" ).sortable({
+  //     connectWith: "ol.item",
+  //     dropOnEmpty: true,
+  //     scroll: true,
+  //     stop: function( event, ui ) {
+  //       var child_id = $(ui.item)[0].id
+  //       var parent_id = $(ui.item)[0].parentElement.id
+
+  //     }
+  //   }).disableSelection();
+
+  $("ol#list1").on("click", "li", function(){
+
+    $("ol#list2").append(this)
+
+  })
+
+  $("ol#list2").on("click", "li", function(){
+
+    $("ol#list1").append(this)
+
+  })
 });
 
