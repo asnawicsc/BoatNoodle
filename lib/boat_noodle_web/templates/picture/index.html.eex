@@ -1,0 +1,36 @@
+<h2>Listing Picture</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Filename</th>
+      <th>File type</th>
+      <th>Bin</th>
+      <th>Url</th>
+      <th>Gallery</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for picture <- @picture do %>
+    <tr>
+      <td><%= picture.id %></td>
+      <td><%= picture.filename %></td>
+      <td><%= picture.file_type %></td>
+      <td><%= picture.bin %></td>
+      <td><%= picture.url %></td>
+      <td><%= picture.gallery_id %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: picture_path(@conn, :show, picture), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: picture_path(@conn, :edit, picture), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: picture_path(@conn, :delete, picture), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Picture", to: picture_path(@conn, :new) %></span>

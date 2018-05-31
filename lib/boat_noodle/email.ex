@@ -12,8 +12,6 @@ defmodule BoatNoodle.Email do
   # end
 
   def forget_password(email_address, password, name, password_not_set) do
-    IEx.pry()
-
     if password_not_set == true do
       new_email()
       |> to(email_address)

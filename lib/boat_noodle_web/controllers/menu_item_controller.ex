@@ -2,13 +2,75 @@ defmodule BoatNoodleWeb.MenuItemController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.MenuItem
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat}
+
   require IEx
 
   def index(conn, _params) do
-    menu_item = Repo.all(MenuItem)
-    # IEx.pry()
-    render(conn, "index.html", menu_item: menu_item)
+    combo_menus =
+      Repo.all(
+        from(
+          i in ItemSubcat,
+          left_join: c in ItemCat,
+          on: c.itemcatid == i.itemcatid,
+          where: c.category_type == ^"COMBO",
+          group_by: [i.itemcode],
+          select: %{
+            itemcode: i.itemcode,
+            subcatid: i.subcatid,
+            itemname: i.itemname,
+            itemcatname: c.itemcatname
+          }
+        )
+      )
+
+    menu_catalog = Repo.all(from(m in MenuCatalog))
+
+    arranged_items =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where: s.is_delete == ^0 and s.is_combo == ^0 and s.is_comboitem == ^0,
+          select: %{
+            subcatid: s.subcatid,
+            item_code: s.itemcode,
+            price_code: s.price_code,
+            itemprice: s.itemprice
+          },
+          order_by: [asc: s.itemcode]
+        )
+      )
+      |> Enum.group_by(fn x -> x.item_code end)
+
+    itemcodes = arranged_items |> Map.keys() |> Enum.sort()
+
+    subcats =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          left_join: c in ItemCat,
+          on: c.itemcatid == s.itemcatid,
+          where: s.is_combo == ^0 and s.is_comboitem == ^0 and s.is_delete == ^0,
+          group_by: [s.itemname, s.itemcatid],
+          select: %{
+            category: c.itemcatname,
+            itemcatid: s.itemcatid,
+            itemname: s.itemname,
+            subcatid: s.subcatid,
+            itemcode: s.itemcode
+          }
+        )
+      )
+
+    render(
+      conn,
+      "index.html",
+      menu_catalog: menu_catalog,
+      subcats: subcats,
+      itemcodes: itemcodes,
+      arranged_items: arranged_items,
+      combo_menus: combo_menus
+    )
   end
 
   def new(conn, _params) do

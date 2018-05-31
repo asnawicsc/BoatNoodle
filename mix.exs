@@ -44,7 +44,13 @@ defmodule BoatNoodle.Mixfile do
       {:timex, "~> 3.0"},
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.4.0"},
-      {:distillery, "~> 1.5", runtime: false}
+
+      {:mogrify, "~> 0.6.1"},
+      {:distillery, "~> 1.5", runtime: false},
+
+      {:comeonin, "~> 4.0"},
+      {:bcrypt_elixir, "~> 0.12"}
+
     ]
   end
 

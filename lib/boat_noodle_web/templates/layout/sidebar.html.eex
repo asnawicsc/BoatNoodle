@@ -1,5 +1,7 @@
 <% require IEx %> 
-<% current_user = @conn.private.plug_session["user_id"] %>   
+<% current_user = @conn.private.plug_session["user_id"] %>
+
+ 
 
 
     <div class="sidebar" data-color="rose" data-background-color="black" data-image="/assets/img/sidebar-1.jpg">
@@ -9,22 +11,26 @@
                 Tip 2: you can also add an image using data-image tag
               -->
       <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-mini">
+        <a href="/" class="simple-text logo-mini">
           V2
         </a>
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="/" class="simple-text logo-normal">
           Gummy POS
         </a>
       </div>
       <div class="sidebar-wrapper">
         <div class="user">
-          <div class="photo">
-            <img src="/assets/img/faces/avatar.jpg" />
+          <div class="photo" style="border-radius: 50% ; vertical-align: middle; width: 34px; height: 34px; " >
+            <%= if user(@conn).bin == "" do %>
+              <img src="/assets/img/faces/avatar.jpg" />
+            <% else %>
+              <img style="border-radius: 50%;  width: 34px; height: 34px;"  src="data:image/jpg;base64, <%= user(@conn).bin %>" alt="...">
+            <% end %>
           </div>
           <div class="user-info">
             <a data-toggle="collapse" href="#collapseExample" class="username">
               <span>
-                Tania Andrew
+                <%= user(@conn).name %>
                 <b class="caret"></b>
               </span>
             </a>

@@ -212,4 +212,5 @@ $(document).ready(function(){
 <script src="/js/sales.js"></script>
 
 <script src="/js/menu_item_category.js"></script>
+<script src="/js/item.js"></script>
 </html>

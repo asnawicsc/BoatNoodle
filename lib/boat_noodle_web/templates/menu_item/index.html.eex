@@ -37,11 +37,11 @@
            
                 </ul>
                 <div class="tab-content tab-space tab-subcategories" >
-									<%= render("menu_items.html", menu_item: @menu_item)%>
+									<%= render("menu_items.html", subcats: @subcats)%>
 									<%= render("categories.html")%>
 									<%= render("item_remark.html")%>
-									<%= render("combo.html")%>
-									<%= render("menu_catalogue.html")%>
+									<%= render("combo.html", combo_menus: @combo_menus)%>
+									<%= render("menu_catalogue.html", menu_catalogs: @menu_catalog, itemcodes: @itemcodes, arranged_items: @arranged_items)%>
 
                   
                  
@@ -50,6 +50,6 @@
             </div>
 </div>
 
-<%= render("add_item.html", menu_item: @menu_item) %>
+
 <%= render("add_category.html") %>
 <%= render("edit_category.html") %>

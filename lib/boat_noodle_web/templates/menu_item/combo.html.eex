@@ -11,7 +11,7 @@
                         			
                         		</div>
                         		<div class="col-sm-4">
-                        			<button class="btn btn-rose btn-round" aria-label="add_new_item">
+                        			<button class="btn btn-rose btn-round" aria-label="">
 						                      <i class="material-icons">add_box</i> New Combo
 						                    <div class="ripple-container"></div>
 						                  </button>
@@ -26,7 +26,35 @@
                         </div>
                       </div>
                       <div class="card-body">
-										  	
+										  	<table class="table data">
+                          <thead>
+                            <tr>  
+                              <th>No</th>
+                              <th>Code</th>
+                              <th>Group</th>
+                              <th>Name</th>
+                     
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <%= for combo_menu <- @combo_menus |> Enum.with_index() do %>
+                            <tr>
+                              <td><%= elem(combo_menu, 1) + 1%></td>
+                              <td><%= elem(combo_menu, 0).itemcode %></td>
+                              <td><%= elem(combo_menu, 0).itemcatname %></td>
+                              <td><%= elem(combo_menu, 0).itemname %></td>
+
+                              <td>
+                                
+<a href="/combos/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+
+                              </td>
+                            </tr>
+                            <% end %>
+                          </tbody>           
+                        </table>
                       </div>
+          
                     </div>
                   </div>

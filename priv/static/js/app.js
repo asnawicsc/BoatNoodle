@@ -105,5 +105,14 @@ $(document).ready(function(){
             default:
                 console.log("default")
               }
+
+    $("a.menu_catalog_item").click(function(){
+
+      var id = $(this).attr("aria-label")
+      $(".menu_catalog_item.tab-pane").attr("class", "menu_catalog_item tab-pane")
+      $("div#"+id+".menu_catalog_item.tab-pane").toggleClass("active show")
+    })
+
+    $("table.data").DataTable()
 });
 

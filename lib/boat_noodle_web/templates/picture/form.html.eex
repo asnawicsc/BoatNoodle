@@ -1,0 +1,47 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :id, class: "control-label" %>
+    <%= number_input f, :id, class: "form-control" %>
+    <%= error_tag f, :id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :filename, class: "control-label" %>
+    <%= text_input f, :filename, class: "form-control" %>
+    <%= error_tag f, :filename %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :file_type, class: "control-label" %>
+    <%= text_input f, :file_type, class: "form-control" %>
+    <%= error_tag f, :file_type %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :bin, class: "control-label" %>
+    <%= text_input f, :bin, class: "form-control" %>
+    <%= error_tag f, :bin %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :url, class: "control-label" %>
+    <%= text_input f, :url, class: "form-control" %>
+    <%= error_tag f, :url %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :gallery_id, class: "control-label" %>
+    <%= number_input f, :gallery_id, class: "form-control" %>
+    <%= error_tag f, :gallery_id %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

@@ -26,38 +26,33 @@
       </div>
     </div>
     <div class="card-body">
-	  	
-			<div class="row">
-				<div class="col-lg-2" id="category_sidebar">
+	  	<table class="table data">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Edit</th>
+        </tr>
+      </thead>  
+      <tbody>
+        <% sbs = @subcats |> Enum.with_index %>
 
-					<%= render("category_sidebar.html", menu_item: @menu_item)%>
-
-				</div>
-				<div class="col-lg-10">
-							<table id="items" class="table">
-								<thead>
-									<tr>
-										<th>Code</th>
-										<th>Product Code</th>
-										<th>Name</th>
-										<th>Price</th>
-										<th>Status</th>
-
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-									</tr>
-								</tbody>
-							</table>
-
-				</div>
-			</div>
+      <%= for subcat <- sbs do %>
+      <tr>
+        <td><%= elem(subcat,1) + 1 %></td>
+        <td><%= elem(subcat,0).itemcode %></td>
+        <td><%= elem(subcat,0).itemname %></td>
+        <td><%= elem(subcat,0).category %></td>
+        <td>
+          
+          <a href="/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+        </td>
+      </tr>
+      <% end %>
+      </tbody>
+      </table>
     </div>
   </div>
 </div>
