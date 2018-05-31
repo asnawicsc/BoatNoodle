@@ -17,16 +17,22 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           order_by: [asc: s.price_code]
         )
       )
+      if same_items == [] do
+        same_items = [item_subcat]
+      end
 
     ids = same_items |> Enum.map(fn x -> x.subcatid end)
     combo_items = Repo.all(from(c in ComboDetails, where: c.combo_id in ^ids))
+
+    no_selection_combo_items = Repo.all(from s in ItemSubcat, where: s.itemcatid == ^Integer.to_string(item_subcat.subcatid))
 
     render(
       conn,
       "combo_show.html",
       item_subcat: item_subcat,
       same_items: same_items,
-      combo_items: combo_items
+      combo_items: combo_items,
+      no_selection_combo_items: no_selection_combo_items
     )
   end
 
