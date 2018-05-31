@@ -68,14 +68,14 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: s in BoatNoodle.BN.Sales,on: s.salesid == sd.salesid,
             left_join: is in BoatNoodle.BN.ItemSubcat,on: sd.itemid == is.subcatid,
             left_join: ic in BoatNoodle.BN.ItemCat,on: ic.itemcatid == is.itemcatid,
-            where: s.branchid >= ^_params["branchid"] and s.salesdate >= ^_params["start_date"] and
+            where: s.branchid == ^_params["branchid"] and s.salesdate >= ^_params["start_date"] and
             s.salesdate <= ^_params["end_date"],
             select: %{
               total: sd.qty,
               date: s.salesdate,
               price: sd.order_price,
               itemcatname: ic.itemcatname,
-              category_type: ic.category_type
+              combo_id: is.is_comboitem
             }
           )
       )
@@ -98,7 +98,7 @@ defmodule BoatNoodleWeb.SalesController do
       beverages_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Beverages"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id ==0 and x.itemcatname=="F_Beverages"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{sum: a}
 
       end
@@ -107,7 +107,7 @@ defmodule BoatNoodleWeb.SalesController do
       beverages_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Beverages" end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id !=0 and x.itemcatname=="F_Beverages" end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{sum: a}
 
       end
@@ -117,7 +117,7 @@ defmodule BoatNoodleWeb.SalesController do
       breakfast_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Breakfast"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id ==0 and x.itemcatname=="F_Breakfast"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{sum: a}
 
       end
@@ -127,7 +127,7 @@ defmodule BoatNoodleWeb.SalesController do
       breakfast_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Breakfast"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id !=0 and x.itemcatname=="F_Breakfast"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{sum: a}
       end
 
@@ -136,7 +136,7 @@ defmodule BoatNoodleWeb.SalesController do
       noodle_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Noodle"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id ==0 and x.itemcatname=="F_Noodle"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{sum: a}
 
       end
@@ -145,7 +145,7 @@ defmodule BoatNoodleWeb.SalesController do
       noodle_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Noodle" end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id !=0 and x.itemcatname=="F_Noodle" end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{sum: a}
 
       end
@@ -154,7 +154,7 @@ defmodule BoatNoodleWeb.SalesController do
       rice_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_Rice"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id ==0 and x.itemcatname=="F_Rice"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{sum: a}
 
       end
@@ -164,7 +164,7 @@ defmodule BoatNoodleWeb.SalesController do
       rice_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_Rice"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id !=0 and x.itemcatname=="F_Rice"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{month: item,sum: a}
 
       end
@@ -173,7 +173,7 @@ defmodule BoatNoodleWeb.SalesController do
       sidedish_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO" and x.itemcatname=="F_SideDish"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id ==0 and x.itemcatname=="F_SideDish"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{month: item,sum: a}
 
       end
@@ -182,7 +182,7 @@ defmodule BoatNoodleWeb.SalesController do
       sidedish_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type =="COMBO" and x.itemcatname=="F_SideDish"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id !=0 and x.itemcatname=="F_SideDish"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{month: item,sum: a}
 
       end
@@ -191,7 +191,7 @@ defmodule BoatNoodleWeb.SalesController do
       toppings_qty_ind=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and x.category_type !="COMBO"  and x.itemcatname=="Toppings"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and x.combo_id ==0 and x.itemcatname=="Toppings"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{month: item,sum: a}
 
       end
@@ -200,7 +200,7 @@ defmodule BoatNoodleWeb.SalesController do
       toppings_qty_com=for item <- date_data1 do
 
         item= String.to_integer(item)
-        a=Enum.filter(try1, fn x -> x.date.month == item and  x.category_type =="COMBO" and x.itemcatname=="Toppings"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
+        a=Enum.filter(try1, fn x -> x.date.month == item and  x.combo_id !=0 and x.itemcatname=="Toppings"  end)|>Enum.map(fn x-> x.total end)|>Enum.sum
         %{month: item,sum: a}
 
       end

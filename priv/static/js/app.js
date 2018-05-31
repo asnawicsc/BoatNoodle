@@ -114,5 +114,13 @@ $(document).ready(function(){
     })
 
     $("table.data").DataTable()
+
+   var addon=$("#myTable").find('tr:eq(3)').find('td:eq(1)');
+
+
+  
+
+
+    
 });
 
