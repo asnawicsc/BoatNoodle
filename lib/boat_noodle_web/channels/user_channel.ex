@@ -10,6 +10,48 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+  def handle_in("generate_all_branch_sales_data", payload, socket) do
+
+    branches = Repo.all(from b in BoatNoodle.BN.Branch, select: %{name: b.branchname, id: b.branchid}) 
+    map = 
+    for branch <- branches do
+      sales_data(branch.name, Integer.to_string(branch.id))
+    end |> Enum.sort_by(fn x -> x.grand_total end)
+
+      broadcast(socket, "save_local_storage", %{map: Poison.encode!(map)})
+    {:noreply, socket}
+  end
+
+  defp sales_data(branch_name, branch_id) do
+      s_date = Timex.beginning_of_month(Date.utc_today)
+      e_date = Timex.end_of_month(Date.utc_today)
+      total_transaction =
+        Repo.all(
+          from(
+            sp in BoatNoodle.BN.SalesPayment,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
+            where:
+              s.branchid == ^branch_id and s.salesdate >= ^s_date and
+                s.salesdate <= ^e_date,
+            select: %{
+              gst_charge: sp.gst_charge,
+              grand_total: sp.grand_total,
+              salesid: s.salesid,
+              pax: s.pax
+            }
+          )
+        )
+
+      res_ori = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum() 
+      if res_ori == 0 do
+        res = "0.00"
+        else
+         res = res_ori |> :erlang.float_to_binary(decimals: 2)
+      end
+      %{branch_name: branch_name, grand_total: res_ori, grand_total_str: res}
+  end
+
   def handle_in("dashboard", payload, socket) do
     branchid = payload["branch_id"]
 
