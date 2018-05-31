@@ -201,7 +201,7 @@ $(document).ready(function(){
   $("#backdrop").delay(500).fadeOut()
 })
 </script>
-
+<script src="/js/highcharts.src.js"></script>
 
 <script src="/js/phoenix.js"></script>
 
