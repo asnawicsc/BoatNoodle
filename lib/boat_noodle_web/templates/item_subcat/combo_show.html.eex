@@ -22,6 +22,7 @@
   
             <th>Code</th>
             <th>Product Code</th>
+            <th>Product Name</th>
             <th>Part Code</th>
       
             <th>Price</th>
@@ -46,7 +47,8 @@
             <td><%= same_item.itemcatid %></td>
        
             <td><%= same_item.itemcode %></td>
-            <td><%= same_item.product_code %></td>
+             <td><%= same_item.product_code %></td>
+            <td><%= same_item.itemname %></td>
             <td><%= same_item.part_code %></td>
     
             <td><%= same_item.itemprice %></td>
@@ -72,18 +74,20 @@
                     <th>Combo Qty</th>
                     <th>Item Qty</th>
                     <th>Unit Price</th>
+                    <th>Topup Price</th>
                     <th>Code</th>
                     <th>ItemSubcat ID</th>
                   </tr>
                 </thead>
                 <tbody>
-              <%= for combo_item <- ci[same_item.subcatid]  do %>
+              <%= for combo_item <- ci[same_item.subcatid] |> Enum.sort_by(fn x -> x.combo_item_code end)  do %>
               
                   <tr>
                     <td><%= combo_item.combo_item_name %></td>
                     <td><%= combo_item.combo_qty %></td>
                     <td><%= combo_item.combo_item_qty %></td>
                     <td><%= combo_item.unit_price %></td>
+                     <td><%= combo_item.top_up %></td>
                     <td><%= combo_item.combo_item_code %></td>
                     <td>
                       
@@ -100,6 +104,30 @@
             </td>
           </tr>
             <% end %>
+          <% end %>
+          <%= for same_item <- @no_selection_combo_items do %>
+          <tr>
+            <td><%= same_item.price_code %></td>
+            <td><%= same_item.itemcatid %></td>
+       
+            <td><%= same_item.itemcode %></td>
+            <td><%= same_item.product_code %></td>
+             <td><%= same_item.itemname %></td>
+            <td><%= same_item.part_code %></td>
+    
+            <td><%= same_item.itemprice %></td>
+            <td><%= same_item.is_categorize %></td>
+
+
+            <td><%= same_item.is_activate %></td>
+   
+     
+            <td><%= same_item.is_delete %></td>
+            <td><%= same_item.enable_disc %></td>
+            <td><%= same_item.include_spend %></td>
+            <td><%= same_item.is_print %></td>
+            <td><%= same_item.subcatid %></td>
+          </tr>
           <% end %>
         </tbody>
       </table>

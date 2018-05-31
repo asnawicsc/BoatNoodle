@@ -20,6 +20,7 @@
   <link href="/assets/assets-for-demo/demo.css" rel="stylesheet" />
 
   <link rel="stylesheet" type="text/css" href="/css/daterangepicker.css"/>
+  <link href="/assets/jquery-ui.min.css" rel="stylesheet" />
 
 
 </head>
@@ -161,7 +162,7 @@
 <script src="/assets/js/plugins/jasny-bootstrap.min.js"></script>
 <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
 <%# <script src="/assets/js/plugins/fullcalendar.min.js"></script> %>
-
+<script src="/assets/jquery-ui.min.js"></script>
 <script>
   window.userToken = "<%= assigns[:user_token] %>";
 
