@@ -1523,15 +1523,11 @@ if ($("div#simpleBarChart").length == 1) {
         console.log(payload.tax_data)
         console.log(payload.tax_total)
 
-
-
-
         var tax = payload.tax_data
         var tax_total = payload.tax_total
 
 
         var all = parseFloat(tax_total) - parseFloat(tax)
-
 
 
         $(".tax#tax_data").html(tax);
@@ -1559,6 +1555,64 @@ if ($("div#simpleBarChart").length == 1) {
             ]
         });
 
+      
+           
+            localStorage.setItem("taxes_data", payload.map);
+
+            var maps = JSON.parse(localStorage.getItem("taxes_data"))
+            var salesdate = []
+            var tax = []
+            var aat = []
+            $(maps).each(function(){ salesdate.push(this.salesdate) })
+            $(maps).each(function(){ tax.push(this.tax) })
+            $(maps).each(function(){ aat.push(this.aat) })
+            Highcharts.chart('taxBarChart', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'Tax Reports(RM)'
+                },
+
+                xAxis: {
+                    categories: salesdate,
+                    title: {
+                        text: null
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Tax (RM)',
+                        align: 'high'
+                    },
+                    labels: {
+                        overflow: 'justify'
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Total Tax",
+                    data: tax
+                },
+                {
+                    name: "Among After Tax",
+                    data: aat
+                }]
+               
+            });
+
+ 
         $("#backdrop").delay(500).fadeOut()
 
     })
@@ -1606,6 +1660,61 @@ if ($("div#simpleBarChart").length == 1) {
                 }
             ]
         });
+
+        localStorage.setItem("payment_data", payload.map);
+
+            var maps = JSON.parse(localStorage.getItem("payment_data"))
+            var salesdate = []
+            var cash = []
+            var card = []
+            $(maps).each(function(){ salesdate.push(this.salesdate) })
+            $(maps).each(function(){ cash.push(this.cash) })
+            $(maps).each(function(){ card.push(this.card) })
+            Highcharts.chart('paymentBarChart', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'Payment Reports(RM)'
+                },
+
+                xAxis: {
+                    categories: salesdate,
+                    title: {
+                        text: null
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Tax (RM)',
+                        align: 'high'
+                    },
+                    labels: {
+                        overflow: 'justify'
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Total Sales by Cash",
+                    data: cash
+                },
+                {
+                    name: "Total Sales by Card",
+                    data: card
+                }]
+               
+            });
 
         $("#backdrop").delay(500).fadeOut()
     })
@@ -1661,5 +1770,24 @@ if ($("div#simpleBarChart").length == 1) {
         });
 
         $("#backdrop").delay(500).fadeOut()
+    })
+
+    $(".btn btn-primary#chart").click(function() {
+
+   $("#backdrop").fadeIn()
+
+    var b_id = $("select#branch_list").val()
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("chart", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date
+        })
+    })
+
+    channel.on("populate_cash_in_out", payload => {
+
     })
 });

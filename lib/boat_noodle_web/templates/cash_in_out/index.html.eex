@@ -79,6 +79,14 @@
                           </div>
                         </div>
                       </div>
+
+                        <div class="row">
+                        <div class="col-sm-12">
+                          <div id="cashinoutBarChart" class="ct-chart" style="height: 400px;"></div>
+                        </div>
+                       
+                      </div>
+                       <br>
            
                     <div class="panel-body"  id="cash_in_out">
                       <table id="cash_in_out" class="table">

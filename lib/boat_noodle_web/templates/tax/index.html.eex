@@ -79,6 +79,15 @@
                           </div>
                         </div>
                       </div>
+
+
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <div id="taxBarChart" class="ct-chart" style="height: 400px;"></div>
+                        </div>
+                       
+                      </div>
+                       <br>
            
                     <div class="panel-body"  id="tax_details">
                       <table id="tax_details" class="table">

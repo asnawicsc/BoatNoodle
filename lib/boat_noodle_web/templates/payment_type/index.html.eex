@@ -80,6 +80,14 @@
                           </div>
                         </div>
                       </div>
+
+                        <div class="row">
+                        <div class="col-sm-12">
+                          <div id="paymentBarChart" class="ct-chart" style="height: 400px;"></div>
+                        </div>
+                       
+                      </div>
+                       <br>
            
          <div class="panel-body"  id="payment_type">
                       <table id="payment_type" class="table">

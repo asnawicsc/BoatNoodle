@@ -1490,15 +1490,15 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("pax_summary", payload, socket) do
-    s_date = payload["s_date"]
-    e_date = payload["e_date"]
+      s_date = payload["s_date"]
+      e_date = payload["e_date"]
 
-    a = Date.from_iso8601!(s_date)
-    b = Date.from_iso8601!(e_date)
+      a = Date.from_iso8601!(s_date)
+      b = Date.from_iso8601!(e_date)
 
-    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
+      date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
 
-    luck =
+      luck =
       for date <- date_data do
         test =
           Repo.all(
@@ -1559,8 +1559,8 @@ defmodule BoatNoodleWeb.UserChannel do
           dinner: dinner
         }
       end
-    broadcast(socket, "populate_table_pax_summary", %{luck: luck})
-    {:noreply, socket}
+      broadcast(socket, "populate_table_pax_summary", %{luck: luck})
+      {:noreply, socket}
   end
 
 
@@ -1610,14 +1610,73 @@ defmodule BoatNoodleWeb.UserChannel do
         )
       )
 
+
+       branches = payload["branch_id"]
+       s_date= payload["s_date"]
+       e_date= payload["e_date"]  
+
+    
+    map=taxes_data(branches,s_date,e_date)
+     
+
     broadcast(socket, "populate_tax_data", %{
       tax_data: :erlang.float_to_binary(tax_data.tax, decimals: 2),
       tax_total: :erlang.float_to_binary(tax_data.grand_total, decimals: 2),
-      tax_details: tax_details
+      tax_details: tax_details,map: Poison.encode!(map)
     })
 
     {:noreply, socket}
   end
+
+
+  defp taxes_data(branches,s_date,e_date) do
+
+      a = Date.from_iso8601!(s_date)
+      b = Date.from_iso8601!(e_date)
+
+     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
+      
+
+      for item <- date_data do
+
+        total_transaction =
+        Repo.all(
+          from(
+            sp in BoatNoodle.BN.SalesPayment,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
+            where:
+              s.branchid == ^branches and s.salesdate == ^item,
+            select: %{
+              salesdate: s.salesdate,
+              gst_charge: sp.gst_charge,
+              grand_total: sp.grand_total
+              
+            }
+          )
+        )
+
+
+      res = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.gst_charge) end)|>Enum.sum
+      grand_total = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)|>Enum.sum
+      aat= grand_total-res
+
+      if res == 0 do
+        res = 0.00
+        else
+         res = res |> Float.round(2)
+      end
+      if aat == 0 do
+        aat = 0.00
+        else
+         aat = aat |> Float.round(2)
+      end
+      
+      %{salesdate: item, tax: res,aat: aat}
+        
+      end
+ 
+   end
 
   def handle_in("payment_type", payload, socket) do
     payment_type_cash =
@@ -1668,12 +1727,19 @@ defmodule BoatNoodleWeb.UserChannel do
           }
         )
       )
+       branches = payload["branch_id"]
+       s_date= payload["s_date"]
+       e_date= payload["e_date"]
+
+    map=payment_data(branches,s_date,e_date)
+
+
 
     if payment_type_others.card == nil do
       broadcast(socket, "populate_payment", %{
         payment_type_cash: payment_type_cash.cash,
         payment_type_others: "0.00",
-        payment: payment
+        payment: payment,map: Poison.encode!(map)
       })
 
       {:noreply, socket}
@@ -1683,7 +1749,7 @@ defmodule BoatNoodleWeb.UserChannel do
       broadcast(socket, "populate_payment", %{
         payment_type_cash: "0.00",
         payment_type_others: payment_type_cash.card,
-        payment: payment
+        payment: payment,map: Poison.encode!(map)
       })
 
       {:noreply, socket}
@@ -1693,7 +1759,7 @@ defmodule BoatNoodleWeb.UserChannel do
       broadcast(socket, "populate_payment", %{
         payment_type_cash: "0.00",
         payment_type_others: "0.00",
-        payment: payment
+        payment: payment,map: Poison.encode!(map)
       })
 
       {:noreply, socket}
@@ -1703,12 +1769,61 @@ defmodule BoatNoodleWeb.UserChannel do
       broadcast(socket, "populate_payment", %{
         payment_type_cash: payment_type_cash.cash,
         payment_type_others: payment_type_others.card,
-        payment: payment
+        payment: payment,map: Poison.encode!(map)
       })
 
       {:noreply, socket}
     end
   end
+
+  defp payment_data(branches,s_date,e_date) do
+
+      a = Date.from_iso8601!(s_date)
+      b = Date.from_iso8601!(e_date)
+
+     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
+      
+
+      for item <- date_data do
+
+        total_transaction =
+        Repo.all(
+          from(
+            sp in BoatNoodle.BN.SalesPayment,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
+            where:
+              s.branchid == ^branches and s.salesdate == ^item,
+            select: %{
+              salesdate: s.salesdate,
+              grand_total: sp.grand_total,
+              payment_type: sp.payment_type
+              
+            }
+          )
+        )
+
+
+      cash = Enum.filter(total_transaction,fn x -> x.payment_type =="CASH" end) |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)|>Enum.sum
+      card = Enum.filter(total_transaction,fn x -> x.payment_type =="CREDITCARD" end) |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)|>Enum.sum
+      
+
+      if cash == 0 do
+        cash = 0.00
+        else
+         cash = cash |> Float.round(2)
+      end
+      if card == 0 do
+        card = 0.00
+        else
+         card = card |> Float.round(2)
+      end
+      
+      %{salesdate: item, cash: cash,card: card}
+        
+      end
+ 
+   end
 
   def handle_in("cash_in_out", payload, socket) do
     s_date = payload["s_date"]
@@ -1723,51 +1838,7 @@ defmodule BoatNoodleWeb.UserChannel do
     dates = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end) |> Poison.encode!()
     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
 
-    cash_in_graph =
-      for date <- date_data do
-        a = Enum.join([date, ":00:00:00"], "")
-        b = Enum.join([date, ":23:59:59"], "")
 
-        cash_in =
-          Repo.all(
-            from(
-              c in BoatNoodle.BN.CashInOut,
-              left_join: b in BoatNoodle.BN.Branch,
-              on: b.branchid == c.branch_id,
-              where:
-                c.cashtype == "CASHIN" and b.branchid == ^payload["branch_id"] and
-                  c.date_time >= ^a and c.date_time <= ^b,
-              select: %{
-                cash_in: sum(c.amount)
-              }
-            )
-          )
-          |> hd()
-      end
-      |> Poison.encode!()
-
-    cash_out_graph =
-      for date <- date_data do
-        a = Enum.join([date, ":00:00:00"], "")
-        b = Enum.join([date, ":23:59:59"], "")
-
-        cash_in =
-          Repo.all(
-            from(
-              c in BoatNoodle.BN.CashInOut,
-              left_join: b in BoatNoodle.BN.Branch,
-              on: b.branchid == c.branch_id,
-              where:
-                c.cashtype == "CASHOUT" and b.branchid == ^payload["branch_id"] and
-                  c.date_time >= ^a and c.date_time <= ^b,
-              select: %{
-                cash_in: sum(c.amount)
-              }
-            )
-          )
-          |> hd()
-      end
-      |> Poison.encode!()
 
     cash_in =
       Repo.all(
@@ -1820,14 +1891,20 @@ defmodule BoatNoodleWeb.UserChannel do
         )
       )
 
+       branches = payload["branch_id"]
+       s_date= payload["s_date"]
+       e_date= payload["e_date"]
+
+       # map=cashinout(branches,s_date,e_date)
+
+
+
     if cash_in.cash_in == nil do
       broadcast(socket, "populate_cash_in_out", %{
         cash_in: "0.00",
         cash_out: cash_out.cash_out,
         cash: cash,
-        dates: dates,
-        cash_in_graph: cash_in_graph,
-        cash_out_graph: cash_out_graph
+        dates: dates
       })
 
       {:noreply, socket}
@@ -1838,9 +1915,7 @@ defmodule BoatNoodleWeb.UserChannel do
         cash_in: cash_in.cash_in,
         cash_out: "0.00",
         cash: cash,
-        dates: dates,
-        cash_in_graph: cash_in_graph,
-        cash_out_graph: cash_out_graph
+        dates: dates
       })
 
       {:noreply, socket}
@@ -1851,9 +1926,7 @@ defmodule BoatNoodleWeb.UserChannel do
         cash_in: "0.00",
         cash_out: "0.00",
         cash: cash,
-        dates: dates,
-        cash_in_graph: cash_in_graph,
-        cash_out_graph: cash_out_graph
+        dates: dates
       })
 
       {:noreply, socket}
@@ -1864,14 +1937,62 @@ defmodule BoatNoodleWeb.UserChannel do
         cash_in: cash_in.cash_in,
         cash_out: cash_out.cash_out,
         cash: cash,
-        dates: dates,
-        cash_in_graph: cash_in_graph,
-        cash_out_graph: cash_out_graph
+        dates: dates
       })
 
       {:noreply, socket}
     end
   end
+
+  # defp cashinout(branches,s_date,e_date) do
+
+  #     a = Date.from_iso8601!(s_date)
+  #     b = Date.from_iso8601!(e_date)
+
+
+
+  #    date_data = Date.range(a,b) |> Enum.map(fn x -> Date.to_string(x) end)
+      
+
+  #     for item <- date_data do
+
+  #       total_transaction =
+  #       Repo.all(
+  #       from(
+  #         c in BoatNoodle.BN.CashInOut,
+  #         left_join: b in BoatNoodle.BN.Branch,
+  #         on: b.branchid == c.branch_id,
+  #         where:
+  #           b.branchid == ^branches,
+  #         select: %{
+  #           amount: sum(c.amount),
+  #           date_time: c.date_time
+  #         }
+  #       )
+  #     )|>Enum.filter(fn x -> DateTime.to_date(DateTime.to_string(x.date_time))==item end)
+
+
+  #     cash = Enum.filter(total_transaction,fn x -> x.payment_type =="CASH" end) |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)|>Enum.sum
+  #     card = Enum.filter(total_transaction,fn x -> x.payment_type =="CARD" end) |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)|>Enum.sum
+      
+
+  #     if cash == 0 do
+  #       cash = 0.00
+  #       else
+  #        cash = cash |> Float.round(2)
+  #     end
+  #     if card == 0 do
+  #       card = 0.00
+  #       else
+  #        card = card |> Float.round(2)
+  #     end
+      
+  #     %{salesdate: item, cash: cash,card: card}
+        
+  #     end
+ 
+  #  end
+
 
   defp authorized?(_payload) do
     true
