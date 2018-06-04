@@ -1,0 +1,112 @@
+<div class="col-md-10 mr-auto ml-auto" aria-label="add_new_item">
+
+          <form method="post" action="/combos/new" class="form-horizontal" aria-label="item_form">
+    <div class="card " data-color="rose" >
+     
+        <div class="card-header text-center">
+          <h3 class="card-title">
+            Add New Combo
+          </h3>
+
+        </div>
+
+        <div class="card-body">     
+            <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+            <input type="hidden" name="item[itemcode]">
+            <div class="row">
+              <div class="col-sm-3">
+              
+                  <select name="itemcatid" class="selectpicker" data-style="btn select-with-transition"  title="Choose Category" data-size="10" required="">
+                          <%= for cat <- @menu_item do %>
+                            <option value="<%= cat.itemcatid %>"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</option>
+                          <% end %>
+                          </select>
+             
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group bmd-form-group">
+                  <label class="bmd-label-floating">Item Code</label>
+                  <input name="itemcode" class="form-control" type="text"  required="">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group bmd-form-group">
+                  <label class="bmd-label-floating">Description</label>
+                  <input name="itemdesc" class="form-control" type="text" required="">
+                </div>
+                
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="togglebutton">
+                        <label>
+                          <input type="checkbox" name="need_selection">
+                          <span class="toggle"></span>
+                          Require food selection?
+                        </label>
+                      </div>
+              </div>
+            </div>
+            <div class="row">
+
+                  <div class="col-sm-6">
+                    <div class="card card-stats">
+                      <div class="card-header card-header-rose card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">No need selection</p>
+                              <h3 class="card-title">Ala Carte</h3>
+                            </div>
+                      <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                       <ol class="item"   id="list1">
+                                <%= for carte <- @ala_carte do %>
+                                <li style="font-size: 15px; height: 40px;" id="<%= carte.itemcode %>"><%= carte.itemname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"><%= carte.itemcode %></span></li>
+                                <% end %>
+                              </ol>
+                        
+                      </div>
+                    </div>
+                    </div>
+          
+              <div class="col-sm-6">
+                 <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">To be included in combo</p>
+                              <h3 class="card-title">Ala Carte</h3>
+                            </div>
+                    <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                      <ol class="item" style="height: 300px; min-width: 300px;" id="list2">
+                       
+                      </ol>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+              
+                
+                
+
+   
+         
+             
+        </div>
+        <div class="card-footer">
+        <div class="mr-auto">
+                    <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                    </div>
+          <div class="ml-auto">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+           
+          </div>
+          <div class="clearfix"></div>
+        </div>
+    
+    </div>
+ </form>
+</div>

@@ -11,10 +11,10 @@
                         			
                         		</div>
                         		<div class="col-sm-4">
-                        			<button class="btn btn-rose btn-round" aria-label="">
+                        			<a href="/combos/new" class="btn btn-rose btn-round" aria-label="">
 						                      <i class="material-icons">add_box</i> New Combo
 						                    <div class="ripple-container"></div>
-						                  </button>
+						                  </a>
                         		</div>
                         	</div>
                       </h4>

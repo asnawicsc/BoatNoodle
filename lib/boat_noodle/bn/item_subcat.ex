@@ -14,7 +14,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:is_comboitem, :integer, default: 0)
     field(:is_default_combo, :integer, default: 0)
     field(:is_delete, :integer, default: 0)
-    field(:is_print, :integer)
+    field(:is_print, :integer, default: 1)
     field(:itemcatid, :string)
     field(:itemcode, :string)
     field(:itemdesc, :string)
