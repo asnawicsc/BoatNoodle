@@ -1,121 +1,146 @@
 <div class="row">
     <div class="col-lg-12">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
+        <div class="panel panel-default">
+            <div class="panel-heading">
 
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="card">
-                              <div class="card-header card-header-rose card-header-text">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
-                                  <i class="material-icons">library_books</i>
+                                    <i class="material-icons">library_books</i>
                                 </div>
                                 <h4 class="card-title">Date</h4>
-                              </div>
-                              <div class="card-body ">
-                                <br>
-                                  <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                                        <i class="fa fa-calendar"></i>&nbsp;
-                                      <span></span> <i class="fa fa-caret-down"></i>
-                                      <input type="hidden" name="start_date">
-                                      <input type="hidden" name="end_date">
-                                  </div>
-                              </div>
                             </div>
-                          </div>
+                            <div class="card-body ">
+                                <br>
+                                <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                    <i class="fa fa-calendar"></i>&nbsp;
+                                    <span></span> <i class="fa fa-caret-down"></i>
+                                    <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                          <div class="col-md-6">
-                            <div class="card">
-                              <div class="card-header card-header-rose card-header-text">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
-                                  <i class="material-icons">library_books</i>
+                                    <i class="material-icons">library_books</i>
                                 </div>
                                 <h4 class="card-title">Branch</h4>
-                              </div>
-                              <div class="card-body ">
-                                        <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                            </div>
+                            <div class="card-body ">
+                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
                                           <%= for branch <- @branches do %>
                                             <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
                                           <% end %>
                                         </select>
-                              </div>
                             </div>
-                          </div>
                         </div>
-
-                      </div>
                     </div>
-      
-                   
-          <div class="row">
-            <div class="col-md-8 ml-auto mr-auto">
-              <div class="page-categories">
-                <br />
-                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
-                  <li class="nav-item" id="discount_receipt">
-                    <a class="nav-link " data-toggle="tab" id="discount_receipt" href="" role="tablist">
-                      <i class="material-icons">info</i> Discounted Receipts
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="discount_summary" href="" role="tablist">
-                      <i class="material-icons">location_on</i> Discount Summary
-                    </a>
-                  </li>
-                </ul>
-              </div>
+                </div>
+
             </div>
-          </div>
-          <br>
+        </div>
 
-      <div class="panel-body" id="discount_receipt" style="width: 100%; overflow-x: scroll; ">
-        <center><h3> Discount Receipt </h3> </center>
-        <table id="discount_receipt" class="table">
-          <thead>
-            <tr>
-              <th>Date Time</th>
-              <th>Invoice No</th>
-              <th>Discount Amount</th>
-              <th>Discount Type</th>
-              <th>Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <div class="panel-body"  id="discount_summary" style="width: 100%; overflow-x: scroll; ">
-        <center><h3> Discount Summary</h3> </center>
-        <table id="discount_summary" class="table">
-          <thead>
-            <tr>
-              <th>Discount Type</th>
-              <th>Quantity</th>
-              <th>Accumulate Amounts</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div class="row">
+            <div class="col-md-8 ml-auto mr-auto">
+                <div class="page-categories">
+                    <br />
+                    <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                        <li class="nav-item" id="discount_receipt">
+                            <a class="nav-link " data-toggle="tab" id="discount_receipt" href="" role="tablist">
+                      <i class="material-icons">receipt</i> Discounted Receipts
+                    </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" id="discount_summary" href="" role="tablist">
+                      <i class="material-icons">toc</i> Discount Summary
+                    </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <br>
 
-  </div>
+        <div class="panel-body" id="discount_receipt" style="width: 100%; overflow-x: scroll; ">
+
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; ">
+                    <div class="card-header card-header-icon card-header-rose">
+              
+                        <h4 class="card-title"> Discount Receipt
+                        </h4>
+                    </div>
+                    <div class="card-body">
+
+
+                        <table id="discount_receipt" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Date Time</th>
+                                    <th>Invoice No</th>
+                                    <th>Discount Amount</th>
+                                    <th>Discount Type</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel-body" id="discount_summary" style="width: 100%; overflow-x: scroll; ">
+
+            <div class="col-md-12" >
+                <div class="card" style="width: 100%; overflow-x: scroll; ">
+                    <div class="card-header card-header-icon card-header-rose">
+                     
+                        <h4 class="card-title"> Discount Summary
+                        </h4>
+                    </div>
+                    <div class="card-body">
+
+
+                        <table id="discount_summary" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Discount Type</th>
+                                    <th>Quantity</th>
+                                    <th>Accumulate Amounts</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+    </div>
 </div>
-
-
-
-
-

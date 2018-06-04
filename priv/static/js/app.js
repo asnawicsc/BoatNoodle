@@ -115,12 +115,34 @@ $(document).ready(function(){
 
     $("table.data").DataTable()
 
-   var addon=$("#myTable").find('tr:eq(3)').find('td:eq(1)');
+   var addon=$("#myTable").find('tr:eq(3)').find('td:eq(2)');
 
 
+   var sum = 0;
+
+   var dataTable = document.getElementById("myTable");
+
+   // use querySelector to find all second table cells
+   var cells = document.querySelectorAll("#f_addon_ind");
+
+ 
+
+      for (var i = 1; i < cells.length; i++){
   
+         initial =parseFloat(cells[i-1].firstChild.data)
+         sum= parseFloat(cells[i].firstChild.data)- initial
 
+          var newColums = document.createElement("td");
+          var secondCell = document.createElement("tr");
+          var secondCellText = document.createTextNode(sum);
+           secondCell.appendChild(secondCellText);
+           newColums.appendChild(secondCell);
 
+           dataTable.appendChild(newColums);
+   
+       };
+
+    
     
 });
 

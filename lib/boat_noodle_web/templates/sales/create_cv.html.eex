@@ -26,15 +26,15 @@
                             <td align="center"><%= item %></td>
                            <% end %>
                           </tr>
-                          <tr>
+                          <tr >
                             <td>F_AddOn</td>
                             <td>Individual</td>
                             <%= for item <- @addon_qty_ind do %> 
-                            <td align="right"><%= item.sum %></td>
+                            <td id="f_addon_ind" align="right"><%= item.sum %></td>
                            <% end %>
-                           <%= for item <- @addon_qty_ind do %> 
-                            <td ></td>
-                           <% end %>
+                          
+                            <td id="f_addon_ind1" ></td>
+                           
                            <%= for item <- @addon_qty_ind do %> 
                             <td id="adi"></td>
                            <% end %>
@@ -44,7 +44,7 @@
                             <td>F_Beverages</td>
                             <td>Combo</td>
                             <%= for item <- @beverages_qty_com do %> 
-                            <td align="right"><%= item.sum %></td>
+                            <td  id="f_beverages_ind" align="right"><%= item.sum %></td>
                            <% end %>
                            <%= for item <- @beverages_qty_com do %> 
                             <td></td>
@@ -236,4 +236,3 @@
                         </tbody>
                       </table>
 
-<br>

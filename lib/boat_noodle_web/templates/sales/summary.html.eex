@@ -1,131 +1,156 @@
 <div class="row">
     <div class="col-lg-12">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
+        <div class="panel panel-default">
+            <div class="panel-heading">
 
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="card">
-                              <div class="card-header card-header-rose card-header-text">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
-                                  <i class="material-icons">library_books</i>
+                                    <i class="material-icons">library_books</i>
                                 </div>
                                 <h4 class="card-title">Date</h4>
-                              </div>
-                              <div class="card-body ">
-                                <br>
-                                  <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                                        <i class="fa fa-calendar"></i>&nbsp;
-                                      <span></span> <i class="fa fa-caret-down"></i>
-                                      <input type="hidden" name="start_date">
-                                      <input type="hidden" name="end_date">
-                                  </div>
-                              </div>
                             </div>
-                          </div>
+                            <div class="card-body ">
+                                <br>
+                                <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                    <i class="fa fa-calendar"></i>&nbsp;
+                                    <span></span> <i class="fa fa-caret-down"></i>
+                                    <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                          <div class="col-md-6">
-                            <div class="card">
-                              <div class="card-header card-header-rose card-header-text">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
-                                  <i class="material-icons">library_books</i>
+                                    <i class="material-icons">library_books</i>
                                 </div>
                                 <h4 class="card-title">Branch</h4>
-                              </div>
-                              <div class="card-body ">
-                                        <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                            </div>
+                            <div class="card-body ">
+                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
                                           <%= for branch <- @branches do %>
                                             <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
                                           <% end %>
                                         </select>
-                              </div>
                             </div>
-                          </div>
                         </div>
-
-                      </div>
                     </div>
-      
-                   
-          <div class="row">
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="row">
             <div class="col-md-8 ml-auto mr-auto">
-              <div class="page-categories">
-                <br />
-                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
-                  <li class="nav-item" id="morning_sales_summary">
-                    <a class="nav-link active" data-toggle="tab" id="sales_summary" href="" role="tablist">
+                <div class="page-categories">
+                    <br />
+                    <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                        <li class="nav-item" id="morning_sales_summary">
+                            <a class="nav-link active" data-toggle="tab" id="sales_summary" href="" role="tablist">
                       <i class="material-icons">info</i>Sales Summary
                     </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="pax_summary" href="" role="tablist">
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" id="pax_summary" href="" role="tablist">
                       <i class="material-icons">location_on</i>Pax Summary
                     </a>
-                  </li>
-                </ul>
-              </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-          </div>
-          <br>
-                   
-    
-      <div class="panel-body"  id="sales_summary" style="width: 100%; overflow-x: scroll;">
-        <center><h3>Sales Summary</h3> </center>
+        </div>
+        <br>
 
-        <table id="sales_summary" class="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Total Sales</th>
-              <th>Morning</th>
-              <th>Lunch</th>
-              <th>Idle</th>
-              <th>Dinner</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <div class="panel-body"  id="pax_summary" style="width: 100%; overflow-x: scroll;">
-        <center><h3>Pax Summary</h3> </center>
+        <div class="panel-body" id="sales_summary" style="width: 100%; overflow-x: scroll;">
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; ">
+                    <div class="card-header card-header-icon card-header-rose">
 
-        <table id="pax_summary" class="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Total Pax</th>
-              <th>Morning</th>
-              <th>Lunch</th>
-              <th>Idle</th>
-              <th>Dinner</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>  
-  </div>
+                        <h4 class="card-title">Sales Summary
+                        </h4>
+                    </div>
+                    <div class="card-body" style="width: 100%; overflow-x: scroll; ">
+
+                        <table id="sales_summary" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Total Sales</th>
+                                    <th>Morning</th>
+                                    <th>Lunch</th>
+                                    <th>Idle</th>
+                                    <th>Dinner</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <div class="panel-body" id="pax_summary" style="width: 100%; overflow-x: scroll;">
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; ">
+                    <div class="card-header card-header-icon card-header-rose">
+
+                        <h4 class="card-title">Pax Summary
+                        </h4>
+                    </div>
+                    <div class="card-body" style="width: 100%; overflow-x: scroll; ">
+
+                        <table id="pax_summary" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Total Pax</th>
+                                    <th>Morning</th>
+                                    <th>Lunch</th>
+                                    <th>Idle</th>
+                                    <th>Dinner</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <center>
+                <h3>Pax Summary</h3>
+            </center>
+
+
+        </div>
+    </div>
 </div>
-
-
-
-
-

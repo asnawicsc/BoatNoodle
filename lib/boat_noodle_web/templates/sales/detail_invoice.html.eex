@@ -65,7 +65,7 @@
     </div>
 </div>
 
-<table border="1" class="table" style="border-color: green; height: 500px;">
+<table border="1" class="table" style="border-color: green;">
 	<%=for item <- @detail_item do %>
 	<tr>	
 		<td width="1105px"><%=item.itemname %></td>

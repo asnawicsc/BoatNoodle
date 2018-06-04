@@ -2165,7 +2165,7 @@ defp hourly_sales_chart_data(branches,s_date) do
               select: %{
                 salesdatetime: s.salesdatetime,
                 salesdate: s.salesdate,
-                gst_charge: sum(sp.service_charge),
+                gst_charge: sum(sp.gst_charge),
                 service_charge: sum(sp.service_charge),
                 grand_total: sum(sp.grand_total)
               }

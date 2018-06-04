@@ -84,33 +84,55 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12">
-                <div id="cashinoutBarChart" class="ct-chart" style="height: 400px;"></div>
-            </div>
 
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-icon card-header-rose">
+                    <div class="card-icon">
+                        <i class="material-icons">insert_chart</i>
+                    </div>
+                    <h4 class="card-title">Tax Report
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div id="cashinoutBarChart" class="ct-chart" style="height: 400px;"></div>
+                </div>
+            </div>
         </div>
-        <br>
 
         <div class="panel-body" id="cash_in_out">
-            <table id="cash_in_out" class="table">
-                <thead>
-                    <tr>
-                        <th>Branch Name</th>
-                        <th>Amount</th>
-                        <th>Cash Type</th>
-                        <th>Open Drawer(times)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; ">
+                    <div class="card-header card-header-icon card-header-rose">
+
+                        <h4 class="card-title">Cash In Out Details
+                        </h4>
+                    </div>
+                    <div class="card-body" style="width: 100%; overflow-x: scroll; ">
+
+                        <table id="cash_in_out" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Branch Name</th>
+                                    <th>Amount</th>
+                                    <th>Cash Type</th>
+                                    <th>Open Drawer(times)</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

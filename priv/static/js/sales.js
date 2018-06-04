@@ -339,9 +339,12 @@ $(document).ready(function() {
                     data: 'pax'
                 },
                 {
+                    data: 'staff_name'
+                },
+                {
                     data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"'>View Details</a>");
+                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
                     }
                 },
             ]
@@ -1037,7 +1040,7 @@ $(document).ready(function() {
                 {
                    data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"'>View Details</a>");
+                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"'  target='_blank'>View Details</a>");
                     }
                 }
             ]
@@ -1602,12 +1605,20 @@ $(document).ready(function() {
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Tax (RM)',
-                    align: 'high'
+                    text: 'Values',
+                    align: 'middle'
                 },
                 labels: {
                     overflow: 'justify'
                 }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
             },
             plotOptions: {
                 bar: {
@@ -1713,12 +1724,20 @@ $(document).ready(function() {
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Tax (RM)',
-                    align: 'high'
+                    text: 'Values',
+                    align: 'middle'
                 },
                 labels: {
                     overflow: 'justify'
                 }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
             },
             plotOptions: {
                 bar: {
@@ -1829,11 +1848,19 @@ $(document).ready(function() {
                     text: null
                 }
             },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Tax (RM)',
-                    align: 'high'
+                    text: 'Values',
+                    align: 'middle'
                 },
                 labels: {
                     overflow: 'justify'
@@ -1918,6 +1945,14 @@ $(document).ready(function() {
             xAxis: {
                 categories: bulan,
             },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
             credits: {
                 enabled: false
             },
@@ -1971,12 +2006,20 @@ $(document).ready(function() {
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Tax (RM)',
-                    align: 'high'
+                    text: 'Values',
+                    align: 'middle'
                 },
                 labels: {
                     overflow: 'justify'
                 }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
             },
             plotOptions: {
                 bar: {
@@ -2045,7 +2088,7 @@ $(document).ready(function() {
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>RM {point.y:.1f} </b></td></tr>',
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
                 footerFormat: '</table>',
                 shared: true,
                 useHTML: true
@@ -2053,8 +2096,8 @@ $(document).ready(function() {
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Tax (RM)',
-                    align: 'high'
+                    text: 'Values',
+                    align: 'middle'
                 },
                 labels: {
                     overflow: 'justify'
@@ -2120,11 +2163,19 @@ $(document).ready(function() {
                     text: null
                 }
             },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Tax (RM)',
-                    align: 'high'
+                    text: 'Values',
+                    align: 'middle'
                 },
                 labels: {
                     overflow: 'justify'

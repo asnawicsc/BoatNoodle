@@ -24,45 +24,45 @@ defmodule BoatNoodleWeb.SalesController do
   
 
     
-    detail=Repo.all(
-          from(
-            sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,on: sp.salesid == s.salesid,
-            left_join: sd in BoatNoodle.BN.SalesMaster,on: sd.salesid == s.salesid,
-            left_join: st in BoatNoodle.BN.Staff,on: st.staff_id == s.staffid,
-            where: s.invoiceno==^invoiceno and s.branchid ==^branchid,
-            select: %{
-              staff_name: st.staff_name,
-              tbl_no: s.tbl_no,
-              pax: s.pax,
-              sub_total: sp.sub_total,
-              after_disc: sp.after_disc,
-              service_charge: sp.service_charge,
-              gst_charge: sp.gst_charge,
-              rounding: sp.rounding,
-              grand_total: sp.grand_total,
-              cash: sp.cash,
-              changes: sp.changes,
-              salesdate: s.salesdate,
-              invoiceno: s.invoiceno
-           
-            }
-          )
-        )|>hd
+            detail=Repo.all(
+                  from(
+                    sp in BoatNoodle.BN.SalesPayment,
+                    left_join: s in BoatNoodle.BN.Sales,on: sp.salesid == s.salesid,
+                    left_join: sd in BoatNoodle.BN.SalesMaster,on: sd.salesid == s.salesid,
+                    left_join: st in BoatNoodle.BN.Staff,on: st.staff_id == s.staffid,
+                    where: s.invoiceno==^invoiceno and s.branchid ==^branchid,
+                    select: %{
+                      staff_name: st.staff_name,
+                      tbl_no: s.tbl_no,
+                      pax: s.pax,
+                      sub_total: sp.sub_total,
+                      after_disc: sp.after_disc,
+                      service_charge: sp.service_charge,
+                      gst_charge: sp.gst_charge,
+                      rounding: sp.rounding,
+                      grand_total: sp.grand_total,
+                      cash: sp.cash,
+                      changes: sp.changes,
+                      salesdate: s.salesdate,
+                      invoiceno: s.invoiceno
+                   
+                    }
+                  )
+                )|>hd
 
-     detail_item=Repo.all(
-          from(s in BoatNoodle.BN.Sales,
-            left_join: sd in BoatNoodle.BN.SalesMaster,on: sd.salesid == s.salesid,
-            left_join: is in BoatNoodle.BN.ItemSubcat,on: is.subcatid == sd.itemid,
-            where: s.invoiceno==^invoiceno and s.branchid ==^branchid,
-            select: %{
-                       itemname: is.itemname,
-                       qty: sd.qty,
-                       afterdisc: sd.afterdisc
+         detail_item=Repo.all(
+              from(s in BoatNoodle.BN.Sales,
+                left_join: sd in BoatNoodle.BN.SalesMaster,on: sd.salesid == s.salesid,
+                left_join: is in BoatNoodle.BN.ItemSubcat,on: is.subcatid == sd.itemid,
+                where: s.invoiceno==^invoiceno and s.branchid ==^branchid,
+                select: %{
+                           itemname: is.itemname,
+                           qty: sd.qty,
+                           afterdisc: sd.afterdisc
 
-            }
-          )
-        )
+                }
+              )
+            )
  
    
     render(conn, "detail_invoice.html",detail: detail,detail_item: detail_item)
@@ -206,8 +206,6 @@ defmodule BoatNoodleWeb.SalesController do
         %{sum: a}
 
       end
-
-
 
       rice_qty_com=for item <- date_data1 do
 
