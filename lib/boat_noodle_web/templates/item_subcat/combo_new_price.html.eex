@@ -1,0 +1,145 @@
+<%require IEx %>
+    <div class="col-md-10 mr-auto ml-auto" aria-label="add_new_item">
+        <form method="post" action="/combos/combo_create_price" class="form-horizontal" aria-label="item_form">
+            <div class="card " data-color="rose">
+
+
+                <div class="card-body">
+                    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                   
+                    <div class="row">
+
+                        <div class="col-sm-12">
+                            <div class="card ">
+                                <div class="card-header card-header-rose card-header-text">
+                                    <div class="card-text">
+                                        <h4 class="card-title">Combo Details</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body ">
+                                    <form method="get" action="/" class="form-horizontal">
+                                        <div class="row">
+                                            <label class="col-sm-2 col-form-label">Item Name</label>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="item[itemname]" value='<%= @params["itemname"] %>' disabled>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label class="col-sm-2 col-form-label">Item Description</label>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="item[itemdesc]" value='<%= @params["itemdesc"] %>' disabled required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label class="col-sm-2 col-form-label">Combo Price</label>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <input type="number" class="form-control" placeholder="0.00" required name="item[itemprice]" min="0" step="0.01" title="Cost Price"></input>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label class="col-sm-2 col-form-label">Price Code</label>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <select name="item[pricecode]" class="selectpicker" data-style="btn select-with-transition" title="Price Code" data-size="10" required="">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                         
+                          </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card card-stats">
+                                <div class="card-header card-header-rose card-header-icon">
+
+
+                                </div>
+                                <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+ 
+                                    <table class="table" id="combo_table"  >
+                                        <thead>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th>Item Desc</th>
+                                            <th>Cost Price (RM)</th>
+                                            <th>Top Up Price (RM)</th>
+                                        </thead>
+                                        <tbody>
+                                            <%= for item <- @all do %>
+                                            
+                                                <tr name="table_all" id="table_all">
+                                                    <td>
+                                                      <input type="hidden" name="d_item[itemcode]" id="d_item[itemcode]"  value='<%= item.itemcode %>' ><%= item.itemcode %>
+                                                    </td>
+                                                    <td>
+                                                      <input type="hidden" name="d_item[itemname]" id="d_item[itemname]"  value='<%= item.name %>' ><%= item.name %>
+                                                    </td>
+                                                    <td>
+                                                      <input type="hidden" name="d_item[itemdesc]" id="d_item[itemdesc]"  value='<%= item.desc %>' ><%= item.desc %>
+                                                    </td>
+                                                    <td><input type="number" placeholder="0.00" id="d_item[costprice]" required name="d_item[costprice]" min="0" step="0.01" title="Cost Price"></input>
+                                                    </td>
+
+                                                    <td><input type="number" placeholder="0.00" id="d_item[topupprice]" required name="d_item[topupprice]" min="0" step="0.01" title="Top Up Price" </input></td>
+                                                <tr>
+                                            <%end%>
+                                        </tbody>
+
+                                    </table>
+                                      <input type="hidden" name="all[combo]">
+
+                                </div>
+                            </div>
+                             <div class="card card-stats">
+                                <div class="card-header card-header-rose card-header-icon">
+
+
+                                </div>
+                                <div class="card-body" >
+ 
+                                   
+                                       
+                                            <%= for item <- @branches do %>
+                                            
+                                            <input type="checkbox" /> <%= item.name %>
+                                                <% end %>
+                                    <p><label><input type="checkbox" id="checkAll"/> Check all</label></p>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="mr-auto">
+                            <%#  <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                        </div>
+                        <div class="ml-auto">
+                            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" id="submit" value="Create" type="submit">
+
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+        </form>
+        </div>

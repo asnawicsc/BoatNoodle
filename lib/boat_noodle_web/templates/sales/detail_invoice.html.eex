@@ -6,7 +6,9 @@
                     <i class="material-icons">store</i>
                 </div>
                 <p class="card-category">Date/Time</p>
-                <h3 class="card-title"><%= @detail.salesdate %></h3>
+                <h3 class="card-title">
+                    <%= @detail.salesdate %>
+                </h3>
             </div>
             <div class="card-footer">
                 <div class="stats">
@@ -22,7 +24,9 @@
                     <i class="material-icons">store</i>
                 </div>
                 <p class="card-category">Table</p>
-                <h3 class="card-title"><%= @detail.tbl_no %></h3>
+                <h3 class="card-title">
+                    <%= @detail.tbl_no %>
+                </h3>
             </div>
             <div class="card-footer">
                 <div class="stats">
@@ -38,7 +42,9 @@
                     <i class="material-icons">store</i>
                 </div>
                 <p class="card-category">Pax</p>
-                <h3 class="card-title"><%= @detail.pax %></h3>
+                <h3 class="card-title">
+                    <%= @detail.pax %>
+                </h3>
             </div>
             <div class="card-footer">
                 <div class="stats">
@@ -54,7 +60,9 @@
                     <i class="material-icons">store</i>
                 </div>
                 <p class="card-category">Cashier</p>
-                <h3 class="card-title"><%= @detail.staff_name %></h3>
+                <h3 class="card-title">
+                    <%= @detail.staff_name %>
+                </h3>
             </div>
             <div class="card-footer">
                 <div class="stats">
@@ -65,69 +73,115 @@
     </div>
 </div>
 
-<table border="1" class="table" style="border-color: green;">
-	<%=for item <- @detail_item do %>
-	<tr>	
-		<td width="1105px"><%=item.itemname %></td>
-		<td  width="170px" align="right">X<%=item.qty%> </td>
-		<td align="right"><%=item.afterdisc%> </td>	
-	</tr>
-	<% end %>
-	
-</table>
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header card-header-icon card-header-rose">
+            <div class="card-icon">
+                <i class="material-icons">assignment</i>
+            </div>
+            <h4 class="card-title "><b>Item Details</b></h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table style="border-color: green;" align="center">
+                    <%=for item <- @detail_item do %>
+                        <thead></thead>
+                        <tbody>
+                            <tr>
+                                <%= if item.combo_item_name == nil  do %>
+                                    <td width="1105px"><b><%=item.itemname %></b></td>
+                                    <%= else %>
+                                        <td width="1105px"><b>(COMBO SET)<%=item.combo_item_name %></b></td>
+                                        <% end %>
+                                            <td width="170px" align="left">X
+                                                <%=item.qty%>
+                                            </td>
+                                            <td align="right">
+                                                <%=item.afterdisc%>
+                                            </td>
+                            </tr>
+                        </tbody>
+                        <% end %>
 
-<table border="1" class="table" style="border-color: green;  ">
-	
-	<tr>	
-		<td  width="1105px"></td>
-		<td width="170px" align="right"><b>Subtotal</b></td>
-		<td align="right"><%= @detail.sub_total%> </td>	
-	</tr>
-		<tr>	
-		<td width="1105px"></td>
-		<td width="170px" align="right"><b>After Discount</b></td>
-		<td align="right"><%= @detail.after_disc%> </td>	
-	</tr>
-		<tr>	
-		<td width="1105px"></td>
-		<td width="170px" align="right"><b>Service Charge(5%)</b></td>
-		<td align="right"><%= @detail.service_charge%> </td>	
-	</tr>
-		<tr>	
-		<td width="1105px"></td>
-		<td width="170px" align="right"><b>GST (6%)</b></td>
-		<td align="right"><%= @detail.gst_charge%> </td>	
-	</tr>
-		<tr>	
-		<td width="1105px"></td>
-		<td width="170px" align="right"><b>Rounding</b></td>
-		<td align="right"><%= @detail.rounding%> </td>	
-	</tr>
-		<tr>	
-		<td width="1105px"></td>
-		<td width="170px" align="right"><b>Grand Total</b></td>
-		<td align="right"><%= @detail.grand_total%> </td>	
-	</tr>
-		<tr>	
-		<td width="1105px"></td>
-		<td width="170px" align="right"><b>Cash</b></td>
-		<td align="right"><%= @detail.cash%> </td>	
-	</tr>
-		<tr>	
-		<td width="1105px"></td>
-		<td width="170px" align="right"><b>Change</b></td>
-		<td align="right"><%= @detail.sub_total%> </td>	
-	</tr>
-
-	
-</table>
-<style type="text/css"> 
-
-table {
-
-    border: 2px solid;
+                </table>
+            </div>
+        </div>
+    </div>
 
 
 
+    <div class="card">
+        <div class="card-header card-header-icon card-header-rose">
+            <div class="card-icon">
+                <i class="material-icons">assignment</i>
+            </div>
+            <h4 class="card-title "><b>Payment Detail</b></h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table style="border-color: green;" align="center">
+                    <thead></thead>
+                    <tbody>
 
-}</style>
+                        <tr>
+                            <td width="1105px" align="right"></td>
+                            <td width="170px"><b>Subtotal</b></td>
+                            <td align="right">
+                                <%= @detail.sub_total%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="1105px"></td>
+                            <td width="170px" align="left"><b>After Discount</b></td>
+                            <td align="right">
+                                <%= @detail.after_disc%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="1105px"></td>
+                            <td width="170px" align="left"><b>Service Charge(5%)</b></td>
+                            <td align="right">
+                                <%= @detail.service_charge%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="1105px"></td>
+                            <td width="170px" align="left"><b>GST (6%)</b></td>
+                            <td align="right">
+                                <%= @detail.gst_charge%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="1105px"></td>
+                            <td width="170px" align="left"><b>Rounding</b></td>
+                            <td align="right">
+                                <%= @detail.rounding%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="1105px"></td>
+                            <td width="170px" align="left"><b>Grand Total</b></td>
+                            <td align="right">
+                                <%= @detail.grand_total%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="1105px"></td>
+                            <td width="170px" align="left"><b>Cash</b></td>
+                            <td align="right">
+                                <%= @detail.cash%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="1105px"></td>
+                            <td width="170px" align="left"><b>Change</b></td>
+                            <td align="right">
+                                <%= @detail.sub_total%>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

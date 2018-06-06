@@ -54,8 +54,10 @@ defmodule BoatNoodleWeb.SalesController do
               from(s in BoatNoodle.BN.Sales,
                 left_join: sd in BoatNoodle.BN.SalesMaster,on: sd.salesid == s.salesid,
                 left_join: is in BoatNoodle.BN.ItemSubcat,on: is.subcatid == sd.itemid,
+                left_join: c in BoatNoodle.BN.ComboDetails,on: sd.itemid == c.combo_item_id,
                 where: s.invoiceno==^invoiceno and s.branchid ==^branchid,
                 select: %{
+                           combo_item_name: c.combo_item_name,
                            itemname: is.itemname,
                            qty: sd.qty,
                            afterdisc: sd.afterdisc
@@ -63,8 +65,7 @@ defmodule BoatNoodleWeb.SalesController do
                 }
               )
             )
- 
-   
+
     render(conn, "detail_invoice.html",detail: detail,detail_item: detail_item)
   end
 

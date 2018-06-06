@@ -2,10 +2,11 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem, ItemSubcat, ComboDetails}
+  alias BoatNoodle.BN.{MenuItem, ItemSubcat, ComboDetails,Branch}
   require IEx
 
   def combo_create(conn, params) do
+
 
     ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
     itemname = params["itemcode"]<>" "<>params["itemdesc"]
@@ -21,29 +22,51 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     params = Map.put(params, "subcatid", subcatid)
     cg = ItemSubcat.changeset(%ItemSubcat{}, params)
 
-    case Repo.insert(cg) do
-      {:ok, cg} ->
-      comboitems = Repo.all(from s in ItemSubcat, where: s.itemcode in ^ala_cart_ids, group_by: [s.itemcode],select: %{itemcode: s.itemcode, itemname: s.itemname, itemprice: s.itemprice, subcatid: s.subcatid, pricecode: s.price_code, itemdesc: s.itemdesc})
-      for comboitem <- comboitems do
-        sci = Integer.to_string(subcatid)<>Integer.to_string(comboitem.subcatid)
-        comboitem = Map.put(comboitem, :subcatid, String.to_integer(sci))
-        comboitem = Map.put(comboitem, :is_comboitem, 1)
-        comboitem = Map.put(comboitem, :itemcatid, Integer.to_string(subcatid))
-        comboitem = Map.delete(comboitem, :itemprice)
-        cg2 = ItemSubcat.changeset(%ItemSubcat{}, comboitem)
- 
-        Repo.insert(cg2)
-      end
-      conn
-      |> put_flash(:info, "combo created")
-      |> redirect(to: menu_item_path(conn, :index))
+    all=for item <- ala_cart_ids do
 
-      _ ->
-      conn
-      |> put_flash(:error, "combo not created")
-      |> redirect(to: menu_item_path(conn, :index))
-        
+     Repo.all(from i in ItemSubcat, where: i.itemcode == ^item,select: %{ name: i.itemname,desc: i.itemdesc,itemcode: i.itemcode})|>hd
+
+      
     end
+
+    branches= Repo.all(from m in Branch, select: %{name: m.branchname, id: m.branchid})|>Enum.filter(fn x -> x.id != 0 end)
+
+
+     render(
+      conn,
+      "combo_new_price.html",params: params,all: all,branches: branches
+    
+    )
+
+    # case Repo.insert(cg) do
+    #   {:ok, cg} ->
+    #   comboitems = Repo.all(from s in ItemSubcat, where: s.itemcode in ^ala_cart_ids, group_by: [s.itemcode],select: %{itemcode: s.itemcode, itemname: s.itemname, itemprice: s.itemprice, subcatid: s.subcatid, pricecode: s.price_code, itemdesc: s.itemdesc})
+    #   for comboitem <- comboitems do
+    #     sci = Integer.to_string(subcatid)<>Integer.to_string(comboitem.subcatid)
+    #     comboitem = Map.put(comboitem, :subcatid, String.to_integer(sci))
+    #     comboitem = Map.put(comboitem, :is_comboitem, 1)
+    #     comboitem = Map.put(comboitem, :itemcatid, Integer.to_string(subcatid))
+    #     comboitem = Map.delete(comboitem, :itemprice)
+    #     cg2 = ItemSubcat.changeset(%ItemSubcat{}, comboitem)
+ 
+    #     Repo.insert(cg2)
+    #   end
+    #   conn
+    #   |> put_flash(:info, "combo created")
+    #   |> redirect(to: menu_item_path(conn, :index))
+
+    #   _ ->
+    #   conn
+    #   |> put_flash(:error, "combo not created")
+    #   |> redirect(to: menu_item_path(conn, :index))
+        
+    # end
+  end
+
+  def combo_create_price(conn, _params) do
+    
+    IEx.pry
+
   end
 
   def combo_new(conn, _params) do
@@ -119,7 +142,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
   def new(conn, _params) do
     changeset = BN.change_item_subcat(%ItemSubcat{})
-    render(conn, "new.html", changeset: changeset)
+    # render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"item_subcat" => item_subcat_params}) do
