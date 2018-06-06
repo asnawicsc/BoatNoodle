@@ -1,5 +1,61 @@
 <h2>New Staff</h2>
 
-<%= render "form.html", Map.put(assigns, :action, staff_path(@conn, :create)) %>
+<%= form_for @changeset, staff_path(@conn, :create), fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
 
-<span><%= link "Back", to: staff_path(@conn, :index) %></span>
+<div class = "row">
+	<div class = "col-sm-3">
+	  <div class="form-group bmd-form-group">
+	    <%= label f, :staff_name, class: "bmd-label-floating" %>
+	    <%= text_input f, :staff_name, class: "form-control" %>
+	    <%= error_tag f, :staff_name %>
+	  </div>
+	</div>
+	<div class = "col-sm-3">
+	  <div class="form-group bmd-form-group">
+	    <%= label f, :staff_contact, class: "bmd-label-floating" %>
+	    <%= text_input f, :staff_contact, class: "form-control" %>
+	    <%= error_tag f, :staff_contact %>
+	  </div>
+	</div>
+
+	<div class = "col-sm-3">
+	  <div class="form-group bmd-form-group">
+	    <%= label f, :staff_email, class: "bmd-label-floating" %>
+	    <%= text_input f, :staff_email, class: "form-control" %>
+	    <%= error_tag f, :staff_email %>
+	  </div>
+	</div>
+
+	<div class = "col-sm-3">
+	    <%= select f, :staff_type_id,@roles, class: "selectpicker" %>
+	</div>
+</div>
+
+<div class = "row">
+		<div class="form-group bmd-form-group">
+			
+		<%= for branch <- @branches do %>
+				<div class="form-check">
+		          <label class="form-check-label">
+		          	
+		              <input class="form-check-input" name= "branch_ids[<%= elem(branch,1) %>]" type="checkbox" value="" >
+		              <%= elem(branch,0) %>
+		              <span class="form-check-sign">
+		                  <span class="check"></span>
+		              </span>
+		            
+		          </label>
+	    		</div>
+    	<% end %>
+    	</div>
+	</div>
+
+<div class="form-group bmd-form-group">
+<%= submit "Submit", class: "btn btn-primary" %> <span class="btn btn-secondary"><%= link "Back", to: staff_path(@conn, :index) %></span>
+</div>
+<% end %>

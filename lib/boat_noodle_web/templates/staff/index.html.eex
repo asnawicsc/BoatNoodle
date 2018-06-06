@@ -3,15 +3,13 @@
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem" onclick="window.location.href='/staff/new'"><i class="fa fa-plus" aria-hidden="true"></i> Add New Staff</button>
 
 
-
-<table class="table">
+<div class="card" style=" overflow-x: scroll;">
+<table class="data" style = "width: 110%">
   <thead>
     <tr>
       <th>Staff name</th>
       <th>Contact number</th>
       <th>Email</th>
-      <th>Pin number</th>
-      <th>Branch</th>
       <th>Staff role</th>
     
 
@@ -24,9 +22,8 @@
       <td><%= staff.staff_name %></td>
       <td><%= staff.staff_contact %></td>
       <td><%= staff.staff_email %></td>
-      <td><%= staff.staff_pin %></td>
-      <td><%= staff.branchid %></td>
       <td><%= staff.staff_type_id %></td>
+      <td><%= link "Edit", to: staff_path(@conn, :edit, staff.id), class: "btn btn-primary btn-sm" %></td>
      
 
    
@@ -34,3 +31,4 @@
 <% end %>
   </tbody>
 </table>
+</div>
