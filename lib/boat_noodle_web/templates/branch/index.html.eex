@@ -6,31 +6,23 @@
 <br>
     <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-book"></i> List of Users 
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                  
-                                </div>
-                            </div>
-                        </div>
+              
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="table-responsive">
-                                        <table class="table table-bordered table-hover table-striped">
+                                        <table class="table data">
                                             <thead>
                                                 <tr>
-                                                  <th>Branch ID</th>
+                                       
                                                   <th>Branch name</th>
                                                   <th>Branch code</th>
-                                                  <th>Branch contact</th>
-                                                  <th>Branch address</th>
+                                  
+                                      
                                                   <th>Organization</th>
-                                                  <th>Goverment tax percentage</th>
-                                                  <th>Service tax percentage</th>
+                                      
                                                   <th>Branch manager</th>
                                                   <th>Number of staff</th>
-                                                  <th>Report class</th>
+                                                  <th>Sync Status</th>
 
                                                   <th>Action</th>
                                                 </tr>
@@ -38,20 +30,19 @@
                                             <tbody>
                                            <%= for branch <- @branch do %>
                                                 <tr>
-                                                  <td><%= branch.branchid %></td>
+                                        
                                                   <td><%= branch.branchname %></td>
                                                   <td><%= branch.branchcode %></td>
-                                                  <td><%= branch.b_phoneno %></td>
-                                                  <td><%= branch.b_address %></td>
+                                            
+                                
                                                   <td><%= branch.org_id %></td>
-                                                  <td><%= branch.tax_percent %></td>
-                                                  <td><%= branch.service_charge %></td>
+                                    
                                                   <td><%= branch.manager %></td>
                                                   <td><%= branch.num_staff %></td>
-                                                  <td><%= branch.report_class %></td>
+                                                  <td><%= branch.sync_status %></td>
 
-                                                  <td class="text-right">
-                                                 
+                                                  <td>
+                                                 <a href="/branch/<%= branch.branchid %>/edit">Edit</a>
                                                   </td>
                                                 </tr>
                                             <% end %>

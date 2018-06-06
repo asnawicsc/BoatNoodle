@@ -4,55 +4,13 @@
 
   <li>
     <strong>Branch name:</strong>
-    <%= @branch.branch_name %>
+    <%= @branch.branchname %>
   </li>
 
   <li>
     <strong>Branch code:</strong>
-    <%= @branch.branch_code %>
+    <%= @branch.branchcode %>
   </li>
 
-  <li>
-    <strong>Branch contact:</strong>
-    <%= @branch.branch_contact %>
-  </li>
-
-  <li>
-    <strong>Branch address:</strong>
-    <%= @branch.branch_address %>
-  </li>
-
-  <li>
-    <strong>Organization:</strong>
-    <%= @branch.organization %>
-  </li>
-
-  <li>
-    <strong>Goverment tax percentage:</strong>
-    <%= @branch.goverment_tax_percentage %>
-  </li>
-
-  <li>
-    <strong>Service tax percentage:</strong>
-    <%= @branch.service_tax_percentage %>
-  </li>
-
-  <li>
-    <strong>Branch manager:</strong>
-    <%= @branch.branch_manager %>
-  </li>
-
-  <li>
-    <strong>Number of staff:</strong>
-    <%= @branch.number_of_staff %>
-  </li>
-
-  <li>
-    <strong>Report class:</strong>
-    <%= @branch.report_class %>
-  </li>
 
 </ul>
-
-<span><%= link "Edit", to: branch_path(@conn, :edit, @branch) %></span>
-<span><%= link "Back", to: branch_path(@conn, :index) %></span>
