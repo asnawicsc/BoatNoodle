@@ -1,36 +1,37 @@
 <div class="row">
     <div class="col-lg-12">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
+        <div class="panel panel-default">
+            <div class="panel-heading">
 
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="card">
-                              <div class="card-header card-header-rose card-header-text">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
-                                  <i class="material-icons">library_books</i>
+                                    <i class="material-icons">library_books</i>
                                 </div>
                                 <h4 class="card-title">Date</h4>
-                              </div>
-                              <div class="card-body ">
-                                <br>
-                                  <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                                        <i class="fa fa-calendar"></i>&nbsp;
-                                      <span></span> <i class="fa fa-caret-down"></i>
-                                      <input type="hidden" name="start_date">
-                                      <input type="hidden" name="end_date">
-                                  </div>
-                              </div>
                             </div>
-                          </div>
+                            <div class="card-body ">
+                                <br>
+                                <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                    <i class="fa fa-calendar"></i>&nbsp;
+                                    <span></span> <i class="fa fa-caret-down"></i>
+                                    <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                          <div class="col-md-6">
-                            <div class="card">
-                              <div class="card-header card-header-rose card-header-text">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
-                                  <i class="material-icons">library_books</i>
+                                    <i class="material-icons">library_books</i>
                                 </div>
                                 <h4 class="card-title">Branch</h4>
+<<<<<<< HEAD
                               </div>
                               <div class="card-body ">
                                   <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
@@ -39,301 +40,342 @@
                                     <% end %>
                                   </select>
                               </div>
+=======
                             </div>
-                          </div>
+                            <div class="card-body ">
+                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                                          <%= for branch <- @branches do %>
+                                            <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+                                          <% end %>
+                                        </select>
+>>>>>>> master
+                            </div>
                         </div>
-
-                      </div>
                     </div>
-      
-                   
-          <div class="row">
-            <div class="col-md-8 ml-auto mr-auto">
-              <div class="page-categories">
-                <br />
-                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
-                  <li class="nav-item" id="">
-                    <a class="nav-link " data-toggle="tab" id="sales_transaction" href="" role="tablist">
-                      <i class="material-icons">info</i> Transactions
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="hourly_pax_summary" href="" role="tablist">
-                      <i class="material-icons">location_on</i> Hourly Pax Summary
-                    </a>
-                  </li>
-                  <li class="nav-item" id="">
-                    <a class="nav-link " data-toggle="tab" id="hourly_sales_summary" href="" role="tablist">
-                      <i class="material-icons">info</i> Hourly Sales Summary
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" id="hourly_transaction_summary" href="" role="tablist">
-                      <i class="material-icons">location_on</i> Hourly Transaction Summary
-                    </a>
-                  </li>
-                </ul>
-              </div>
+                </div>
+
             </div>
-          </div>
-          <br>
-                   
-    
-      <div class="panel-body" id="sales_transaction"  style="width: 100%; overflow-x: scroll; ">
-        <center><h3> Sales Transaction</h3> </center>
-        <table id="sales_transaction" class="table">
-          <thead>
-            <tr>
-              <th>Sales Date</th>
-              <th>Receipt No</th>
-              <th>Payment</th>
-              <th>Grand Total</th>
-              <th>Table</th>
-              <th>Pax</th>
-              <th>View Details</th>
+        </div>
 
 
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="row">
+            <div class="col-md-8 ml-auto mr-auto">
+                <div class="page-categories">
+                    <br />
+                    <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                        <li class="nav-item" id="">
+                            <a class="nav-link " data-toggle="tab" id="sales_transaction" href="" role="tablist">
+                      <i class="material-icons">done_all</i> Transactions
+                    </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" id="hourly_pax_summary" href="" role="tablist">
+                      <i class="material-icons">date_range</i> Hourly Pax Summary
+                    </a>
+                        </li>
+                        <li class="nav-item" id="">
+                            <a class="nav-link " data-toggle="tab" id="hourly_sales_summary" href="" role="tablist">
+                      <i class="material-icons">date_range</i> Hourly Sales Summary
+                    </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" id="hourly_transaction_summary" href="" role="tablist">
+                      <i class="material-icons">date_range</i> Hourly Transaction Summary
+                    </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="panel-body" id="sales_transaction" style="width: 100%; overflow-x: scroll; ">
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; " >
+                    <div class="card-header card-header-icon card-header-rose">
+                        
+                        <h4 class="card-title">Sales Transaction
+                        </h4>
+                    </div>
+                    <div class="card-body">
 
-        <table id="try2" class="table">
-          <thead>
-            <tr>
-              <th>Month</th>
-              <th>Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+                        <table id="sales_transaction" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Sales Date</th>
+                                    <th>Receipt No</th>
+                                    <th>Payment</th>
+                                    <th>Total Amount</th>
+                                    <th>Table</th>
+                                    <th>Pax</th>
+                                    <th>Cashier</th>
+                                    <th>View Details</th>
 
 
-      </div>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-      <div class="panel-body" id="hourly_pax_summary"  style="width: 100%; overflow-x: scroll; ">
-        <center><h3> Hourly Pax Summary</h3> </center>
-        <table id="hourly_pax_summary" class="table">
-          <thead>
-            <tr>
-               <th>Sales Date</th>
-                      <th>Total Sales</th>
-                      <th>Total Pax</th>
-                      <th>12 AM</th>
-                      <th>01 AM</th>
-                      <th>02 AM</th>
-                      <th>03 AM</th>
-                      <th>04 AM</th>
-                      <th>05 AM</th>
-                      <th>06 AM</th>
-                      <th>07 AM</th>
-                      <th>08 AM</th>
-                      <th>09 AM</th>
-                      <th>10 AM</th>
-                      <th>11 AM</th>
-                      <th>12 PM</th>
-                      <th>01 PM</th>
-                      <th>02 PM</th>
-                      <th>03 PM</th>
-                      <th>04 PM</th>
-                      <th>05 PM</th>
-                      <th>06 PM</th>
-                      <th>07 PM</th>
-                      <th>08 PM</th>
-                      <th>09 PM</th>
-                      <th>10 PM</th>
-                      <th>11 PM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body" id="hourly_pax_summary" style="width: 100%; overflow-x: scroll; ">
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; " >
+                    <div class="card-header card-header-icon card-header-rose">
+                       
+                        <h4 class="card-title"> Hourly Pax Summary
+                        </h4>
+                    </div>
+                    <div class="card-body">
 
-      <div class="panel-body" id="hourly_sales_summary" style="width: 100%; overflow-x: scroll;">
-        <center><h3> Hourly Sales Summary</h3> </center>
-        <table id="hourly_sales_summary" class="table">
-          <thead>
-            <tr>
-              <th>Sales Date</th>
-                      <th>Total Sales</th>
-                      <th>Total Pax</th>
-                      <th>12 AM</th>
-                      <th>01 AM</th>
-                      <th>02 AM</th>
-                      <th>03 AM</th>
-                      <th>04 AM</th>
-                      <th>05 AM</th>
-                      <th>06 AM</th>
-                      <th>07 AM</th>
-                      <th>08 AM</th>
-                      <th>09 AM</th>
-                      <th>10 AM</th>
-                      <th>11 AM</th>
-                      <th>12 PM</th>
-                      <th>01 PM</th>
-                      <th>02 PM</th>
-                      <th>03 PM</th>
-                      <th>04 PM</th>
-                      <th>05 PM</th>
-                      <th>06 PM</th>
-                      <th>07 PM</th>
-                      <th>08 PM</th>
-                      <th>09 PM</th>
-                      <th>10 PM</th>
-                      <th>11 PM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                        <center>
+                            <h3> Hourly Pax Summary</h3>
+                        </center>
+                        <table id="hourly_pax_summary" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Sales Date</th>
+                                    <th>Total Sales</th>
+                                    <th>Total Pax</th>
+                                    <th>12 AM</th>
+                                    <th>01 AM</th>
+                                    <th>02 AM</th>
+                                    <th>03 AM</th>
+                                    <th>04 AM</th>
+                                    <th>05 AM</th>
+                                    <th>06 AM</th>
+                                    <th>07 AM</th>
+                                    <th>08 AM</th>
+                                    <th>09 AM</th>
+                                    <th>10 AM</th>
+                                    <th>11 AM</th>
+                                    <th>12 PM</th>
+                                    <th>01 PM</th>
+                                    <th>02 PM</th>
+                                    <th>03 PM</th>
+                                    <th>04 PM</th>
+                                    <th>05 PM</th>
+                                    <th>06 PM</th>
+                                    <th>07 PM</th>
+                                    <th>08 PM</th>
+                                    <th>09 PM</th>
+                                    <th>10 PM</th>
+                                    <th>11 PM</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-      <div class="panel-body" id="hourly_transaction_summary" style="width: 100%; overflow-x: scroll; ">
-        <center><h3> Hourly Transaction Sumaary</h3> </center>
-        <table id="hourly_transaction_summary" class="table">
-          <thead>
-            <tr>
-             <th>Sales Date</th>
-                      <th>Total Sales</th>
-                      <th>Total Pax</th>
-                      <th>12 AM</th>
-                      <th>01 AM</th>
-                      <th>02 AM</th>
-                      <th>03 AM</th>
-                      <th>04 AM</th>
-                      <th>05 AM</th>
-                      <th>06 AM</th>
-                      <th>07 AM</th>
-                      <th>08 AM</th>
-                      <th>09 AM</th>
-                      <th>10 AM</th>
-                      <th>11 AM</th>
-                      <th>12 PM</th>
-                      <th>01 PM</th>
-                      <th>02 PM</th>
-                      <th>03 PM</th>
-                      <th>04 PM</th>
-                      <th>05 PM</th>
-                      <th>06 PM</th>
-                      <th>07 PM</th>
-                      <th>08 PM</th>
-                      <th>09 PM</th>
-                      <th>10 PM</th>
-                      <th>11 PM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-     
-  </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body" id="hourly_sales_summary" style="width: 100%; overflow-x: scroll;">
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; ">
+                    <div class="card-header card-header-icon card-header-rose">
+                        
+                        <h4 class="card-title"> Hourly Sales Summary
+                        </h4>
+                    </div>
+                    <div class="card-body">
+
+                        <table id="hourly_sales_summary" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Sales Date</th>
+                                    <th>Total Sales</th>
+                                    <th>Total Pax</th>
+                                    <th>12 AM</th>
+                                    <th>01 AM</th>
+                                    <th>02 AM</th>
+                                    <th>03 AM</th>
+                                    <th>04 AM</th>
+                                    <th>05 AM</th>
+                                    <th>06 AM</th>
+                                    <th>07 AM</th>
+                                    <th>08 AM</th>
+                                    <th>09 AM</th>
+                                    <th>10 AM</th>
+                                    <th>11 AM</th>
+                                    <th>12 PM</th>
+                                    <th>01 PM</th>
+                                    <th>02 PM</th>
+                                    <th>03 PM</th>
+                                    <th>04 PM</th>
+                                    <th>05 PM</th>
+                                    <th>06 PM</th>
+                                    <th>07 PM</th>
+                                    <th>08 PM</th>
+                                    <th>09 PM</th>
+                                    <th>10 PM</th>
+                                    <th>11 PM</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="panel-body" id="hourly_transaction_summary" style="width: 100%; overflow-x: scroll; ">
+            <div class="col-md-12">
+                <div class="card" style="width: 100%; overflow-x: scroll; ">
+                    <div class="card-header card-header-icon card-header-rose">
+                        
+                        <h4 class="card-title"> Hourly Transaction Sumaary
+                        </h4>
+                    </div>
+                    <div class="card-body">
+
+
+                        <table id="hourly_transaction_summary" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Sales Date</th>
+                                    <th>Total Sales</th>
+                                    <th>Total Pax</th>
+                                    <th>12 AM</th>
+                                    <th>01 AM</th>
+                                    <th>02 AM</th>
+                                    <th>03 AM</th>
+                                    <th>04 AM</th>
+                                    <th>05 AM</th>
+                                    <th>06 AM</th>
+                                    <th>07 AM</th>
+                                    <th>08 AM</th>
+                                    <th>09 AM</th>
+                                    <th>10 AM</th>
+                                    <th>11 AM</th>
+                                    <th>12 PM</th>
+                                    <th>01 PM</th>
+                                    <th>02 PM</th>
+                                    <th>03 PM</th>
+                                    <th>04 PM</th>
+                                    <th>05 PM</th>
+                                    <th>06 PM</th>
+                                    <th>07 PM</th>
+                                    <th>08 PM</th>
+                                    <th>09 PM</th>
+                                    <th>10 PM</th>
+                                    <th>11 PM</th>
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
 </div>
-
-
-
-
-

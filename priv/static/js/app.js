@@ -114,5 +114,64 @@ $(document).ready(function(){
     })
 
     $("table.data").DataTable()
+
+
+
+   var sum = 0;
+
+   var dataTable = document.getElementById("myTable");
+
+   // use querySelector to find all second table cells
+   var cells = document.querySelectorAll("#f_addon_ind");
+
+ 
+
+      for (var i = 1; i < cells.length; i++){
+  
+         initial =parseFloat(cells[i-1].firstChild.data)
+         sum= parseFloat(cells[i].firstChild.data)- initial
+
+          var newColums = document.createElement("td");
+          var secondCell = document.createElement("tr");
+          var secondCellText = document.createTextNode(sum);
+           secondCell.appendChild(secondCellText);
+           newColums.appendChild(secondCell);
+
+           dataTable.appendChild(newColums);
+   
+       };
+
+    
+    
+
+
+  // $( "ol.item" ).sortable({
+  //     connectWith: "ol.item",
+  //     dropOnEmpty: true,
+  //     scroll: true,
+  //     stop: function( event, ui ) {
+  //       var child_id = $(ui.item)[0].id
+  //       var parent_id = $(ui.item)[0].parentElement.id
+
+  //     }
+  //   }).disableSelection();
+
+  $("ol#list1").on("click", "li", function(){
+
+    $("ol#list2").append(this)
+    var list_ids = [] 
+    $("ol#list2 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='item[itemcode]']").val(list_ids)
+  })
+
+  $("ol#list2").on("click", "li", function(){
+
+    $("ol#list1").append(this)
+
+  })
+
 });
 

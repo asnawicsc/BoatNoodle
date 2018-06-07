@@ -60,6 +60,8 @@ defmodule BoatNoodleWeb.Router do
     get("/voided", SalesController, :voided)
     get("/sales_chart", SalesController, :sales_chart)
 
+    get("/detail_invoice/:branchid/:invoiceno", SalesController, :detail_invoice)
+
 
     get("/csv_compare_category_qty", SalesController, :csv_compare_category_qty)
     post("/create_cv", SalesController, :create_cv)
@@ -93,7 +95,9 @@ defmodule BoatNoodleWeb.Router do
     resources("/salespayment", SalesPaymentController)
     resources("/item_subcat", ItemSubcatController)
     get("/items/:subcatid", ItemSubcatController, :item_show)
+    get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid", ItemSubcatController, :combo_show)
+    post("/combos/new", ItemSubcatController, :combo_create)
     resources("/itemcat", ItemCatController)
     resources("/organization", OrganizationController)
     resources("/branch", BranchController)

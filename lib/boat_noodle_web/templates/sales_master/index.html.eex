@@ -1,324 +1,125 @@
-  <br>
-   <h2>Sales Detail</h2>
-  <%# <h2>Sales Chart</h2> %>
-  <br>       
-                  <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Month to Month Comparison
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                  
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
+                                <div class="card-icon">
+                                    <i class="material-icons">library_books</i>
+                                </div>
+                                <h4 class="card-title">Date</h4>
+                            </div>
+                            <div class="card-body ">
+                                <br>
+                                <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                    <i class="fa fa-calendar"></i>&nbsp;
+                                    <span></span> <i class="fa fa-caret-down"></i>
+                                    <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
                                 </div>
                             </div>
                         </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                           <%= form_for @conn, sales_master_path(@conn, :sales_bar_graph_by_year), fn f -> %>
-                              <div class="form-group">
-                                
-                                <%= select f, :year, @year_range , class: "form-control" %>
-                              </div>
-                             <div class="form-group">
-                              <%= submit "Submit", class: "btn btn-primary" %>
-                            </div>
-                            <% end %>
-                            <div id="monthly"></div>
-                        </div>
-                        <!-- /.panel-body -->
                     </div>
-           
+
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
+                                <div class="card-icon">
+                                    <i class="material-icons">library_books</i>
+                                </div>
+                                <h4 class="card-title">Branch</h4>
+                            </div>
+                            <div class="card-body ">
+                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                                          <%= for branch <- @branches do %>
+                                            <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+                                          <% end %>
+                                        </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2" style="margin-top: 80px;">
+                        <button class="btn btn-primary" id="chart_btn">Submit</button>
+                    </div>
                 </div>
-               
 
-                  <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Daily Sales
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                  
-                                </div>
-                            </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-rose">
+                        <div class="card-icon">
+                            <i class="material-icons">insert_chart</i>
                         </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="daily_sales"></div>
-                        </div>
-                        <!-- /.panel-body -->
+                        <h4 class="card-title">Branch Month Comparison Chart
+                        </h4>
                     </div>
-                  </div>
-            
-                  <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Hourly Sales
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                  
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="hourly_sales"></div>
-                        </div>
-                        <!-- /.panel-body -->
+                    <div class="card-body">
+                        <div id="chart2" class="ct-chart" style="height: 400px;"></div>
                     </div>
-                  </div>
+                </div>
+            </div>
 
-                  <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Hourly Pax and Transaction
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                  
-                                </div>
-                            </div>
+
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-info">
+                        <div class="card-icon">
+                            <i class="material-icons">timeline</i>
                         </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="hourly_pax_and_transaction"></div>
-                        </div>
-                        <!-- /.panel-body -->
+                        <h4 class="card-title">Daily Sales Chart
+
+                        </h4>
                     </div>
-                  </div>
+                    <div class="card-body">
+                        <div id="chart" class="ct-chart" style="height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
 
 
-                
-           
-                 </div>
- <script src="/highchartjs/highcharts.js"></script>
-    <script src="/highchartjs/highcharts-3d.js"></script>
-    <script src="/highchartjs/series-label.js"></script>
-    <script src="/highchartjs/exporting.js"></script>
-    <script src="/highchartjs/export-data.js"></script>
-
-<script type="text/javascript">
-
-// Highcharts.chart('monthly', {
-//   chart: {
-//     type: 'column'
-//   },
-//   title: {
-//     text: 'Branch Monthly Sales Comparison'
-//   },
-//   xAxis: {
-//     categories: [<%= for s <- @month do %>
-//         ['<%= s %>'],
-//   <% end %>]
-//   },
-//   credits: {
-//     enabled: false
-//   },
-//   series: [
-//         {
-//     name: 'Sales',
-//     data: [<%= for s <- @totals do %> 
-//     <%= s.sum%>,
-//     <% end %>]
-
-//   },
-//   {
-//     name: 'Tax',
-//     data: [<%= for s <- @totals1 do %> 
-//     <%= s.sum %>,
-//     <% end %>],
-    
-//   },
-//   {
-//     name: 'Sales Charge',
-//     data: [<%= for s <- @totals2 do %> 
-//     <%= s.sum %>,
-//     <% end %>],
-    
-//   }
- 
-//   ]
-// });
-
-// Highcharts.chart("daily_sales", {
-
-  
-//   title: {
-//     text: 'Daily Sales Chart'
-//   },
-
-//   subtitle: {
-//     text: 'Daily Sales,Taxs and Service Charges'
-//   },
-
-//   yAxis: {
-//     title: {
-//       text: 'Values'
-//     }
-//   },
-//   legend: {
-//     layout: 'horizontal',
-//     align: 'center',
-//     verticalAlign: 'bottom'
-//   },
-
-//   plotOptions: {
-//     series: {
-//       label: {
-//         connectorAllowed: false
-//       },
-//       pointStart: <%= @date %>
-//     }
-//   },
-//   series: [{
-//     name: 'Sales',
-//     data: [<%= @sales_graph %>]
-//   }, {
-//     name: 'Taxes',
-//     data: [<%= @tax_graph %>]
-//   }, {
-//     name: 'Service Charge',
-//     data: [<%= @service_graph %>]
-//   }],
-
-//   responsive: {
-//     rules: [{
-//       condition: {
-//         maxWidth: 500
-//       },
-//       chartOptions: {
-//         legend: {
-//           layout: 'horizontal',
-//           align: 'center',
-//           verticalAlign: 'bottom'
-//         }
-//       }
-//     }]
-//   }
-
-// });
-
-// Highcharts.chart("hourly_sales", {
 
 
-//   title: {
-//     text: 'Hourly Sales Chart'
-//   },
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-info">
+                        <div class="card-icon">
+                            <i class="material-icons">timeline</i>
+                        </div>
+                        <h4 class="card-title">Hourly Sales Chart
 
-//   subtitle: {
-//     text: 'Hourly Sales,Taxs and Service Charges'
-//   },
-
-//   yAxis: {
-//     title: {
-//       text: 'Values'
-//     }
-//   },
-//   legend: {
-//     layout: 'horizontal',
-//     align: 'center',
-//     verticalAlign: 'bottom'
-//   },
-
-//   plotOptions: {
-//     series: {
-//       label: {
-//         connectorAllowed: false
-//       },
-//       pointStart: <%= @date %>
-//     }
-//   },
-//   series: [{
-//     name: 'Sales',
-//     data: [<%= @sales_graph %>]
-//   }, {
-//     name: 'Taxes',
-//     data: [<%= @tax_graph %>]
-//   }, {
-//     name: 'Service Charge',
-//     data: [<%= @service_graph %>]
-//   }],
-
-//   responsive: {
-//     rules: [{
-//       condition: {
-//         maxWidth: 500
-//       },
-//       chartOptions: {
-//         legend: {
-//           layout: 'horizontal',
-//           align: 'center',
-//           verticalAlign: 'bottom'
-//         }
-//       }
-//     }]
-//   }
-
-// });
-
-// Highcharts.chart("hourly_pax_and_transaction", {
-
-  
-
-//   title: {
-//     text: 'Hourly Pax Chart'
-//   },
-
-//   subtitle: {
-//     text: 'Hourly Pax and Transaction'
-//   },
-
-//   yAxis: {
-//     title: {
-//       text: 'Values'
-//     }
-//   },
-//   legend: {
-//     layout: 'horizontal',
-//     align: 'center',
-//     verticalAlign: 'bottom'
-//   },
-
-//   plotOptions: {
-//     series: {
-//       label: {
-//         connectorAllowed: false
-//       },
-//       pointStart: 2010
-//     }
-//   },
-//   series: [{
-//     name: 'Sales',
-//     data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-//   }, {
-//     name: 'Taxes',
-//     data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
-//   }, {
-//     name: 'Discounts',
-//     data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-//   }, {
-//     name: 'Service Charge',
-//     data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-//   }, {
-//     name: 'Transaction',
-//     data: [12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111]
-//   }],
-
-//   responsive: {
-//     rules: [{
-//       condition: {
-//         maxWidth: 500
-//       },
-//       chartOptions: {
-//         legend: {
-//           layout: 'horizontal',
-//           align: 'center',
-//           verticalAlign: 'bottom'
-//         }
-//       }
-//     }]
-//   }
-
-// });
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="hourly_sales_chart" class="ct-chart" style="height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
 
 
-</script>
 
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-info">
+                        <div class="card-icon">
+                            <i class="material-icons">timeline</i>
+                        </div>
+                        <h4 class="card-title">Hourly Pax Chart
+
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="hourly_pax_chart" class="ct-chart" style="height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

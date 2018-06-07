@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+<<<<<<< HEAD
 if ($("div#simpleBarChart").length == 1) {
     
     if (localStorage.getItem("sales_data") == null) {
@@ -30,34 +31,69 @@ if ($("div#simpleBarChart").length == 1) {
                 },
                 yAxis: {
                     min: 0,
-                    title: {
-                        text: 'Sales (RM)',
-                        align: 'high'
+=======
+    if ($("div#simpleBarChart").length == 1) {
+
+        if (localStorage.getItem("sales_data") == null) {
+
+            channel.push("generate_all_branch_sales_data", {})
+            channel.on("save_local_storage", payload => {
+                localStorage.setItem("sales_data", payload.map);
+
+                var maps = JSON.parse(localStorage.getItem("sales_data"))
+                var branches = []
+                var trx = []
+                $(maps).each(function() {
+                    branches.push(this.branch_name)
+                })
+                $(maps).each(function() {
+                    trx.push(this.grand_total)
+                })
+                Highcharts.chart('simpleBarChart', {
+                    chart: {
+                        type: 'bar'
                     },
-                    labels: {
-                        overflow: 'justify'
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        dataLabels: {
-                            enabled: true
+>>>>>>> master
+                    title: {
+                        text: 'Current Month Sales(RM)'
+                    },
+
+                    xAxis: {
+                        categories: branches,
+                        title: {
+                            text: null
                         }
-                    }
-                },
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Sales (RM)',
+                            align: 'high'
+                        },
+                        labels: {
+                            overflow: 'justify'
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: true
+                            }
+                        }
+                    },
 
-                credits: {
-                    enabled: false
-                },
-                series: [{
-                    name: "Branch Monthly Sales",
-                    data: trx
-                }]
-            });
+                    credits: {
+                        enabled: false
+                    },
+                    series: [{
+                        name: "Branch Monthly Sales",
+                        data: trx
+                    }]
+                });
 
 
-        })
-    } else {
+            })
+        } else {
 
 
             // var dataSimpleBarChart = {
@@ -89,12 +125,16 @@ if ($("div#simpleBarChart").length == 1) {
             // ];
 
             // var simpleBarChart = Chartist.Bar('#simpleBarChart', dataSimpleBarChart, optionsSimpleBarChart, responsiveOptionsSimpleBarChart);
-    
+
             var maps = JSON.parse(localStorage.getItem("sales_data"))
             var branches = []
             var trx = []
-            $(maps).each(function(){ branches.push(this.branch_name) })
-            $(maps).each(function(){ trx.push(this.grand_total) })
+            $(maps).each(function() {
+                branches.push(this.branch_name)
+            })
+            $(maps).each(function() {
+                trx.push(this.grand_total)
+            })
             Highcharts.chart('simpleBarChart', {
                 chart: {
                     type: 'bar'
@@ -136,8 +176,8 @@ if ($("div#simpleBarChart").length == 1) {
                 }]
             });
 
+        }
     }
-}
 
 
     $("button#dashboard").click(function() {
@@ -307,6 +347,8 @@ if ($("div#simpleBarChart").length == 1) {
     channel.on("populate_table_sales_transaction", payload => {
         console.log(payload.sales_data)
         var data = payload.sales_data
+      
+
 
         $("table#sales_transaction").DataTable({
             destroy: true,
@@ -330,9 +372,12 @@ if ($("div#simpleBarChart").length == 1) {
                     data: 'pax'
                 },
                 {
+                    data: 'staff_name'
+                },
+                {
                     data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='" + oData.invoiceno + "/detail_invoice'>View Details</a>");
+                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
                     }
                 },
             ]
@@ -904,7 +949,6 @@ if ($("div#simpleBarChart").length == 1) {
 
 
 
-
         var b_id = $("select#branch_list").val()
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
@@ -1027,7 +1071,10 @@ if ($("div#simpleBarChart").length == 1) {
                     data: 'discitemsname'
                 },
                 {
-                    data: 'invoiceno'
+                   data: 'invoiceno',
+                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"'  target='_blank'>View Details</a>");
+                    }
                 }
             ]
         });
@@ -1388,7 +1435,7 @@ if ($("div#simpleBarChart").length == 1) {
         console.log(payload.luck)
         var data = payload.luck
 
-      
+
         $("table#sales_summary").DataTable({
             destroy: true,
             data: data,
@@ -1407,7 +1454,8 @@ if ($("div#simpleBarChart").length == 1) {
                 {
                     data: 'idle'
                 },
-                {   data: 'dinner'
+                {
+                    data: 'dinner'
                 }
             ]
         });
@@ -1473,7 +1521,7 @@ if ($("div#simpleBarChart").length == 1) {
         console.log(payload.luck)
         var data = payload.luck
 
-       
+
         $("table#pax_summary").DataTable({
             destroy: true,
             data: data,
@@ -1524,15 +1572,11 @@ if ($("div#simpleBarChart").length == 1) {
         console.log(payload.tax_data)
         console.log(payload.tax_total)
 
-
-
-
         var tax = payload.tax_data
         var tax_total = payload.tax_total
 
 
         var all = parseFloat(tax_total) - parseFloat(tax)
-
 
 
         $(".tax#tax_data").html(tax);
@@ -1559,6 +1603,79 @@ if ($("div#simpleBarChart").length == 1) {
                 }
             ]
         });
+
+
+
+        localStorage.setItem("taxes_data", payload.map);
+
+        var maps = JSON.parse(localStorage.getItem("taxes_data"))
+        var salesdate = []
+        var tax = []
+        var aat = []
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            tax.push(this.tax)
+        })
+        $(maps).each(function() {
+            aat.push(this.aat)
+        })
+        Highcharts.chart('taxBarChart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Tax Reports(RM)'
+            },
+
+            xAxis: {
+                categories: salesdate,
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Total Tax",
+                    data: tax
+                },
+                {
+                    name: "Among After Tax",
+                    data: aat
+                }
+            ]
+
+        });
+
 
         $("#backdrop").delay(500).fadeOut()
 
@@ -1606,6 +1723,76 @@ if ($("div#simpleBarChart").length == 1) {
                     data: 'total'
                 }
             ]
+        });
+
+        localStorage.setItem("payment_data", payload.map);
+
+        var maps = JSON.parse(localStorage.getItem("payment_data"))
+        var salesdate = []
+        var cash = []
+        var card = []
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            cash.push(this.cash)
+        })
+        $(maps).each(function() {
+            card.push(this.card)
+        })
+        Highcharts.chart('paymentBarChart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Payment Reports(RM)'
+            },
+
+            xAxis: {
+                categories: salesdate,
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Total Sales by Cash",
+                    data: cash
+                },
+                {
+                    name: "Total Sales by Card",
+                    data: card
+                }
+            ]
+
         });
 
         $("#backdrop").delay(500).fadeOut()
@@ -1661,7 +1848,398 @@ if ($("div#simpleBarChart").length == 1) {
             ]
         });
 
+        localStorage.setItem("cashinout", payload.map);
+
+        var maps = JSON.parse(localStorage.getItem("cashinout"))
+        var salesdate = []
+        var cash_in = []
+        var cash_out = []
+        var open_drawer = []
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            cash_in.push(this.cash_in)
+        })
+        $(maps).each(function() {
+            cash_out.push(this.cash_out)
+        })
+        $(maps).each(function() {
+            open_drawer.push(this.open_drawer)
+        })
+        Highcharts.chart('cashinoutBarChart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Cash In Out Reports'
+            },
+
+            xAxis: {
+                categories: salesdate,
+                title: {
+                    text: null
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Total Cash In",
+                    data: cash_in
+                },
+                {
+                    name: "Total Cash Out",
+                    data: cash_out
+                },
+                {
+                    name: "Open Drawer",
+                    data: open_drawer
+                }
+            ]
+
+        });
+
+
         $("#backdrop").delay(500).fadeOut()
+    })
+
+    $("button#chart_btn").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        var b_id = $("select#branch_list").val()
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("chart_btn", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date
+        })
+    })
+
+    channel.on("populate_chart", payload => {
+
+        localStorage.setItem("bar_chart_sales_data", payload.map0);
+
+        var maps = JSON.parse(localStorage.getItem("bar_chart_sales_data"))
+        var bulan = []
+        var sales = []
+        var tax = []
+        var service_charge = []
+
+        $(maps).each(function() {
+            bulan.push(this.bulan)
+        })
+        $(maps).each(function() {
+            sales.push(this.sales)
+        })
+        $(maps).each(function() {
+            tax.push(this.tax)
+        })
+        $(maps).each(function() {
+            service_charge.push(this.service_charge)
+        })
+
+        Highcharts.chart('chart2', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Branch Monthly Comparison Chart'
+            },
+            xAxis: {
+                categories: bulan,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Sales',
+                data: sales
+            }, {
+                name: 'Tax',
+                data: tax
+            }, {
+                name: 'Service Charge',
+                data: service_charge
+            }]
+        });
+
+        localStorage.setItem("chart_data", payload.map);
+
+        var maps = JSON.parse(localStorage.getItem("chart_data"))
+        var salesdate = []
+        var grand_total = []
+        var tax = []
+        var service_charge = []
+
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            grand_total.push(this.grand_total)
+        })
+        $(maps).each(function() {
+            tax.push(this.tax)
+        })
+        $(maps).each(function() {
+            service_charge.push(this.service_charge)
+        })
+
+        Highcharts.chart('chart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Daily Sales Report(RM)'
+            },
+
+            xAxis: {
+                categories: salesdate,
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Sales",
+                    data: grand_total
+                },
+                {
+                    name: "Tax",
+                    data: tax
+                },
+                {
+                    name: "Service Charge",
+                    data: service_charge
+                }
+            ]
+
+        });
+
+
+        localStorage.setItem("hourly_sales_chart_data", payload.map2);
+
+        var maps = JSON.parse(localStorage.getItem("hourly_sales_chart_data"))
+        var sales = []
+        var tax = []
+        var service_charge = []
+        var time = []
+
+        $(maps).each(function() {
+            sales.push(this.sales)
+        })
+        $(maps).each(function() {
+            tax.push(this.tax)
+        })
+        $(maps).each(function() {
+            service_charge.push(this.service_charge)
+        })
+        $(maps).each(function() {
+            time.push(this.time)
+        })
+
+
+        Highcharts.chart('hourly_sales_chart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Current Hourly Sales Reports(RM)'
+            },
+
+            xAxis: {
+                categories: time,
+                title: {
+                    text: null
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Sales",
+                    data: sales
+                },
+                {
+                    name: "Tax",
+                    data: tax
+                },
+                {
+                    name: "Service Charge",
+                    data: service_charge
+                }
+            ]
+
+        });
+
+
+        localStorage.setItem("hourly_pax_chart_data", payload.map3);
+
+        var maps = JSON.parse(localStorage.getItem("hourly_pax_chart_data"))
+        var pax = []
+        var transaction = []
+        var time = []
+
+        $(maps).each(function() {
+            pax.push(this.pax)
+        })
+        $(maps).each(function() {
+            transaction.push(this.transaction)
+        })
+        $(maps).each(function() {
+            time.push(this.time)
+        })
+
+
+        Highcharts.chart('hourly_pax_chart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Current Hourly Pax Reports'
+            },
+
+            xAxis: {
+                categories: time,
+                title: {
+                    text: null
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Pax",
+                    data: pax
+                },
+                {
+                    name: "Transaction",
+                    data: transaction
+                }
+            ]
+
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+
+
     })
 
     $("button#generate_sales_charts").click(function(){
