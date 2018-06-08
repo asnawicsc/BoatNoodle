@@ -1,58 +1,59 @@
 <h2>Listing Branch</h2>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem" onclick="window.location.href='/organization/new'"><i class="fa fa-plus" aria-hidden="true"></i> Add New Organization</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="/branch/new" onclick="window.location.href='/branch/new'" ><i class="fa fa-plus" aria-hidden="true"></i> Add New Branch</button>
-<br>
-<br>
     <div class="col-lg-12">
-                    <div class="panel panel-default">
+      <div class="panel panel-default">
+
+          <!-- /.panel-heading -->
+          <div class="panel-body">
+              <div class="table-responsive">
+                  <table class="table data">
+                      <thead>
+                          <tr>
+                 
+                            <th>Branch name</th>
+                            <th>Branch code</th>
+            
+                
+                            <th>Organization</th>
+                
+                            <th>Branch manager</th>
+                            <th>Number of staff</th>
+                            <th>Sync Status</th>
+
+                            <th>Action</th>
+                            <th>Printer</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                     <%= for branch <- @branch do %>
+                          <tr>
+                  
+                            <td><%= branch.branchname %></td>
+                            <td><%= branch.branchcode %></td>
+                      
+          
+                            <td><%= branch.org_id %></td>
               
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                        <table class="table data">
-                                            <thead>
-                                                <tr>
-                                       
-                                                  <th>Branch name</th>
-                                                  <th>Branch code</th>
-                                  
-                                      
-                                                  <th>Organization</th>
-                                      
-                                                  <th>Branch manager</th>
-                                                  <th>Number of staff</th>
-                                                  <th>Sync Status</th>
+                            <td><%= branch.manager %></td>
+                            <td><%= branch.num_staff %></td>
+                            <td><%= branch.sync_status %></td>
 
-                                                  <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                           <%= for branch <- @branch do %>
-                                                <tr>
-                                        
-                                                  <td><%= branch.branchname %></td>
-                                                  <td><%= branch.branchcode %></td>
-                                            
-                                
-                                                  <td><%= branch.org_id %></td>
-                                    
-                                                  <td><%= branch.manager %></td>
-                                                  <td><%= branch.num_staff %></td>
-                                                  <td><%= branch.sync_status %></td>
+                            <td>
+                           <a class="btn btn-primary btn-xs" href="/branch/<%= branch.branchid %>/edit">Edit</a>
+                           
+                            </td>
+                            <td>
+                              <a class="btn btn-warning btn-xs" href="/branch/<%= branch.branchid %>/printers">Printers</a>
+                            </td>
+                          </tr>
+                      <% end %>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+          <!-- /.panel-body -->
+      </div>
 
-                                                  <td>
-                                                 <a href="/branch/<%= branch.branchid %>/edit">Edit</a>
-                                                  </td>
-                                                </tr>
-                                            <% end %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-           
   </div>
 
 

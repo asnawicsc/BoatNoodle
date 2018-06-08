@@ -1,37 +1,6 @@
 $(document).ready(function() {
 
-<<<<<<< HEAD
-if ($("div#simpleBarChart").length == 1) {
-    
-    if (localStorage.getItem("sales_data") == null) {
 
-        channel.push("generate_all_branch_sales_data", {})
-        channel.on("save_local_storage", payload => {
-        localStorage.setItem("sales_data", payload.map);
-
-            var maps = JSON.parse(localStorage.getItem("sales_data"))
-            var branches = []
-            var trx = []
-            $(maps).each(function(){ branches.push(this.branch_name) })
-            $(maps).each(function(){ trx.push(this.grand_total) })
-
-            Highcharts.chart('simpleBarChart', {
-                chart: {
-                    type: 'bar'
-                },
-                title: {
-                    text: 'Current Month Sales(RM)'
-                },
-
-                xAxis: {
-                    categories: branches,
-                    title: {
-                        text: null
-                    }
-                },
-                yAxis: {
-                    min: 0,
-=======
     if ($("div#simpleBarChart").length == 1) {
 
         if (localStorage.getItem("sales_data") == null) {
@@ -53,7 +22,7 @@ if ($("div#simpleBarChart").length == 1) {
                     chart: {
                         type: 'bar'
                     },
->>>>>>> master
+
                     title: {
                         text: 'Current Month Sales(RM)'
                     },

@@ -2,8 +2,34 @@ defmodule BoatNoodleWeb.BranchController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{Branch, Organization, User}
+  alias BoatNoodle.BN.{Branch, Organization, User, TagCatalog, Tag, TagItems}
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat}
   require IEx
+
+  def printers(conn, %{"id" => id}) do
+    printers = Repo.all(from(t in Tag, where: t.branch_id == ^id))
+    branch = BN.get_branch!(id)
+    menu_cat = Repo.get(MenuCatalog, branch.menu_catalog)
+
+    item_ids = menu_cat.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
+
+    subcats =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where: s.subcatid in ^item_ids,
+          select: %{
+            id: s.subcatid,
+            name: s.itemname,
+            code: s.itemcode
+          },
+          order_by: [asc: s.itemcode]
+        )
+      )
+
+    # need to do for combo items
+    render(conn, "printers.html", branch: branch, printers: printers, subcats: subcats)
+  end
 
   def index(conn, _params) do
     branch =

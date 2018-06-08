@@ -214,4 +214,5 @@ $(document).ready(function(){
 
 <script src="/js/menu_item_category.js"></script>
 <script src="/js/item.js"></script>
+<script src="/js/tag.js"></script>
 </html>
