@@ -1,48 +1,223 @@
-<h2>Listing User</h2>
+<div class="col-lg-12">
+   <div class="page-categories">
+      <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#user_list" role="tablist">
+            <i class="material-icons">assignment_ind</i> Users
+          </a>
+        </li>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem" onclick="window.location.href='/user/new'"><i class="fa fa-plus" aria-hidden="true"></i> Add User</button>
-<br>
-<br>
-    <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-book"></i> List of Users 
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                  
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                        <table class="table table-bordered table-hover table-striped">
-                                            <thead>
-                                                <tr>
-                                                  <th>Username</th>
-                                                  <th>Password</th>
-                                                  <th>Email</th>
-                                                  <th>User role</th>
-                                                  <th>Branch access</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                             <%= for user <- @user do %>
-                                                  <tr>
-                                                    <td><%= user.username %></td>
-                                                    <td><%= user.password %></td>
-                                                    <td><%= user.email %></td>
-                                                    <td><%= user.roleid %></td>
-                                                    <td><%= user.manager_access %></td>
+        <li class="nav-item">
+          <a class="nav-link active show" data-toggle="tab" href="#branch_access" role="tablist">
+            <i class="material-icons">restaurant</i> Branch Access
+          </a>
+        </li>
 
-                                                 
-                                                  </tr>
-                                              <% end %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                        </div>
-                        <!-- /.panel-body -->
+      </ul>
+      <div class="tab-content tab-space tab-subcategories" >
+        <div class="tab-pane" id="user_list" >
+          <div class="card">
+            <div class="card-header card-header-text card-header-warning">
+              <div class="card-text">
+                <h4 class="card-title">Users</h4>
+              </div>
+              <div class="dropdown pull-right" style="padding: 10px;">
+                  <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="material-icons">settings</i>
+                    <span class="caret"></span>
+                  <div class="ripple-container"></div></button>
+                  <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
+                    <li>
+                      <a href="/user/new">New user</a>
+                    </li>
+
+                  </ul>
+                </div>
+            </div>
+            <div class="card-body table-responsive">
+              <% group_user = @user |> Enum.group_by(fn x -> x.roleid end) %>
+             <% groups = group_user |> Map.keys %>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active show" data-toggle="tab" href="#link4" role="tablist">
+                        ALL
+                      </a>
+                    </li>
+                   <%= for group <- groups do %>
+                    <li class="nav-item">
+                      <a class="nav-link" data-toggle="tab" href="#<%= group %>" role="tablist">
+                        <%= group%>
+                      </a>
+                    </li>
+                    <% end %>
+                  </ul>
+                </div>
+                <div class="col-md-10">
+                  <div class="tab-content">
+                    <div class="tab-pane active show" id="link4">
+                      <table class="table data">
+                          <thead>
+                              <tr>
+                                <th>Username</th>
+
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Manager access</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                           <%= for user <- @user do %>
+                                <tr>
+                                  <td><%= user.username %></td>
+                     
+                                  <td><%= user.email %></td>
+                                  <td><%= user.roleid %></td>
+                                  <td><%= user.manager_access %></td>
+
+                               
+                                </tr>
+                            <% end %>
+                          </tbody>
+                      </table>
                     </div>
-           
+                  <%= for group <- groups do %>
+                      <div class="tab-pane" id="<%= group %>">
+                        <table class="table data">
+                            <thead>
+                                <tr>
+                                  <th>Username</th>
+
+                                  <th>Email</th>
+                                  <th>Role</th>
+                                  <th>Manager access</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                             <%= for user <- group_user[group] do %>
+                                  <tr>
+                                    <td><%= user.username %></td>
+                       
+                                    <td><%= user.email %></td>
+                                    <td><%= user.roleid %></td>
+                                    <td><%= user.manager_access %></td>
+
+                                 
+                                  </tr>
+                              <% end %>
+                            </tbody>
+                        </table>
+                      </div>
+                  <% end %>
+                  </div>
+                </div>
+
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+         <div class="tab-pane active show" id="branch_access" >
+
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12" style="width: 100%;">
+                  <table style="float: left;">
+                    <tr><th>Branches</th></tr>
+                   <%= for branch <- @branches do %>
+                      <tr>
+                        <td>
+                          <div style="margin-top: 3px; margin-bottom: 3px;">
+                            
+                          <%= String.replace(branch.name, "BN", "") %>
+                          </div>
+                          </td>
+                      </tr>
+                    <% end %>
+                     <tr><th>Branches</th></tr>
+                  </table>
+                  <div style="overflow-x: scroll;overflow-y: hidden;">
+
+                    <table style="margin-left: 20px; width: 100%;">
+
+                      <tr>
+                        <%= for manager_access_user <- @manager_access_users do %>
+                          <th style="width: 200px; text-align: center; font-size: 12px;">
+                            <%= manager_access_user.username %>
+                          </th>
+                        <% end %>
+                      </tr>
+
+                     <%= for branch <- @branches do %>
+                       
+                        <tr>
+                          <%= for manager_access_user <- @manager_access_users do %>
+                            <th style="width: 200px; text-align: center;">
+                              <% 
+                              uba = @uba[manager_access_user.id]
+                              if uba != nil do
+                          
+                                a = uba |> Enum.filter(fn x -> x.branchid == branch.id end)
+                                if a != [] do
+                                  checkbox = true
+                                else
+                                  checkbox = false
+                                end
+                              end
+                              %>
+                              <%= if checkbox do %>
+                                <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
+                                  <label class="form-check-label" style="display: inline;">
+                                      <input class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" checked="">
+                    
+                                      <span class="form-check-sign" style="padding-right: 0px;">
+                                          <span class="check"></span>
+                                      </span>
+                                    
+                                  </label>
+                                </div>
+                              <% else %>
+                                <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
+                                  <label class="form-check-label" style="display: inline;">
+                                      <input class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" >
+                                 
+                                      <span class="form-check-sign" style="padding-right: 0px;">
+                                          <span class="check"></span>
+                                      </span>
+                                    
+                                  </label>
+                                </div>
+                              <% end %>
+                 
+                            </th>
+                          <% end %>
+            
+                        </tr>
+
+                        <% end %>
+                      <tr>
+                        <%= for manager_access_user <- @manager_access_users do %>
+                          <th style="width: 200px; text-align: center; font-size: 12px;">
+                            <%= manager_access_user.username %>
+                          </th>
+                        <% end %>
+                      </tr>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+         </div>
+      </div>
   </div>
+</div>
+
+
+

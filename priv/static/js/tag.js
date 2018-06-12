@@ -17,18 +17,38 @@ $(document).ready(function(){
 	})
 
 	tag_channel.on("updated_printer", payload => {
-    $.notify({
-        icon: "notifications",
-        message: payload.item_name+" "+payload.action+" "+payload.printer_name
+	    $.notify({
+	        icon: "notifications",
+	        message: payload.item_name+" "+payload.action+" "+payload.printer_name
 
-    }, {
-        type: payload.alert,
-        timer: 100,
-        placement: {
-            from: 'bottom',
-            align: 'right'
-        }
-    });
+	    }, {
+	        type: payload.alert,
+	        timer: 100,
+	        placement: {
+	            from: 'bottom',
+	            align: 'right'
+	        }
+	    });
+	})
+
+	$("input.user_branch").click(function(){
+		var info = $(this).attr("name")
+		tag_channel.push("toggle_user_branch", {info: info})
+	})
+
+	tag_channel.on("updated_branch_access", payload => {
+	    $.notify({
+	        icon: "notifications",
+	        message: payload.user_name+" "+payload.action+" "+payload.branch_name
+
+	    }, {
+	        type: payload.alert,
+	        timer: 100,
+	        placement: {
+	            from: 'bottom',
+	            align: 'right'
+	        }
+	    });
 	})
 
 })

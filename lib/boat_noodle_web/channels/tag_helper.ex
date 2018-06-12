@@ -88,6 +88,49 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
+  def handle_in("toggle_user_branch", %{"info" => info}, socket) do
+    tuple_data =
+      info
+      |> String.replace("][", ",")
+      |> String.replace("[", ",")
+      |> String.replace("]", ",")
+      |> String.split(",")
+      |> List.to_tuple()
+
+    user_id = elem(tuple_data, 1)
+    branch_id = elem(tuple_data, 2)
+
+    user = Repo.get(User, user_id)
+    branch = Repo.get(Branch, branch_id)
+
+    # Repo.all(
+    #   from(u in UserBranchAccess, where: u.userid == ^user_id and u.branch_id == ^branch_id)
+    # )
+    uba = Repo.get_by(UserBranchAccess, userid: user_id, branchid: branch_id)
+
+    if uba != nil do
+      Repo.delete(uba)
+      action = "removed from"
+      alert = "danger"
+    else
+      cg =
+        UserBranchAccess.changeset(%UserBranchAccess{}, %{userid: user_id, branchid: branch_id})
+
+      Repo.insert(cg)
+      action = "added to"
+      alert = "success"
+    end
+
+    broadcast(socket, "updated_branch_access", %{
+      user_name: user.username,
+      branch_name: branch.branchname,
+      action: action,
+      alert: alert
+    })
+
+    {:noreply, socket}
+  end
+
   defp authorized?(_payload) do
     true
   end

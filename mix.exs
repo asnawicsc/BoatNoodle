@@ -19,7 +19,7 @@ defmodule BoatNoodle.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {BoatNoodle.Application, []},
+      mod: {BoatNoodle.Application, [:elixir_make, :parse_trans]},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -44,13 +44,10 @@ defmodule BoatNoodle.Mixfile do
       {:timex, "~> 3.0"},
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.4.0"},
-
       {:mogrify, "~> 0.6.1"},
       {:distillery, "~> 1.5", runtime: false},
-
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 0.12"}
-
     ]
   end
 
