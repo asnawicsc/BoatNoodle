@@ -64,8 +64,8 @@ defmodule BoatNoodleWeb.TagController do
     case BN.update_tag(tag, tag_params) do
       {:ok, tag} ->
         conn
-        |> put_flash(:info, "Tag updated successfully.")
-        |> redirect(to: tag_path(conn, :show, tag))
+        |> put_flash(:info, "Printer updated successfully.")
+        |> redirect(to: branch_path(conn, :printers, tag.branch_id))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", tag: tag, changeset: changeset)

@@ -103,6 +103,116 @@
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
+       <div class="card-header"><h5>Combos</h5></div>
+      <div class="card-body ">
+        <div class="row">
+          <div class="col-md-2">
+            <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+              <%= for combo <- @combos do %>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#<%= combo.id %>" role="tablist">
+                  <%= combo.name %>
+                </a>
+              </li>
+              <% end %>
+
+            </ul>
+          </div>
+          <div class="col-md-10">
+            <div class="tab-content">
+              <%= for combo <- @combos do %>
+              <div class="tab-pane" id="<%= combo.id %>">
+
+                <div class="row">
+                  <div class="col-md-12" style="width: 100%;">
+                    <table style="float: left;">
+
+                      <tr>
+                        <th>Ala Carte Printer</th>
+                 
+                      </tr>
+
+            
+                      <%= for combo_item <- @combo_items[combo.id] do %>
+                      
+                              <tr>
+                                <td>
+                                  <div style="margin-top: 3px; margin-bottom: 3px;">
+                                
+                                    <%= combo_item.combo_item_name %>
+                                    </div>
+                                  </td>
+                              </tr>
+                      <% end %>
+
+
+                       
+
+                    </table>
+                    <div style="overflow-x: scroll;overflow-y: hidden;">
+
+                      <table style="margin-left: 20px; width: 100%;">
+
+                        <tr>
+                      
+                          <%= for printer <- @printers do %>
+                            <th style="width: 200px; text-align: left;">
+                              <%= printer.tagname %>
+                            </th>
+                            <% end %>
+                        </tr>
+
+                        <%= for combo_item <- @combo_items[combo.id] do %>
+                          <tr>
+
+                            <%= for printer <- @printers do %>
+                          <% printer_combo_items = printer.combo_item_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )%>
+                              <td style="width: 200px; padding-right: 5px;">
+
+                                <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
+                                  <label class="form-check-label" style="display: inline;">
+                                    <% item = combo_item.combo_item_id |> Integer.to_string %>
+
+                                    <%= if Enum.any?(printer_combo_items, fn x -> x == item end) do %>
+                                      <input class="form-check-input printer_combo_item" name= "subcat_ids[<%= printer.tagid %>][<%= combo_item.combo_item_id %>]" type="checkbox" checked="" value="" >
+                                      <% else %>
+                                      <input class="form-check-input printer_combo_item" name= "subcat_ids[<%= printer.tagid %>][<%= combo_item.combo_item_id %>]" type="checkbox" value="" >
+                                      <% end %>
+                                 
+                                      <span class="form-check-sign" style="padding-right: 0px;">
+                                          <span class="check"></span>
+                                      </span>
+                                    
+                                  </label>
+                                </div>
+
+            
+                              </td>
+                              <% end %>
+                          </tr>
+
+                          <% end %>
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+
+
+              </div>
+              <% end %>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
       <div class="card-header"><h5>New Printer</h5></div>
       <div class="card-body">
 

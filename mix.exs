@@ -19,8 +19,8 @@ defmodule BoatNoodle.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {BoatNoodle.Application, [:elixir_make, :parse_trans]},
-      extra_applications: [:logger, :runtime_tools]
+      mod: {BoatNoodle.Application, []},
+      extra_applications: [:logger, :runtime_tools, :elixir_make, :parse_trans]
     ]
   end
 

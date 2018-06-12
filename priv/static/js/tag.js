@@ -31,6 +31,26 @@ $(document).ready(function(){
 	    });
 	})
 
+	$("input.printer_combo_item").click(function(){
+		var info = $(this).attr("name")
+		tag_channel.push("toggle_printer_combo", {info: info})
+	})
+
+	tag_channel.on("updated_printer_combo", payload => {
+	    $.notify({
+	        icon: "notifications",
+	        message: payload.item_name+" "+payload.action+" "+payload.printer_name
+
+	    }, {
+	        type: payload.alert,
+	        timer: 100,
+	        placement: {
+	            from: 'bottom',
+	            align: 'right'
+	        }
+	    });
+	})
+
 	$("input.user_branch").click(function(){
 		var info = $(this).attr("name")
 		tag_channel.push("toggle_user_branch", {info: info})

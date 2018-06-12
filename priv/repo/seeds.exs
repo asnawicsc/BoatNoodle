@@ -19,5 +19,8 @@ ADD COLUMN `printer_IP` VARCHAR(255) NULL AFTER `subcat_ids`;
 ALTER TABLE `posgb_boatnoodle`.`tag_tbl` 
 CHANGE COLUMN `subcat_ids` `subcat_ids` TEXT NULL DEFAULT NULL ;
 
+ALTER TABLE `posgb_boatnoodle`.`tag_tbl` 
+ADD COLUMN `combo_item_ids` LONGTEXT NULL DEFAULT NULL AFTER `printer_IP`;
+
 
 "

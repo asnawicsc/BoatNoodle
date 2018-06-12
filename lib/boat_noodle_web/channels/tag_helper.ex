@@ -41,6 +41,60 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
+  def handle_in("toggle_printer_combo", %{"info" => info}, socket) do
+    tuple_data =
+      info
+      |> String.replace("][", ",")
+      |> String.replace("[", ",")
+      |> String.replace("]", ",")
+      |> String.split(",")
+      |> List.to_tuple()
+
+    tagid = elem(tuple_data, 1)
+    combo_item_id = elem(tuple_data, 2)
+
+    tag = Repo.get(Tag, tagid)
+    combo_item = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
+
+    if tag.combo_item_ids != nil do
+      existing_combo_item_ids = tag.combo_item_ids |> String.split(",")
+    else
+      existing_combo_item_ids = []
+    end
+
+    if Enum.any?(existing_combo_item_ids, fn x -> x == combo_item_id end) do
+      new_combo_ids =
+        List.delete(existing_combo_item_ids, combo_item_id) |> Enum.sort() |> Enum.join(",")
+
+      action = "removed from"
+      alert = "danger"
+    else
+      new_combo_ids =
+        List.insert_at(existing_combo_item_ids, 0, combo_item_id) |> Enum.sort() |> Enum.join(",")
+
+      action = "added to"
+      alert = "success"
+    end
+
+    cg = Tag.changeset(tag, %{combo_item_ids: new_combo_ids})
+
+    case Repo.update(cg) do
+      {:ok, tag} ->
+        broadcast(socket, "updated_printer_combo", %{
+          printer_name: tag.tagname,
+          item_name: combo_item.combo_item_name,
+          action: action,
+          alert: alert
+        })
+
+      _ ->
+        IO.puts("printer update failed")
+        true
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_in("toggle_printer", %{"info" => info}, socket) do
     tuple_data =
       info
@@ -55,10 +109,18 @@ defmodule BoatNoodleWeb.TagHelper do
 
     tag = Repo.get(Tag, tagid)
     subcat = Repo.get(ItemSubcat, subcatid)
+
     existing_subcats = tag.subcat_ids |> String.split(",")
+
+    combo_item_ids =
+      Repo.all(
+        from(c in ComboDetails, where: c.combo_id == ^subcat.subcatid, select: c.combo_item_id)
+      )
+      |> Enum.map(fn x -> Integer.to_string(x) end)
 
     if Enum.any?(existing_subcats, fn x -> x == subcatid end) do
       new_subcatids = List.delete(existing_subcats, subcatid) |> Enum.sort() |> Enum.join(",")
+
       action = "removed from"
       alert = "danger"
     else

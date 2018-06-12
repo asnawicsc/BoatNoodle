@@ -7,6 +7,7 @@ defmodule BoatNoodle.BN.Tag do
     field(:tagid, :integer, primary_key: true)
     field(:branch_id, :integer)
     field(:subcat_ids, :string)
+    field(:combo_item_ids, :string)
     field(:tagdesc, :string)
     field(:printer, :string)
     field(:printer_ip, :string)
@@ -19,6 +20,7 @@ defmodule BoatNoodle.BN.Tag do
   def changeset(tag, attrs) do
     tag
     |> cast(attrs, [
+      :combo_item_ids,
       :subcat_ids,
       :branch_id,
       :printer_ip,

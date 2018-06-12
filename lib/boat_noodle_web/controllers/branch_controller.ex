@@ -13,7 +13,7 @@ defmodule BoatNoodleWeb.BranchController do
 
     item_ids = menu_cat.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
-    subcats =
+    subcats_data =
       Repo.all(
         from(
           s in ItemSubcat,
@@ -27,6 +27,10 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
 
+    subcats =
+      subcats_data
+      |> Enum.reject(fn x -> String.length(Integer.to_string(x.id)) >= 6 end)
+
     changeset = BN.change_tag(%Tag{})
 
     html =
@@ -36,6 +40,19 @@ defmodule BoatNoodleWeb.BranchController do
         subcats: subcats
       )
 
+    # need a list of combos
+    # subcatid thats 6 digit are combos 
+    combos = subcats_data |> Enum.filter(fn x -> String.length(Integer.to_string(x.id)) == 6 end)
+    combo_ids = combos |> Enum.map(fn x -> x.id end)
+
+    combo_items =
+      Repo.all(from(c in ComboDetails, where: c.combo_id in ^combo_ids))
+      |> Enum.group_by(fn x -> x.combo_id end)
+
+    # each combo has a list of items
+    # there are 2 type of combos but both also go into this combo_item_ids column
+    # allow user to set which item goes to which printer
+
     render(
       conn,
       "printers.html",
@@ -43,7 +60,9 @@ defmodule BoatNoodleWeb.BranchController do
       printers: printers,
       subcats: subcats,
       changeset: changeset,
-      html: html
+      html: html,
+      combos: combos,
+      combo_items: combo_items
     )
   end
 
