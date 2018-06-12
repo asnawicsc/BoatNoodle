@@ -37,12 +37,12 @@ defmodule BoatNoodleWeb.TagController do
     case BN.create_tag(tag_params) do
       {:ok, tag} ->
         conn
-        |> put_flash(:info, "Tag created successfully.")
-        |> redirect(to: tag_path(conn, :index))
+        |> put_flash(:info, "Printer created successfully.")
+        |> redirect(to: branch_path(conn, :printers, tag_params["branch_id"]))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
-        |> put_flash(:error, "Tag creation error.")
+        |> put_flash(:error, "Printer creation error.")
         |> redirect(to: tag_path(conn, :index))
     end
   end

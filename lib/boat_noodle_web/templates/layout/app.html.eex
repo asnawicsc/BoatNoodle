@@ -23,6 +23,7 @@
   <link href="/assets/jquery-ui.min.css" rel="stylesheet" />
 
 <script src="/assets/js/core/jquery.min.js"></script>
+
 </head>
 
 <body class="">
@@ -207,8 +208,8 @@ $(document).ready(function(){
 <script src="/js/phoenix.js"></script>
 
 <script src="/js/socket.js"></script>
-
 <script src="/js/app.js"></script>
+
 
 <script src="/js/sales.js"></script>
 

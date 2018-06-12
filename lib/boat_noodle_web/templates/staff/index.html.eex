@@ -1,34 +1,115 @@
-<h2>Listing Staff</h2>
+<div class="col-lg-12">
+  <div class="card">
+    <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title">Staffs</h4>
+      </div>
+      <div class="dropdown pull-right" style="padding: 10px;">
+          <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <i class="material-icons">settings</i>
+            <span class="caret"></span>
+          <div class="ripple-container"></div></button>
+          <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
+            <li>
+              <a href="/staff/new">New Staff</a>
+            </li>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmenuitem" onclick="window.location.href='/staff/new'"><i class="fa fa-plus" aria-hidden="true"></i> Add New Staff</button>
+          </ul>
+        </div>
+    </div>
+    <div class="card-body table-responsive">
+      <% group_staff = @staff |> Enum.group_by(fn x -> x.staff_type_id end)%>
+      <% group_name = group_staff |> Map.keys() %>
+      <div class="row">
+        <div class="col-md-2">
+          <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active show" data-toggle="tab" href="#link4" role="tablist">
+                ALL
+              </a>
+            </li>
+            <%= for group <- group_name do %>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#<%= group %>" role="tablist">
+                <%= group%>
+              </a>
+            </li>
+            <% end %>
+          </ul>
+        </div>
+        <div class="col-md-10">
+          <div class="tab-content">
+            <div class="tab-pane active show" id="link4">
+              <table class="table data" >
+                <thead>
+                  <tr>
+                    <th>Staff name</th>
+                    <th>Contact number</th>
+                    <th>Email</th>
+          
+                  
 
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%= for staff <- @staff do %>
+                      <tr>
+                        <td><%= staff.staff_name %></td>
+                        <td><%= staff.staff_contact %></td>
+                        <td><%= staff.staff_email %></td>
+                 
+                        <td>
+                          <a href="/staff/<%= staff.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Staff">
+                            <i class="material-icons">edit</i>
+                          <div class="ripple-container"></div></a>
+                        
+                            
+                          </td>
+                       
 
-<div class="card" style=" overflow-x: scroll;">
-<table class="data" style = "width: 110%">
-  <thead>
-    <tr>
-      <th>Staff name</th>
-      <th>Contact number</th>
-      <th>Email</th>
-      <th>Staff role</th>
-    
+                     
+                      </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+             <%= for group <- group_name do %>
+            <div class="tab-pane" id="<%= group %>">
+              <table class="table data" >
+                <thead>
+                  <tr>
+                    <th>Staff name</th>
+                    <th>Contact number</th>
+                    <th>Email</th>
+       
+                  
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for staff <- @staff do %>
-    <tr>
-      <td><%= staff.staff_name %></td>
-      <td><%= staff.staff_contact %></td>
-      <td><%= staff.staff_email %></td>
-      <td><%= staff.staff_type_id %></td>
-      <td><%= link "Edit", to: staff_path(@conn, :edit, staff.id), class: "btn btn-primary btn-sm" %></td>
-     
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%= for staff <- group_staff[group] do %>
+                      <tr>
+                        <td><%= staff.staff_name %></td>
+                        <td><%= staff.staff_contact %></td>
+                        <td><%= staff.staff_email %></td>
+ 
+                        <td><a href="/staff/<%= staff.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Staff">
+                            <i class="material-icons">edit</i>
+                          <div class="ripple-container"></div></a></td>
+                       
 
-   
-    </tr>
-<% end %>
-  </tbody>
-</table>
+                     
+                      </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+             <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

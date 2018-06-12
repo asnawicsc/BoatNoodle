@@ -18,7 +18,8 @@
                 <tr>
                   <td>
                     <div style="margin-top: 3px; margin-bottom: 3px;">
-                    <%= printer.tagname %>
+                  
+                      <a href="/tag/<%= printer.tagid %>/edit">  <%= printer.tagname %><i style="font-size: 20px;margin-left: 10px;" class="material-icons">edit</i></a>
                       </div>
                     </td>
                 </tr>
@@ -95,6 +96,68 @@
 		      </div>
 		    </div>
 
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header"><h5>New Printer</h5></div>
+      <div class="card-body">
+
+        <%= form_for @changeset, tag_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
+        <%= hidden_input f, :branch_id, value: @branch.branchid %>
+        <div class="row">
+          <div class="col-sm-2">
+            <div class="form-group bmd-form-group">
+              <%= label f, :tagname, class: "bmd-label-floating" %>
+              <%= text_input f, :tagname, class: "form-control", required: true %>
+              <%= error_tag f, :tagname %>
+            </div>
+          </div>
+          <div class="col-sm-2">
+
+            <div class="form-group bmd-form-group">
+              <%= label f, :tagdesc, class: "bmd-label-floating" %>
+              <%= text_input f, :tagdesc, class: "form-control", required: true %>
+              <%= error_tag f, :tagdesc %>
+            </div>
+          </div>
+          <div class="col-sm-2">
+
+           <div class="form-group bmd-form-group">
+              <%= label f, :printer, class: "bmd-label-floating" %>
+              <%= text_input f, :printer, class: "form-control", required: true %>
+              <%= error_tag f, :printer %>
+            </div>
+          </div>
+          <div class="col-sm-2">
+
+           <div class="form-group bmd-form-group">
+              <%= label f, :printer_ip, class: "bmd-label-floating" %>
+              <%= text_input f, :printer_ip, class: "form-control"%>
+              <%= error_tag f, :printer_ip %>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="row" >
+          <div class="col-sm-4"  id="subcat_checkbox" style="height: 500px; overflow-y: scroll;">
+            <%= raw(@html)%>
+          </div>
+
+        </div>
+        <div class="row" >
+          <div class="col-sm-2">
+            <div class="form-group">
+              <%= submit "Create New Printer", class: "btn btn-primary" %>
+            </div>
+          </div>
+        </div>
+        <% end %>
       </div>
     </div>
   </div>

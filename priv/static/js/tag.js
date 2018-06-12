@@ -16,5 +16,20 @@ $(document).ready(function(){
 		tag_channel.push("toggle_printer", {info: info})
 	})
 
+	tag_channel.on("updated_printer", payload => {
+    $.notify({
+        icon: "notifications",
+        message: payload.item_name+" "+payload.action+" "+payload.printer_name
+
+    }, {
+        type: payload.alert,
+        timer: 100,
+        placement: {
+            from: 'bottom',
+            align: 'right'
+        }
+    });
+	})
+
 })
 

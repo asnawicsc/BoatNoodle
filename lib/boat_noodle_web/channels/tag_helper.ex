@@ -41,6 +41,53 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
+  def handle_in("toggle_printer", %{"info" => info}, socket) do
+    tuple_data =
+      info
+      |> String.replace("][", ",")
+      |> String.replace("[", ",")
+      |> String.replace("]", ",")
+      |> String.split(",")
+      |> List.to_tuple()
+
+    tagid = elem(tuple_data, 1)
+    subcatid = elem(tuple_data, 2)
+
+    tag = Repo.get(Tag, tagid)
+    subcat = Repo.get(ItemSubcat, subcatid)
+    existing_subcats = tag.subcat_ids |> String.split(",")
+
+    if Enum.any?(existing_subcats, fn x -> x == subcatid end) do
+      new_subcatids = List.delete(existing_subcats, subcatid) |> Enum.sort() |> Enum.join(",")
+      action = "removed from"
+      alert = "danger"
+    else
+      new_subcatids =
+        List.insert_at(existing_subcats, 0, subcatid) |> Enum.sort() |> Enum.join(",")
+
+      action = "added to"
+      alert = "success"
+    end
+
+    cg = Tag.changeset(tag, %{subcat_ids: new_subcatids})
+
+    case Repo.update(cg) do
+      {:ok, tag} ->
+        broadcast(socket, "updated_printer", %{
+          printer_name: tag.tagname,
+          item_name: subcat.itemname,
+          action: action,
+          alert: alert
+        })
+
+      _ ->
+        IO.puts("printer update failed")
+        true
+    end
+
+    {:noreply, socket}
+  end
+
   defp authorized?(_payload) do
     true
   end

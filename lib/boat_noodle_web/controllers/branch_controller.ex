@@ -27,8 +27,24 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
 
-    # need to do for combo items
-    render(conn, "printers.html", branch: branch, printers: printers, subcats: subcats)
+    changeset = BN.change_tag(%Tag{})
+
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.TagView,
+        "subcat_checkbox.html",
+        subcats: subcats
+      )
+
+    render(
+      conn,
+      "printers.html",
+      branch: branch,
+      printers: printers,
+      subcats: subcats,
+      changeset: changeset,
+      html: html
+    )
   end
 
   def index(conn, _params) do
@@ -52,13 +68,37 @@ defmodule BoatNoodleWeb.BranchController do
           }
         )
       )
+      |> Enum.reject(fn x -> x.branchcode == "ALL" end)
 
     render(conn, "index.html", branch: branch)
   end
 
   def new(conn, _params) do
     changeset = BN.change_branch(%Branch{})
-    render(conn, "new.html", changeset: changeset)
+
+    managers =
+      BN.list_user() |> Enum.map(fn x -> {x.username, x.id} end)
+      |> Enum.sort_by(fn x -> elem(x, 0) end)
+
+    organizations =
+      BN.list_organization() |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
+      |> Enum.sort_by(fn x -> elem(x, 0) end)
+
+    menu_catalog =
+      Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+
+    disc_catalog =
+      Repo.all(from(m in DiscountCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+
+    render(
+      conn,
+      "new.html",
+      changeset: changeset,
+      managers: managers,
+      organizations: organizations,
+      menu_catalog: menu_catalog,
+      disc_catalog: disc_catalog
+    )
   end
 
   def create(conn, %{"branch" => branch_params}) do
@@ -90,13 +130,21 @@ defmodule BoatNoodleWeb.BranchController do
       BN.list_organization() |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
+    menu_catalog =
+      Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+
+    disc_catalog =
+      Repo.all(from(m in DiscountCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+
     render(
       conn,
       "edit.html",
       branch: branch,
       changeset: changeset,
       managers: managers,
-      organizations: organizations
+      organizations: organizations,
+      menu_catalog: menu_catalog,
+      disc_catalog: disc_catalog
     )
   end
 

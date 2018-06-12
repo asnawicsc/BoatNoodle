@@ -31,7 +31,7 @@
                                     <i class="material-icons">library_books</i>
                                 </div>
                                 <h4 class="card-title">Branch</h4>
-<<<<<<< HEAD
+
                               </div>
                               <div class="card-body ">
                                   <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
@@ -40,15 +40,7 @@
                                     <% end %>
                                   </select>
                               </div>
-=======
-                            </div>
-                            <div class="card-body ">
-                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
-                                          <%= for branch <- @branches do %>
-                                            <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
-                                          <% end %>
-                                        </select>
->>>>>>> master
+
                             </div>
                         </div>
                     </div>

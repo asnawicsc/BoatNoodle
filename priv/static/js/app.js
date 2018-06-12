@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    $("button[aria-label='go_back']").click(function(){
+       window.history.back();
+    })
+    $("div[aria-label='go_back']").click(function(){
+       window.history.back();
+    })
 
     var start = moment().subtract(29, 'days');
     var end = moment();
