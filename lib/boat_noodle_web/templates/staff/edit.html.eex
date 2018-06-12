@@ -1,5 +1,113 @@
-<h2>Edit Staff</h2>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+    <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title">Staff Details</h4>
+      </div>
 
-<%= render "form.html", Map.put(assigns, :action, staff_path(@conn, :update, @staff)) %>
+    </div>
+      <div class="card-body">
+        <%= form_for @changeset, staff_path(@conn, :update, @staff.staff_id), [class: "form-horizontal"], fn f -> %>
+          <%= if @changeset.action do %>
+            <div class="alert alert-danger">
+              <p>Oops, something went wrong! Please check the errors below.</p>
+            </div>
+            <% end %>
 
-<span><%= link "Back", to: staff_path(@conn, :index) %></span>
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="form-group bmd-form-group">
+                    <%= label f, :staff_name, class: "bmd-label-floating" %>
+                      <%= text_input f, :staff_name, class: "form-control" %>
+                        <%= error_tag f, :staff_name %>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="form-group bmd-form-group">
+                    <%= label f, :staff_contact, class: "bmd-label-floating" %>
+                      <%= text_input f, :staff_contact, class: "form-control" %>
+                        <%= error_tag f, :staff_contact %>
+                  </div>
+                </div>
+
+                <div class="col-sm-3">
+                  <div class="form-group bmd-form-group">
+                    <%= label f, :staff_email, class: "bmd-label-floating" %>
+                      <%= text_input f, :staff_email, class: "form-control" %>
+                        <%= error_tag f, :staff_email %>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Role</label>
+                  <select name="staff[staff_type_id]" class="selectpicker" data-style="btn select-with-transition" title="Choose Manager" data-size="10">
+						    <%= for role <- @roles do %>
+						      <option value="<%= elem(role,1) %>"><%= elem(role,0) %> </option>
+						    <% end %>
+						  </select>
+
+                </div>
+
+              </div>
+
+              <div class="row">
+              	<div class="col-sm-4" >
+	                <div class="form-group bmd-form-group">
+	                	<label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Branches</label>
+	                	<div style="padding-left: 10px; padding-top: 10px; height: 300px;overflow-y: scroll;">
+	                		
+		                  <%= if @staff.branch_access == nil do %>
+		                    <% branch_access = [] %>
+		                      <% else %>
+		                        <% branch_access = String.split(@staff.branch_access,",") %>
+		                          <% end %>
+
+		                            <%= for branch <- @branches do %>
+		                              <%= if Enum.any?(branch_access, fn x -> x == to_string(elem(branch,1)) end) do %>
+		                                <div class="form-check">
+		                                  <label class="form-check-label">
+								          	
+													              <input class="form-check-input" name= "branch_ids[<%= elem(branch,1) %>]" type="checkbox" value="" checked= "" >
+													              <%= elem(branch,0) %>
+													              <span class="form-check-sign">
+													                  <span class="check"></span>
+													              </span>
+													            
+													          	</label>
+		                                </div>
+		                                <%= else %>
+		                                  <div class="form-check">
+		                                    <label class="form-check-label">
+								          	
+														              <input class="form-check-input" name= "branch_ids[<%= to_string(elem(branch,1)) %>]" type="checkbox" value="" >
+														              <%= elem(branch,0) %>
+														              <span class="form-check-sign">
+														                  <span class="check"></span>
+														              </span>
+														            
+														          	</label>
+		                                  </div>
+		                                <% end %>
+		                            <% end %>
+	                	</div>
+	                </div>
+                </div>
+              </div>
+
+              <div class="form-group bmd-form-group">
+                <%= submit "Submit", class: "btn btn-primary" %> 
+          
+                		<div class="btn btn-secondary" aria-label="go_back">Go Back</div>
+            
+              </div>
+              <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('select[name="staff[staff_type_id]"]').selectpicker('val', '<%= @staff.staff_type_id%>');
+  })
+</script>

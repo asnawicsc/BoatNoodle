@@ -50,3 +50,18 @@ channel3.join()
         console.log("Unable to join topic", topic3)
     })
 
+var topic4 = "tag:" + window.currentUser
+// Join the topic
+let tag_channel = socket.channel(topic4, {})
+tag_channel.join()
+
+
+    .receive("ok", data => {
+        console.log("Joined topic", topic4)
+    })
+
+
+    .receive("error", resp => {
+        console.log("Unable to join topic", topic4)
+    })
+

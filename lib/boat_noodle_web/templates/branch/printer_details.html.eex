@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-sm-1">
+    <div class="form-group bmd-form-group">
+      <label class="bmd-label-floating" for="tag_tagname">Tagname</label> <input class="form-control" id="tag_tagname" name="tag[tagname]" required="" type="text">
+    </div>
+  </div>
+  <div class="col-sm-1">
+
+    <div class="form-group bmd-form-group">
+      <label class="bmd-label-floating" for="tag_tagdesc">Tagdesc</label> <input class="form-control" id="tag_tagdesc" name="tag[tagdesc]" required="" type="text">
+    </div>
+  </div>
+  <div class="col-sm-1">
+
+    <div class="form-group bmd-form-group">
+      <label class="bmd-label-floating" for="tag_printer">Printer</label> <input class="form-control" id="tag_printer" name="tag[printer]" required="" type="text">
+    </div>
+  </div>
+  <div class="col-sm-1">
+
+    <div class="form-group bmd-form-group">
+      <label class="bmd-label-floating" for="tag_printer_ip">Printer ip</label> <input class="form-control" id="tag_printer_ip" name="tag[printer_ip]" type="text">
+    </div>
+  </div>
+
+
+</div>

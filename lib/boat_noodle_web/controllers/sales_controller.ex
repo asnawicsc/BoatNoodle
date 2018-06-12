@@ -274,6 +274,10 @@ defmodule BoatNoodleWeb.SalesController do
       rice_qty_com: rice_qty_com,sidedish_qty_ind: sidedish_qty_ind,sidedish_qty_com: sidedish_qty_com,toppings_qty_ind: toppings_qty_ind,toppings_qty_com: toppings_qty_com)
   end
 
+  def sales_chart(conn, params) do
+    render(conn, "sales_chart.html", branches: branches())
+  end
+
   def create(conn, %{"sales" => sales_params}) do
     case BN.create_sales(sales_params) do
       {:ok, sales} ->

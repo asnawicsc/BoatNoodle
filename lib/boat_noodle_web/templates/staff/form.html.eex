@@ -5,49 +5,34 @@
     </div>
   <% end %>
 
-  <div class="form-group">
-    <%= label f, :staff_name, class: "control-label" %>
+  <div class="form-group bmd-form-group">
+    <%= label f, :staff_name, class: "bmd-label-floating" %>
     <%= text_input f, :staff_name, class: "form-control" %>
     <%= error_tag f, :staff_name %>
   </div>
 
-  <div class="form-group">
-    <%= label f, :contact_number, class: "control-label" %>
-    <%= text_input f, :contact_number, class: "form-control" %>
-    <%= error_tag f, :contact_number %>
+  <div class="form-group bmd-form-group">
+    <%= label f, :staff_contact, class: "bmd-label-floating" %>
+    <%= text_input f, :staff_contact, class: "form-control" %>
+    <%= error_tag f, :staff_contact %>
   </div>
 
-  <div class="form-group">
-    <%= label f, :email, class: "control-label" %>
-    <%= text_input f, :email, class: "form-control" %>
-    <%= error_tag f, :email %>
+  <div class="form-group bmd-form-group">
+    <%= label f, :staff_email, class: "bmd-label-floating" %>
+    <%= text_input f, :staff_email, class: "form-control" %>
+    <%= error_tag f, :staff_email %>
   </div>
 
-  <div class="form-group">
-    <%= label f, :pin_number, class: "control-label" %>
-    <%= number_input f, :pin_number, class: "form-control" %>
-    <%= error_tag f, :pin_number %>
+
+  <div class="form-group bmd-form-group">
+    <%= label f, :staff_type_id, class: "btn-group bootstrap-select show-tick" %>
+    <%= select f, :staff_type_id,@roles, class: "selectpicker" %>
+    <%= error_tag f, :staff_type_id %>
+
   </div>
 
-  <div class="form-group">
-    <%= label f, :branch, class: "control-label" %>
-    <%= text_input f, :branch, class: "form-control" %>
-    <%= error_tag f, :branch %>
-  </div>
 
-  <div class="form-group">
-    <%= label f, :staff_role, class: "control-label" %>
-    <%= text_input f, :staff_role, class: "form-control" %>
-    <%= error_tag f, :staff_role %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :photo, class: "control-label" %>
-    <%= text_input f, :photo, class: "form-control" %>
-    <%= error_tag f, :photo %>
-  </div>
-
-  <div class="form-group">
+  <div class="form-group bmd-form-group">
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>
 <% end %>

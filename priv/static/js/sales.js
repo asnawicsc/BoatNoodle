@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+
     if ($("div#simpleBarChart").length == 1) {
 
         if (localStorage.getItem("sales_data") == null) {
@@ -21,6 +22,7 @@ $(document).ready(function() {
                     chart: {
                         type: 'bar'
                     },
+
                     title: {
                         text: 'Current Month Sales(RM)'
                     },
@@ -2208,4 +2210,73 @@ $(document).ready(function() {
 
 
     })
+
+    $("button#generate_sales_charts").click(function(){
+
+        $("#backdrop").fadeIn()
+
+        var b_id = $("select#branch_list").val()
+        var year = $("select#year").val()
+
+        channel.push("generate_sales_charts", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            year: year
+        })
+    })
+
+    channel.on("show_sales_chart", payload => {
+        $("div#show_sales_chart").html(payload.html)
+        var monthly_sales = JSON.parse(payload.monthly_sales)
+        var months = []
+        var grand_totals = []
+        $(monthly_sales).each(function(){ months.push(this.month) })
+        $(monthly_sales).each(function(){ grand_totals.push(this.grand_total) })
+        console.log(months)
+        console.log(grand_totals)
+        Highcharts.chart('monthly_chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: payload.branchname +' Monthly Sales in ' + payload.year
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: months,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Sales (RM)'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b>RM {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: 'Sales',
+                data: grand_totals
+
+            }]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+        
+    })
+
 });

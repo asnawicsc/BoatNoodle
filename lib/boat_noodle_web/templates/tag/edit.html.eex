@@ -1,5 +1,53 @@
-<h2>Edit Tag</h2>
+<h2>Edit Printer</h2>
 
-<%= render "form.html", Map.put(assigns, :action, tag_path(@conn, :update, @tag)) %>
 
-<span><%= link "Back", to: tag_path(@conn, :index) %></span>
+<%= form_for @changeset, tag_path(@conn, :update, @tag.tagid), [class: "form-horizontal"], fn f -> %>
+
+<div class="row">
+	<div class="col-sm-2">
+	  <div class="form-group bmd-form-group">
+	    <%= label f, :tagname, class: "bmd-label-floating" %>
+	    <%= text_input f, :tagname, class: "form-control", required: true %>
+	    <%= error_tag f, :tagname %>
+	  </div>
+	</div>
+
+	<div class="col-sm-2">
+
+	  <div class="form-group bmd-form-group">
+	    <%= label f, :tagdesc, class: "bmd-label-floating" %>
+	    <%= text_input f, :tagdesc, class: "form-control", required: true %>
+	    <%= error_tag f, :tagdesc %>
+	  </div>
+	</div>
+
+	<div class="col-sm-2">
+
+	 <div class="form-group bmd-form-group">
+	    <%= label f, :printer, class: "bmd-label-floating" %>
+	    <%= text_input f, :printer, class: "form-control", required: true %>
+	    <%= error_tag f, :printer %>
+	  </div>
+	</div>
+
+	<div class="col-sm-2">
+
+	 <div class="form-group bmd-form-group">
+	    <%= label f, :printer_ip, class: "bmd-label-floating" %>
+	    <%= text_input f, :printer_ip, class: "form-control"%>
+	    <%= error_tag f, :printer_ip %>
+	  </div>
+	</div>
+
+	<div class="col-sm-2">
+	  <div class="form-group">
+	    <%= submit "Submit", class: "btn btn-primary" %>
+	  </div>
+	</div>
+
+</div>
+
+
+<% end %>
+
+<button class="btn btn-primary" aria-label="go_back">Go Back</button>

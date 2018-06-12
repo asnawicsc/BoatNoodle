@@ -3,7 +3,19 @@
     <div class="card-header">
       <h4 class="card-title">Menu Catalogue</h4>
       <p class="card-category">
-        More information here
+        <div style="">
+          
+          <b>
+            
+          Price Codes: 
+          </b>
+          <span class="badge badge-primary" >A</span>
+          <span class="badge badge-warning" >B</span>
+          <span class="badge badge-success" >C</span>
+          <span class="badge badge-info" >D</span>
+          <span class="badge badge-rose" >E</span>
+          <span class="badge badge-danger" >Others</span>
+        </div>
       </p>
     </div>
     <div class="card-body">
@@ -30,6 +42,10 @@
                     </tr>
 
                     <% end %>
+                <tr style="height: 27px;">
+                  <th  class="headcol"  ></th>
+ 
+                </tr>
               </table>
             <div style="overflow-x: scroll;">
               
@@ -84,10 +100,35 @@
                     </tr>
 
                     <% end %>
+                    <tr>
+                  <th  class="headcol"  style="display: none;"></th>
+                  <%= for itemcode <- @itemcodes do %>
+                    <th>
+                      <%= itemcode %>
+                    </th>
+                    <% end %>
+                </tr>
               </table>
             </div>
+
+
           </div>
 
+        </div>
+    </div>
+    <div class="card-footer">
+              <div style="">
+          
+          <b>
+            
+          Price Codes: 
+          </b>
+          <span class="badge badge-primary" >A</span>
+          <span class="badge badge-warning" >B</span>
+          <span class="badge badge-success" >C</span>
+          <span class="badge badge-info" >D</span>
+          <span class="badge badge-rose" >E</span>
+          <span class="badge badge-danger" >Others</span>
         </div>
     </div>
   </div>
