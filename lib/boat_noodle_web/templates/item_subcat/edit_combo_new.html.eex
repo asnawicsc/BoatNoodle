@@ -5,7 +5,7 @@
      
         <div class="card-header text-center">
           <h3 class="card-title">
-            Add New Combo
+            Edit Combo
           </h3>
 
         </div>
@@ -18,27 +18,18 @@
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Item Code</label>
-                  <input name="itemcode" class="form-control" type="text"  required="">
+                  <input name="itemcode" class="form-control" type="text" value="<%=@item_subcat.itemcode%>"  required="">
                 </div>
               </div>
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Description</label>
-                  <input name="itemdesc" class="form-control" type="text" required="">
+                  <input name="itemdesc" class="form-control" type="text" value="<%=@item_subcat.itemdesc%>" required="">
                 </div>
                 
               </div>
             
-                <div class="col-lg-5 col-md-6 col-sm-3">
-
-                          <select class="selectpicker" data-style="btn select-with-transition" name="itemcat"  title="Category" data-size="7">
-                           <%= for a <- @ala_carte1 do %>
-                                            <option value="<%= a.itemcatcode %>" ><%= a.itemcatname %> (<%= a.itemcatcode %>
-                                              )
-                                            </option>
-                                          <% end %>
-                                        </select>
-                        </div>
+               
               
             </div>
             
@@ -75,6 +66,9 @@
                             </div>
                     <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
                       <ol class="item" style="height: 300px; min-width: 300px;" id="list2">
+                        <%= for category <- @categories do %>
+                                <li style="font-size: 15px; height: 40px;" id="<%= category.itemcatid %>"><%= category.itemcatname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"><%= category.itemcatcode %></span></li>
+                                <% end %>
                       </ol>
                     </div>
                   </div>

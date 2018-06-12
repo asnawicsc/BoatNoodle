@@ -24,6 +24,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
       broadcast(socket, "save_local_storage", %{map: Poison.encode!(map)})
     {:noreply, socket}
+    
   end
 
   defp sales_data(branch_name, branch_id) do

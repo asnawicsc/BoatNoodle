@@ -22,6 +22,6 @@ defmodule BoatNoodle.BN.ComboDetails do
   def changeset(combo_details, attrs) do
     combo_details
     |> cast(attrs, [:id, :menu_cat_id, :combo_id, :combo_qty, :combo_item_id, :combo_item_name, :combo_item_code, :combo_item_qty, :update_qty, :unit_price, :top_up])
-    |> validate_required([:id, :menu_cat_id, :combo_id, :combo_qty, :combo_item_id, :combo_item_name, :combo_item_code, :combo_item_qty, :update_qty, :unit_price, :top_up])
+   
   end
 end

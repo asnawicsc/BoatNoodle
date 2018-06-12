@@ -170,12 +170,40 @@ $(document).ready(function(){
   $("ol#list2").on("click", "li", function(){
 
     $("ol#list1").append(this)
-
   })
 
-  $("#checkAll").change(function () {
-    $("input:checkbox").prop('checked', $(this).prop("checked"));
-});
+
+
+   
+ var list ={}  
+  $("ol#a1").on("click", "li", function(){
+    var cat = $(this).parent().attr("aria-label")
+    $("ol#a2[aria-label='"+cat+"']").append(this)
+
+    var sublist =[]
+    $("ol#a2[aria-label='"+cat+"'] li").each(function(){
+          var id = $(this).attr("id")
+          sublist.push(id)
+          list[cat]=sublist;
+    })
+
+    console.log(list[cat])
+    $("input[name='"+cat+"[all_item]'").val(list[cat])
+
+    })
+
+ 
+  $("ol#a2").on("click", "li", function(){
+      var cat = $(this).parent().attr("aria-label")
+
+    $("ol#a1[aria-label='"+cat+"']").append(this)
+  })
+           
+ 
+
+
+
 
 });
 
+      

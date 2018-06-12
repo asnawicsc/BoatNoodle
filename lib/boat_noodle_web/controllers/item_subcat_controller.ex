@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem, ItemSubcat, ComboDetails,Branch}
+  alias BoatNoodle.BN.{MenuItem, ItemSubcat, ComboDetails,Branch, ItemCat}
   require IEx
 
   def combo_create(conn, params) do
@@ -22,19 +22,25 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     params = Map.put(params, "subcatid", subcatid)
     cg = ItemSubcat.changeset(%ItemSubcat{}, params)
 
+    itemcat=params["itemcat"]
+
+
     all=for item <- ala_cart_ids do
+    
+        
+     abc =Repo.all(from c in ItemCat,where: c.itemcatid==^item, select: %{itemcatcode: c.itemcatcode, itemcatid: c.itemcatid, itemcatname: c.itemcatname} )|>hd
+   
 
-     Repo.all(from i in ItemSubcat, where: i.itemcode == ^item,select: %{ name: i.itemname,desc: i.itemdesc,itemcode: i.itemcode})|>hd
-
-      
     end
+   
+
 
     branches= Repo.all(from m in Branch, select: %{name: m.branchname, id: m.branchid})|>Enum.filter(fn x -> x.id != 0 end)
-
-
+    
+  
      render(
       conn,
-      "combo_new_price.html",params: params,all: all,branches: branches
+      "combo_new_price.html",params: params,all: all,branches: branches,itemcat: itemcat
     
     )
 
@@ -51,9 +57,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
  
     #     Repo.insert(cg2)
     #   end
-    #   conn
-    #   |> put_flash(:info, "combo created")
-    #   |> redirect(to: menu_item_path(conn, :index))
+    #   
 
     #   _ ->
     #   conn
@@ -63,26 +67,163 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     # end
   end
 
-  def combo_create_price(conn, _params) do
+  def combo_create_price(conn, params) do
+
+     pr=params|>Enum.map(fn x -> x end)|>hd|>elem(1)
+     item_name=pr["itemname"]
+     item_desc=pr["itemdesc"]
+     item_code=pr["itemcode"]
+     item_cat=pr["itemcat"]
+
+   
+
+
+     render(
+      conn,
+      "combo_new_price_update.html",params: params,item_name: item_name,item_desc: item_desc,item_code: item_code,item_cat: item_cat
+
+
     
-    IEx.pry
+    )
+
+  end
+    def combo_finish(conn, params) do
+ 
+      combos=params["com"]
+      all_item=params["all"]
+
+      
+
+      for combo <- combos do
+
+              item_category=elem(combo,1)["item_category"]
+              item_code=elem(combo,1)["item_code"]
+              
+              price_code=elem(combo,1)["product_code"]
+              
+
+              a=elem(combo,1)["item_code"]|>String.split_at(2)
+              front=elem(a,0)
+              back=elem(a,1)
+              part_code=front<>"0"<>back
+
+               prev_subcatid = Repo.all(from c in ItemSubcat, 
+                  select: %{subcatid: c.subcatid}) 
+                |> Enum.map(fn x -> Integer.to_string(x.subcatid) end) 
+                |> Enum.filter(fn x -> String.length(x) == 6 end) 
+                |> Enum.sort() 
+                |> List.last
+
+          
+              itemcat= Repo.get_by(ItemCat,itemcatcode: item_category)
+
+              subcatid = String.to_integer(prev_subcatid) + 1
+              itemcatid=itemcat.itemcatid|>Integer.to_string
+              itemname=elem(combo,1)["item_name"]
+              itemcode=item_code
+              product_code=item_category<>part_code<>price_code
+              item_desc=elem(combo,1)["item_desc"]
+              total_price=elem(combo,1)["total_price"]
+
+
+
+               stat=BoatNoodle.BN.create_item_subcat(%{subcatid: subcatid,itemcatid: itemcatid,itemname: itemname,
+                itemcode: itemcode,product_code: product_code,price_code: price_code,
+                part_code: part_code,itemdesc: item_desc,itemprice: total_price})
+               case stat do
+                  
+                  {:ok,itemsubcat} ->
+                    true
+                    {:error,changeset} ->
+                      IEx.pry
+                      true
+                end
+
+
+
+             all_combo= Enum.map(all_item,fn x -> x end)|>Enum.filter(fn x -> elem(x,1)["price_code"]==price_code end)
+            
+
+                for item <- all_combo do
+
+                  
+
+                    itemname=elem(item,1)["product_name"]
+                    item_coded=itemname|>String.split_at(3)|>elem(0)
+                    itemcat= Repo.get_by(ItemCat,itemcatcode: item_category)
+                    menu_cat_id=itemcat.itemcatid
+                    combo_id=subcatid
+                    combo_qty=elem(item,1)["cat_limit"]
+                    comboid2=combo_id|>Integer.to_string
+                    subcatid2=elem(item,1)["subcatid"]
+
+                    sub=subcatid2|>String.to_integer
+
+                    if sub < 100 do
+
+                      sub=1000+sub|>Integer.to_string|>String.split("")|>Enum.reject(fn x -> x=="" end)|>List.delete_at(0)|>Enum.join
+
+                    else
+                      sub=sub|>Integer.to_string
+
+
+                    end
+
+                   
+
+                    p=comboid2<>sub|>String.to_integer
+                   
+
+                    combo_item_id=p
+                 
+              
+                    combo_item_qty=elem(item,1)["cat_limit"]
+
+                    unit_price=elem(item,1)["cost_price"]
+
+                    top_up=elem(item,1)["top_up"]
+
+                   
+                    stat2=BoatNoodle.BN.create_combo_details(%{menu_cat_id: menu_cat_id,
+                    combo_id: combo_id,combo_qty: combo_qty,combo_item_id: combo_item_id,
+                    combo_item_name: itemname,combo_item_code: item_coded,
+                    combo_item_qty: combo_item_qty,unit_price: unit_price,top_up: top_up})
+
+                     case stat2 do
+                  
+                         {:ok,combo_details} ->
+                        true
+                        {:error,changeset} ->
+                        IEx.pry
+                        true
+                    end
+                end    
+      end
+
+conn
+      |> put_flash(:info, "Combo Created")
+      |> redirect(to: menu_item_path(conn, :index))
+
 
   end
 
   def combo_new(conn, _params) do
     menu_item = Repo.all(from i in MenuItem, where: i.category_type == ^"COMBO")
 
-    ala_carte = Repo.all(from s in ItemSubcat, left_join: i in MenuItem, on: i.itemcatid == s.itemcatid, where: i.category_type != ^"COMBO", group_by: [s.itemcode], select: %{
-      subcatid: s.subcatid,
-      itemname: s.itemname,
-      itemdesc: s.itemdesc,
-      itemcode: s.itemcode
-      }, order_by: [asc: s.itemcode])
+    ala_carte1 = Repo.all(from s in ItemSubcat, left_join: i in MenuItem, on: i.itemcatid == s.itemcatid, where: i.category_type == ^"COMBO",
+     group_by: [s.itemcode], 
+     select: %{
+    itemcatcode: i.itemcatcode,
+     itemcatid: i.itemcatid,
+      itemcatname: i.itemcatname},
+       order_by: [asc: i.itemcatcode])|>Enum.uniq
+
+    ala_carte = Repo.all(from c in ItemCat, select: %{itemcatcode: c.itemcatcode, itemcatid: c.itemcatid, itemcatname: c.itemcatname} )
 # IEx.pry
     render(
       conn,
       "combo_new.html",
-      menu_item: menu_item,ala_carte: ala_carte
+      menu_item: menu_item,ala_carte: ala_carte,ala_carte1: ala_carte1
     )
   end
 
@@ -133,6 +274,35 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       )
 
     render(conn, "show.html", item_subcat: item_subcat, same_items: same_items)
+  end
+
+   def edit_combo(conn, %{"subcatid" => id}) do
+    item_subcat = BN.get_item_subcat!(id)
+
+    categories=Repo.all(from c in ComboDetails,where: c.combo_id==^id,
+      left_join: b in ItemSubcat, where: c.combo_item_code==b.itemcode,
+      left_join: d in ItemCat, where: b.itemcatid==d.itemcatid,
+      group_by: d.itemcatid,select: %{itemcatname: d.itemcatname,itemcatid: d.itemcatid,itemcatcode: d.itemcatcode})
+
+
+
+    changeset = BN.change_item_subcat(item_subcat)
+
+     ala_carte1 = Repo.all(from s in ItemSubcat, left_join: i in MenuItem, on: i.itemcatid == s.itemcatid, where: i.category_type == ^"COMBO",
+     group_by: [s.itemcode], 
+     select: %{
+    itemcatcode: i.itemcatcode,
+     itemcatid: i.itemcatid,
+      itemcatname: i.itemcatname},
+       order_by: [asc: i.itemcatcode])|>Enum.uniq
+
+     ala_carte = Repo.all(from c in ComboDetails, where: c.combo_id !=^id,
+      left_join: g in ItemSubcat,where: c.combo_item_code != g.itemcode, 
+      left_join: d in ItemCat,where: d.itemcatid==g.itemcatid, select: %{itemcatcode: d.itemcatcode, itemcatid: d.itemcatid, itemcatname: d.itemcatname} )|>Enum.uniq
+IEx.pry
+
+
+    render(conn, "edit_combo_new.html",categories: categories,ala_carte: ala_carte,ala_carte1: ala_carte1, item_subcat: item_subcat, changeset: changeset)
   end
 
   def index(conn, _params) do

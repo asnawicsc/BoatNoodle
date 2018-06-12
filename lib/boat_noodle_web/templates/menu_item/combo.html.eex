@@ -48,6 +48,7 @@
                               <td>
                                 
 <a href="/combos/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+<a href="/edit_combo/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Edit2<div class="ripple-container"></div></a>
 
                               </td>
                             </tr>

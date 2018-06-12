@@ -96,8 +96,11 @@ defmodule BoatNoodleWeb.Router do
     get("/items/:subcatid", ItemSubcatController, :item_show)
     get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid", ItemSubcatController, :combo_show)
+    get("/edit_combo/:subcatid", ItemSubcatController, :edit_combo)
     post("/combos/new", ItemSubcatController, :combo_create)
     post("/combos/combo_create_price", ItemSubcatController, :combo_create_price)
+    post("/combos/combo_create_price_update", ItemSubcatController, :combo_create_price_update)
+    post("/combos/finish", ItemSubcatController, :combo_finish)
     resources("/itemcat", ItemCatController)
     resources("/organization", OrganizationController)
     resources("/branch", BranchController)
@@ -134,3 +137,5 @@ defmodule BoatNoodleWeb.Router do
   #   pipe_through :api
   # end
 end
+
+
