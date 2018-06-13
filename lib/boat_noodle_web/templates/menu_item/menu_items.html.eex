@@ -1,31 +1,24 @@
-<div class="tab-pane" id="menu_item" style="width: 100%; overflow-x: scroll; ">
+<div class="tab-pane" id="menu_item" >
   <div class="card">
-    <div class="card-header">
-      <h4 class="card-title">
-      	<div class="row">
-      		<div class="col-sm-4">
-      			
-      Menu Items
-      		</div>
-      		<div class="col-sm-4">
-      			
-      		</div>
-      		<div class="col-sm-4">
-      			<button class="btn btn-rose btn-round" aria-label="add_new_item">
-                <i class="material-icons">add_box</i> New Item
-              <div class="ripple-container"></div>
-            </button>
-      		</div>
-      	</div>
-    </h4>
-      <p class="card-category">
-        More information here
-      </p>
-      <div>
-      	
+      <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title">Menu Items</h4>
       </div>
+      <div class="dropdown pull-right" style="padding: 10px;">
+          <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <i class="material-icons">settings</i>
+            <span class="caret"></span>
+          <div class="ripple-container"></div></button>
+          <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
+            <li>
+              <a href="/menu_item/new">New Item</a>
+            </li>
+
+          </ul>
+        </div>
     </div>
-    <div class="card-body" style="width: 100%; overflow-x: scroll; ">
+ 
+    <div class="card-body" >
 	  	<table class="table data">
       <thead>
         <tr>

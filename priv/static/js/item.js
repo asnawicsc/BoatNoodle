@@ -1,15 +1,6 @@
 $(document).ready(function() {
 
-  $("input[name='item_create']").click(function(){
-    var fr = $("form[aria-label='item_form']").serializeArray();
-    channel3.push("submit_item_form", {map: fr})
-  })
-
-  channel3.on("inserted_item_subcat", payload => {
-    $("div[aria-label='add_new_item']").fadeOut()
-    $("a[href='#menu_item']").click()
-    $("div[aria-label='menu_item_content']").fadeIn()
-  })
+ 
 
     $("button.item_cat").click(function() {
 

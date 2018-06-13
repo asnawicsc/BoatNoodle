@@ -19,29 +19,15 @@
                       <i class="material-icons">style</i> Categories
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#item_remark" role="tablist">
-                      <i class="material-icons">create</i> Item Remark
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#combo" role="tablist">
-                      <i class="material-icons">view_compact</i> Combo
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#menu_catalogue" role="tablist">
-                      <i class="material-icons">import_contacts</i> Menu Catalogue
-                    </a>
-                  </li>
+          
+     
+             
            
                 </ul>
                 <div class="tab-content tab-space tab-subcategories" >
 									<%= render("menu_items.html", subcats: @subcats)%>
 									<%= render("categories.html")%>
-									<%= render("item_remark.html")%>
-									<%= render("combo.html", combo_menus: @combo_menus)%>
-									<%= render("menu_catalogue.html", menu_catalogs: @menu_catalog, itemcodes: @itemcodes, arranged_items: @arranged_items)%>
+					
 
                   
                  

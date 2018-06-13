@@ -200,7 +200,7 @@
   <% end %>
 $(document).ready(function(){
 
-  $("#backdrop").delay(500).fadeOut()
+  $("#backdrop").delay(200).fadeOut()
 })
 </script>
 <script src="/js/highcharts.src.js"></script>
