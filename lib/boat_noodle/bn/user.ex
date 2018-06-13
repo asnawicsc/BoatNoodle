@@ -15,7 +15,6 @@ defmodule BoatNoodle.BN.User do
     field(:created_at, :utc_datetime)
     field(:last_login, :utc_datetime)
     field(:last_logout, :utc_datetime)
-    field(:password_v2, :string)
     field(:gall_id, :integer)
   end
 
@@ -34,7 +33,6 @@ defmodule BoatNoodle.BN.User do
       :email,
       :roleid,
       :manager_access,
-      :password_v2,
       :gall_id
     ])
   end

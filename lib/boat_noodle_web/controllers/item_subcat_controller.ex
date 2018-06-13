@@ -276,33 +276,59 @@ conn
     render(conn, "show.html", item_subcat: item_subcat, same_items: same_items)
   end
 
-   def edit_combo(conn, %{"subcatid" => id}) do
-    item_subcat = BN.get_item_subcat!(id)
-
-    categories=Repo.all(from c in ComboDetails,where: c.combo_id==^id,
-      left_join: b in ItemSubcat, where: c.combo_item_code==b.itemcode,
-      left_join: d in ItemCat, where: b.itemcatid==d.itemcatid,
-      group_by: d.itemcatid,select: %{itemcatname: d.itemcatname,itemcatid: d.itemcatid,itemcatcode: d.itemcatcode})
+   def edit_combo(conn, %{"subcatid" => id,"price_code" => price_code}) do
+    combo = Repo.get_by(ItemSubcat,%{subcatid: id,price_code: price_code})
+   
 
 
-
-    changeset = BN.change_item_subcat(item_subcat)
-
-     ala_carte1 = Repo.all(from s in ItemSubcat, left_join: i in MenuItem, on: i.itemcatid == s.itemcatid, where: i.category_type == ^"COMBO",
-     group_by: [s.itemcode], 
-     select: %{
-    itemcatcode: i.itemcatcode,
-     itemcatid: i.itemcatid,
-      itemcatname: i.itemcatname},
-       order_by: [asc: i.itemcatcode])|>Enum.uniq
-
-     ala_carte = Repo.all(from c in ComboDetails, where: c.combo_id !=^id,
-      left_join: g in ItemSubcat,where: c.combo_item_code != g.itemcode, 
-      left_join: d in ItemCat,where: d.itemcatid==g.itemcatid, select: %{itemcatcode: d.itemcatcode, itemcatid: d.itemcatid, itemcatname: d.itemcatname} )|>Enum.uniq
-IEx.pry
+     com = Repo.all(from m in ComboDetails, where: m.combo_id==^id,
+      left_join: s in ItemSubcat, where: s.itemcode== m.combo_item_code,
+      left_join: b in ItemCat, where: b.itemcatid==s.itemcatid,group_by: b.itemcatid,
+       select: %{combo_id: m.combo_id,id: m.id,combo_item_id: m.combo_item_id,itemcatname: b.itemcatname,combo_qty: m.combo_qty,itemname: m.combo_item_name,unit_price: m.unit_price,top_up: m.top_up})|>Enum.uniq
 
 
-    render(conn, "edit_combo_new.html",categories: categories,ala_carte: ala_carte,ala_carte1: ala_carte1, item_subcat: item_subcat, changeset: changeset)
+
+
+    render(conn, "edit_combo_new.html",com: com,combo: combo)
+  end
+
+   def edit_combo_detail(conn, params) do
+
+   
+      subcatid=params["subcatid"]
+      item_subcat = BN.get_item_subcat!(subcatid)
+      item_price=params["itemprice"]
+
+      price_code=params["price_code"]
+
+     
+
+      BN.update_item_subcat(item_subcat, %{itemprice: item_price})
+
+      all=params["Item"]
+
+
+      for item <- all do
+
+      
+        combo = Repo.get_by!(ComboDetails, %{id: elem(item,1)["id"], combo_item_name: elem(item,0),combo_item_id: elem(item,1)["combo_item_id"]})
+      
+
+        
+
+       unit_price= elem(item,1)["unit_price"]
+       top_up= elem(item,1)["top_up"]
+
+
+         BN.update_combo_details(combo, %{unit_price: unit_price,top_up: top_up})
+        
+      end
+    conn
+      |> put_flash(:info, "Combo Updated")
+      |> redirect(to: item_subcat_path(conn, :combo_show, subcatid))
+
+    
+
   end
 
   def index(conn, _params) do
