@@ -5,17 +5,13 @@
                 <h4 class="card-title">Users</h4>
               </div>
               <div class="dropdown pull-right" style="padding: 10px;">
-                  <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <i class="material-icons">settings</i>
-                    <span class="caret"></span>
-                  <div class="ripple-container"></div></button>
-                  <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
-                    <li>
-                      <a href="/user/new">New user</a>
-                    </li>
+            <a  href="/user/new" class="btn btn-info btn-round" >
+                <i class="material-icons">add_box</i> New User
+              <div class="ripple-container"></div>
+            </a>
+          </div>
 
-                  </ul>
-                </div>
+   
             </div>
             <div class="card-body table-responsive">
               <% group_user = @user |> Enum.group_by(fn x -> x.roleid end) %>

@@ -1,6 +1,8 @@
 defmodule BoatNoodleWeb.UserChannel do
   use BoatNoodleWeb, :channel
   require IEx
+  alias BoatNoodle.Images
+  alias BoatNoodle.Images.{Gallery, Picture}
 
   def join("user:" <> user_id, payload, socket) do
     if authorized?(payload) do
@@ -8,6 +10,22 @@ defmodule BoatNoodleWeb.UserChannel do
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+
+  def handle_in("load_user_sidebar", %{"userid" => userid}, socket) do
+    user = Repo.get(User, userid)
+
+    map =
+      if user.gall_id != nil do
+        gallery = Repo.get(Gallery, user.gall_id)
+        picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
+        %{name: user.username, bin: picture.bin}
+      else
+        %{name: user.username, bin: ""}
+      end
+
+    broadcast(socket, "save_user_local_storage", %{map: Poison.encode!(map)})
+    {:noreply, socket}
   end
 
   def handle_in("generate_all_branch_sales_data", payload, socket) do
@@ -24,7 +42,6 @@ defmodule BoatNoodleWeb.UserChannel do
 
     broadcast(socket, "save_local_storage", %{map: Poison.encode!(map)})
     {:noreply, socket}
-    
   end
 
   defp sales_data(branch_name, branch_id) do

@@ -13,15 +13,15 @@
       </div>
       <div class="sidebar-wrapper">
         <div class="user">
-          <div class="photo" style="border-radius: 50% ; vertical-align: middle; width: 34px; height: 34px; " >
-       
-              <img src="/assets/img/faces/avatar.jpg" />
-   
+          <div class="photo" aria-lable="photo" style="border-radius: 50% ; vertical-align: middle; width: 34px; height: 34px; " >
+         
+         
+            
           </div>
           <div class="user-info">
             <a data-toggle="collapse" href="#collapseExample" class="username">
-              <span>
-              User
+              <span aria-label="username">
+                
                 <b class="caret"></b>
               </span>
             </a>

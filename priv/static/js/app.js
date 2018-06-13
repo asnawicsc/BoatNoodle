@@ -1,4 +1,22 @@
+    if (localStorage.getItem("bn_user") != null) {
+
+      var map = JSON.parse(localStorage.getItem("bn_user"))
+      var html = "<img style='border-radius: 50%;  width: 34px; height: 34px;' src='data:image/jpg;base64, "+map.bin +"'>" 
+      $("div[aria-lable='photo']").html(html)
+      $("span[aria-label='username']").append(map.name)
+    } else {
+
+      channel.push("load_user_sidebar", {userid: window.currentUser})
+    }
 $(document).ready(function(){
+
+
+
+    channel.on("save_user_local_storage", payload => {
+
+      localStorage.setItem("bn_user", payload.map)
+    })
+
     $("button[aria-label='go_back']").click(function(){
        window.history.back();
     })
