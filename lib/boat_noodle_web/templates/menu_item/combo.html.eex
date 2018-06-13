@@ -1,4 +1,4 @@
-                  <div class="tab-pane" id="combo">
+                  <div class="col-lg-12">
                     <div class="card">
                       <div class="card-header">
                         <h4 class="card-title">
@@ -47,8 +47,8 @@
 
                               <td>
                                 
-<a href="/combos/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
-<a href="/edit_combo/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Edit2<div class="ripple-container"></div></a>
+<a href="/combos/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
+
 
                               </td>
                             </tr>

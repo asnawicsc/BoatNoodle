@@ -11,41 +11,6 @@ defmodule BoatNoodleWeb.ItemHelper do
   end
 
   def handle_in("submit_item_form", %{"map" => map}, socket) do
-    item_subcat_params =
-      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
-      |> Enum.into(%{})
-
-    cat_id = item_subcat_params["itemcatid"]
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
-    itemcode = item_subcat_params["itemcode"]
-    first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
-
-    if Float.parse(first_letter) == :error do
-      running_no = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> tl()
-
-      if Enum.count(running_no) == 2 do
-        part_code =
-          List.insert_at(running_no, 0, "0") |> List.insert_at(0, first_letter) |> Enum.join()
-
-        itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
-        extension_params = %{"itemname" => itemname, "part_code" => part_code}
-        item_param = Map.merge(item_subcat_params, extension_params)
-        cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param)
-
-        case Repo.insert(cg) do
-          {:ok, item_cat} ->
-            broadcast(socket, "inserted_item_subcat", %{})
-
-          true ->
-            IO.puts("error in inserting item subcat")
-        end
-      else
-        IO.puts("code behind are not numbers")
-      end
-    else
-      IO.puts("code first letter is not alphabet")
-    end
-
     {:noreply, socket}
   end
 

@@ -33,7 +33,6 @@ defmodule BoatNoodle.BN.User do
       :email,
       :roleid,
       :manager_access,
-
       :gall_id
     ])
   end

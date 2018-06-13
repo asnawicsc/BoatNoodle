@@ -1,15 +1,12 @@
 <div class="tab-pane" id="menu_categories">
   <div class="card">
-    <div class="card-header">
-      <h4 class="card-title">
-      	<div class="row">
-      		<div class="col-sm-6">
-      			
-      Categories
-      		</div>
-   
-      		<div class="col-sm-6">
-      			<button class="btn btn-rose btn-round" aria-label="add_new_category">
+
+    <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title">    Categories</h4>
+      </div>
+      <div class="dropdown pull-right" style="padding: 10px;">
+            <button class="btn btn-rose btn-round" aria-label="add_new_category">
                 <i class="material-icons">add_box</i> New Categories
               <div class="ripple-container"></div>
             </button>
@@ -21,17 +18,10 @@
                 <i class="material-icons">create</i> Edit Selected
               <div class="ripple-container"></div>
             </button>
-      		</div>
-      	</div>
-    </h4>
-      <p class="card-category">
-        More information here
-      </p>
-      <div>
-      	
-      </div>
+        </div>
     </div>
-    <div class="card-body" style="width: 100%; overflow-x: scroll; ">
+
+    <div class="card-body">
 	  	<div class="row">
         <div class="col-lg-12">
           <style type="text/css">
