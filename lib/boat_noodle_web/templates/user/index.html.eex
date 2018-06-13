@@ -55,12 +55,12 @@
                            <%= for user <- @user do %>
                                 <tr>
                                   <td><%= user.username %></td>
-                     
+
                                   <td><%= user.email %></td>
                                   <td><%= user.roleid %></td>
                                   <td><%= user.manager_access %></td>
 
-                               
+
                                 </tr>
                             <% end %>
                           </tbody>
@@ -82,12 +82,12 @@
                              <%= for user <- group_user[group] do %>
                                   <tr>
                                     <td><%= user.username %></td>
-                       
+
                                     <td><%= user.email %></td>
                                     <td><%= user.roleid %></td>
                                     <td><%= user.manager_access %></td>
 
-                                 
+
                                   </tr>
                               <% end %>
                             </tbody>
@@ -103,6 +103,3 @@
             </div>
           </div>
 </div>
-
-
-

@@ -3,6 +3,7 @@ defmodule BoatNoodleWeb.UserController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.User
+  alias BoatNoodle.BN.UserRole
   alias BoatNoodle.Images
   alias BoatNoodle.Images.{Gallery, Picture}
   require(IEx)
@@ -66,15 +67,21 @@ defmodule BoatNoodleWeb.UserController do
 
   def new(conn, _params) do
     changeset = BN.change_user(%User{})
-    render(conn, "new.html", changeset: changeset)
+    roles = BN.list_user_role() |> Enum.map(fn x -> {x.role_name, x.roleid} end)
+    render(conn, "new.html", changeset: changeset,roles: roles)
   end
 
   def create(conn, %{"user" => user_params}) do
+
+    crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["password"])
+    user_params = Map.put(user_params,"password", crypted_password)
+
+
     case BN.create_user(user_params) do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: user_path(conn, :show, user))
+        |> redirect(to: user_path(conn, :index))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
@@ -129,10 +136,9 @@ defmodule BoatNoodleWeb.UserController do
           email: params["email"]
         }
 
-        IEx.pry()
-        bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
-        crypted_password = Plug.Crypto.MessageEncryptor.encrypt(params["new_pass"], bin, bin)
-        user_params = Map.put(user_params, :password_v2, crypted_password)
+
+        crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["new_pass"])
+        user_params = Map.put(user_params, :password, crypted_password)
 
         case BN.update_user(user, user_params) do
           {:ok, user} ->
@@ -245,17 +251,13 @@ defmodule BoatNoodleWeb.UserController do
     render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "full_bg.html"})
   end
 
-  def authenticate_login(conn, %{"username" => username, "password_v2" => password_v2}) do
+  def authenticate_login(conn, %{"username" => username, "password" => password}) do
     user = Repo.get_by(User, username: username)
 
     if user != nil do
-      # bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
 
-      # {:ok, saved_password} = Plug.Crypto.MessageEncryptor.decrypt(user.password_v2, bin, bin)
 
-      p2 = String.replace(user.password, "$2y", "$2b")
-
-      if Comeonin.Bcrypt.checkpw(password_v2, p2) do
+      if Comeonin.Bcrypt.checkpw(password, user.password) do
         # IEx.pry()
 
         conn
