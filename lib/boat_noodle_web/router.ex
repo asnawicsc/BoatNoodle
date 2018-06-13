@@ -23,6 +23,7 @@ defmodule BoatNoodleWeb.Router do
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
 
     resources("/menu_item", MenuItemController)
+    get("/combos", MenuItemController, :combos)
     resources("/category", CategoryController)
     resources("/remark", RemarkController)
     resources("/menu_catalog", MenuCatalogController)
@@ -50,6 +51,7 @@ defmodule BoatNoodleWeb.Router do
 
     resources("/organization", OrganizationController)
     resources("/branch", BranchController)
+    get("/branch/:id/printers", BranchController, :printers)
     resources("/payment_type", PaymentTypeController)
     resources("/sales_master", SalesMasterController)
     resources("/sales", SalesController)
@@ -58,9 +60,9 @@ defmodule BoatNoodleWeb.Router do
     get("/item_sales", SalesController, :item_sales)
     get("/discounts", SalesController, :discounts)
     get("/voided", SalesController, :voided)
+    get("/sales_chart", SalesController, :sales_chart)
 
     get("/detail_invoice/:branchid/:invoiceno", SalesController, :detail_invoice)
-
 
     get("/csv_compare_category_qty", SalesController, :csv_compare_category_qty)
     post("/create_cv", SalesController, :create_cv)
@@ -68,7 +70,6 @@ defmodule BoatNoodleWeb.Router do
     resources("/gallery", GalleryController)
     resources("/picture", PictureController)
     post("/update_profile_picture/:id", UserController, :update_profile_picture)
-
 
     resources("/tax", TaxController)
     resources("/cash_in_out", CashInOutController)
@@ -94,6 +95,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/salespayment", SalesPaymentController)
     resources("/item_subcat", ItemSubcatController)
     get("/items/:subcatid", ItemSubcatController, :item_show)
+    get("/items/:subcatid/edit", ItemSubcatController, :item_edit)
     get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid", ItemSubcatController, :combo_show)
     get("/edit_combo/:subcatid/:price_code", ItemSubcatController, :edit_combo)
@@ -138,5 +140,3 @@ defmodule BoatNoodleWeb.Router do
   #   pipe_through :api
   # end
 end
-
-

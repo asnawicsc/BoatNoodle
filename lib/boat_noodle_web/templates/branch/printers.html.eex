@@ -1,0 +1,274 @@
+<% require IEx %>
+<h3>Printers at <%= @branch.branchname%></h3>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12" style="width: 100%;">
+            <table style="float: left;">
+
+              <tr>
+                <th>Ala Carte Printer</th>
+         
+              </tr>
+
+              <%= for printer <- @printers do %>
+
+                <tr>
+                  <td>
+                    <div style="margin-top: 3px; margin-bottom: 3px;">
+                  
+                      <a href="/tag/<%= printer.tagid %>/edit">  <%= printer.tagname %><i style="font-size: 20px;margin-left: 10px;" class="material-icons">edit</i></a>
+                      </div>
+                    </td>
+                </tr>
+
+                <% end %>
+
+            </table>
+
+            <div style="overflow-x: scroll;overflow-y: hidden;">
+
+              <table style="margin-left: 20px; width: 100%;">
+
+                <tr>
+              
+                  <%= for subcat <- @subcats do %>
+                    <th style="width: 200px; text-align: center;">
+                      <%= subcat.code %>
+                    </th>
+                    <% end %>
+                </tr>
+
+                <%= for printer <- @printers do %>
+                  <% gp = printer.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )%>
+                  <tr>
+
+                    <%= for subcat <- @subcats do %>
+                      <td style="width: 200px; padding-right: 5px;">
+
+
+                       <%= if Enum.any?(gp, fn x -> x == Integer.to_string(subcat.id) end) do %>
+                 
+
+                   
+                     
+                          <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
+                            <label class="form-check-label" style="display: inline;">
+                                <input class="form-check-input printer_subcat" name= "subcat_ids[<%= printer.tagid %>][<%= subcat.id %>]" type="checkbox" value="" checked="">
+              
+                                <span class="form-check-sign" style="padding-right: 0px;">
+                                    <span class="check"></span>
+                                </span>
+                              
+                            </label>
+                          </div>
+                
+                
+
+
+                       <% else %>
+
+                     
+                     
+                          <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
+                            <label class="form-check-label" style="display: inline;">
+                                <input class="form-check-input printer_subcat" name= "subcat_ids[<%= printer.tagid %>][<%= subcat.id %>]" type="checkbox" value="" >
+                           
+                                <span class="form-check-sign" style="padding-right: 0px;">
+                                    <span class="check"></span>
+                                </span>
+                              
+                            </label>
+                          </div>
+                
+                       
+                       <% end %>
+                      </td>
+                      <% end %>
+                  </tr>
+
+                  <% end %>
+
+              </table>
+            </div>
+		      </div>
+		    </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+       <div class="card-header"><h5>Combos</h5></div>
+      <div class="card-body ">
+        <div class="row">
+          <div class="col-md-2">
+            <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+              <%= for combo <- @combos do %>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#<%= combo.id %>" role="tablist">
+                  <%= combo.name %>
+                </a>
+              </li>
+              <% end %>
+
+            </ul>
+          </div>
+          <div class="col-md-10">
+            <div class="tab-content">
+              <%= for combo <- @combos do %>
+              <div class="tab-pane" id="<%= combo.id %>">
+
+                <div class="row">
+                  <div class="col-md-12" style="width: 100%;">
+                    <table style="float: left;">
+
+                      <tr>
+                        <th>Ala Carte Printer</th>
+                 
+                      </tr>
+
+            
+                      <%= for combo_item <- @combo_items[combo.id] do %>
+                      
+                              <tr>
+                                <td>
+                                  <div style="margin-top: 3px; margin-bottom: 3px;">
+                                
+                                    <%= combo_item.combo_item_name %>
+                                    </div>
+                                  </td>
+                              </tr>
+                      <% end %>
+
+
+                       
+
+                    </table>
+                    <div style="overflow-x: scroll;overflow-y: hidden;">
+
+                      <table style="margin-left: 20px; width: 100%;">
+
+                        <tr>
+                      
+                          <%= for printer <- @printers do %>
+                            <th style="width: 200px; text-align: left;">
+                              <%= printer.tagname %>
+                            </th>
+                            <% end %>
+                        </tr>
+
+                        <%= for combo_item <- @combo_items[combo.id] do %>
+                          <tr>
+
+                            <%= for printer <- @printers do %>
+                          <% printer_combo_items = printer.combo_item_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )%>
+                              <td style="width: 200px; padding-right: 5px;">
+
+                                <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
+                                  <label class="form-check-label" style="display: inline;">
+                                    <% item = combo_item.combo_item_id |> Integer.to_string %>
+
+                                    <%= if Enum.any?(printer_combo_items, fn x -> x == item end) do %>
+                                      <input class="form-check-input printer_combo_item" name= "subcat_ids[<%= printer.tagid %>][<%= combo_item.combo_item_id %>]" type="checkbox" checked="" value="" >
+                                      <% else %>
+                                      <input class="form-check-input printer_combo_item" name= "subcat_ids[<%= printer.tagid %>][<%= combo_item.combo_item_id %>]" type="checkbox" value="" >
+                                      <% end %>
+                                 
+                                      <span class="form-check-sign" style="padding-right: 0px;">
+                                          <span class="check"></span>
+                                      </span>
+                                    
+                                  </label>
+                                </div>
+
+            
+                              </td>
+                              <% end %>
+                          </tr>
+
+                          <% end %>
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+
+
+              </div>
+              <% end %>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header"><h5>New Printer</h5></div>
+      <div class="card-body">
+
+        <%= form_for @changeset, tag_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
+        <%= hidden_input f, :branch_id, value: @branch.branchid %>
+        <div class="row">
+          <div class="col-sm-2">
+            <div class="form-group bmd-form-group">
+              <%= label f, :tagname, class: "bmd-label-floating" %>
+              <%= text_input f, :tagname, class: "form-control", required: true %>
+              <%= error_tag f, :tagname %>
+            </div>
+          </div>
+          <div class="col-sm-2">
+
+            <div class="form-group bmd-form-group">
+              <%= label f, :tagdesc, class: "bmd-label-floating" %>
+              <%= text_input f, :tagdesc, class: "form-control", required: true %>
+              <%= error_tag f, :tagdesc %>
+            </div>
+          </div>
+          <div class="col-sm-2">
+
+           <div class="form-group bmd-form-group">
+              <%= label f, :printer, class: "bmd-label-floating" %>
+              <%= text_input f, :printer, class: "form-control", required: true %>
+              <%= error_tag f, :printer %>
+            </div>
+          </div>
+          <div class="col-sm-2">
+
+           <div class="form-group bmd-form-group">
+              <%= label f, :printer_ip, class: "bmd-label-floating" %>
+              <%= text_input f, :printer_ip, class: "form-control"%>
+              <%= error_tag f, :printer_ip %>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="row" >
+          <div class="col-sm-4"  id="subcat_checkbox" style="height: 500px; overflow-y: scroll;">
+            <%= raw(@html)%>
+          </div>
+
+        </div>
+        <div class="row" >
+          <div class="col-sm-2">
+            <div class="form-group">
+              <%= submit "Create New Printer", class: "btn btn-primary" %>
+            </div>
+          </div>
+        </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

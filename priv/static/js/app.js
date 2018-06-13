@@ -1,4 +1,28 @@
+    if (localStorage.getItem("bn_user") != null) {
+
+      var map = JSON.parse(localStorage.getItem("bn_user"))
+      var html = "<img style='border-radius: 50%;  width: 34px; height: 34px;' src='data:image/jpg;base64, "+map.bin +"'>" 
+      $("div[aria-lable='photo']").html(html)
+      $("span[aria-label='username']").append(map.name)
+    } else {
+
+      channel.push("load_user_sidebar", {userid: window.currentUser})
+    }
 $(document).ready(function(){
+
+
+
+    channel.on("save_user_local_storage", payload => {
+
+      localStorage.setItem("bn_user", payload.map)
+    })
+
+    $("button[aria-label='go_back']").click(function(){
+       window.history.back();
+    })
+    $("div[aria-label='go_back']").click(function(){
+       window.history.back();
+    })
 
     var start = moment().subtract(29, 'days');
     var end = moment();
@@ -36,15 +60,7 @@ $(document).ready(function(){
         dv.remove()
 
 
-        $("button[aria-label='add_new_item']").click(function(){
-          $("div[aria-label='menu_item_content']").fadeOut()
-          $("div[aria-label='add_new_item']").fadeIn()
-        })
 
-        $("input[name='previous_item']").click(function(){
-          $("div[aria-label='menu_item_content']").fadeIn()
-          $("div[aria-label='add_new_item']").fadeOut()
-        })
 
         $("button[aria-label='add_new_category']").click(function(){
           $("div[aria-label='menu_item_content']").fadeOut()
@@ -124,9 +140,7 @@ $(document).ready(function(){
    // use querySelector to find all second table cells
    var cells = document.querySelectorAll("#f_addon_ind");
 
- 
-
-      for (var i = 1; i < cells.length; i++){
+       for (var i = 1; i < cells.length; i++){
   
          initial =parseFloat(cells[i-1].firstChild.data)
          sum= parseFloat(cells[i].firstChild.data)- initial
@@ -143,19 +157,6 @@ $(document).ready(function(){
 
     
     
-
-
-  // $( "ol.item" ).sortable({
-  //     connectWith: "ol.item",
-  //     dropOnEmpty: true,
-  //     scroll: true,
-  //     stop: function( event, ui ) {
-  //       var child_id = $(ui.item)[0].id
-  //       var parent_id = $(ui.item)[0].parentElement.id
-
-  //     }
-  //   }).disableSelection();
-
   $("ol#list1").on("click", "li", function(){
 
     $("ol#list2").append(this)

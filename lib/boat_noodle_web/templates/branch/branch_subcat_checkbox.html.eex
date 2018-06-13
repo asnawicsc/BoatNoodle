@@ -1,0 +1,15 @@
+
+<div class="form-group bmd-form-group">
+<%= for subcat <- @subcats do %>
+	<div class="form-check">
+	  <label class="form-check-label">
+	      <input class="form-check-input" name= "subcat_ids[<%= @tag.id %>][<%= subcat.id %>]" type="checkbox" value="" >
+	      <%= subcat.name %>
+	      <span class="form-check-sign">
+	          <span class="check"></span>
+	      </span>
+	    
+	  </label>
+	</div>
+<% end %>
+</div>

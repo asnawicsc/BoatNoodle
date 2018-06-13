@@ -52,28 +52,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       branches: branches,
       itemcat: itemcat
     )
-
-    # case Repo.insert(cg) do
-    #   {:ok, cg} ->
-    #   comboitems = Repo.all(from s in ItemSubcat, where: s.itemcode in ^ala_cart_ids, group_by: [s.itemcode],select: %{itemcode: s.itemcode, itemname: s.itemname, itemprice: s.itemprice, subcatid: s.subcatid, pricecode: s.price_code, itemdesc: s.itemdesc})
-    #   for comboitem <- comboitems do
-    #     sci = Integer.to_string(subcatid)<>Integer.to_string(comboitem.subcatid)
-    #     comboitem = Map.put(comboitem, :subcatid, String.to_integer(sci))
-    #     comboitem = Map.put(comboitem, :is_comboitem, 1)
-    #     comboitem = Map.put(comboitem, :itemcatid, Integer.to_string(subcatid))
-    #     comboitem = Map.delete(comboitem, :itemprice)
-    #     cg2 = ItemSubcat.changeset(%ItemSubcat{}, comboitem)
-
-    #     Repo.insert(cg2)
-    #   end
-    #   
-
-    #   _ ->
-    #   conn
-    #   |> put_flash(:error, "combo not created")
-    #   |> redirect(to: menu_item_path(conn, :index))
-
-    # end
   end
 
   def combo_create_price(conn, params) do
@@ -309,6 +287,63 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       )
 
     render(conn, "show.html", item_subcat: item_subcat, same_items: same_items)
+  end
+
+  def item_edit(conn, %{"subcatid" => id}) do
+    item_subcat = BN.get_item_subcat!(id)
+
+    same_items =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where:
+            s.itemcode == ^item_subcat.itemcode and s.is_combo == ^0 and s.is_comboitem == ^0 and
+              s.is_delete == ^0,
+          order_by: [asc: s.price_code]
+        )
+      )
+
+    price_codes = same_items |> Enum.map(fn x -> %{code: x.price_code, price: x.itemprice} end)
+
+    itemcodes =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          left_join: c in ItemCat,
+          on: c.itemcatid == s.itemcatid,
+          where:
+            s.is_combo == ^0 and s.is_comboitem == ^0 and s.is_delete == ^0 and
+              c.category_type != "COMBO",
+          group_by: [s.itemcode],
+          select: %{code: s.itemcode, name: s.itemname}
+        )
+      )
+      |> Enum.map(fn x ->
+        %{name: x.name, code: x.code, group: hd(String.split(x.code, ""))}
+      end)
+      |> Enum.group_by(fn x -> x.group end)
+
+    item_cat =
+      Repo.all(
+        from(
+          c in ItemCat,
+          where: c.category_type != "COMBO",
+          select: %{
+            itemcatid: c.itemcatid,
+            itemcatname: c.itemcatname,
+            itemcatcode: c.itemcatcode
+          }
+        )
+      )
+
+    render(
+      conn,
+      "edit_item.html",
+      item_subcat: item_subcat,
+      itemcodes: itemcodes,
+      item_cat: item_cat,
+      price_codes: price_codes
+    )
   end
 
   def edit_combo(conn, %{"subcatid" => id, "price_code" => price_code}) do

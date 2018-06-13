@@ -18,7 +18,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:itemcatid, :string)
     field(:itemcode, :string)
     field(:itemdesc, :string)
-    field(:itemimage, :string )
+    field(:itemimage, :string)
     field(:itemname, :string)
     field(:itemprice, :decimal, default: 0)
     field(:part_code, :string)
@@ -53,5 +53,6 @@ defmodule BoatNoodle.BN.ItemSubcat do
       :updated_at,
       :created_at
     ])
+    |> unique_constraint(:subcatid, name: "PRIMARY")
   end
 end

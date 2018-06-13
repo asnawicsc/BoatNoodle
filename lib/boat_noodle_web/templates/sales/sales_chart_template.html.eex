@@ -1,0 +1,21 @@
+<div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-icon card-header-rose">
+                  <div class="card-icon">
+                    <i class="material-icons">insert_chart</i>
+                  </div>
+                  <h4 class="card-title">Bar Chart
+                      
+                  </h4>
+                </div>
+                <div class="card-body">
+                  <div id="monthly_chart" class="ct-chart">
+                  
+                  </div>
+                </div>
+            </div>
+        </div>
+
+<script type="text/javascript">
+  
+</script>

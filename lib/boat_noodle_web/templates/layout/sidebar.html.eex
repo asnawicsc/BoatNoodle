@@ -1,15 +1,8 @@
-<% require IEx %> 
 <% current_user = @conn.private.plug_session["user_id"] %>
-
- 
 
 
     <div class="sidebar" data-color="rose" data-background-color="black" data-image="/assets/img/sidebar-1.jpg">
-              <!--
-                Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
-                Tip 2: you can also add an image using data-image tag
-              -->
       <div class="logo">
         <a href="/" class="simple-text logo-mini">
           V2
@@ -20,28 +13,21 @@
       </div>
       <div class="sidebar-wrapper">
         <div class="user">
-          <div class="photo" style="border-radius: 50% ; vertical-align: middle; width: 34px; height: 34px; " >
-            <%= if user(@conn).bin == "" do %>
-              <img src="/assets/img/faces/avatar.jpg" />
-            <% else %>
-              <img style="border-radius: 50%;  width: 34px; height: 34px;"  src="data:image/jpg;base64, <%= user(@conn).bin %>" alt="...">
-            <% end %>
+          <div class="photo" aria-lable="photo" style="border-radius: 50% ; vertical-align: middle; width: 34px; height: 34px; " >
+         
+         
+            
           </div>
           <div class="user-info">
             <a data-toggle="collapse" href="#collapseExample" class="username">
-              <span>
-                <%= user(@conn).name %>
+              <span aria-label="username">
+                
                 <b class="caret"></b>
               </span>
             </a>
             <div class="collapse" id="collapseExample">
               <ul class="nav">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">
-                    <span class="sidebar-mini"> MP </span>
-                    <span class="sidebar-normal"> My Profile </span>
-                  </a>
-                </li>
+           
                 <li class="nav-item">
                   <a class="nav-link" href="/edit_profile/<%= current_user %>">
                     <span class="sidebar-mini"> EP </span>
@@ -49,12 +35,7 @@
                   </a>
 
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">
-                    <span class="sidebar-mini"> S </span>
-                    <span class="sidebar-normal"> Settings </span>
-                  </a>
-                </li>
+           
               </ul>
             </div>
           </div>
@@ -156,6 +137,18 @@
                   </a>
                 </li>
                 <li class="nav-item ">
+                  <a class="nav-link" href="/combos">
+                    <span class="sidebar-mini"> C </span>
+                    <span class="sidebar-normal"> Combo </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/menu_catalog">
+                    <span class="sidebar-mini"> C </span>
+                    <span class="sidebar-normal"> Catalogue </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
                   <a class="nav-link" href="/discount">
                     <span class="sidebar-mini"> D </span>
                     <span class="sidebar-normal"> Discount </span>
@@ -165,25 +158,6 @@
                   <a class="nav-link" href="/tag">
                     <span class="sidebar-mini"> T </span>
                     <span class="sidebar-normal"> Tags </span>
-                  </a>
-                </li>
-
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item ">
-            <a class="nav-link" data-toggle="collapse" href="#staff">
-              <i class="material-icons">group</i>
-              <p> Staff
-                <b class="caret"></b>
-              </p>
-            </a>
-            <div class="collapse" id="staff">
-              <ul class="nav">
-                <li class="nav-item ">
-                  <a class="nav-link" href="/staff">
-                    <span class="sidebar-mini"> MS </span>
-                    <span class="sidebar-normal"> Manage Staff </span>
                   </a>
                 </li>
 
@@ -206,12 +180,23 @@
                   </a>
                 </li>
                 <li class="nav-item ">
+                  <a class="nav-link" href="/staff">
+                    <span class="sidebar-mini"> MS </span>
+                    <span class="sidebar-normal"> Manage Staff </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
                   <a class="nav-link" href="/user">
                     <span class="sidebar-mini"> MU </span>
                     <span class="sidebar-normal"> Manage User </span>
                   </a>
                 </li>
-
+                <li class="nav-item ">
+                  <a class="nav-link" href="/user_branch_access">
+                    <span class="sidebar-mini"> UBA </span>
+                    <span class="sidebar-normal"> User Branch Access </span>
+                  </a>
+                </li>
               </ul>
             </div>
           </li>

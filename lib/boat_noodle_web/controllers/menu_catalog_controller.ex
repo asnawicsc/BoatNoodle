@@ -5,8 +5,33 @@ defmodule BoatNoodleWeb.MenuCatalogController do
   alias BoatNoodle.BN.MenuCatalog
 
   def index(conn, _params) do
-    menu_catalog = Repo.all(MenuCatalog)
-    render(conn, "index.html", menu_catalog: menu_catalog)
+    menu_catalog = Repo.all(from(m in MenuCatalog))
+
+    arranged_items =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where: s.is_delete == ^0 and s.is_combo == ^0 and s.is_comboitem == ^0,
+          select: %{
+            subcatid: s.subcatid,
+            item_code: s.itemcode,
+            price_code: s.price_code,
+            itemprice: s.itemprice
+          },
+          order_by: [asc: s.itemcode]
+        )
+      )
+      |> Enum.group_by(fn x -> x.item_code end)
+
+    itemcodes = arranged_items |> Map.keys() |> Enum.sort()
+
+    render(
+      conn,
+      "index.html",
+      menu_catalogs: menu_catalog,
+      itemcodes: itemcodes,
+      arranged_items: arranged_items
+    )
   end
 
   def new(conn, _params) do
@@ -20,6 +45,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         conn
         |> put_flash(:info, "Menu catalog created successfully.")
         |> redirect(to: menu_catalog_path(conn, :show, menu_catalog))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +70,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         conn
         |> put_flash(:info, "Menu catalog updated successfully.")
         |> redirect(to: menu_catalog_path(conn, :show, menu_catalog))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", menu_catalog: menu_catalog, changeset: changeset)
     end

@@ -27,6 +27,42 @@ defmodule BoatNoodleWeb do
       alias BoatNoodle.Repo
       alias BoatNoodle.View
       import Ecto.Query
+      alias BoatNoodle.BN
+
+      alias BoatNoodle.BN.{
+        Discount,
+        DiscountCatalog,
+        DiscountCatalogMaster,
+        DiscountCategory,
+        DiscountItem,
+        DiscountType,
+        ItemCat,
+        MenuCatalogMaster,
+        Organization,
+        PaymentType,
+        Remark,
+        Sales,
+        SalesDetailCust,
+        SalesMaster,
+        SalesPayment,
+        Staff,
+        StaffType,
+        Tag,
+        TagCatalog,
+        TagItem,
+        Tax,
+        User,
+        UserBranchAccess,
+        UserRole,
+        VoidItems,
+        ComboMap,
+        ComboDetails,
+        Category,
+        MenuCatalog,
+        ItemSubcat,
+        Branch,
+        Tag
+      }
     end
   end
 
@@ -47,6 +83,42 @@ defmodule BoatNoodleWeb do
       import BoatNoodleWeb.Gettext
       import Ecto.Query
       alias BoatNoodle.Repo
+      alias BoatNoodle.BN
+
+      alias BoatNoodle.BN.{
+        Discount,
+        DiscountCatalog,
+        DiscountCatalogMaster,
+        DiscountCategory,
+        DiscountItem,
+        DiscountType,
+        ItemCat,
+        MenuCatalogMaster,
+        Organization,
+        PaymentType,
+        Remark,
+        Sales,
+        SalesDetailCust,
+        SalesMaster,
+        SalesPayment,
+        Staff,
+        StaffType,
+        Tag,
+        TagCatalog,
+        TagItem,
+        Tax,
+        User,
+        UserBranchAccess,
+        UserRole,
+        VoidItems,
+        ComboMap,
+        ComboDetails,
+        Category,
+        MenuCatalog,
+        ItemSubcat,
+        Branch,
+        Tag
+      }
     end
   end
 
@@ -63,6 +135,43 @@ defmodule BoatNoodleWeb do
       use Phoenix.Channel
       import BoatNoodleWeb.Gettext
       alias BoatNoodle.Repo
+      alias BoatNoodle.BN
+
+      alias BoatNoodle.BN.{
+        Discount,
+        DiscountCatalog,
+        DiscountCatalogMaster,
+        DiscountCategory,
+        DiscountItem,
+        DiscountType,
+        ItemCat,
+        MenuCatalogMaster,
+        Organization,
+        PaymentType,
+        Remark,
+        Sales,
+        SalesDetailCust,
+        SalesMaster,
+        SalesPayment,
+        Staff,
+        StaffType,
+        Tag,
+        TagCatalog,
+        TagItem,
+        Tax,
+        User,
+        UserBranchAccess,
+        UserRole,
+        VoidItems,
+        ComboMap,
+        ComboDetails,
+        Category,
+        MenuCatalog,
+        ItemSubcat,
+        Branch,
+        Tag
+      }
+
       import Ecto.Query
     end
   end

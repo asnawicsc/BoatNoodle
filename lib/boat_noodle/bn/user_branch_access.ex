@@ -2,12 +2,11 @@ defmodule BoatNoodle.BN.UserBranchAccess do
   use Ecto.Schema
   import Ecto.Changeset
 
-@primary_key false
+  @primary_key false
   schema "user_brnch_access" do
-    field :branchid, :integer
-    field :userbranchid, :integer
-    field :userid, :integer, primary_key: true
-
+    field(:branchid, :integer)
+    field(:userbranchid, :integer, primary_key: true)
+    field(:userid, :integer)
   end
 
   @doc false
