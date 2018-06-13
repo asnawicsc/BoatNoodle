@@ -4,17 +4,18 @@
 
     <div class="card-header text-center">
       <h3 class="card-title">
-        Add New Menu Item
+        Edit <%= @item_subcat.itemname %>
       </h3>
 
     </div>
 
-    <%= form_for @changeset, menu_item_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
+    <%= form_for @conn, menu_item_path(@conn, :update, @item_subcat.subcatid), [method: "PUT",class: "form-horizontal"], fn f -> %>
       <div class="card-body">
 
         <div class="row">
           <div class="col-sm-3">
-<label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Category</label>
+           
+                  <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Category</label>
             <select name="menu_item[itemcatid]" class="selectpicker" data-style="btn select-with-transition" title="Choose Category" data-size="10" required="">
             <%= for cat <- @item_cat do %>
               <option value="<%= cat.itemcatid %>"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</option>
@@ -25,13 +26,13 @@
           <div class="col-sm-3">
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Item Code</label>
-              <input name="menu_item[itemcode]" class="form-control" type="text" required="">
+              <input name="menu_item[itemcode]" value="<%= @item_subcat.itemcode %>" class="form-control" type="text" required="">
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Description</label>
-              <input name="menu_item[itemdesc]" class="form-control" type="text" required="">
+              <input name="menu_item[itemdesc]" value="<%= @item_subcat.itemdesc %>" class="form-control" type="text" required="">
             </div>
 
           </div>
@@ -40,32 +41,38 @@
           <div class="col-sm-3">
           	<div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code A</label>
-              <input name="menu_item[price_code][A]" class="form-control" type="text" required="">
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "A" end) |> hd() %>
+              <input name="menu_item[price_code][A]" value="<%= val.price %>" class="form-control" type="text" required="">
             </div>
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code B</label>
-              <input name="menu_item[price_code][B]" class="form-control" type="text" required="">
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "B" end) |> hd() %>
+              <input name="menu_item[price_code][B]" value="<%= val.price %>" class="form-control" type="text" required="">
             </div>
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code C</label>
-              <input name="menu_item[price_code][C]" class="form-control" type="text" required="">
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "C" end) |> hd() %>
+              <input name="menu_item[price_code][C]" value="<%= val.price %>" class="form-control" type="text" required="">
             </div>
           </div>
           <div class="col-sm-3">
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code D</label>
-              <input name="menu_item[price_code][D]" class="form-control" type="text" >
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "D" end)  %>
+              <input name="menu_item[price_code][D]" value="<%= if val != [], do: hd(val).price %>" class="form-control" type="text" >
             </div>
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code E</label>
-              <input name="menu_item[price_code][E]" class="form-control" type="text" >
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "E" end) %>
+              <input name="menu_item[price_code][E]" value="<%= if val != [], do: hd(val).price %>" class="form-control" type="text" >
             </div>
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code F</label>
-              <input name="menu_item[price_code][F]" class="form-control" type="text" >
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "F" end)  %>
+              <input name="menu_item[price_code][F]" value="<%= if val != [], do: hd(val).price %>" class="form-control" type="text" >
             </div>
           </div>
- 
+
         </div>
 
       </div>
@@ -74,7 +81,7 @@
           <a href="/menu_item" class="btn btn-previous btn-fill btn-default btn-wd" type="button">Previous</a>
         </div>
         <div class="ml-auto">
-          <input class="btn btn-next btn-fill btn-rose btn-wd" name="item_create" value="Create" type="submit">
+          <input class="btn btn-next btn-fill btn-rose btn-wd" name="item_update" value="Update" type="submit">
 
         </div>
         <div class="clearfix"></div>
@@ -113,3 +120,8 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('select[name="menu_item[itemcatid]"]').selectpicker('val', '<%= @item_subcat.itemcatid %>');
+  })
+</script>

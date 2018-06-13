@@ -23,6 +23,7 @@ defmodule BoatNoodleWeb.Router do
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
 
     resources("/menu_item", MenuItemController)
+    get("/combos", MenuItemController, :combos)
     resources("/category", CategoryController)
     resources("/remark", RemarkController)
     resources("/menu_catalog", MenuCatalogController)
@@ -94,6 +95,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/salespayment", SalesPaymentController)
     resources("/item_subcat", ItemSubcatController)
     get("/items/:subcatid", ItemSubcatController, :item_show)
+    get("/items/:subcatid/edit", ItemSubcatController, :item_edit)
     get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid", ItemSubcatController, :combo_show)
     get("/edit_combo/:subcatid", ItemSubcatController, :edit_combo)
@@ -137,5 +139,3 @@ defmodule BoatNoodleWeb.Router do
   #   pipe_through :api
   # end
 end
-
-
