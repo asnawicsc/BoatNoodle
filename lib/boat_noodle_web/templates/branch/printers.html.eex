@@ -166,7 +166,11 @@
                           <tr>
 
                             <%= for printer <- @printers do %>
+                            <%= if printer.combo_item_ids == nil do %>
+                            <% printer_combo_items = [] %>
+                            <%else %>
                           <% printer_combo_items = printer.combo_item_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )%>
+                          <% end %>
                               <td style="width: 200px; padding-right: 5px;">
 
                                 <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
