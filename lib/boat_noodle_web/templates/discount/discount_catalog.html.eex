@@ -1,8 +1,8 @@
-<div class="tab-pane" id="menu_item" >
+<div class="tab-pane" id="menu_a" >
   <div class="card">
       <div class="card-header card-header-text card-header-warning">
       <div class="card-text">
-        <h4 class="card-title">Menu Items</h4>
+        <h4 class="card-title">Discount Catalogs</h4>
       </div>
       <div class="dropdown pull-right" style="padding: 10px;">
           <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -22,26 +22,21 @@
 	  	<table class="table data">
       <thead>
         <tr>
-          <th>No</th>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Edit</th>
+          <th>Catalog Name</th>
+          <th>Actions</th>
         </tr>
       </thead>  
       <tbody>
-        <% sbs = @subcats |> Enum.with_index %>
+      
 
-      <%= for subcat <- sbs do %>
+      <%= for discount <- @discount_catalog do %>
       <tr>
-        <td><%= elem(subcat,1) + 1 %></td>
-        <td><%= elem(subcat,0).itemcode %></td>
-        <td><%= elem(subcat,0).itemname %></td>
-        <td><%= elem(subcat,0).category %></td>
+        <td><%= discount.name %></td>
+      
         <td>
           
-          <a href="/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
-          <a href="/items/<%= elem(subcat,0).subcatid %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+          <a href="/items/<%= discount.id %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
+          <a href="/items/<%= discount.id %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
         </td>
       </tr>
       <% end %>

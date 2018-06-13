@@ -36,6 +36,7 @@
             <th>Is print?</th>
 
             <th>ID</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -61,6 +62,7 @@
             <td><%= same_item.include_spend %></td>
             <td><%= same_item.is_print %></td>
             <td><%= same_item.subcatid %></td>
+            
           </tr>
           <% end %>
         </tbody>

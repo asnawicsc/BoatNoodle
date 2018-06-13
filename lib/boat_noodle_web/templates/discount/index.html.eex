@@ -1,43 +1,46 @@
-<h2>Listing Discount</h2>
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">Menu Items</h1>
+  </div>
+</div>
+<div class="row" aria-label="menu_item_content">
+            <div class="col-md-12 ">
+              <div class="page-categories">
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Discount</th>
-      <th>Discname</th>
-      <th>Descriptions</th>
-      <th>Discamtpercentage</th>
-      <th>Target cat</th>
-      <th>Is used</th>
-      <th>Disc qty</th>
-      <th>Targer itemcode</th>
-      <th>Disctype</th>
-      <th>Is categorize</th>
-      <th>Is visible</th>
-      <th>Is delete</th>
+               
+                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                  <li class="nav-item ">
+                    <a class="nav-link active" data-toggle="tab" href="#menu_item" role="tablist">
+                      <i class="material-icons">restaurant</i> Discount Category
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#menu_categories" role="tablist">
+                      <i class="material-icons">style</i> Discount Item
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#menu_a" role="tablist">
+                      <i class="material-icons">style</i> Discount Catalogs
+                    </a>
+                  </li>
+          
+     
+             
+           
+                </ul>
+                <div class="tab-content tab-space tab-subcategories" >
+            <%= render("discount_category.html", discount_details: @discount_details)%>
+            <%= render("discount_item.html", discount_items: @discount_items)%>
+            <%= render("discount_catalog.html", discount_catalog: @discount_catalog)%>
+                 
+          
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for discount <- @discount do %>
-    <tr>
-      <td><%= discount.discountid %></td>
-      <td><%= discount.discname %></td>
-      <td><%= discount.descriptions %></td>
-      <td><%= discount.discamtpercentage %></td>
-      <td><%= discount.target_cat %></td>
-      <td><%= discount.is_used %></td>
-      <td><%= discount.disc_qty %></td>
-      <td><%= discount.target_itemcode %></td>
-      <td><%= discount.disctype %></td>
-      <td><%= discount.is_categorize %></td>
-      <td><%= discount.is_visable %></td>
-      <td><%= discount.is_delete %></td>
+                  
+                 
+                </div>
+              </div>
+            </div>
+</div>
 
-    </tr>
-<% end %>
-  </tbody>
-</table>
 
-<span><%= link "New Discount", to: discount_path(@conn, :new) %></span>

@@ -1,0 +1,67 @@
+<div class="tab-pane" id="menu_categories" >
+  <div class="card">
+      <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title">Discount Item</h4>
+      </div>
+      <div class="dropdown pull-right" style="padding: 10px;">
+          <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <i class="material-icons">settings</i>
+            <span class="caret"></span>
+          <div class="ripple-container"></div></button>
+          <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
+            <li>
+              <a href="/menu_item/new">New Item</a>
+            </li>
+
+          </ul>
+        </div>
+    </div>
+ 
+    <div class="card-body" >
+	  	<table class="table data">
+      <thead>
+        <tr>
+          <th>Discount Name</th>
+          <th>Description</th>
+          <th>Discount Amount</th>
+          <th>Discount Category</th>
+          <th>Target Menu Category</th>
+          <th>Target Menu Item</th>
+          <th>Is Activate</th>
+          <th>Actions</th>
+          
+        </tr>
+      </thead>  
+      <tbody>
+      
+
+      <%= for discount <- @discount_items do %>
+      <tr>
+        <td><%= discount.discitemsname %></td>
+        <td><%= discount.description %></td>
+        <td><%= discount.discamtpercentage %></td>
+        <td><%= discount.discountcategory %></td>
+        <td><%= discount.target_menu_category %></td>
+        <td><%= discount.target_menu_item %></td>
+        <td><%= if discount.activate == 1 do %>
+
+           True
+          <% else %>
+          False
+       <% end %>
+       </td>
+        <td>
+          
+          <a href="/items/<%= discount.discountitemsid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
+          <a href="/items/<%= discount.discountitemsid %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+        </td>
+      </tr>
+      <% end %>
+      </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
