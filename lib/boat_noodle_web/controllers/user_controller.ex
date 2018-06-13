@@ -135,10 +135,8 @@ defmodule BoatNoodleWeb.UserController do
           username: params["username"],
           email: params["email"]
         }
-
-
-        crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["new_pass"])
-        user_params = Map.put(user_params, :password, crypted_password)
+        crypted_password = Comeonin.Bcrypt.hashpwsalt(params["new_pass"])
+        user_params = Map.put(params, :password, crypted_password)
 
         case BN.update_user(user, user_params) do
           {:ok, user} ->
@@ -151,16 +149,21 @@ defmodule BoatNoodleWeb.UserController do
             |> put_flash(:error, "User update unsuccessful.")
             |> redirect(to: user_path(conn, :edit, params["user_id"]))
         end
+
+
+
       else
         conn
         |> put_flash(:error, "New Password and Confirmation Password do not match")
         |> redirect(to: user_path(conn, :edit, params["user_id"]))
       end
     else
+
+
+
       user_params = %{
         username: params["username"],
         email: params["email"],
-        password_v2: user.password_v2
       }
 
       case BN.update_user(user, user_params) do
