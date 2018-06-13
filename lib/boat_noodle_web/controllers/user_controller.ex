@@ -68,14 +68,12 @@ defmodule BoatNoodleWeb.UserController do
   def new(conn, _params) do
     changeset = BN.change_user(%User{})
     roles = BN.list_user_role() |> Enum.map(fn x -> {x.role_name, x.roleid} end)
-    render(conn, "new.html", changeset: changeset,roles: roles)
+    render(conn, "new.html", changeset: changeset, roles: roles)
   end
 
   def create(conn, %{"user" => user_params}) do
-
     crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["password"])
-    user_params = Map.put(user_params,"password", crypted_password)
-
+    user_params = Map.put(user_params, "password", crypted_password)
 
     case BN.create_user(user_params) do
       {:ok, user} ->
@@ -135,7 +133,6 @@ defmodule BoatNoodleWeb.UserController do
           username: params["username"],
           email: params["email"]
         }
-
 
         crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["new_pass"])
         user_params = Map.put(user_params, :password, crypted_password)
@@ -255,9 +252,9 @@ defmodule BoatNoodleWeb.UserController do
     user = Repo.get_by(User, username: username)
 
     if user != nil do
+      p2 = String.replace(user.password, "$2y", "$2b")
 
-
-      if Comeonin.Bcrypt.checkpw(password, user.password) do
+      if Comeonin.Bcrypt.checkpw(password, p2) do
         # IEx.pry()
 
         conn
