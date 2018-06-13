@@ -37,13 +37,30 @@ defmodule BoatNoodleWeb.UserController do
         from(b in Branch, select: %{name: b.branchname, id: b.branchid}, order_by: [b.branchname])
       )
 
+    staff =
+      Repo.all(
+        from(
+          s in Staff,
+          left_join: r in BoatNoodle.BN.StaffType,
+          on: s.staff_type_id == r.id,
+          select: %{
+            id: s.staff_id,
+            staff_name: s.staff_name,
+            staff_contact: s.staff_contact,
+            staff_email: s.staff_email,
+            staff_type_id: r.name
+          }
+        )
+      )
+
     render(
       conn,
       "index.html",
       user: user,
       branches: branches,
       manager_access_users: manager_access_users,
-      uba: uba
+      uba: uba,
+      staff: staff
     )
   end
 

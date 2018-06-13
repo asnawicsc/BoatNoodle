@@ -172,25 +172,6 @@
             </div>
           </li>
           <li class="nav-item ">
-            <a class="nav-link" data-toggle="collapse" href="#staff">
-              <i class="material-icons">group</i>
-              <p> Staff
-                <b class="caret"></b>
-              </p>
-            </a>
-            <div class="collapse" id="staff">
-              <ul class="nav">
-                <li class="nav-item ">
-                  <a class="nav-link" href="/staff">
-                    <span class="sidebar-mini"> MS </span>
-                    <span class="sidebar-normal"> Manage Staff </span>
-                  </a>
-                </li>
-
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item ">
             <a class="nav-link" data-toggle="collapse" href="#settings">
               <i class="material-icons">settings</i>
               <p> Settings
@@ -206,12 +187,23 @@
                   </a>
                 </li>
                 <li class="nav-item ">
+                  <a class="nav-link" href="/staff">
+                    <span class="sidebar-mini"> MS </span>
+                    <span class="sidebar-normal"> Manage Staff </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
                   <a class="nav-link" href="/user">
                     <span class="sidebar-mini"> MU </span>
                     <span class="sidebar-normal"> Manage User </span>
                   </a>
                 </li>
-
+                <li class="nav-item ">
+                  <a class="nav-link" href="/user_branch_access">
+                    <span class="sidebar-mini"> UBA </span>
+                    <span class="sidebar-normal"> User Branch Access </span>
+                  </a>
+                </li>
               </ul>
             </div>
           </li>
