@@ -1,6 +1,32 @@
 $(document).ready(function() {
 
+$("a[aria-label='organization_name']").click(function(){
 
+  var name = $(this).attr("href")
+    console.log(name)
+    channel.push("find_organization", {name: name})
+})
+
+
+
+channel.on("display_organization_details", payload => {
+
+    var firstpart = '/organization/'
+    var lastpart = '/edit'
+    var newhref = firstpart + payload.organizationid + lastpart
+    $("a[aria-label='edit_organization']").attr("href", newhref)
+
+  $("li[aria-label='"+payload.name+"'].name").html(payload.name)
+  $("li[aria-label='"+payload.name+"'].address").html(payload.address)
+  $("li[aria-label='"+payload.name+"'].phone").html(payload.phone)
+  $("li[aria-label='"+payload.name+"'].country").html(payload.country)
+  $("li[aria-label='"+payload.name+"'].registernumber").html(payload.registernumber)
+  $("li[aria-label='"+payload.name+"'].gstregisternumber").html(payload.gstregisternumber)
+
+
+
+
+})
 
     $("button#dashboard").click(function() {
 
@@ -169,7 +195,7 @@ $(document).ready(function() {
     channel.on("populate_table_sales_transaction", payload => {
         console.log(payload.sales_data)
         var data = payload.sales_data
-      
+
 
 
         $("table#sales_transaction").DataTable({
@@ -2129,7 +2155,7 @@ $(document).ready(function() {
         });
 
         $("#backdrop").delay(500).fadeOut()
-        
+
     })
 
 });

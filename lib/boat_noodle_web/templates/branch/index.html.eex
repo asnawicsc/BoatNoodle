@@ -33,14 +33,14 @@
             </li>
             <%= for organization <- organizations do %>
             <li class="nav-item">
-              <a class="nav-link" data-toggle="tab" href="#<%= organization %>" role="tablist">
+              <a class="nav-link" data-toggle="tab" href="#<%= organization %>" role="tablist" aria-label="organization_name">
                 <%= organization%>
               </a>
             </li>
             <% end %>
           </ul>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-9">
           <div class="tab-content">
             <div class="tab-pane active show" id="link4">
 
@@ -93,7 +93,6 @@
                         <th>Name</th>
                         <th>Code</th>
                         <th>Manager</th>
-     
                         <th>Action</th>
 
                       </tr>
@@ -106,7 +105,7 @@
                         <td><%= branch.branchname %></td>
                         <td><%= branch.branchcode %></td>
                         <td><%= branch.manager %></td>
-            
+
                         <td>
                           <a href="/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
                             <i class="material-icons">edit</i>
@@ -121,11 +120,42 @@
                   </tbody>
               </table>
                 </div>
-                <div class="col-md-2">
-                  Details on the organization
-                </div>
-              </div>
 
+                <div class="col-md-2">
+                      <div class="card card-nav-tabs" style="width: 18rem;">
+                            <div class="card-header card-header-rose">
+                              Organization Details
+                            </div>
+                          <ul class="list-group list-group-flush">
+                          <li class="list-group-item">Name :</li>
+                          <li class="list-group-item name" aria-label="<%= organization %>">  </li>
+
+                          <li class="list-group-item">Address :</li>
+                          <li class="list-group-item address" aria-label="<%= organization %>"> </li>
+
+                          <li class="list-group-item">phone:</li>
+                          <li class="list-group-item phone" aria-label="<%= organization %>"></li>
+
+                          <li class="list-group-item">Country :</li>
+                          <li class="list-group-item country" aria-label="<%= organization %>"></li>
+
+                          <li class="list-group-item">Register number :</li>
+                          <li class="list-group-item registernumber" aria-label="<%= organization %>"></li>
+
+                          <li class="list-group-item">GST register number :</li>
+                          <li class="list-group-item gstregisternumber" aria-label="<%= organization %>"></li>
+
+
+
+                          <a href="/organization/1/edit" button class="btn btn-rose btn-round btn-link organizationid" data-original-title="Edit Organization" aria-label="edit_organization">
+                            <i class="material-icons">edit</i> Edit
+                          </button>
+                        </a>
+                          </ul>
+                        </div>
+                    </div>
+
+              </div>
             </div>
 <% end %>
 

@@ -1,38 +1,62 @@
-<h2>Show Organization</h2>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+    <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title"> Organization details</h4>
+      </div>
 
-<ul>
+    </div>
+			<div class="card-body">
 
-  <li>
-    <strong>Name:</strong>
-    <%= @organization.organisationname %>
-  </li>
 
-  <li>
-    <strong>Address:</strong>
-    <%= @organization.address %>
-  </li>
+        <ul>
 
-  <li>
-    <strong>Company registration id:</strong>
-    <%= @organization.orgregid %>
-  </li>
+          <li>
+            <strong>Name:</strong>
+            <%= @organization.organisationname %>
+          </li>
 
-  <li>
-    <strong>GST registration number:</strong>
-    <%= @organization.gst_reg_id %>
-  </li>
+          <li>
+            <strong>Address:</strong>
+            <%= @organization.address %>
+          </li>
 
-  <li>
-    <strong>Contact number:</strong>
-    <%= @organization.phone %>
-  </li>
+          <li>
+            <strong>Company registration id:</strong>
+            <%= @organization.orgregid %>
+          </li>
 
-  <li>
-    <strong>Country:</strong>
-    <%= @organization.country %>
-  </li>
+          <li>
+            <strong>GST registration number:</strong>
+            <%= @organization.gst_reg_id %>
+          </li>
 
-</ul>
+          <li>
+            <strong>Contact number:</strong>
+            <%= @organization.phone %>
+          </li>
 
-<span><%= link "Edit", to: organization_path(@conn, :edit, @organization.organisationid) %></span>
-<span><%= link "Back", to: organization_path(@conn, :index) %></span>
+          <li>
+            <strong>Country:</strong>
+            <%= @organization.country %>
+          </li>
+
+        </ul>
+
+
+    <div class="btn btn-primary btn-link"> <span><%= link "Edit", to: organization_path(@conn, :edit, @organization.organisationid) %></span> </div>
+
+
+      <div class="btn btn-primary btn-link">  <span> <%= link "Back", to: organization_path(@conn, :index) %> </span> </div>
+
+
+
+
+
+ </div>
+
+</div>
+
+
+</div>

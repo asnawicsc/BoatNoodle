@@ -49,7 +49,8 @@ defmodule BoatNoodleWeb.OrganizationController do
   def edit(conn, %{"id" => id}) do
     organization = BN.get_organization!(id)
     changeset = BN.change_organization(organization)
-    render(conn, "edit.html", organization: organization, changeset: changeset)
+    countries = Countries.all |> Enum.map(fn x -> {x.name,x.name} end)
+    render(conn, "edit.html", organization: organization, changeset: changeset,countries: countries)
   end
 
   def update(conn, %{"id" => id, "organization" => organization_params}) do
@@ -59,7 +60,7 @@ defmodule BoatNoodleWeb.OrganizationController do
       {:ok, organization} ->
         conn
         |> put_flash(:info, "Organization updated successfully.")
-        |> redirect(to: organization_path(conn, :show, organization))
+        |> redirect(to: organization_path(conn, :show, organization.organisationid))
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", organization: organization, changeset: changeset)
     end

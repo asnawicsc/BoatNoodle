@@ -12,6 +12,35 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+
+  def handle_in("find_organization", %{"name" => name}, socket) do
+
+    name = name |> String.replace("#", "")
+
+    organization  = Repo.get_by(Organization, organisationname: name)
+
+    name = organization.organisationname
+    address = organization.address
+    phone = organization.phone
+    country = organization.country
+    registernumber = organization.orgregid
+    gstregisternumber = organization.gst_reg_id
+    organizationid = organization.organisationid
+
+
+    broadcast(socket, "display_organization_details", %{name: name,
+                                                        address: address,
+                                                        phone: phone,
+                                                        country: country,
+                                                        registernumber: registernumber,
+                                                        gstregisternumber: gstregisternumber,
+                                                        organizationid: organizationid
+                                                        })
+                                                        {:noreply, socket}
+
+  end
+
+
   def handle_in("load_user_sidebar", %{"userid" => userid}, socket) do
     user = Repo.get(User, userid)
 
