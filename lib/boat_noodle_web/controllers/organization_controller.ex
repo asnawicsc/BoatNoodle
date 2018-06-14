@@ -3,6 +3,7 @@ defmodule BoatNoodleWeb.OrganizationController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.Organization
+  require IEx
 
   def index(conn, _params) do
     organization = Repo.all(Organization)
@@ -11,15 +12,30 @@ defmodule BoatNoodleWeb.OrganizationController do
 
   def new(conn, _params) do
     changeset = BN.change_organization(%Organization{})
-    render(conn, "new.html", changeset: changeset)
+
+    countries = Countries.all |> Enum.map(fn x -> {x.name,x.name} end)
+
+
+    render(conn, "new.html", changeset: changeset, countries: countries)
   end
 
   def create(conn, %{"organization" => organization_params}) do
+
+    latest_organization_id =
+      Repo.all(from(s in Organization))
+      |> Enum.map(fn x -> x.organisationid end)
+      |> Enum.sort()
+      |> List.last()
+
+    latest_organization_id  = latest_organization_id  + 1
+
+    organization_params = Map.put(organization_params, "organisationid", latest_organization_id)
+
     case BN.create_organization(organization_params) do
       {:ok, organization} ->
         conn
         |> put_flash(:info, "Organization created successfully.")
-        |> redirect(to: organization_path(conn, :show, organization))
+        |> redirect(to: organization_path(conn, :show,organization.organisationid))
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

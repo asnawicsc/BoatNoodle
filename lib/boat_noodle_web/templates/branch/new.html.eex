@@ -8,7 +8,7 @@
 
     </div>
 			<div class="card-body">
-				
+
 
 <%= form_for @changeset, branch_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
 
@@ -127,7 +127,7 @@
       <option value="<%= elem(menu_catalo,1) %>"><%= elem(menu_catalo,0) %> </option>
     <% end %>
   </select>
-	
+
 
 	  </div>
 	  <div class="col-sm-2">
@@ -154,7 +154,7 @@
 	  </div>
 	  </div>
 	  <div class="col-sm-2" style="display: none;">
-	  
+
 	  <div class="form-group bmd-form-group" >
 	    <%= label f, :payment_catalog, class: "bmd-label-floating" %>
 	    <%= text_input f, :payment_catalog, class: "form-control" %>

@@ -4,7 +4,7 @@
 
   <li>
     <strong>Name:</strong>
-    <%= @organization.name %>
+    <%= @organization.organisationname %>
   </li>
 
   <li>
@@ -13,18 +13,18 @@
   </li>
 
   <li>
-    <strong>Company registration number:</strong>
-    <%= @organization.company_registration_number %>
+    <strong>Company registration id:</strong>
+    <%= @organization.orgregid %>
   </li>
 
   <li>
-    <strong>Tax registration number:</strong>
-    <%= @organization.tax_registration_number %>
+    <strong>GST registration number:</strong>
+    <%= @organization.gst_reg_id %>
   </li>
 
   <li>
     <strong>Contact number:</strong>
-    <%= @organization.contact_number %>
+    <%= @organization.phone %>
   </li>
 
   <li>
@@ -34,5 +34,5 @@
 
 </ul>
 
-<span><%= link "Edit", to: organization_path(@conn, :edit, @organization) %></span>
+<span><%= link "Edit", to: organization_path(@conn, :edit, @organization.organisationid) %></span>
 <span><%= link "Back", to: organization_path(@conn, :index) %></span>

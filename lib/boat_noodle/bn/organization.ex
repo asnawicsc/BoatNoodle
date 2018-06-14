@@ -19,6 +19,6 @@ defmodule BoatNoodle.BN.Organization do
   @doc false
   def changeset(organization, attrs) do
     organization
-    |> cast(attrs, [:created_at,:updated_at,:id, :address, :orgregid, :gst_reg_id, :phone, :country,:organisationname])
+    |> cast(attrs, [:created_at,:updated_at,:organisationid, :address, :orgregid, :gst_reg_id, :phone, :country,:organisationname])
     end
 end

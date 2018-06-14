@@ -41,7 +41,7 @@ defmodule BoatNoodleWeb.BranchController do
       )
 
     # need a list of combos
-    # subcatid thats 6 digit are combos 
+    # subcatid thats 6 digit are combos
     combos = subcats_data |> Enum.filter(fn x -> String.length(Integer.to_string(x.id)) == 6 end)
     combo_ids = combos |> Enum.map(fn x -> x.id end)
 
@@ -95,16 +95,14 @@ defmodule BoatNoodleWeb.BranchController do
   def new(conn, _params) do
     changeset = BN.change_branch(%Branch{})
 
-    managers =
-      BN.list_user() |> Enum.map(fn x -> {x.username, x.id} end)
+    managers =BN.list_user() |> Enum.map(fn x -> {x.username, x.id} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     organizations =
       BN.list_organization() |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
-    menu_catalog =
-      Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+    menu_catalog =  Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
 
     disc_catalog =
       Repo.all(from(m in DiscountCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
