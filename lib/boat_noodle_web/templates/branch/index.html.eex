@@ -43,6 +43,7 @@
         <div class="col-md-10">
           <div class="tab-content">
             <div class="tab-pane active show" id="link4">
+
                <table class="table data">
                   <thead>
                       <tr>
@@ -83,6 +84,8 @@
 
 <%= for organization <- organizations do %>
             <div class="tab-pane" id="<%= organization %>">
+              <div class="row">
+                <div class="col-md-10">
                <table class="table data">
                   <thead>
                       <tr>
@@ -90,7 +93,7 @@
                         <th>Name</th>
                         <th>Code</th>
                         <th>Manager</th>
-                        <th>Sync Status</th>
+     
                         <th>Action</th>
 
                       </tr>
@@ -103,7 +106,7 @@
                         <td><%= branch.branchname %></td>
                         <td><%= branch.branchcode %></td>
                         <td><%= branch.manager %></td>
-                        <td><%= branch.sync_status %></td>
+            
                         <td>
                           <a href="/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
                             <i class="material-icons">edit</i>
@@ -117,6 +120,12 @@
                   <% end %>
                   </tbody>
               </table>
+                </div>
+                <div class="col-md-2">
+                  Details on the organization
+                </div>
+              </div>
+
             </div>
 <% end %>
 
