@@ -14,12 +14,14 @@ defmodule BoatNoodle.BN.Tag do
     field(:tagname, :string)
     field(:updated_at, :utc_datetime)
     field(:created_at, :utc_datetime)
+    field(:brand_id, :integer, primary_key: true)
   end
 
   @doc false
   def changeset(tag, attrs) do
     tag
     |> cast(attrs, [
+      :brand_id,
       :combo_item_ids,
       :subcat_ids,
       :branch_id,

@@ -2,20 +2,19 @@ defmodule BoatNoodle.BN.MenuCatalog do
   use Ecto.Schema
   import Ecto.Changeset
 
-@primary_key false
+  @primary_key false
   schema "menu_catalog" do
-    field :id, :integer, primary_key: true
-    field :name, :string
-    field :categories, :string
-    field :items, :string
-    field :combo_items, :string
-
+    field(:id, :integer, primary_key: true)
+    field(:name, :string)
+    field(:categories, :string)
+    field(:items, :string)
+    field(:combo_items, :string)
+    field(:brand_id, :integer, primary_key: true)
   end
 
   @doc false
   def changeset(menu_catalog, attrs) do
     menu_catalog
-    |> cast(attrs, [:id, :item_code, :name, :categories, :items, :combo_items])
-  
+    |> cast(attrs, [:brand_id, :id, :item_code, :name, :categories, :items, :combo_items])
   end
 end

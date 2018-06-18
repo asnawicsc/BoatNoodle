@@ -25,12 +25,14 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:price_code, :string)
     field(:product_code, :string)
     field(:updated_at, :utc_datetime)
+    field(:brand_id, :integer, primary_key: true)
   end
 
   @doc false
   def changeset(item_subcat, attrs) do
     item_subcat
     |> cast(attrs, [
+      :brand_id,
       :subcatid,
       :itemcatid,
       :itemname,

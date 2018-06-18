@@ -64,4 +64,26 @@ config :boat_noodle, BoatNoodle.Repo,
   password: "123123",
   database: "posgb_boatnoodle",
   pool_size: 10,
-  timeout: 90000
+  timeout: 1500_000
+
+config :boat_noodle, BoatNoodle.RepoChillChill,
+  adapter: Ecto.Adapters.MySQL,
+  hostname: "110.4.42.47",
+  port: "15100",
+  username: "phoenix_bn",
+  password: "123123",
+  database: "chillchi_db",
+  pool_size: 10,
+  timeout: 1500_000
+
+# @doc """
+# # regarding consolidating databases, im wondering should i wrtie another function that will interact
+# with other databases and initiate the migration process...
+
+# 1. set the default databases
+# 2. ensure the columns already set in the default database
+# 3. individual databases will be imported...
+
+# should i include a a timestamp? for fallback purpose....
+
+# """

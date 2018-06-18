@@ -13,12 +13,14 @@ defmodule BoatNoodle.BN.Staff do
     field(:staff_name, :string)
     field(:staff_type_id, :integer)
     field(:branch_access, :string)
+    field(:brand_id, :integer, primary_key: true)
   end
 
   @doc false
   def changeset(staffs, attrs) do
     staffs
     |> cast(attrs, [
+      :brand_id,
       :staff_id,
       :branch_access,
       :staff_name,

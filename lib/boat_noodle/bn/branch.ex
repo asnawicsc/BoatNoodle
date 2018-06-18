@@ -29,12 +29,14 @@ defmodule BoatNoodle.BN.Branch do
     field(:payment_catalog, :string)
     field(:updated_at, :utc_datetime)
     field(:created_at, :utc_datetime)
+    field(:brand_id, :integer, primary_key: true)
   end
 
   @doc false
   def changeset(branch, attrs) do
     branch
     |> cast(attrs, [
+      :brand_id,
       :created_at,
       :updated_at,
       :payment_catalog,
