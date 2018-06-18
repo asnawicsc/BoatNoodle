@@ -12,12 +12,10 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
-
   def handle_in("find_organization", %{"name" => name}, socket) do
-
     name = name |> String.replace("#", "")
 
-    organization  = Repo.get_by(Organization, organisationname: name)
+    organization = Repo.get_by(Organization, organisationname: name)
 
     name = organization.organisationname
     address = organization.address
@@ -27,30 +25,32 @@ defmodule BoatNoodleWeb.UserChannel do
     gstregisternumber = organization.gst_reg_id
     organizationid = organization.organisationid
 
+    broadcast(socket, "display_organization_details", %{
+      name: name,
+      address: address,
+      phone: phone,
+      country: country,
+      registernumber: registernumber,
+      gstregisternumber: gstregisternumber,
+      organizationid: organizationid
+    })
 
-    broadcast(socket, "display_organization_details", %{name: name,
-                                                        address: address,
-                                                        phone: phone,
-                                                        country: country,
-                                                        registernumber: registernumber,
-                                                        gstregisternumber: gstregisternumber,
-                                                        organizationid: organizationid
-                                                        })
-                                                        {:noreply, socket}
-
+    {:noreply, socket}
   end
-
 
   def handle_in("load_user_sidebar", %{"userid" => userid}, socket) do
     user = Repo.get(User, userid)
 
     map =
-      if user.gall_id != nil do
+      if user.gall_id != 1 do
         gallery = Repo.get(Gallery, user.gall_id)
         picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
         %{name: user.username, bin: picture.bin}
       else
-        %{name: user.username, bin: ""}
+        path = File.cwd!() <> "/media/demo.png"
+        {:ok, bin} = File.read(path)
+        bin = Base.encode64(bin)
+        %{name: user.username, bin: bin}
       end
 
     broadcast(socket, "save_user_local_storage", %{map: Poison.encode!(map)})
@@ -2130,7 +2130,8 @@ defmodule BoatNoodleWeb.UserChannel do
       )
 
     total =
-      total_transaction |> Enum.reject(fn x -> x.salesdate == nil end)
+      total_transaction
+      |> Enum.reject(fn x -> x.salesdate == nil end)
       |> Enum.filter(fn x -> x.salesdate.year == year end)
 
     ranges = 1..12
@@ -2211,7 +2212,8 @@ defmodule BoatNoodleWeb.UserChannel do
       tax = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.tax) end) |> Enum.sum()
 
       service_charge =
-        total_transaction |> Enum.map(fn x -> Decimal.to_float(x.service_charge) end)
+        total_transaction
+        |> Enum.map(fn x -> Decimal.to_float(x.service_charge) end)
         |> Enum.sum()
 
       if grand_total == 0 do
