@@ -66,6 +66,7 @@ defmodule BoatNoodleWeb.MenuItemController do
          }
         )
         )
+      
 
     render(
       conn,

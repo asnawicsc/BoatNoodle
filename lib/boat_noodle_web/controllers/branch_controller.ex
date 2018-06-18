@@ -88,6 +88,7 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
       |> Enum.reject(fn x -> x.branchcode == "ALL" end)
+  
 
     render(conn, "index.html", branch: branch)
   end

@@ -1,19 +1,74 @@
-              <div class="tab-pane" id="item_remark" >
-                    <div class="card">
-                        <div class="card-header card-header-text card-header-warning">
-                        <div class="card-text">
-                          <h4 class="card-title">Items Remark</h4>
-                        </div>
-                        <div class="dropdown pull-right" style="padding: 10px;">
-                      <a  href="/remark/new" class="btn btn-info btn-round" >
-                          <i class="material-icons">add_box</i> New Remark
-                        <div class="ripple-container"></div>
-                      </a>
-                    </div>
-                      </div>
+<div class="tab-pane" id="item_remark" >
+      <div class="card">
+          <div class="card-header card-header-text card-header-warning">
+          <div class="card-text">
+            <h4 class="card-title">Items Remark</h4>
+          </div>
+          <div class="dropdown pull-right" style="padding: 10px;">
+        <a  href="/remark/new" class="btn btn-info btn-round" >
+            <i class="material-icons">add_box</i> New Remark
+          <div class="ripple-container"></div>
+        </a>
+      </div>
+        </div>
 
-                      <div class="card-body" >
-                  	  	<table class="table data">
+        <div class="card-body" >
+
+          <% group_remark = @remark |> Enum.group_by(fn x -> x.itemname end) %>
+         <% groups = group_remark |> Map.keys %>
+
+          <div class="row">
+
+            <div class="col-md-2">
+              <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active show" data-toggle="tab" href="#link4" role="tablist">
+                    ALL
+                  </a>
+                </li>
+               <%= for group <- groups do %>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#<%= group %>" role="tablist">
+                    <%= group%>
+                  </a>
+                </li>
+                <% end %>
+              </ul>
+            </div>
+
+            <div class="col-md-10">
+              <div class="tab-content">
+                <div class="tab-pane active show" id="link4">
+                  <table class="table data">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>Item name</th>
+                          <th>Remark</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+
+                      <%= for remark <- @remark do %>
+                      <tr>
+                        <td><%= remark.remarkid %></td>
+                        <td><%= remark.itemname %></td>
+                        <td><%= remark.itemremark %></td>
+                        <td>
+
+                          <a href="/remark/<%= remark.remarkid  %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Remark">
+                            <i class="material-icons">edit</i>
+                        </td>
+                      </tr>
+                      <% end %>
+                      </tbody>
+                  </table>
+                </div>
+              <%= for group <- groups do %>
+                  <div class="tab-pane" id="<%= group %>">
+                    <table class="table data">
                         <thead>
                           <tr>
                             <th>No</th>
@@ -23,22 +78,25 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <% remark = @remark |> Enum.with_index %>
+                         <%= for remark <- group_remark[group] do %>
+                              <tr>
+                                <td><%= remark.remarkid %></td>
+                                <td><%= remark.itemname %></td>
+                                <td><%= remark.itemremark %></td>
+                                <td>
 
-                        <%= for remark <- remark do %>
-                        <tr>
-                          <td><%= elem(remark,1) + 1 %></td>
-                          <td><%= elem(remark,0).itemname %></td>
-                          <td><%= elem(remark,0).itemremark %></td>
-                          <td>
-
-                            <a href="/remark/<%= elem(remark,0).remarkid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
-                              <i class="material-icons">edit</i>
-                          </td>
-                        </tr>
-                        <% end %>
+                                  <a href="/remark/<%= remark.remarkid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Remark">
+                                    <i class="material-icons">edit</i>
+                                </td>
+                              </tr>
+                          <% end %>
                         </tbody>
-                        </table>
-                      </div>
-                    </div>
+                    </table>
                   </div>
+              <% end %>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
