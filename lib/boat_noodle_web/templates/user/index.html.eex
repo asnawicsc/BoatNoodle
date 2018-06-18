@@ -10,9 +10,9 @@
               <div class="ripple-container"></div>
             </a>
           </div>
-
-   
             </div>
+
+            
             <div class="card-body table-responsive">
               <% group_user = @user |> Enum.group_by(fn x -> x.roleid end) %>
              <% groups = group_user |> Map.keys %>
@@ -86,6 +86,9 @@
                                     <td><%= user.email %></td>
                                     <td><%= user.roleid %></td>
                                     <td><%= user.manager_access %></td>
+                                    <td><a href="/user/<%= user.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit user">
+                                        <i class="material-icons">edit</i>
+                                      <div class="ripple-container"></div></a></td>
 
 
 

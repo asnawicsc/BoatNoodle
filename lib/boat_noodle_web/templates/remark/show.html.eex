@@ -3,13 +3,18 @@
 <ul>
 
   <li>
+    <strong>Item Remark ID:</strong>
+    <%= @remark.itemsremarkid %>
+  </li>
+
+  <li>
     <strong>Remark description:</strong>
-    <%= @remark.remark_description %>
+    <%= @remark.remark %>
   </li>
 
   <li>
     <strong>Target category:</strong>
-    <%= @remark.target_category %>
+    <%= @remark.target_cat %>
   </li>
 
   <li>
@@ -18,6 +23,3 @@
   </li>
 
 </ul>
-
-<span><%= link "Edit", to: remark_path(@conn, :edit, @remark) %></span>
-<span><%= link "Back", to: remark_path(@conn, :index) %></span>
