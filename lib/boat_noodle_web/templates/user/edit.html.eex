@@ -14,7 +14,7 @@
 
                 <div class="card-body">
 
-                  <form action="/update_profile" method="post">
+                  <form action="/<%= @conn.private.plug_session["brand"] %>/update_profile" method="post">
                   	<input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
                   	<input type="hidden" name="user_id" value="<%= @user.id %>">
                     <div class="row">
@@ -74,7 +74,7 @@
 
                 <div class="card-body">
 
-                  <%= form_for @changeset, user_path(@conn, :update_profile_picture, @user.id), [method: :post, multipart: true], fn f -> %>
+                  <%= form_for @changeset, user_path(@conn, :update_profile_picture,@conn.private.plug_session["brand"], @user.id), [method: :post, multipart: true], fn f -> %>
                     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
                     <input type="hidden" name="user_id" value="<%= @user.id %>">
                     <div class="row">

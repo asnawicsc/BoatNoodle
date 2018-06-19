@@ -8,8 +8,21 @@ defmodule BoatNoodleWeb.BranchController do
 
   def printers(conn, %{"id" => id}) do
     printers = Repo.all(from(t in Tag, where: t.branch_id == ^id))
-    branch = BN.get_branch!(id)
-    menu_cat = Repo.get(MenuCatalog, branch.menu_catalog)
+
+    branch =
+      Repo.all(
+        from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))
+      )
+      |> hd()
+
+    menu_cat =
+      Repo.all(
+        from(
+          m in MenuCatalog,
+          where: m.id == ^branch.menu_catalog and m.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+      |> hd()
 
     item_ids = menu_cat.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
@@ -88,7 +101,6 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
       |> Enum.reject(fn x -> x.branchcode == "ALL" end)
-  
 
     render(conn, "index.html", branch: branch)
   end
@@ -97,11 +109,13 @@ defmodule BoatNoodleWeb.BranchController do
     changeset = BN.change_branch(%Branch{})
 
     managers =
-      BN.list_user() |> Enum.map(fn x -> {x.username, x.id} end)
+      BN.list_user()
+      |> Enum.map(fn x -> {x.username, x.id} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     organizations =
-      BN.list_organization() |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
+      BN.list_organization()
+      |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     menu_catalog =
@@ -139,15 +153,22 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def edit(conn, %{"id" => id}) do
-    branch = BN.get_branch!(id)
+    branch =
+      Repo.all(
+        from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))
+      )
+      |> hd()
+
     changeset = BN.change_branch(branch)
 
     managers =
-      BN.list_user() |> Enum.map(fn x -> {x.username, x.id} end)
+      BN.list_user()
+      |> Enum.map(fn x -> {x.username, x.id} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     organizations =
-      BN.list_organization() |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
+      BN.list_organization()
+      |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     menu_catalog =
