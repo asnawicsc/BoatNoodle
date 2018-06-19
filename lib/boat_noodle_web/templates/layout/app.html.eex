@@ -177,6 +177,8 @@
     window.currentUser = '<%=  @conn.private.plug_session["user_id"] %>';
   <% end %>
 
+  window.currentBrand = '<%=  @conn.private.plug_session["brand_id"] %>';
+
   <%= cond do %>
 
   <% get_flash(@conn, :info) != nil -> %>

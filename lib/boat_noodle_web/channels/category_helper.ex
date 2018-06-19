@@ -10,7 +10,11 @@ defmodule BoatNoodleWeb.CategoryHelper do
     end
   end
 
-  def handle_in("update_category_form", %{"map" => map, "cat_id" => cat_id}, socket) do
+  def handle_in(
+        "update_category_form",
+        %{"map" => map, "cat_id" => cat_id, "brand_id" => brand_id},
+        socket
+      ) do
     item_cat_params =
       map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
@@ -30,7 +34,7 @@ defmodule BoatNoodleWeb.CategoryHelper do
             menu_item: menu_item
           )
 
-        broadcast(socket, "updated_item_cat", %{categories: all_categories(), html: html})
+        broadcast(socket, "updated_item_cat", %{categories: all_categories(brand_id), html: html})
 
       true ->
         IO.puts("error in inserting item cat")
@@ -99,10 +103,11 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-  defp all_categories() do
+  defp all_categories(brand_id) do
     Repo.all(
       from(
         i in BoatNoodle.BN.ItemCat,
+        where: i.brand_id == ^brand_id,
         select: %{
           itemcatid: i.itemcatid,
           itemcatname: i.itemcatname,
@@ -116,8 +121,8 @@ defmodule BoatNoodleWeb.CategoryHelper do
     )
   end
 
-  def handle_in("load_all_categories", %{"user_id" => user_id}, socket) do
-    broadcast(socket, "dt_show_categories", %{categories: all_categories()})
+  def handle_in("load_all_categories", %{"user_id" => user_id, "brand_id" => brand_id}, socket) do
+    broadcast(socket, "dt_show_categories", %{categories: all_categories(brand_id)})
     {:noreply, socket}
   end
 

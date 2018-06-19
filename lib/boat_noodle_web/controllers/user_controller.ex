@@ -333,6 +333,8 @@ defmodule BoatNoodleWeb.UserController do
   def logout(conn, _params) do
     conn
     |> delete_session(:user_id)
+    |> delete_session(:brand_id)
+    |> delete_session(:brand)
     |> put_flash(:info, "Logout successfully")
     |> redirect(to: user_path(conn, :login, BN.get_domain(conn)))
   end

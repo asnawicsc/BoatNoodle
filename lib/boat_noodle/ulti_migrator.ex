@@ -1,6 +1,7 @@
 defmodule BoatNoodle.UltiMigrator do
   use Task
   require IEx
+  import Ecto.Query
 
   @migration_modules [
     {0, AddBrand},
@@ -9,25 +10,88 @@ defmodule BoatNoodle.UltiMigrator do
     {3, AddBrand4}
   ]
 
-  def start_link(arg) do
+  def add_brand(arg) do
     Task.start_link(__MODULE__, :run, [arg])
   end
 
+  def migrate(arg) do
+    Task.start_link(__MODULE__, :migrate_new, [arg])
+  end
+
   def run(arg) do
-    versions = Ecto.Migrator.migrated_versions(BoatNoodle.Repo)
-    # IEx.pry()
-    Ecto.Migrator.run(BoatNoodle.Repo, @migration_modules, :up, all: true)
+    case arg do
+      "boat_noodle" ->
+        repo = BoatNoodle.Repo
+
+      "chill_chill" ->
+        repo = BoatNoodle.RepoChillChill
+
+      _ ->
+        repo = nil
+    end
+
+    if repo != nil do
+      versions = Ecto.Migrator.migrated_versions(repo)
+
+      Ecto.Migrator.run(repo, @migration_modules, :up, all: true)
+    else
+      IO.puts("unknow database")
+    end
+  end
+
+  def migrate_new(arg) do
+    case arg do
+      "boat_noodle" ->
+        brand_id = 1
+
+      "chill_chill" ->
+        brand_id = 2
+
+      _ ->
+        repo = nil
+    end
+
+    chill_item_cats =
+      BoatNoodle.RepoChillChill.all(from(c in BoatNoodle.BN.ItemCat))
+      |> Enum.map(fn x ->
+        %{
+          brand_id: brand_id,
+          itemcatid: x.itemcatid,
+          itemcatcode: x.itemcatcode,
+          itemcatname: x.itemcatname,
+          itemcatdesc: x.itemcatdesc,
+          is_default: x.is_default,
+          category_type: x.category_type,
+          is_delete: x.is_delete
+        }
+      end)
+
+    batch =
+      for chill_item_cat <- chill_item_cats do
+        if chill_item_cat.itemcatcode == "" do
+          chill_item_cat = Map.put(chill_item_cat, :itemcatcode, "empty")
+        end
+
+        cg = BoatNoodle.BN.ItemCat.changeset(%BoatNoodle.BN.ItemCat{}, chill_item_cat)
+
+        case BoatNoodle.Repo.insert(cg) do
+          {:ok, item_cat} ->
+            item_cat
+
+          {:error, cg} ->
+            true
+        end
+      end
+
+    :ok
   end
 end
-
-# migrate the new items
-# 
 
 defmodule AddBrand4 do
   use Ecto.Migration
 
   def change do
-    # execute("ALTER TABLE `branch` DROP PRIMARY KEY, ADD PRIMARY KEY (`branchid`, `brand_id`);")
+    execute("ALTER TABLE `branch` DROP PRIMARY KEY, ADD PRIMARY KEY (`branchid`, `brand_id`);")
 
     execute("ALTER TABLE `combo_details` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `brand_id`);")
 
@@ -83,9 +147,19 @@ defmodule AddBrand do
     create(index(:brand, [:domain_name], unique: true))
     create(index(:brand, [:name, :domain_name], unique: true))
 
-    alter table(:branch) do
-      # remove(:brand_id)
+    execute("ALTER TABLE `brand` CHANGE COLUMN `id` `id` INT NOT NULL AUTO_INCREMENT;")
 
+    execute(
+      "INSERT INTO `brand` (`name`, `domain_name`, `inserted_at`, `updated_at`) VALUES ('chill_chill', 'chill_chill', '2018-04-30 21:17:46', '2018-04-30 21:17:46');"
+    )
+  end
+end
+
+defmodule AddBrand2 do
+  use Ecto.Migration
+
+  def change do
+    alter table(:branch) do
       add(:brand_id, references(:brand, on_delete: :nothing, type: :integer), default: 1)
     end
 
@@ -128,13 +202,7 @@ defmodule AddBrand do
       # remove(:brand_id)
       add(:brand_id, references(:brand, on_delete: :nothing, type: :integer), default: 1)
     end
-  end
-end
 
-defmodule AddBrand2 do
-  use Ecto.Migration
-
-  def change do
     alter table(:salespayment) do
       # remove(:brand_id)
       add(:brand_id, references(:brand, on_delete: :nothing, type: :integer), default: 1)

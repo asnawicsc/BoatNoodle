@@ -35,7 +35,7 @@ $(document).ready(function() {
   $("input[name='category_update']").click(function(){
     var fr = $("form[aria-label='edit_category_form']").serializeArray();
     var cat_id = $("input[name='category_update']").attr("id")
-    channel2.push("update_category_form", {map: fr, cat_id: cat_id })
+    channel2.push("update_category_form", {map: fr, cat_id: cat_id, brand_id: window.currentBrand })
   })
 
   channel2.on("updated_item_cat", payload => {
@@ -135,7 +135,7 @@ $(document).ready(function() {
   })
 
   $("a[href='#menu_categories']").click(function(){
-    channel2.push("load_all_categories", {user_id: window.currentUser})
+    channel2.push("load_all_categories", {user_id: window.currentUser, brand_id: window.currentBrand})
   })
 
   channel2.on("dt_show_categories", payload => {
