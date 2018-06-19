@@ -20,4 +20,4 @@
 </ul>
 
 <span><%= link "Edit", to: remark_path(@conn, :edit, @remark) %></span>
-<span><%= link "Back", to: remark_path(@conn, :index) %></span>
+<span><%= link "Back", to: remark_path(@conn, :index, BN.get_domain(@conn)) %></span>

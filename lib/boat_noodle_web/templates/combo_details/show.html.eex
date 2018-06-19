@@ -60,4 +60,4 @@
 </ul>
 
 <span><%= link "Edit", to: combo_details_path(@conn, :edit, @combo_details) %></span>
-<span><%= link "Back", to: combo_details_path(@conn, :index) %></span>
+<span><%= link "Back", to: combo_details_path(@conn, :index, BN.get_domain(@conn)) %></span>

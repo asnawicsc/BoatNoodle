@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.PictureController do
         conn
         |> put_flash(:info, "Picture created successfully.")
         |> redirect(to: picture_path(conn, :show, picture))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.PictureController do
         conn
         |> put_flash(:info, "Picture updated successfully.")
         |> redirect(to: picture_path(conn, :show, picture))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", picture: picture, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.PictureController do
 
     conn
     |> put_flash(:info, "Picture deleted successfully.")
-    |> redirect(to: picture_path(conn, :index))
+    |> redirect(to: picture_path(conn, :index, BN.get_domain(conn)))
   end
 end

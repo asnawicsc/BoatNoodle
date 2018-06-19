@@ -1,5 +1,5 @@
 <h2>New Discount category</h2>
 
-<%= render "form.html", Map.put(assigns, :action, discount_category_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, discount_category_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: discount_category_path(@conn, :index) %></span>
+<span><%= link "Back", to: discount_category_path(@conn, :index, BN.get_domain(@conn)) %></span>

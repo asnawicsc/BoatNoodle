@@ -10,7 +10,7 @@
 			<div class="card-body">
 
 
-<%= form_for @changeset, branch_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
+<%= form_for @changeset, branch_path(@conn, :create, BN.get_domain(@conn)), [class: "form-horizontal"], fn f -> %>
 
 <div class="row">
 

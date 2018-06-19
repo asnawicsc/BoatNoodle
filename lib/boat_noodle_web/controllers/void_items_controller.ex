@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.VoidItemsController do
   alias BoatNoodle.BN.VoidItems
 
   def index(conn, _params) do
-    voiditems = Repo.all(from v in VoidItems, limit: 10)
+    voiditems = Repo.all(from(v in VoidItems, limit: 10))
     render(conn, "index.html", voiditems: voiditems)
   end
 
@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.VoidItemsController do
         conn
         |> put_flash(:info, "Void items created successfully.")
         |> redirect(to: void_items_path(conn, :show, void_items))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.VoidItemsController do
         conn
         |> put_flash(:info, "Void items updated successfully.")
         |> redirect(to: void_items_path(conn, :show, void_items))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", void_items: void_items, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.VoidItemsController do
 
     conn
     |> put_flash(:info, "Void items deleted successfully.")
-    |> redirect(to: void_items_path(conn, :index))
+    |> redirect(to: void_items_path(conn, :index, BN.get_domain(conn)))
   end
 end

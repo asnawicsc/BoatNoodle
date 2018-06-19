@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.SalesPaymentController do
   alias BoatNoodle.BN.SalesPayment
 
   def index(conn, _params) do
-    salespayment = Repo.all(from sp in SalesPayment, limit: 100)
+    salespayment = Repo.all(from(sp in SalesPayment, limit: 100))
     render(conn, "index.html", salespayment: salespayment)
   end
 
@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.SalesPaymentController do
         conn
         |> put_flash(:info, "Sales payment created successfully.")
         |> redirect(to: sales_payment_path(conn, :show, sales_payment))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.SalesPaymentController do
         conn
         |> put_flash(:info, "Sales payment updated successfully.")
         |> redirect(to: sales_payment_path(conn, :show, sales_payment))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", sales_payment: sales_payment, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.SalesPaymentController do
 
     conn
     |> put_flash(:info, "Sales payment deleted successfully.")
-    |> redirect(to: sales_payment_path(conn, :index))
+    |> redirect(to: sales_payment_path(conn, :index, BN.get_domain(conn)))
   end
 end

@@ -65,4 +65,4 @@
 </ul>
 
 <span><%= link "Edit", to: rpthourlyoutlet_path(@conn, :edit, @rpthourlyoutlet) %></span>
-<span><%= link "Back", to: rpthourlyoutlet_path(@conn, :index) %></span>
+<span><%= link "Back", to: rpthourlyoutlet_path(@conn, :index, BN.get_domain(@conn)) %></span>

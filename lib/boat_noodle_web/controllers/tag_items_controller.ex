@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.TagItemsController do
         conn
         |> put_flash(:info, "Tag items created successfully.")
         |> redirect(to: tag_items_path(conn, :show, tag_items))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.TagItemsController do
         conn
         |> put_flash(:info, "Tag items updated successfully.")
         |> redirect(to: tag_items_path(conn, :show, tag_items))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", tag_items: tag_items, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.TagItemsController do
 
     conn
     |> put_flash(:info, "Tag items deleted successfully.")
-    |> redirect(to: tag_items_path(conn, :index))
+    |> redirect(to: tag_items_path(conn, :index, BN.get_domain(conn)))
   end
 end

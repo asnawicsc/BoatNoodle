@@ -42,7 +42,7 @@
         </div>
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="/">
+            <a class="nav-link" href="/<%= @conn.params["brand"]%>/">
               <i class="material-icons">dashboard</i>
               <p> Dashboard </p>
             </a>
@@ -58,61 +58,61 @@
             <div class="collapse" id="sales">
               <ul class="nav">
                 <li class="nav-item ">
-                  <a class="nav-link" href="/sales">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/sales">
                     <span class="sidebar-mini"> T </span>
                     <span class="sidebar-normal"> Transactions </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/item_sales">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/item_sales">
                     <span class="sidebar-mini"> IS </span>
                     <span class="sidebar-normal"> Item Sales </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/discounts">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/discounts">
                     <span class="sidebar-mini"> D </span>
                     <span class="sidebar-normal"> Discounts </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/tables">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/tables">
                     <span class="sidebar-mini"> T </span>
                     <span class="sidebar-normal"> Tables </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/voided">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/voided">
                     <span class="sidebar-mini"> V </span>
                     <span class="sidebar-normal"> Voided </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/summary">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/summary">
                     <span class="sidebar-mini"> S </span>
                     <span class="sidebar-normal"> Summary </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/sales_master">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/sales_master">
                     <span class="sidebar-mini"> SC </span>
                     <span class="sidebar-normal"> Sales Chart </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/tax">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/tax">
                     <span class="sidebar-mini"> T </span>
                     <span class="sidebar-normal"> Taxes </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/payment_type">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/payment_type">
                     <span class="sidebar-mini"> P </span>
                     <span class="sidebar-normal"> Payments </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/cash_in_out">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/cash_in_out">
                     <span class="sidebar-mini"> C </span>
                     <span class="sidebar-normal"> Cash In/Out </span>
                   </a>
@@ -131,31 +131,31 @@
             <div class="collapse" id="menus">
               <ul class="nav">
                 <li class="nav-item ">
-                  <a class="nav-link" href="/menu_item">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/menu_item">
                     <span class="sidebar-mini"> I </span>
                     <span class="sidebar-normal"> Item </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/combos">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/combos">
                     <span class="sidebar-mini"> C </span>
                     <span class="sidebar-normal"> Combo </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/menu_catalog">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/menu_catalog">
                     <span class="sidebar-mini"> C </span>
                     <span class="sidebar-normal"> Catalogue </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/discount">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/discount">
                     <span class="sidebar-mini"> D </span>
                     <span class="sidebar-normal"> Discount </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/tag">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/tag">
                     <span class="sidebar-mini"> T </span>
                     <span class="sidebar-normal"> Tags </span>
                   </a>
@@ -174,25 +174,25 @@
             <div class="collapse" id="settings">
               <ul class="nav">
                 <li class="nav-item ">
-                  <a class="nav-link" href="/branch">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/branch">
                     <span class="sidebar-mini"> MB </span>
                     <span class="sidebar-normal"> Manage Branch </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/staff">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/staff">
                     <span class="sidebar-mini"> MS </span>
                     <span class="sidebar-normal"> Manage Staff </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/user">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/user">
                     <span class="sidebar-mini"> MU </span>
                     <span class="sidebar-normal"> Manage User </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="/user_branch_access">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/user_branch_access">
                     <span class="sidebar-mini"> UBA </span>
                     <span class="sidebar-normal"> User Branch Access </span>
                   </a>

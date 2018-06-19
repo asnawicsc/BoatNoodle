@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, tax_path(@conn, :update, @tax)) %>
 
-<span><%= link "Back", to: tax_path(@conn, :index) %></span>
+<span><%= link "Back", to: tax_path(@conn, :index, BN.get_domain(@conn)) %></span>

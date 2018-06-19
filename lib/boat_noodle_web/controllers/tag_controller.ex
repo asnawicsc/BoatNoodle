@@ -43,7 +43,7 @@ defmodule BoatNoodleWeb.TagController do
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_flash(:error, "Printer creation error.")
-        |> redirect(to: tag_path(conn, :index))
+        |> redirect(to: tag_path(conn, :index, BN.get_domain(conn)))
     end
   end
 
@@ -78,6 +78,6 @@ defmodule BoatNoodleWeb.TagController do
 
     conn
     |> put_flash(:info, "Tag deleted successfully.")
-    |> redirect(to: tag_path(conn, :index))
+    |> redirect(to: tag_path(conn, :index, BN.get_domain(conn)))
   end
 end

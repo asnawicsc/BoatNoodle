@@ -20,4 +20,4 @@
 </ul>
 
 <span><%= link "Edit", to: category_path(@conn, :edit, @category) %></span>
-<span><%= link "Back", to: category_path(@conn, :index) %></span>
+<span><%= link "Back", to: category_path(@conn, :index, BN.get_domain(@conn)) %></span>

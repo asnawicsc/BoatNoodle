@@ -33,4 +33,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Picture", to: picture_path(@conn, :new) %></span>
+<span><%= link "New Picture", to: picture_path(@conn, :new, BN.get_domain(@conn)) %></span>

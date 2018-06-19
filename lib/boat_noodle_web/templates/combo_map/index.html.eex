@@ -19,4 +19,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Combo map", to: combo_map_path(@conn, :new) %></span>
+<span><%= link "New Combo map", to: combo_map_path(@conn, :new, BN.get_domain(@conn)) %></span>

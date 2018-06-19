@@ -1,5 +1,5 @@
 <h2>New Payment type</h2>
 
-<%= render "form.html", Map.put(assigns, :action, payment_type_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, payment_type_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: payment_type_path(@conn, :index) %></span>
+<span><%= link "Back", to: payment_type_path(@conn, :index, BN.get_domain(@conn)) %></span>

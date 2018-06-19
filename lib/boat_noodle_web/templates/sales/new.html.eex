@@ -1,5 +1,5 @@
 <h2>New Sales</h2>
 
-<%= render "form.html", Map.put(assigns, :action, sales_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, sales_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: sales_path(@conn, :index) %></span>
+<span><%= link "Back", to: sales_path(@conn, :index, BN.get_domain(@conn)) %></span>

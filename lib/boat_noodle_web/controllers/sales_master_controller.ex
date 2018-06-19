@@ -10,12 +10,9 @@ defmodule BoatNoodleWeb.SalesMasterController do
     |> Enum.reject(fn x -> x.branchid == 0 end)
   end
 
-
   def index(conn, _params) do
-
-     render(conn, "index.html",branches: branches())
+    render(conn, "index.html", branches: branches())
   end
-
 
   def new(conn, _params) do
     changeset = BN.change_sales_master(%SalesMaster{})
@@ -28,6 +25,7 @@ defmodule BoatNoodleWeb.SalesMasterController do
         conn
         |> put_flash(:info, "Sales master created successfully.")
         |> redirect(to: sales_master_path(conn, :show, sales_master))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -52,6 +50,7 @@ defmodule BoatNoodleWeb.SalesMasterController do
         conn
         |> put_flash(:info, "Sales master updated successfully.")
         |> redirect(to: sales_master_path(conn, :show, sales_master))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", sales_master: sales_master, changeset: changeset)
     end
@@ -63,6 +62,6 @@ defmodule BoatNoodleWeb.SalesMasterController do
 
     conn
     |> put_flash(:info, "Sales master deleted successfully.")
-    |> redirect(to: sales_master_path(conn, :index))
+    |> redirect(to: sales_master_path(conn, :index, BN.get_domain(conn)))
   end
 end

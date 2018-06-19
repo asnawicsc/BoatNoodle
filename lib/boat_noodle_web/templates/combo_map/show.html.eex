@@ -15,4 +15,4 @@
 </ul>
 
 <span><%= link "Edit", to: combo_map_path(@conn, :edit, @combo_map) %></span>
-<span><%= link "Back", to: combo_map_path(@conn, :index) %></span>
+<span><%= link "Back", to: combo_map_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, migrations_path(@conn, :update, @migrations)) %>
 
-<span><%= link "Back", to: migrations_path(@conn, :index) %></span>
+<span><%= link "Back", to: migrations_path(@conn, :index, BN.get_domain(@conn)) %></span>

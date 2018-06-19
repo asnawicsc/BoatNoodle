@@ -45,4 +45,4 @@
 </ul>
 
 <span><%= link "Edit", to: discount_item_path(@conn, :edit, @discount_item) %></span>
-<span><%= link "Back", to: discount_item_path(@conn, :index) %></span>
+<span><%= link "Back", to: discount_item_path(@conn, :index, BN.get_domain(@conn)) %></span>

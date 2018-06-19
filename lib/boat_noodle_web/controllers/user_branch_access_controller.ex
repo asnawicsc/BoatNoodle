@@ -109,6 +109,6 @@ defmodule BoatNoodleWeb.UserBranchAccessController do
 
     conn
     |> put_flash(:info, "User branch access deleted successfully.")
-    |> redirect(to: user_branch_access_path(conn, :index))
+    |> redirect(to: user_branch_access_path(conn, :index, BN.get_domain(conn)))
   end
 end

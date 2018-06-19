@@ -22,4 +22,4 @@
   </tbody>
 </table>
 
-<span><%= link "New User role", to: user_role_path(@conn, :new) %></span>
+<span><%= link "New User role", to: user_role_path(@conn, :new, BN.get_domain(@conn)) %></span>

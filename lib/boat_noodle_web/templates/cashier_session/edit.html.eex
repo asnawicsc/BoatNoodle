@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, cashier_session_path(@conn, :update, @cashier_session)) %>
 
-<span><%= link "Back", to: cashier_session_path(@conn, :index) %></span>
+<span><%= link "Back", to: cashier_session_path(@conn, :index, BN.get_domain(@conn)) %></span>

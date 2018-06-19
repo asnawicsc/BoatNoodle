@@ -1,5 +1,5 @@
 <h2>New User branch access</h2>
 
-<%= render "form.html", Map.put(assigns, :action, user_branch_access_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, user_branch_access_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: user_branch_access_path(@conn, :index) %></span>
+<span><%= link "Back", to: user_branch_access_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -28,4 +28,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Staff log session", to: staff_log_session_path(@conn, :new) %></span>
+<span><%= link "New Staff log session", to: staff_log_session_path(@conn, :new, BN.get_domain(@conn)) %></span>

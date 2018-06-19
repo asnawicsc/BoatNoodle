@@ -25,4 +25,4 @@
 </ul>
 
 <span><%= link "Edit", to: cash_in_out_path(@conn, :edit, @cash_in_out) %></span>
-<span><%= link "Back", to: cash_in_out_path(@conn, :index) %></span>
+<span><%= link "Back", to: cash_in_out_path(@conn, :index, BN.get_domain(@conn)) %></span>

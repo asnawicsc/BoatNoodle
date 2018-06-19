@@ -20,4 +20,4 @@
 </ul>
 
 <span><%= link "Edit", to: password_resets_path(@conn, :edit, @password_resets) %></span>
-<span><%= link "Back", to: password_resets_path(@conn, :index) %></span>
+<span><%= link "Back", to: password_resets_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.RPTTRANSACTIONController do
   alias BoatNoodle.BN.RPTTRANSACTION
 
   def index(conn, _params) do
-    rpt_transaction = Repo.all(from r in RPTTRANSACTION, limit: 10)
+    rpt_transaction = Repo.all(from(r in RPTTRANSACTION, limit: 10))
     render(conn, "index.html", rpt_transaction: rpt_transaction)
   end
 
@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.RPTTRANSACTIONController do
         conn
         |> put_flash(:info, "Rpttransaction created successfully.")
         |> redirect(to: rpttransaction_path(conn, :show, rpttransaction))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.RPTTRANSACTIONController do
         conn
         |> put_flash(:info, "Rpttransaction updated successfully.")
         |> redirect(to: rpttransaction_path(conn, :show, rpttransaction))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", rpttransaction: rpttransaction, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.RPTTRANSACTIONController do
 
     conn
     |> put_flash(:info, "Rpttransaction deleted successfully.")
-    |> redirect(to: rpttransaction_path(conn, :index))
+    |> redirect(to: rpttransaction_path(conn, :index, BN.get_domain(conn)))
   end
 end

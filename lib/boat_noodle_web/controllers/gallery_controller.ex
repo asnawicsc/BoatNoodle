@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.GalleryController do
         conn
         |> put_flash(:info, "Gallery created successfully.")
         |> redirect(to: gallery_path(conn, :show, gallery))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.GalleryController do
         conn
         |> put_flash(:info, "Gallery updated successfully.")
         |> redirect(to: gallery_path(conn, :show, gallery))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", gallery: gallery, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.GalleryController do
 
     conn
     |> put_flash(:info, "Gallery deleted successfully.")
-    |> redirect(to: gallery_path(conn, :index))
+    |> redirect(to: gallery_path(conn, :index, BN.get_domain(conn)))
   end
 end

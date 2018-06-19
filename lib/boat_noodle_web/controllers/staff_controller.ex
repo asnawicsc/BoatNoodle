@@ -131,7 +131,7 @@ defmodule BoatNoodleWeb.StaffController do
       {:ok, staff} ->
         conn
         |> put_flash(:info, "Staff updated successfully.")
-        |> redirect(to: staff_path(conn, :index))
+        |> redirect(to: staff_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", staff: staff, changeset: changeset)
@@ -144,6 +144,6 @@ defmodule BoatNoodleWeb.StaffController do
 
     conn
     |> put_flash(:info, "Staff deleted successfully.")
-    |> redirect(to: staff_path(conn, :index))
+    |> redirect(to: staff_path(conn, :index, BN.get_domain(conn)))
   end
 end

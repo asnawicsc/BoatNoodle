@@ -7,7 +7,6 @@ defmodule BoatNoodleWeb.DiscountController do
   alias BoatNoodle.BN.ItemCat
   alias BoatNoodle.BN.ItemSubcat
 
-
   def index(conn, _params) do
     discount = BN.list_discount()
 
@@ -24,13 +23,16 @@ defmodule BoatNoodleWeb.DiscountController do
         )
       )
 
-       discount_items =
+    discount_items =
       Repo.all(
         from(
           s in DiscountItem,
-          left_join: b in Discount, where: b.discountid==s.discountid,
-          left_join: c in ItemCat, where: s.target_cat==c.itemcatid,
-          left_join: d in ItemSubcat, where: s.is_targetmenuitems==d.subcatid,
+          left_join: b in Discount,
+          where: b.discountid == s.discountid,
+          left_join: c in ItemCat,
+          where: s.target_cat == c.itemcatid,
+          left_join: d in ItemSubcat,
+          where: s.is_targetmenuitems == d.subcatid,
           select: %{
             discountitemsid: s.discountitemsid,
             discitemsname: s.discitemsname,
@@ -44,7 +46,7 @@ defmodule BoatNoodleWeb.DiscountController do
         )
       )
 
-      discount_catalog =
+    discount_catalog =
       Repo.all(
         from(
           s in DiscountCatalog,
@@ -54,7 +56,15 @@ defmodule BoatNoodleWeb.DiscountController do
           }
         )
       )
-    render(conn, "index.html",discount_catalog: discount_catalog,discount_items: discount_items,discount_details: discount_details, discount: discount)
+
+    render(
+      conn,
+      "index.html",
+      discount_catalog: discount_catalog,
+      discount_items: discount_items,
+      discount_details: discount_details,
+      discount: discount
+    )
   end
 
   def new(conn, _params) do
@@ -68,6 +78,7 @@ defmodule BoatNoodleWeb.DiscountController do
         conn
         |> put_flash(:info, "Discount created successfully.")
         |> redirect(to: discount_path(conn, :show, discount))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -92,6 +103,7 @@ defmodule BoatNoodleWeb.DiscountController do
         conn
         |> put_flash(:info, "Discount updated successfully.")
         |> redirect(to: discount_path(conn, :show, discount))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", discount: discount, changeset: changeset)
     end
@@ -103,6 +115,6 @@ defmodule BoatNoodleWeb.DiscountController do
 
     conn
     |> put_flash(:info, "Discount deleted successfully.")
-    |> redirect(to: discount_path(conn, :index))
+    |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
   end
 end

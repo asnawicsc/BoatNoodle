@@ -79,7 +79,7 @@ defmodule BoatNoodleWeb.UserController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: user_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
@@ -141,17 +141,17 @@ defmodule BoatNoodleWeb.UserController do
           {:ok, user} ->
             conn
             |> put_flash(:info, "User updated successfully.")
-            |> redirect(to: user_path(conn, :edit, params["user_id"]))
+            |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
 
           {:error, %Ecto.Changeset{} = changeset} ->
             conn
             |> put_flash(:error, "User update unsuccessful.")
-            |> redirect(to: user_path(conn, :edit, params["user_id"]))
+            |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
         end
       else
         conn
         |> put_flash(:error, "New Password and Confirmation Password do not match")
-        |> redirect(to: user_path(conn, :edit, params["user_id"]))
+        |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
       end
     else
       user_params = %{
@@ -163,12 +163,12 @@ defmodule BoatNoodleWeb.UserController do
         {:ok, user} ->
           conn
           |> put_flash(:info, "User updated successfully.")
-          |> redirect(to: user_path(conn, :edit, params["user_id"]))
+          |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
 
         {:error, %Ecto.Changeset{} = changeset} ->
           conn
           |> put_flash(:error, "User update unsuccessful.")
-          |> redirect(to: user_path(conn, :edit, params["user_id"]))
+          |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
       end
     end
   end
@@ -179,7 +179,7 @@ defmodule BoatNoodleWeb.UserController do
     if params["user"]["image"] == nil do
       conn
       |> put_flash(:error, "No image found!")
-      |> redirect(to: user_path(conn, :edit, params["user_id"]))
+      |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
     else
       if user.gall_id == nil do
         {:ok, gallery} = Images.create_gallery(%{})
@@ -215,7 +215,7 @@ defmodule BoatNoodleWeb.UserController do
 
         conn
         |> put_flash(:info, "Profile picture updated successfully.")
-        |> redirect(to: user_path(conn, :edit, params["user_id"]))
+        |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
       end
     end
   end
@@ -227,7 +227,7 @@ defmodule BoatNoodleWeb.UserController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: user_path(conn, :show, user))
+        |> redirect(to: user_path(conn, :show, BN.get_domain(conn), user))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user: user, changeset: changeset)
@@ -240,7 +240,7 @@ defmodule BoatNoodleWeb.UserController do
 
     conn
     |> put_flash(:info, "User deleted successfully.")
-    |> redirect(to: user_path(conn, :index))
+    |> redirect(to: user_path(conn, :index, BN.get_domain(conn)))
   end
 
   def login(conn, params) do
@@ -254,21 +254,20 @@ defmodule BoatNoodleWeb.UserController do
       p2 = String.replace(user.password, "$2y", "$2b")
 
       if Comeonin.Bcrypt.checkpw(password, p2) do
-        # IEx.pry()
-
         conn
         |> put_session(:user_id, user.id)
+        |> put_session(:brand, "boot_noodle")
         |> put_flash(:info, "Login successfully")
-        |> redirect(to: page_path(conn, :index))
+        |> redirect(to: page_path(conn, :index, conn.params["brand"]))
       else
         conn
         |> put_flash(:error, "Wrong password!")
-        |> redirect(to: user_path(conn, :login))
+        |> redirect(to: user_path(conn, :login, conn.params["brand"]))
       end
     else
       conn
       |> put_flash(:error, "User not found")
-      |> redirect(to: user_path(conn, :login))
+      |> redirect(to: user_path(conn, :login, conn.params["brand"]))
     end
   end
 
@@ -282,7 +281,7 @@ defmodule BoatNoodleWeb.UserController do
     if user == nil do
       conn
       |> put_flash(:error, "User not found")
-      |> redirect(to: user_path(conn, :forget_password))
+      |> redirect(to: user_path(conn, :forget_password, BN.get_domain(conn)))
     else
       if user.password_v2 != "" do
         bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
@@ -319,7 +318,7 @@ defmodule BoatNoodleWeb.UserController do
 
       conn
       |> put_flash(:info, "Password has been sent to your email. Please check !")
-      |> redirect(to: user_path(conn, :login))
+      |> redirect(to: user_path(conn, :login, BN.get_domain(conn)))
     end
   end
 
@@ -327,6 +326,6 @@ defmodule BoatNoodleWeb.UserController do
     conn
     |> delete_session(:user_id)
     |> put_flash(:info, "Logout successfully")
-    |> redirect(to: user_path(conn, :login))
+    |> redirect(to: user_path(conn, :login, BN.get_domain(conn)))
   end
 end

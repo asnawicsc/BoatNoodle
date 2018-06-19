@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, item_customized_path(@conn, :update, @item_customized)) %>
 
-<span><%= link "Back", to: item_customized_path(@conn, :index) %></span>
+<span><%= link "Back", to: item_customized_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -1,5 +1,5 @@
 <h2>New Tax</h2>
 
-<%= render "form.html", Map.put(assigns, :action, tax_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, tax_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: tax_path(@conn, :index) %></span>
+<span><%= link "Back", to: tax_path(@conn, :index, BN.get_domain(@conn)) %></span>

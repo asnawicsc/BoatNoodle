@@ -82,6 +82,6 @@ defmodule BoatNoodleWeb.MenuCatalogController do
 
     conn
     |> put_flash(:info, "Menu catalog deleted successfully.")
-    |> redirect(to: menu_catalog_path(conn, :index))
+    |> redirect(to: menu_catalog_path(conn, :index, BN.get_domain(conn)))
   end
 end

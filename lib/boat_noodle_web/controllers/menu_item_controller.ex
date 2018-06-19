@@ -159,16 +159,16 @@ defmodule BoatNoodleWeb.MenuItemController do
 
         conn
         |> put_flash(:info, "Menu item created successfully.")
-        |> redirect(to: menu_item_path(conn, :index))
+        |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
       else
         conn
         |> put_flash(:info, "code behind are not numbers")
-        |> redirect(to: menu_item_path(conn, :new))
+        |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
       end
     else
       conn
       |> put_flash(:info, "code first letter is not alphabet")
-      |> redirect(to: menu_item_path(conn, :new))
+      |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
     end
 
     # case BN.create_menu_item(menu_item_params) do
@@ -249,23 +249,23 @@ defmodule BoatNoodleWeb.MenuItemController do
 
         conn
         |> put_flash(:info, "Menu item updated successfully.")
-        |> redirect(to: menu_item_path(conn, :index))
+        |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
       else
         conn
         |> put_flash(:info, "code behind are not numbers")
-        |> redirect(to: menu_item_path(conn, :new))
+        |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
       end
     else
       conn
       |> put_flash(:info, "code first letter is not alphabet")
-      |> redirect(to: menu_item_path(conn, :new))
+      |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
     end
 
     # case BN.update_menu_item(menu_item, menu_item_params) do
     #   {:ok, menu_item} ->
     conn
     |> put_flash(:info, "Menu item updated successfully.")
-    |> redirect(to: menu_item_path(conn, :index))
+    |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
 
     #   {:error, %Ecto.Changeset{} = changeset} ->
     #     render(conn, "edit.html", menu_item: menu_item, changeset: changeset)
@@ -278,6 +278,6 @@ defmodule BoatNoodleWeb.MenuItemController do
 
     conn
     |> put_flash(:info, "Menu item deleted successfully.")
-    |> redirect(to: menu_item_path(conn, :index))
+    |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
   end
 end

@@ -1,5 +1,5 @@
 <h2>New Staff log session</h2>
 
-<%= render "form.html", Map.put(assigns, :action, staff_log_session_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, staff_log_session_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: staff_log_session_path(@conn, :index) %></span>
+<span><%= link "Back", to: staff_log_session_path(@conn, :index, BN.get_domain(@conn)) %></span>

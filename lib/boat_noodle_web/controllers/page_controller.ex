@@ -10,6 +10,6 @@ defmodule BoatNoodleWeb.PageController do
   def no_page_found(conn, _params) do
     conn
     |> put_flash(:error, "No page found")
-    |> redirect(to: page_path(conn, :index))
+    |> redirect(to: page_path(conn, :index, BN.get_domain(conn)))
   end
 end

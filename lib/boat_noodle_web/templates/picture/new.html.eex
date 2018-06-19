@@ -1,5 +1,5 @@
 <h2>New Picture</h2>
 
-<%= render "form.html", Map.put(assigns, :action, picture_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, picture_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: picture_path(@conn, :index) %></span>
+<span><%= link "Back", to: picture_path(@conn, :index, BN.get_domain(@conn)) %></span>

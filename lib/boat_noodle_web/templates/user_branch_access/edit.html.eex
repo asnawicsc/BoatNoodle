@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, user_branch_access_path(@conn, :update, @user_branch_access)) %>
 
-<span><%= link "Back", to: user_branch_access_path(@conn, :index) %></span>
+<span><%= link "Back", to: user_branch_access_path(@conn, :index, BN.get_domain(@conn)) %></span>

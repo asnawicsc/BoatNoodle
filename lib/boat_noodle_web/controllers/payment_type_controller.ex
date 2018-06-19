@@ -4,11 +4,11 @@ defmodule BoatNoodleWeb.PaymentTypeController do
   alias BoatNoodle.BN
   alias BoatNoodle.BN.PaymentType
 
-   def index(conn, _params) do
+  def index(conn, _params) do
     branches = Repo.all(from(s in BoatNoodle.BN.Branch))
     render(conn, "index.html", branches: branches)
   end
-  
+
   def new(conn, _params) do
     changeset = BN.change_payment_type(%PaymentType{})
     render(conn, "new.html", changeset: changeset)
@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.PaymentTypeController do
         conn
         |> put_flash(:info, "Payment type created successfully.")
         |> redirect(to: payment_type_path(conn, :show, payment_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.PaymentTypeController do
         conn
         |> put_flash(:info, "Payment type updated successfully.")
         |> redirect(to: payment_type_path(conn, :show, payment_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", payment_type: payment_type, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.PaymentTypeController do
 
     conn
     |> put_flash(:info, "Payment type deleted successfully.")
-    |> redirect(to: payment_type_path(conn, :index))
+    |> redirect(to: payment_type_path(conn, :index, BN.get_domain(conn)))
   end
 end

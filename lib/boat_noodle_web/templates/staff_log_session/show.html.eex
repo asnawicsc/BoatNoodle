@@ -35,4 +35,4 @@
 </ul>
 
 <span><%= link "Edit", to: staff_log_session_path(@conn, :edit, @staff_log_session) %></span>
-<span><%= link "Back", to: staff_log_session_path(@conn, :index) %></span>
+<span><%= link "Back", to: staff_log_session_path(@conn, :index, BN.get_domain(@conn)) %></span>

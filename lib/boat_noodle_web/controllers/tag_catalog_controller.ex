@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.TagCatalogController do
         conn
         |> put_flash(:info, "Tag catalog created successfully.")
         |> redirect(to: tag_catalog_path(conn, :show, tag_catalog))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.TagCatalogController do
         conn
         |> put_flash(:info, "Tag catalog updated successfully.")
         |> redirect(to: tag_catalog_path(conn, :show, tag_catalog))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", tag_catalog: tag_catalog, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.TagCatalogController do
 
     conn
     |> put_flash(:info, "Tag catalog deleted successfully.")
-    |> redirect(to: tag_catalog_path(conn, :index))
+    |> redirect(to: tag_catalog_path(conn, :index, BN.get_domain(conn)))
   end
 end

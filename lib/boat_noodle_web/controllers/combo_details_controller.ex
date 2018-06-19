@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.ComboDetailsController do
         conn
         |> put_flash(:info, "Combo details created successfully.")
         |> redirect(to: combo_details_path(conn, :show, combo_details))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.ComboDetailsController do
         conn
         |> put_flash(:info, "Combo details updated successfully.")
         |> redirect(to: combo_details_path(conn, :show, combo_details))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", combo_details: combo_details, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.ComboDetailsController do
 
     conn
     |> put_flash(:info, "Combo details deleted successfully.")
-    |> redirect(to: combo_details_path(conn, :index))
+    |> redirect(to: combo_details_path(conn, :index, BN.get_domain(conn)))
   end
 end

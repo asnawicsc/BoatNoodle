@@ -4,7 +4,7 @@ defmodule BoatNoodleWeb.CashInOutController do
   alias BoatNoodle.BN
   alias BoatNoodle.BN.CashInOut
 
-   def index(conn, _params) do
+  def index(conn, _params) do
     branches = Repo.all(from(s in BoatNoodle.BN.Branch))
     render(conn, "index.html", branches: branches)
   end
@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.CashInOutController do
         conn
         |> put_flash(:info, "Cash in out created successfully.")
         |> redirect(to: cash_in_out_path(conn, :show, cash_in_out))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.CashInOutController do
         conn
         |> put_flash(:info, "Cash in out updated successfully.")
         |> redirect(to: cash_in_out_path(conn, :show, cash_in_out))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", cash_in_out: cash_in_out, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.CashInOutController do
 
     conn
     |> put_flash(:info, "Cash in out deleted successfully.")
-    |> redirect(to: cash_in_out_path(conn, :index))
+    |> redirect(to: cash_in_out_path(conn, :index, BN.get_domain(conn)))
   end
 end

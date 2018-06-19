@@ -70,4 +70,4 @@
 </ul>
 
 <span><%= link "Edit", to: cashier_session_path(@conn, :edit, @cashier_session) %></span>
-<span><%= link "Back", to: cashier_session_path(@conn, :index) %></span>
+<span><%= link "Back", to: cashier_session_path(@conn, :index, BN.get_domain(@conn)) %></span>

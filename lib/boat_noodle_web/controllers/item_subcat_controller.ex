@@ -190,7 +190,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     conn
     |> put_flash(:info, "Combo Created")
-    |> redirect(to: menu_item_path(conn, :index))
+    |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
   end
 
   def combo_new(conn, _params) do
@@ -459,6 +459,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     conn
     |> put_flash(:info, "Item subcat deleted successfully.")
-    |> redirect(to: item_subcat_path(conn, :index))
+    |> redirect(to: item_subcat_path(conn, :index, BN.get_domain(conn)))
   end
 end

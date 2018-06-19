@@ -1,5 +1,6 @@
 defmodule BoatNoodle.UltiMigrator do
   use Task
+  require IEx
 
   @migration_modules [
     {0, AddBrand},
@@ -7,8 +8,6 @@ defmodule BoatNoodle.UltiMigrator do
     {2, AddBrand3},
     {3, AddBrand4}
   ]
-
-  require IEx
 
   def start_link(arg) do
     Task.start_link(__MODULE__, :run, [arg])
@@ -22,6 +21,7 @@ defmodule BoatNoodle.UltiMigrator do
 end
 
 # migrate the new items
+# 
 
 defmodule AddBrand4 do
   use Ecto.Migration

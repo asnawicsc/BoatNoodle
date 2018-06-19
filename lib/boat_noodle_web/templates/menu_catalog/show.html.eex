@@ -40,4 +40,4 @@
 </ul>
 
 <span><%= link "Edit", to: menu_catalog_path(@conn, :edit, @menu_catalog) %></span>
-<span><%= link "Back", to: menu_catalog_path(@conn, :index) %></span>
+<span><%= link "Back", to: menu_catalog_path(@conn, :index, BN.get_domain(@conn)) %></span>

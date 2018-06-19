@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, picture_path(@conn, :update, @picture)) %>
 
-<span><%= link "Back", to: picture_path(@conn, :index) %></span>
+<span><%= link "Back", to: picture_path(@conn, :index, BN.get_domain(@conn)) %></span>

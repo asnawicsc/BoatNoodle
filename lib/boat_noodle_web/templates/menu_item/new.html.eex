@@ -9,7 +9,7 @@
 
     </div>
 
-    <%= form_for @changeset, menu_item_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
+    <%= form_for @changeset, menu_item_path(@conn, :create, BN.get_domain(@conn)), [class: "form-horizontal"], fn f -> %>
       <div class="card-body">
 
         <div class="row">

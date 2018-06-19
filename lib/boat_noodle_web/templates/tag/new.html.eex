@@ -1,7 +1,7 @@
 <h2>New Printer</h2>
 
 
-<%= form_for @changeset, tag_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
+<%= form_for @changeset, tag_path(@conn, :create, BN.get_domain(@conn)), [class: "form-horizontal"], fn f -> %>
 
 <div class="row">
 	<div class="col-sm-2">
@@ -51,4 +51,4 @@
 </div>
 <% end %>
 
-<span><%= link "Back", to: tag_path(@conn, :index) %></span>
+<span><%= link "Back", to: tag_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.DiscountCategoryController do
         conn
         |> put_flash(:info, "Discount category created successfully.")
         |> redirect(to: discount_category_path(conn, :show, discount_category))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.DiscountCategoryController do
         conn
         |> put_flash(:info, "Discount category updated successfully.")
         |> redirect(to: discount_category_path(conn, :show, discount_category))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", discount_category: discount_category, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.DiscountCategoryController do
 
     conn
     |> put_flash(:info, "Discount category deleted successfully.")
-    |> redirect(to: discount_category_path(conn, :index))
+    |> redirect(to: discount_category_path(conn, :index, BN.get_domain(conn)))
   end
 end

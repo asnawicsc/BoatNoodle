@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, rpthourlyoutlet_path(@conn, :update, @rpthourlyoutlet)) %>
 
-<span><%= link "Back", to: rpthourlyoutlet_path(@conn, :index) %></span>
+<span><%= link "Back", to: rpthourlyoutlet_path(@conn, :index, BN.get_domain(@conn)) %></span>

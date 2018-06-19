@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.UserRoleController do
         conn
         |> put_flash(:info, "User role created successfully.")
         |> redirect(to: user_role_path(conn, :show, user_role))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.UserRoleController do
         conn
         |> put_flash(:info, "User role updated successfully.")
         |> redirect(to: user_role_path(conn, :show, user_role))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user_role: user_role, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.UserRoleController do
 
     conn
     |> put_flash(:info, "User role deleted successfully.")
-    |> redirect(to: user_role_path(conn, :index))
+    |> redirect(to: user_role_path(conn, :index, BN.get_domain(conn)))
   end
 end

@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.CashInOutTypeController do
         conn
         |> put_flash(:info, "Cash in out type created successfully.")
         |> redirect(to: cash_in_out_type_path(conn, :show, cash_in_out_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.CashInOutTypeController do
         conn
         |> put_flash(:info, "Cash in out type updated successfully.")
         |> redirect(to: cash_in_out_type_path(conn, :show, cash_in_out_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", cash_in_out_type: cash_in_out_type, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.CashInOutTypeController do
 
     conn
     |> put_flash(:info, "Cash in out type deleted successfully.")
-    |> redirect(to: cash_in_out_type_path(conn, :index))
+    |> redirect(to: cash_in_out_type_path(conn, :index, BN.get_domain(conn)))
   end
 end

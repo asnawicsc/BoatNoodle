@@ -148,4 +148,4 @@
 
 
 
-<span><%= link "New Discount item", to: discount_item_path(@conn, :new) %></span>
+<span><%= link "New Discount item", to: discount_item_path(@conn, :new, BN.get_domain(@conn)) %></span>

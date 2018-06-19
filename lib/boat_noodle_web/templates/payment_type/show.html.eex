@@ -10,4 +10,4 @@
 </ul>
 
 <span><%= link "Edit", to: payment_type_path(@conn, :edit, @payment_type) %></span>
-<span><%= link "Back", to: payment_type_path(@conn, :index) %></span>
+<span><%= link "Back", to: payment_type_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -40,4 +40,4 @@
 </ul>
 
 <span><%= link "Edit", to: staff_path(@conn, :edit, @staff) %></span>
-<span><%= link "Back", to: staff_path(@conn, :index) %></span>
+<span><%= link "Back", to: staff_path(@conn, :index, BN.get_domain(@conn)) %></span>

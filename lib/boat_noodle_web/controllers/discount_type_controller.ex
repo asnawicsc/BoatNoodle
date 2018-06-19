@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.DiscountTypeController do
         conn
         |> put_flash(:info, "Discount type created successfully.")
         |> redirect(to: discount_type_path(conn, :show, discount_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.DiscountTypeController do
         conn
         |> put_flash(:info, "Discount type updated successfully.")
         |> redirect(to: discount_type_path(conn, :show, discount_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", discount_type: discount_type, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.DiscountTypeController do
 
     conn
     |> put_flash(:info, "Discount type deleted successfully.")
-    |> redirect(to: discount_type_path(conn, :index))
+    |> redirect(to: discount_type_path(conn, :index, BN.get_domain(conn)))
   end
 end

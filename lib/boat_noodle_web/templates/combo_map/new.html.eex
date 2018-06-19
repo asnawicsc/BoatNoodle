@@ -1,5 +1,5 @@
 <h2>New Combo map</h2>
 
-<%= render "form.html", Map.put(assigns, :action, combo_map_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, combo_map_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: combo_map_path(@conn, :index) %></span>
+<span><%= link "Back", to: combo_map_path(@conn, :index, BN.get_domain(@conn)) %></span>

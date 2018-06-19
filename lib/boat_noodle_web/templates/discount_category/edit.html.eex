@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, discount_category_path(@conn, :update, @discount_category)) %>
 
-<span><%= link "Back", to: discount_category_path(@conn, :index) %></span>
+<span><%= link "Back", to: discount_category_path(@conn, :index, BN.get_domain(@conn)) %></span>

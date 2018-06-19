@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.ItemCatController do
         conn
         |> put_flash(:info, "Item cat created successfully.")
         |> redirect(to: item_cat_path(conn, :show, item_cat))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.ItemCatController do
         conn
         |> put_flash(:info, "Item cat updated successfully.")
         |> redirect(to: item_cat_path(conn, :show, item_cat))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", item_cat: item_cat, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.ItemCatController do
 
     conn
     |> put_flash(:info, "Item cat deleted successfully.")
-    |> redirect(to: item_cat_path(conn, :index))
+    |> redirect(to: item_cat_path(conn, :index, BN.get_domain(conn)))
   end
 end

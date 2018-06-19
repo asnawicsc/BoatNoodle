@@ -65,4 +65,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Sales payment", to: sales_payment_path(@conn, :new) %></span>
+<span><%= link "New Sales payment", to: sales_payment_path(@conn, :new, BN.get_domain(@conn)) %></span>

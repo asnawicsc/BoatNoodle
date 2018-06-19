@@ -21,4 +21,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Migrations", to: migrations_path(@conn, :new) %></span>
+<span><%= link "New Migrations", to: migrations_path(@conn, :new, BN.get_domain(@conn)) %></span>

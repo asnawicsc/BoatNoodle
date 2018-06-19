@@ -160,4 +160,4 @@
 </ul>
 
 <span><%= link "Edit", to: rptcashiereod_path(@conn, :edit, @rptcashiereod) %></span>
-<span><%= link "Back", to: rptcashiereod_path(@conn, :index) %></span>
+<span><%= link "Back", to: rptcashiereod_path(@conn, :index, BN.get_domain(@conn)) %></span>

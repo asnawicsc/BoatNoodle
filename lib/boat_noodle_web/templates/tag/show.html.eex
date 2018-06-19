@@ -20,4 +20,4 @@
 </ul>
 
 <span><%= link "Edit", to: tag_path(@conn, :edit, @tag) %></span>
-<span><%= link "Back", to: tag_path(@conn, :index) %></span>
+<span><%= link "Back", to: tag_path(@conn, :index, BN.get_domain(@conn)) %></span>

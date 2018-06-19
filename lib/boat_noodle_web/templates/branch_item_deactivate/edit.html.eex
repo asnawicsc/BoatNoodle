@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, branch_item_deactivate_path(@conn, :update, @branch_item_deactivate)) %>
 
-<span><%= link "Back", to: branch_item_deactivate_path(@conn, :index) %></span>
+<span><%= link "Back", to: branch_item_deactivate_path(@conn, :index, BN.get_domain(@conn)) %></span>

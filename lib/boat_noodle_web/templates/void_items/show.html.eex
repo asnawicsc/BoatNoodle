@@ -100,4 +100,4 @@
 </ul>
 
 <span><%= link "Edit", to: void_items_path(@conn, :edit, @void_items) %></span>
-<span><%= link "Back", to: void_items_path(@conn, :index) %></span>
+<span><%= link "Back", to: void_items_path(@conn, :index, BN.get_domain(@conn)) %></span>

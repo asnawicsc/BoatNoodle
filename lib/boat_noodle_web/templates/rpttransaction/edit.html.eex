@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, rpttransaction_path(@conn, :update, @rpttransaction)) %>
 
-<span><%= link "Back", to: rpttransaction_path(@conn, :index) %></span>
+<span><%= link "Back", to: rpttransaction_path(@conn, :index, BN.get_domain(@conn)) %></span>

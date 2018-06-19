@@ -66,7 +66,7 @@ defmodule BoatNoodleWeb.BranchController do
     )
   end
 
-  def index(conn, _params) do
+  def index(conn, params) do
     branch =
       Repo.all(
         from(
@@ -95,14 +95,16 @@ defmodule BoatNoodleWeb.BranchController do
   def new(conn, _params) do
     changeset = BN.change_branch(%Branch{})
 
-    managers =BN.list_user() |> Enum.map(fn x -> {x.username, x.id} end)
+    managers =
+      BN.list_user() |> Enum.map(fn x -> {x.username, x.id} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     organizations =
       BN.list_organization() |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
-    menu_catalog =  Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+    menu_catalog =
+      Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
 
     disc_catalog =
       Repo.all(from(m in DiscountCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
@@ -172,7 +174,7 @@ defmodule BoatNoodleWeb.BranchController do
       {:ok, branch} ->
         conn
         |> put_flash(:info, "Branch updated successfully.")
-        |> redirect(to: branch_path(conn, :index))
+        |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", branch: branch, changeset: changeset)
@@ -185,6 +187,6 @@ defmodule BoatNoodleWeb.BranchController do
 
     conn
     |> put_flash(:info, "Branch deleted successfully.")
-    |> redirect(to: branch_path(conn, :index))
+    |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
   end
 end

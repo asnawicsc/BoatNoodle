@@ -50,4 +50,4 @@
 </ul>
 
 <span><%= link "Edit", to: item_cat_path(@conn, :edit, @item_cat) %></span>
-<span><%= link "Back", to: item_cat_path(@conn, :index) %></span>
+<span><%= link "Back", to: item_cat_path(@conn, :index, BN.get_domain(@conn)) %></span>

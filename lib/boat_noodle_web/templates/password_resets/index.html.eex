@@ -27,4 +27,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Password resets", to: password_resets_path(@conn, :new) %></span>
+<span><%= link "New Password resets", to: password_resets_path(@conn, :new, BN.get_domain(@conn)) %></span>

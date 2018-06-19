@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.ItemCustomizedController do
         conn
         |> put_flash(:info, "Item customized created successfully.")
         |> redirect(to: item_customized_path(conn, :show, item_customized))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.ItemCustomizedController do
         conn
         |> put_flash(:info, "Item customized updated successfully.")
         |> redirect(to: item_customized_path(conn, :show, item_customized))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", item_customized: item_customized, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.ItemCustomizedController do
 
     conn
     |> put_flash(:info, "Item customized deleted successfully.")
-    |> redirect(to: item_customized_path(conn, :index))
+    |> redirect(to: item_customized_path(conn, :index, BN.get_domain(conn)))
   end
 end

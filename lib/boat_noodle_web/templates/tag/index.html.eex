@@ -1,4 +1,4 @@
 <h3>Printers</h3>
 
 
-<span><%= link "New Tag", to: tag_path(@conn, :new) %></span>
+<span><%= link "New Tag", to: tag_path(@conn, :new, BN.get_domain(@conn)) %></span>

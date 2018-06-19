@@ -1,5 +1,5 @@
         <div class="col-md-4 col-sm-6 ml-auto mr-auto">
-          <form role="form" action="/authenticate_login" method="post">
+          <form role="form" action="/<%= @conn.params["brand"]%>/authenticate_login" method="post">
                         <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
 
             <div class="card card-login card-hidden">

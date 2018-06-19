@@ -25,4 +25,4 @@
 </ul>
 
 <span><%= link "Edit", to: branch_item_deactivate_path(@conn, :edit, @branch_item_deactivate) %></span>
-<span><%= link "Back", to: branch_item_deactivate_path(@conn, :index) %></span>
+<span><%= link "Back", to: branch_item_deactivate_path(@conn, :index, BN.get_domain(@conn)) %></span>

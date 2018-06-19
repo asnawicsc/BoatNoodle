@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.CashierSessionController do
         conn
         |> put_flash(:info, "Cashier session created successfully.")
         |> redirect(to: cashier_session_path(conn, :show, cashier_session))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.CashierSessionController do
         conn
         |> put_flash(:info, "Cashier session updated successfully.")
         |> redirect(to: cashier_session_path(conn, :show, cashier_session))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", cashier_session: cashier_session, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.CashierSessionController do
 
     conn
     |> put_flash(:info, "Cashier session deleted successfully.")
-    |> redirect(to: cashier_session_path(conn, :index))
+    |> redirect(to: cashier_session_path(conn, :index, BN.get_domain(conn)))
   end
 end

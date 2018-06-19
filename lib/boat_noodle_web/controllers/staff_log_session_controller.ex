@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.StaffLogSessionController do
         conn
         |> put_flash(:info, "Staff log session created successfully.")
         |> redirect(to: staff_log_session_path(conn, :show, staff_log_session))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.StaffLogSessionController do
         conn
         |> put_flash(:info, "Staff log session updated successfully.")
         |> redirect(to: staff_log_session_path(conn, :show, staff_log_session))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", staff_log_session: staff_log_session, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.StaffLogSessionController do
 
     conn
     |> put_flash(:info, "Staff log session deleted successfully.")
-    |> redirect(to: staff_log_session_path(conn, :index))
+    |> redirect(to: staff_log_session_path(conn, :index, BN.get_domain(conn)))
   end
 end

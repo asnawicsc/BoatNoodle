@@ -35,4 +35,4 @@
 </ul>
 
 <span><%= link "Edit", to: picture_path(@conn, :edit, @picture) %></span>
-<span><%= link "Back", to: picture_path(@conn, :index) %></span>
+<span><%= link "Back", to: picture_path(@conn, :index, BN.get_domain(@conn)) %></span>

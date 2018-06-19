@@ -35,4 +35,4 @@
 </ul>
 
 <span><%= link "Edit", to: sales_master_path(@conn, :edit, @sales_master) %></span>
-<span><%= link "Back", to: sales_master_path(@conn, :index) %></span>
+<span><%= link "Back", to: sales_master_path(@conn, :index, BN.get_domain(@conn)) %></span>

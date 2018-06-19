@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, menu_catalog_master_path(@conn, :update, @menu_catalog_master)) %>
 
-<span><%= link "Back", to: menu_catalog_master_path(@conn, :index) %></span>
+<span><%= link "Back", to: menu_catalog_master_path(@conn, :index, BN.get_domain(@conn)) %></span>

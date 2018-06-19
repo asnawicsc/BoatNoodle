@@ -1,5 +1,5 @@
 <h2>New Cash in out type</h2>
 
-<%= render "form.html", Map.put(assigns, :action, cash_in_out_type_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, cash_in_out_type_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: cash_in_out_type_path(@conn, :index) %></span>
+<span><%= link "Back", to: cash_in_out_type_path(@conn, :index, BN.get_domain(@conn)) %></span>

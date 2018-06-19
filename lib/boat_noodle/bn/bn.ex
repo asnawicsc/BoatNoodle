@@ -4229,4 +4229,8 @@ defmodule BoatNoodle.BN do
   def change_discount(%Discount{} = discount) do
     Discount.changeset(discount, %{})
   end
+
+  def get_domain(conn) do
+    conn.private.plug_session["brand"]
+  end
 end

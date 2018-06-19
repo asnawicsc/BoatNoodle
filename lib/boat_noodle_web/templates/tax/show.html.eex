@@ -25,4 +25,4 @@
 </ul>
 
 <span><%= link "Edit", to: tax_path(@conn, :edit, @tax) %></span>
-<span><%= link "Back", to: tax_path(@conn, :index) %></span>
+<span><%= link "Back", to: tax_path(@conn, :index, BN.get_domain(@conn)) %></span>

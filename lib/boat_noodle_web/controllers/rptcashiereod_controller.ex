@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.RPTCASHIEREODController do
   alias BoatNoodle.BN.RPTCASHIEREOD
 
   def index(conn, _params) do
-    rpt_cashier_eod = Repo.all(from r in RPTCASHIEREOD, limit: 10)
+    rpt_cashier_eod = Repo.all(from(r in RPTCASHIEREOD, limit: 10))
     render(conn, "index.html", rpt_cashier_eod: rpt_cashier_eod)
   end
 
@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.RPTCASHIEREODController do
         conn
         |> put_flash(:info, "Rptcashiereod created successfully.")
         |> redirect(to: rptcashiereod_path(conn, :show, rptcashiereod))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.RPTCASHIEREODController do
         conn
         |> put_flash(:info, "Rptcashiereod updated successfully.")
         |> redirect(to: rptcashiereod_path(conn, :show, rptcashiereod))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", rptcashiereod: rptcashiereod, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.RPTCASHIEREODController do
 
     conn
     |> put_flash(:info, "Rptcashiereod deleted successfully.")
-    |> redirect(to: rptcashiereod_path(conn, :index))
+    |> redirect(to: rptcashiereod_path(conn, :index, BN.get_domain(conn)))
   end
 end

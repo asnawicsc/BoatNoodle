@@ -15,4 +15,4 @@
 </ul>
 
 <span><%= link "Edit", to: migrations_path(@conn, :edit, @migrations) %></span>
-<span><%= link "Back", to: migrations_path(@conn, :index) %></span>
+<span><%= link "Back", to: migrations_path(@conn, :index, BN.get_domain(@conn)) %></span>

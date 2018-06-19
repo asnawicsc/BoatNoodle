@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.UserPwdController do
         conn
         |> put_flash(:info, "User pwd created successfully.")
         |> redirect(to: user_pwd_path(conn, :show, user_pwd))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.UserPwdController do
         conn
         |> put_flash(:info, "User pwd updated successfully.")
         |> redirect(to: user_pwd_path(conn, :show, user_pwd))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user_pwd: user_pwd, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.UserPwdController do
 
     conn
     |> put_flash(:info, "User pwd deleted successfully.")
-    |> redirect(to: user_pwd_path(conn, :index))
+    |> redirect(to: user_pwd_path(conn, :index, BN.get_domain(conn)))
   end
 end

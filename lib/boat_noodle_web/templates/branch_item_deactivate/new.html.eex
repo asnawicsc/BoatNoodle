@@ -1,5 +1,5 @@
 <h2>New Branch item deactivate</h2>
 
-<%= render "form.html", Map.put(assigns, :action, branch_item_deactivate_path(@conn, :create)) %>
+<%= render "form.html", Map.put(assigns, :action, branch_item_deactivate_path(@conn, :create, BN.get_domain(@conn))) %>
 
-<span><%= link "Back", to: branch_item_deactivate_path(@conn, :index) %></span>
+<span><%= link "Back", to: branch_item_deactivate_path(@conn, :index, BN.get_domain(@conn)) %></span>

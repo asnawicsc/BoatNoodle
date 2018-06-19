@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.StaffTypeController do
         conn
         |> put_flash(:info, "Staff type created successfully.")
         |> redirect(to: staff_type_path(conn, :show, staff_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.StaffTypeController do
         conn
         |> put_flash(:info, "Staff type updated successfully.")
         |> redirect(to: staff_type_path(conn, :show, staff_type))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", staff_type: staff_type, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.StaffTypeController do
 
     conn
     |> put_flash(:info, "Staff type deleted successfully.")
-    |> redirect(to: staff_type_path(conn, :index))
+    |> redirect(to: staff_type_path(conn, :index, BN.get_domain(conn)))
   end
 end

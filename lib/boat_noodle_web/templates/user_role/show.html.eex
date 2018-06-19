@@ -20,4 +20,4 @@
 </ul>
 
 <span><%= link "Edit", to: user_role_path(@conn, :edit, @user_role) %></span>
-<span><%= link "Back", to: user_role_path(@conn, :index) %></span>
+<span><%= link "Back", to: user_role_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -20,4 +20,4 @@
 </ul>
 
 <span><%= link "Edit", to: user_branch_access_path(@conn, :edit, @user_branch_access) %></span>
-<span><%= link "Back", to: user_branch_access_path(@conn, :index) %></span>
+<span><%= link "Back", to: user_branch_access_path(@conn, :index, BN.get_domain(@conn)) %></span>

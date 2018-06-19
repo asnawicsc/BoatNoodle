@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.SalesDetailCustController do
         conn
         |> put_flash(:info, "Sales detail cust created successfully.")
         |> redirect(to: sales_detail_cust_path(conn, :show, sales_detail_cust))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.SalesDetailCustController do
         conn
         |> put_flash(:info, "Sales detail cust updated successfully.")
         |> redirect(to: sales_detail_cust_path(conn, :show, sales_detail_cust))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", sales_detail_cust: sales_detail_cust, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.SalesDetailCustController do
 
     conn
     |> put_flash(:info, "Sales detail cust deleted successfully.")
-    |> redirect(to: sales_detail_cust_path(conn, :index))
+    |> redirect(to: sales_detail_cust_path(conn, :index, BN.get_domain(conn)))
   end
 end

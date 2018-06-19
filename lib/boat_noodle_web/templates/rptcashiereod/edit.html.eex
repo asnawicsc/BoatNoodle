@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, rptcashiereod_path(@conn, :update, @rptcashiereod)) %>
 
-<span><%= link "Back", to: rptcashiereod_path(@conn, :index) %></span>
+<span><%= link "Back", to: rptcashiereod_path(@conn, :index, BN.get_domain(@conn)) %></span>

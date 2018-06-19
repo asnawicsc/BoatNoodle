@@ -9,7 +9,6 @@ defmodule BoatNoodleWeb.TaxController do
     render(conn, "index.html", branches: branches)
   end
 
-
   def new(conn, _params) do
     changeset = BN.change_tax(%Tax{})
     render(conn, "new.html", changeset: changeset)
@@ -21,6 +20,7 @@ defmodule BoatNoodleWeb.TaxController do
         conn
         |> put_flash(:info, "Tax created successfully.")
         |> redirect(to: tax_path(conn, :show, tax))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -45,6 +45,7 @@ defmodule BoatNoodleWeb.TaxController do
         conn
         |> put_flash(:info, "Tax updated successfully.")
         |> redirect(to: tax_path(conn, :show, tax))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", tax: tax, changeset: changeset)
     end
@@ -56,6 +57,6 @@ defmodule BoatNoodleWeb.TaxController do
 
     conn
     |> put_flash(:info, "Tax deleted successfully.")
-    |> redirect(to: tax_path(conn, :index))
+    |> redirect(to: tax_path(conn, :index, BN.get_domain(conn)))
   end
 end

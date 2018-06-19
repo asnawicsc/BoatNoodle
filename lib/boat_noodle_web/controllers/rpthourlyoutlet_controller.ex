@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.RPTHOURLYOUTLETController do
   alias BoatNoodle.BN.RPTHOURLYOUTLET
 
   def index(conn, _params) do
-    rpt_hourly_outlet = Repo.all(from r in RPTHOURLYOUTLET, limit: 10 )
+    rpt_hourly_outlet = Repo.all(from(r in RPTHOURLYOUTLET, limit: 10))
     render(conn, "index.html", rpt_hourly_outlet: rpt_hourly_outlet)
   end
 
@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.RPTHOURLYOUTLETController do
         conn
         |> put_flash(:info, "Rpthourlyoutlet created successfully.")
         |> redirect(to: rpthourlyoutlet_path(conn, :show, rpthourlyoutlet))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.RPTHOURLYOUTLETController do
         conn
         |> put_flash(:info, "Rpthourlyoutlet updated successfully.")
         |> redirect(to: rpthourlyoutlet_path(conn, :show, rpthourlyoutlet))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", rpthourlyoutlet: rpthourlyoutlet, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.RPTHOURLYOUTLETController do
 
     conn
     |> put_flash(:info, "Rpthourlyoutlet deleted successfully.")
-    |> redirect(to: rpthourlyoutlet_path(conn, :index))
+    |> redirect(to: rpthourlyoutlet_path(conn, :index, BN.get_domain(conn)))
   end
 end

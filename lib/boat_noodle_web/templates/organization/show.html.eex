@@ -48,7 +48,7 @@
     <div class="btn btn-primary btn-link"> <span><%= link "Edit", to: organization_path(@conn, :edit, @organization.organisationid) %></span> </div>
 
 
-      <div class="btn btn-primary btn-link">  <span> <%= link "Back", to: organization_path(@conn, :index) %> </span> </div>
+      <div class="btn btn-primary btn-link">  <span> <%= link "Back", to: organization_path(@conn, :index, BN.get_domain(@conn)) %> </span> </div>
 
 
 

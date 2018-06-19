@@ -14,7 +14,7 @@ defmodule BoatNoodleWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/", BoatNoodleWeb do
+  scope "/:brand", BoatNoodleWeb do
     # Use the default browser stack
     pipe_through(:browser)
 

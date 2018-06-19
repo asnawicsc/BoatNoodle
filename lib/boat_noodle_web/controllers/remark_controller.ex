@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.RemarkController do
         conn
         |> put_flash(:info, "Remark created successfully.")
         |> redirect(to: remark_path(conn, :show, remark))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.RemarkController do
         conn
         |> put_flash(:info, "Remark updated successfully.")
         |> redirect(to: remark_path(conn, :show, remark))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", remark: remark, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.RemarkController do
 
     conn
     |> put_flash(:info, "Remark deleted successfully.")
-    |> redirect(to: remark_path(conn, :index))
+    |> redirect(to: remark_path(conn, :index, BN.get_domain(conn)))
   end
 end

@@ -220,7 +220,7 @@
       <div class="card-header"><h5>New Printer</h5></div>
       <div class="card-body">
 
-        <%= form_for @changeset, tag_path(@conn, :create), [class: "form-horizontal"], fn f -> %>
+        <%= form_for @changeset, tag_path(@conn, :create, BN.get_domain(@conn)), [class: "form-horizontal"], fn f -> %>
         <%= hidden_input f, :branch_id, value: @branch.branchid %>
         <div class="row">
           <div class="col-sm-2">

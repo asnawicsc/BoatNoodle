@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.ComboMapController do
         conn
         |> put_flash(:info, "Combo map created successfully.")
         |> redirect(to: combo_map_path(conn, :show, combo_map))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.ComboMapController do
         conn
         |> put_flash(:info, "Combo map updated successfully.")
         |> redirect(to: combo_map_path(conn, :show, combo_map))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", combo_map: combo_map, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.ComboMapController do
 
     conn
     |> put_flash(:info, "Combo map deleted successfully.")
-    |> redirect(to: combo_map_path(conn, :index))
+    |> redirect(to: combo_map_path(conn, :index, BN.get_domain(conn)))
   end
 end

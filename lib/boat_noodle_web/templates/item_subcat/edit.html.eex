@@ -2,4 +2,4 @@
 
 <%= render "form.html", Map.put(assigns, :action, item_subcat_path(@conn, :update, @item_subcat)) %>
 
-<span><%= link "Back", to: item_subcat_path(@conn, :index) %></span>
+<span><%= link "Back", to: item_subcat_path(@conn, :index, BN.get_domain(@conn)) %></span>

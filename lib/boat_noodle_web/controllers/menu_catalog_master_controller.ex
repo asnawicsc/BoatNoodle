@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.MenuCatalogMasterController do
         conn
         |> put_flash(:info, "Menu catalog master created successfully.")
         |> redirect(to: menu_catalog_master_path(conn, :show, menu_catalog_master))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.MenuCatalogMasterController do
         conn
         |> put_flash(:info, "Menu catalog master updated successfully.")
         |> redirect(to: menu_catalog_master_path(conn, :show, menu_catalog_master))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", menu_catalog_master: menu_catalog_master, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.MenuCatalogMasterController do
 
     conn
     |> put_flash(:info, "Menu catalog master deleted successfully.")
-    |> redirect(to: menu_catalog_master_path(conn, :index))
+    |> redirect(to: menu_catalog_master_path(conn, :index, BN.get_domain(conn)))
   end
 end

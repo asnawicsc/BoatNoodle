@@ -75,4 +75,4 @@
 </ul>
 
 <span><%= link "Edit", to: menu_item_path(@conn, :edit, @menu_item) %></span>
-<span><%= link "Back", to: menu_item_path(@conn, :index) %></span>
+<span><%= link "Back", to: menu_item_path(@conn, :index, BN.get_domain(@conn)) %></span>

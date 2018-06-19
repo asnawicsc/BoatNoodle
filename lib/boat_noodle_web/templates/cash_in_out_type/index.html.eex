@@ -22,4 +22,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Cash in out type", to: cash_in_out_type_path(@conn, :new) %></span>
+<span><%= link "New Cash in out type", to: cash_in_out_type_path(@conn, :new, BN.get_domain(@conn)) %></span>

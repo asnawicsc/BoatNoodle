@@ -155,4 +155,4 @@
 </ul>
 
 <span><%= link "Edit", to: rpttransaction_path(@conn, :edit, @rpttransaction) %></span>
-<span><%= link "Back", to: rpttransaction_path(@conn, :index) %></span>
+<span><%= link "Back", to: rpttransaction_path(@conn, :index, BN.get_domain(@conn)) %></span>

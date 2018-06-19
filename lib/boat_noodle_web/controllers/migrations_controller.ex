@@ -20,6 +20,7 @@ defmodule BoatNoodleWeb.MigrationsController do
         conn
         |> put_flash(:info, "Migrations created successfully.")
         |> redirect(to: migrations_path(conn, :show, migrations))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -44,6 +45,7 @@ defmodule BoatNoodleWeb.MigrationsController do
         conn
         |> put_flash(:info, "Migrations updated successfully.")
         |> redirect(to: migrations_path(conn, :show, migrations))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", migrations: migrations, changeset: changeset)
     end
@@ -55,6 +57,6 @@ defmodule BoatNoodleWeb.MigrationsController do
 
     conn
     |> put_flash(:info, "Migrations deleted successfully.")
-    |> redirect(to: migrations_path(conn, :index))
+    |> redirect(to: migrations_path(conn, :index, BN.get_domain(conn)))
   end
 end

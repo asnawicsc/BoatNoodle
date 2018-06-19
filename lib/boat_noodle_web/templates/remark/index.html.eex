@@ -25,4 +25,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Remark", to: remark_path(@conn, :new) %></span>
+<span><%= link "New Remark", to: remark_path(@conn, :new, BN.get_domain(@conn)) %></span>
