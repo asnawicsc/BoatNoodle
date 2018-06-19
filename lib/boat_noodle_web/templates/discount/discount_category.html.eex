@@ -43,8 +43,8 @@
        </td>
         <td>
           
-          <a href="/items/<%= discount.discountid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
-          <a href="/items/<%= discount.discountid %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+          <a href="/discount_category_details/<%= discount.discountid %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+
         </td>
       </tr>
       <% end %>
