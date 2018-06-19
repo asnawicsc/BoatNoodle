@@ -3,6 +3,7 @@ defmodule BoatNoodleWeb.RemarkController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.Remark
+  require(IEx)
 
   def index(conn, _params) do
     remark = Repo.all(Remark)
@@ -11,7 +12,8 @@ defmodule BoatNoodleWeb.RemarkController do
 
   def new(conn, _params) do
     changeset = BN.change_remark(%Remark{})
-    render(conn, "new.html", changeset: changeset)
+    item = BN.list_itemcat() |> Enum.map(fn x -> {x.itemcatname, x.itemcatid} end)
+    render(conn, "new.html", changeset: changeset, item: item)
   end
 
   def create(conn, %{"remark" => remark_params}) do
@@ -19,7 +21,7 @@ defmodule BoatNoodleWeb.RemarkController do
       {:ok, remark} ->
         conn
         |> put_flash(:info, "Remark created successfully.")
-        |> redirect(to: remark_path(conn, :show, remark))
+        |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
@@ -34,7 +36,8 @@ defmodule BoatNoodleWeb.RemarkController do
   def edit(conn, %{"id" => id}) do
     remark = BN.get_remark!(id)
     changeset = BN.change_remark(remark)
-    render(conn, "edit.html", remark: remark, changeset: changeset)
+    item = BN.list_itemcat() |> Enum.map(fn x -> {x.itemcatname, x.itemcatid} end)
+    render(conn, "edit.html", remark: remark, changeset: changeset, item: item)
   end
 
   def update(conn, %{"id" => id, "remark" => remark_params}) do
@@ -44,7 +47,7 @@ defmodule BoatNoodleWeb.RemarkController do
       {:ok, remark} ->
         conn
         |> put_flash(:info, "Remark updated successfully.")
-        |> redirect(to: remark_path(conn, :show, remark))
+        |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", remark: remark, changeset: changeset)

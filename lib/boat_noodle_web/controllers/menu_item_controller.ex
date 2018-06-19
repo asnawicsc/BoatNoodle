@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat}
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat,Remark}
 
   require IEx
 
@@ -23,7 +23,6 @@ defmodule BoatNoodleWeb.MenuItemController do
           }
         )
       )
-
     render(
       conn,
       "combo.html",
@@ -54,11 +53,27 @@ defmodule BoatNoodleWeb.MenuItemController do
         )
       )
 
+      remark =
+        Repo.all(
+        from(
+         r in Remark,
+         left_join: s in ItemCat,
+         on: r.target_cat == s.itemcatid,
+         select: %{
+          remarkid: r.itemsremarkid,
+          itemname: s.itemcatname,
+          itemremark: r.remark
+         }
+        )
+        )
+      
+
     render(
       conn,
       "index.html",
       menu_catalog: menu_catalog,
-      subcats: subcats
+      subcats: subcats,
+      remark: remark
     )
   end
 

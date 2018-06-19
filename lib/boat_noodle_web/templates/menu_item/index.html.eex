@@ -7,30 +7,38 @@
             <div class="col-md-12 ">
               <div class="page-categories">
 
-               
+
                 <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
                   <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#menu_item" role="tablist">
                       <i class="material-icons">restaurant</i> Menu Item
                     </a>
                   </li>
+
+									<li class="nav-item">
+										<a class="nav-link" data-toggle="tab" href="#item_remark" role="tablist">
+											<i class="material-icons">add_comment</i> Item Remark
+										</a>
+									</li>
+
+
+
                   <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#menu_categories" role="tablist">
                       <i class="material-icons">style</i> Categories
                     </a>
                   </li>
-          
-     
-             
-           
+
+
+
+
+
+
                 </ul>
                 <div class="tab-content tab-space tab-subcategories" >
-									<%= render("menu_items.html", subcats: @subcats)%>
-									<%= render("categories.html")%>
-					
-
-                  
-                 
+									<%= render("menu_items.html", conn: @conn, subcats: @subcats)%>
+							    <%= render("item_remark.html", conn: @conn,remark: @remark)%>
+									<%= render("categories.html", conn: @conn)%>
                 </div>
               </div>
             </div>

@@ -33,7 +33,7 @@ defmodule BoatNoodleWeb.OrganizationController do
       {:ok, organization} ->
         conn
         |> put_flash(:info, "Organization created successfully.")
-        |> redirect(to: organization_path(conn, :show, organization.organisationid))
+        |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
