@@ -16,10 +16,12 @@ defmodule BoatNoodleWeb.CategoryHelper do
         socket
       ) do
     item_cat_params =
-      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
+      map
+      |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
+      |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
 
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+    cat = Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
 
     cg = BoatNoodle.BN.ItemCat.changeset(cat, item_cat_params)
 
@@ -44,7 +46,7 @@ defmodule BoatNoodleWeb.CategoryHelper do
   end
 
   def handle_in("edit_item_category", %{"cat_id" => cat_id}, socket) do
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+    cat = Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
 
     broadcast(socket, "open_edit_category", %{
       itemcatcode: cat.itemcatcode,
@@ -58,7 +60,7 @@ defmodule BoatNoodleWeb.CategoryHelper do
   end
 
   def handle_in("delete_item_category", %{"cat_id" => cat_id}, socket) do
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+    cat = Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
 
     Repo.delete(cat)
 
@@ -78,7 +80,9 @@ defmodule BoatNoodleWeb.CategoryHelper do
 
   def handle_in("submit_category_form", %{"map" => map}, socket) do
     item_cat_params =
-      map |> Enum.map(fn x -> %{x["name"] => x["value"]} end) |> Enum.flat_map(fn x -> x end)
+      map
+      |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
+      |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
 
     cg = BoatNoodle.BN.ItemCat.changeset(%BoatNoodle.BN.ItemCat{}, item_cat_params)

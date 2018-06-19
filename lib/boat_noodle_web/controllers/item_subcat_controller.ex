@@ -237,7 +237,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_show(conn, %{"subcatid" => id}) do
-    item_subcat = BN.get_item_subcat!(id)
+    item_subcat =
+      Repo.all(
+        from(i in ItemSubcat, where: i.subcatid == ^id and i.brand_id == ^BN.get_brand_id(conn))
+      )
+      |> hd()
+
     # IEx.pry()
 
     same_items =
@@ -267,7 +272,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       item_subcat: item_subcat,
       same_items: same_items,
       combo_items: combo_items,
-      no_selection_combo_items: no_selection_combo_items
+      no_selection_combo_items: no_selection_combo_items,
+      brand_name: BN.get_domain(conn)
     )
   end
 
