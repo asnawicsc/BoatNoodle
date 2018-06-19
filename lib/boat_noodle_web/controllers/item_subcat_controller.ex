@@ -266,6 +266,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         from(s in ItemSubcat, where: s.itemcatid == ^Integer.to_string(item_subcat.subcatid))
       )
 
+    IEx.pry()
+
     render(
       conn,
       "combo_show.html",

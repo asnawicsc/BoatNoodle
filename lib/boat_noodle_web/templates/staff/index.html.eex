@@ -6,7 +6,7 @@
       </div>
 
       <div class="dropdown pull-right" style="padding: 10px;">
-            <a  href="/staff/new" class="btn btn-info btn-round" >
+            <a  href="/<%= @conn.private.plug_session["brand"] %>/staff/new" class="btn btn-info btn-round" >
                 <i class="material-icons">add_box</i> New Staff
               <div class="ripple-container"></div>
             </a>
@@ -56,7 +56,7 @@
                         <td><%= staff.staff_email %></td>
                  
                         <td>
-                          <a href="/staff/<%= staff.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Staff">
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/staff/<%= staff.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Staff">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a>
                         

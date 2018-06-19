@@ -96,7 +96,12 @@ defmodule BoatNoodleWeb.StaffController do
   end
 
   def edit(conn, %{"id" => id}) do
-    staff = BN.get_staff!(id)
+    staff =
+      Repo.all(
+        from(s in Staff, where: s.staff_id == ^id and s.brand_id == ^BN.get_brand_id(conn))
+      )
+      |> hd()
+
     changeset = BN.change_staff(staff)
     roles = BN.list_staff_type()
     roles = Enum.map(roles, fn x -> {x.name, x.id} end)
