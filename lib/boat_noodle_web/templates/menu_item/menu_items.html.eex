@@ -1,4 +1,4 @@
-<div class="tab-pane" id="menu_item" >
+<div class="tab-pane active show" id="menu_item" >
   <div class="card">
       <div class="card-header card-header-text card-header-warning">
       <div class="card-text">

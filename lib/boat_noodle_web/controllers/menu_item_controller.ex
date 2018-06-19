@@ -41,8 +41,8 @@ defmodule BoatNoodleWeb.MenuItemController do
           left_join: c in ItemCat,
           on: c.itemcatid == s.itemcatid,
           where:
-            s.is_combo == ^0 and s.is_comboitem == ^0 and s.is_delete == ^0 and
-              c.category_type != "COMBO",
+            s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO" and
+              s.brand_id == ^BN.get_brand_id(conn) and c.brand_id == ^BN.get_brand_id(conn),
           group_by: [s.itemname, s.itemcatid],
           select: %{
             category: c.itemcatname,
@@ -60,6 +60,7 @@ defmodule BoatNoodleWeb.MenuItemController do
           r in Remark,
           left_join: s in ItemCat,
           on: r.target_cat == s.itemcatid,
+          where: s.brand_id == ^BN.get_brand_id(conn),
           select: %{
             remarkid: r.itemsremarkid,
             itemname: s.itemcatname,

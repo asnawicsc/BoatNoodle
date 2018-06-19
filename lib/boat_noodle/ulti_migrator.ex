@@ -7,7 +7,8 @@ defmodule BoatNoodle.UltiMigrator do
     {0, AddBrand},
     {1, AddBrand2},
     {2, AddBrand3},
-    {3, AddBrand4}
+    {3, AddBrand4},
+    {4, AddBrand5}
   ]
 
   def add_brand(arg) do
@@ -15,7 +16,8 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate(arg) do
-    Task.start_link(__MODULE__, :migrate_new, [arg])
+    # Task.start_link(__MODULE__, :migrate_new, [arg])
+    Task.start_link(__MODULE__, :migrate_new_subcat, [arg])
   end
 
   def run(arg) do
@@ -37,6 +39,68 @@ defmodule BoatNoodle.UltiMigrator do
     else
       IO.puts("unknow database")
     end
+  end
+
+  def migrate_new_subcat(arg) do
+    case arg do
+      "boat_noodle" ->
+        brand_id = 1
+
+      "chill_chill" ->
+        brand_id = 2
+
+      _ ->
+        repo = nil
+    end
+
+    chill_item_cats =
+      BoatNoodle.RepoChillChill.all(from(c in BoatNoodle.BN.ItemSubcat))
+      |> Enum.map(fn x ->
+        %{
+          brand_id: brand_id,
+          itemcatid: x.itemcatid,
+          subcatid: x.subcatid,
+          itemname: x.itemname,
+          itemcode: x.itemcode,
+          product_code: x.product_code,
+          price_code: x.price_code,
+          part_code: x.part_code,
+          itemdesc: x.itemdesc,
+          itemprice: x.itemprice,
+          itemimage: x.itemimage,
+          is_categorize: x.is_categorize,
+          is_activate: x.is_activate,
+          is_comboitem: x.is_comboitem,
+          is_default_combo: x.is_default_combo,
+          is_delete: x.is_delete,
+          enable_disc: x.enable_disc,
+          include_spend: x.include_spend,
+          is_print: x.is_print
+        }
+      end)
+
+    batch =
+      for chill_item_cat <- chill_item_cats do
+        if chill_item_cat.itemdesc == "" do
+          chill_item_cat = Map.put(chill_item_cat, :itemdesc, "empty")
+        end
+
+        if chill_item_cat.itemcode == "" do
+          chill_item_cat = Map.put(chill_item_cat, :itemcode, "empty")
+        end
+
+        cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, chill_item_cat)
+
+        case BoatNoodle.Repo.insert(cg) do
+          {:ok, item_subcat} ->
+            item_subcat
+
+          {:error, cg} ->
+            true
+        end
+      end
+
+    :ok
   end
 
   def migrate_new(arg) do
