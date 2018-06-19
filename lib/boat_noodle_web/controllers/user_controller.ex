@@ -247,6 +247,10 @@ defmodule BoatNoodleWeb.UserController do
     render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "full_bg.html"})
   end
 
+  def login_management(conn, params) do
+    render(conn, "management_login.html", layout: {BoatNoodleWeb.LayoutView, "full_bg.html"})
+  end
+
   def authenticate_login(conn, %{"username" => username, "password" => password}) do
     user = Repo.get_by(User, username: username)
 

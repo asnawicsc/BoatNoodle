@@ -10,12 +10,26 @@ defmodule BoatNoodleWeb.Router do
     plug(BoatNoodle.Authorization)
   end
 
+  pipeline :management do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
 
-  scope "/:brand", BoatNoodleWeb do
+  scope "/", BoatNoodleWeb do
     # Use the default browser stack
+    pipe_through(:management)
+
+    get("/management_login", UserController, :login_management)
+  end
+
+  scope "/:brand", BoatNoodleWeb do
     pipe_through(:browser)
 
     get("/", PageController, :index)

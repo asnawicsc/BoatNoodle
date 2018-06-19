@@ -1,0 +1,46 @@
+        <div class="col-md-4 col-sm-6 ml-auto mr-auto">
+          <form role="form" action="/<%= @conn.params["brand"]%>/authenticate_login" method="post">
+                        <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+
+            <div class="card card-login card-hidden">
+              <div class="card-header card-header-rose text-center">
+                <h4 class="card-title">Log in</h4>
+
+              </div>
+              <div class="card-body ">
+               
+                <span class="bmd-form-group">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">face</i>
+                      </span>
+                    </div>
+                    <input type="text" name="username" class="form-control" placeholder="Username">
+                  </div>
+                </span>
+
+                <span class="bmd-form-group">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">lock_outline</i>
+                      </span>
+                    </div>
+                    <input type="password" name="password" class="form-control" placeholder="Password">
+                  </div>
+                </span>
+              </div>
+                <div style="text-align: right">
+                  <a class="btn btn-rose btn-link" href="/forget_password" >Forget password? Click here !</a>
+                </div>
+
+              
+              
+              <div class="card-footer justify-content-center">
+                
+                <input type="submit" value="Lets Go" class="btn btn-rose btn-link btn-lg">
+              </div>
+            </div>
+          </form>
+        </div>

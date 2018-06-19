@@ -30,7 +30,7 @@
   <div class="wrapper">
         <%= render("sidebar.html", conn: @conn)%>
     <div class="main-panel">
-        <%= render("nav_metro.html")%>
+        <%= render("nav_metro.html", conn: @conn)%>
 <style type="text/css">
   .loader,
   .loader:before,
