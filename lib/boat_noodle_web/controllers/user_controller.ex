@@ -99,8 +99,11 @@ defmodule BoatNoodleWeb.UserController do
     user = BN.get_user!(id)
     changeset = BN.change_user(user)
 
-    if user.gall_id == nil do
-      picture = %{bin: ""}
+    if user.gall_id == 1 do
+      path = File.cwd!() <> "/media/demo.png"
+      {:ok, bin} = File.read(path)
+      bin = Base.encode64(bin)
+      picture = %{bin: bin}
 
       render(
         conn,
@@ -181,7 +184,7 @@ defmodule BoatNoodleWeb.UserController do
       |> put_flash(:error, "No image found!")
       |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
     else
-      if user.gall_id == nil do
+      if user.gall_id == 1 do
         {:ok, gallery} = Images.create_gallery(%{})
         {:ok, user} = BN.update_user(user, %{gall_id: gallery.id})
 

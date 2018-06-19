@@ -1,6 +1,6 @@
 defmodule BoatNoodleWeb.MenuCatalogController do
   use BoatNoodleWeb, :controller
-
+  require IEx
   alias BoatNoodle.BN
   alias BoatNoodle.BN.MenuCatalog
 

@@ -1,0 +1,22 @@
+<h4>Please select a price: </h4>
+
+<form action="" aria-label = "edit_price_form">
+  <input type="hidden" id="current_catalog" name="current_catalog_id" value="<%= @current_catalog_id %>">
+  <input type="hidden" id="current_subcat" name="current_subcat_id" value="<%= @current_subcat_id %>">
+    <%= for list <- @subcat_lists do %>
+  <div class="form-check">
+    <label class="form-check-label">
+      <%= if list.price_code == @current_price_code do %>
+        <input class="form-check-input" type="radio" name="subcat_id" value="<%= list.subcat_id %>" checked=""><%= list.price_code %> :  RM <%= list.itemprice %>
+      <% else %>
+        <input class="form-check-input" type="radio" name="subcat_id" value="<%= list.subcat_id %>"><%= list.price_code %> :  RM <%= list.itemprice %>
+      <% end %>
+      <span class="circle">
+        <span class="check"></span>
+      </span>
+    </label>
+  </div>
+    <% end %>
+    <button type="submit" class="btn btn-primary" id="submit_edit_form" >Save changes</button>
+</form>
+

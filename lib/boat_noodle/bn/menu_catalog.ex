@@ -15,6 +15,6 @@ defmodule BoatNoodle.BN.MenuCatalog do
   @doc false
   def changeset(menu_catalog, attrs) do
     menu_catalog
-    |> cast(attrs, [:brand_id, :id, :item_code, :name, :categories, :items, :combo_items])
+    |> cast(attrs, [:brand_id, :id, :name, :categories, :items, :combo_items])
   end
 end
