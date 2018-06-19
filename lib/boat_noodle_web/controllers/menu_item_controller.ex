@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat,Remark}
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, Remark}
 
   require IEx
 
@@ -23,6 +23,7 @@ defmodule BoatNoodleWeb.MenuItemController do
           }
         )
       )
+
     render(
       conn,
       "combo.html",
@@ -53,20 +54,19 @@ defmodule BoatNoodleWeb.MenuItemController do
         )
       )
 
-      remark =
-        Repo.all(
+    remark =
+      Repo.all(
         from(
-         r in Remark,
-         left_join: s in ItemCat,
-         on: r.target_cat == s.itemcatid,
-         select: %{
-          remarkid: r.itemsremarkid,
-          itemname: s.itemcatname,
-          itemremark: r.remark
-         }
+          r in Remark,
+          left_join: s in ItemCat,
+          on: r.target_cat == s.itemcatid,
+          select: %{
+            remarkid: r.itemsremarkid,
+            itemname: s.itemcatname,
+            itemremark: r.remark
+          }
         )
-        )
-      
+      )
 
     render(
       conn,
@@ -207,7 +207,15 @@ defmodule BoatNoodleWeb.MenuItemController do
 
   def update(conn, %{"id" => subcatid, "menu_item" => menu_item_params}) do
     # menu_item = BN.get_menu_item!(id)
-    item_subcat = BN.get_item_subcat!(subcatid)
+
+    item_subcat =
+      Repo.all(
+        from(
+          i in ItemSubcat,
+          where: i.subcatid == ^subcatid and i.brand_id == ^conn.private.plug_session["brand_id"]
+        )
+      )
+      |> hd()
 
     same_items =
       Repo.all(
@@ -220,7 +228,17 @@ defmodule BoatNoodleWeb.MenuItemController do
         )
       )
 
-    cat = Repo.get(BoatNoodle.BN.ItemCat, menu_item_params["itemcatid"])
+    cat =
+      Repo.all(
+        from(
+          i in ItemCat,
+          where:
+            i.itemcatid == ^menu_item_params["itemcatid"] and i.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+      |> hd()
+
+    # cat = Repo.all(from(i in BoatNoodle.BN.ItemCat, where: ))
     itemcode = menu_item_params["itemcode"]
     first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
 
