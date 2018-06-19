@@ -14,14 +14,17 @@ $(document).ready(function(){
 		$("button#submit_edit_form").click(function(event){
 			event.preventDefault();
 			var fr = $("form[aria-label='edit_price_form']").serializeArray();
-			console.log
+
 			menu_catalog_channel.push("update_catalog_price",{map: fr})
 		})
 	})
 
 	menu_catalog_channel.on("updated_catalog_price", payload => {
 		$('#exampleModal').modal('toggle');
-		location.reload()
+		console.log("span#"+payload.menucat_id+"-"+payload.subcat_id+"[aria-label='badge']")
+		$("span#"+payload.menucat_id+"-"+payload.subcat_id+"[aria-label='badge']").attr("class", "badge badge-"+payload.style)
+		$("span#"+payload.menucat_id+"-"+payload.subcat_id+"[aria-label='badge']").html(payload.price)
+		$("span#"+payload.menucat_id+"-"+payload.subcat_id+"[aria-label='badge']").attr("id", payload.menucat_id+"-"+payload.new_id	)
 	})
 
 })

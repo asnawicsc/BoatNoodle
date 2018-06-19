@@ -58,8 +58,40 @@ defmodule BoatNoodleWeb.MenuCatalog do
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
 
+    subcat = Repo.get_by(ItemSubcat, subcatid: map["subcat_id"])
+
+    case subcat.price_code do
+      "A" ->
+        style = "primary"
+
+      "B" ->
+        style = "warning"
+
+      "C" ->
+        style = "success"
+
+      "D" ->
+        style = "info"
+
+      "E" ->
+        style = "rose"
+
+      _ ->
+        style = "danger"
+    end
+
     if map["current_subcat_id"] == map["subcat_id"] do
-      broadcast(socket, "updated_catalog_price", %{})
+      broadcast(socket, "updated_catalog_price", %{
+        style: style,
+        price:
+          :erlang.float_to_binary(
+            Decimal.to_float(subcat.itemprice),
+            decimals: 2
+          ),
+        menucat_id: map["current_catalog_id"],
+        subcat_id: map["current_subcat_id"],
+        new_id: map["subcat_id"]
+      })
     else
       menu_catalog =
         Repo.all(from(m in MenuCatalog, where: m.id == ^map["current_catalog_id"])) |> hd()
@@ -73,7 +105,13 @@ defmodule BoatNoodleWeb.MenuCatalog do
 
       case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
         {:ok, menu_catalog} ->
-          broadcast(socket, "updated_catalog_price", %{})
+          broadcast(socket, "updated_catalog_price", %{
+            style: style,
+            price: :erlang.float_to_binary(Decimal.to_float(subcat.itemprice), decimals: 2),
+            menucat_id: map["current_catalog_id"],
+            subcat_id: map["current_subcat_id"],
+            new_id: map["subcat_id"]
+          })
       end
     end
 
