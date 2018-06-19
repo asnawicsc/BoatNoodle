@@ -263,7 +263,7 @@ defmodule BoatNoodleWeb.UserController do
       if Comeonin.Bcrypt.checkpw(password, p2) do
         conn
         |> put_session(:user_id, user.id)
-        |> put_session(:brand, "boot_noodle")
+        |> put_session(:brand, conn.params["brand"])
         |> put_session(:brand_id, BN.brand_id(conn))
         |> put_flash(:info, "Login successfully")
         |> redirect(to: page_path(conn, :index, conn.params["brand"]))
