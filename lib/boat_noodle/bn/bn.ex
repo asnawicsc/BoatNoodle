@@ -4233,4 +4233,18 @@ defmodule BoatNoodle.BN do
   def get_domain(conn) do
     conn.private.plug_session["brand"]
   end
+
+  def get_brand_id(conn) do
+    conn.private.plug_session["brand_id"]
+  end
+
+  def brand_id(conn) do
+    brand = Repo.get_by(BoatNoodle.BN.Brand, domain_name: conn.params["brand"])
+
+    if brand != nil do
+      brand.id
+    else
+      1
+    end
+  end
 end

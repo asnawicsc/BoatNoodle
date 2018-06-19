@@ -1,6 +1,6 @@
 defmodule BoatNoodleWeb.DiscountController do
   use BoatNoodleWeb, :controller
-require IEx
+  require IEx
   alias BoatNoodle.BN
   alias BoatNoodle.BN.Discount
   alias BoatNoodle.BN.DiscountItem
@@ -68,19 +68,24 @@ require IEx
     )
   end
 
-   def discount_category_details(conn, %{"id" => id}) do
+  def discount_category_details(conn, %{"id" => id}) do
+    # discount = BN.get_discount!(id)
 
-    discount=BN.get_discount!(id)
+    discount = Repo.get_by(Discount, brand_id: BN.get_brand_id(conn), discountid: id)
 
-    disc_type=Repo.all(from s in DiscountType)
+    disc_type = Repo.all(from(s in DiscountType))
 
-   
-   
-    render(conn, "discount_category_details.html",disc_type: disc_type,discount: discount, id: id)
+    render(
+      conn,
+      "discount_category_details.html",
+      disc_type: disc_type,
+      discount: discount,
+      id: id
+    )
   end
 
-   def edit_discount_detail(conn, params) do
-   IEx.pry
+  def edit_discount_detail(conn, params) do
+    IEx.pry()
   end
 
   def new(conn, _params) do
