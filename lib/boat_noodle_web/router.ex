@@ -47,6 +47,8 @@ defmodule BoatNoodleWeb.Router do
     resources("/discount_catalog_master", DiscountCatalogMasterController)
     resources("/discount_catalog", DiscountCatalogController)
     resources("/discount", DiscountController)
+    get("/discount_category_details/:id", DiscountController, :discount_category_details)
+    post("/edit_discount_detail", DiscountController, :edit_discount_detail)
 
     resources("/tag", TagController)
     resources("/tag_catalog", TagCatalogController)

@@ -1,10 +1,11 @@
 defmodule BoatNoodleWeb.DiscountController do
   use BoatNoodleWeb, :controller
-
+require IEx
   alias BoatNoodle.BN
   alias BoatNoodle.BN.Discount
   alias BoatNoodle.BN.DiscountItem
   alias BoatNoodle.BN.ItemCat
+  alias BoatNoodle.BN.DiscountType
   alias BoatNoodle.BN.ItemSubcat
 
   def index(conn, _params) do
@@ -65,6 +66,21 @@ defmodule BoatNoodleWeb.DiscountController do
       discount_details: discount_details,
       discount: discount
     )
+  end
+
+   def discount_category_details(conn, %{"id" => id}) do
+
+    discount=BN.get_discount!(id)
+
+    disc_type=Repo.all(from s in DiscountType)
+
+   
+   
+    render(conn, "discount_category_details.html",disc_type: disc_type,discount: discount, id: id)
+  end
+
+   def edit_discount_detail(conn, params) do
+   IEx.pry
   end
 
   def new(conn, _params) do
