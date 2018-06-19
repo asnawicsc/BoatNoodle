@@ -272,8 +272,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def item_show(conn, %{"subcatid" => id}) do
-    item_subcat = BN.get_item_subcat!(id)
-    # IEx.pry()
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
     same_items =
       Repo.all(
@@ -290,7 +289,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def item_edit(conn, %{"subcatid" => id}) do
-    item_subcat = BN.get_item_subcat!(id)
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
     same_items =
       Repo.all(

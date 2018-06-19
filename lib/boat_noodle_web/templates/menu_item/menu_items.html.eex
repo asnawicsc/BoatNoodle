@@ -40,8 +40,8 @@
         <td><%= elem(subcat,0).category %></td>
         <td>
           
-          <a href="/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
-          <a href="/items/<%= elem(subcat,0).subcatid %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+          <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
+          <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
         </td>
       </tr>
       <% end %>
