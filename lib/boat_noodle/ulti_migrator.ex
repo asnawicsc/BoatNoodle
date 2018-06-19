@@ -18,6 +18,7 @@ defmodule BoatNoodle.UltiMigrator do
   def migrate(arg) do
     # Task.start_link(__MODULE__, :migrate_new, [arg])
     Task.start_link(__MODULE__, :migrate_new_subcat, [arg])
+    # Task.start_link(__MODULE__, :migrate_new_remark, [arg])
   end
 
   def run(arg) do
@@ -39,6 +40,46 @@ defmodule BoatNoodle.UltiMigrator do
     else
       IO.puts("unknow database")
     end
+  end
+
+  def migrate_new_remark(arg) do
+    case arg do
+      "boat_noodle" ->
+        brand_id = 1
+
+      "chill_chill" ->
+        brand_id = 2
+
+      _ ->
+        repo = nil
+    end
+
+    chill_item_cats =
+      BoatNoodle.RepoChillChill.all(from(c in BoatNoodle.BN.Remark))
+      |> Enum.map(fn x ->
+        %{
+          brand_id: brand_id,
+          itemsremarkid: x.itemsremarkid,
+          remark: x.remark,
+          target_cat: x.target_cat,
+          target_item: x.target_item
+        }
+      end)
+
+    batch =
+      for chill_item_cat <- chill_item_cats do
+        cg = BoatNoodle.BN.Remark.changeset(%BoatNoodle.BN.Remark{}, chill_item_cat)
+
+        case BoatNoodle.Repo.insert(cg) do
+          {:ok, item_subcat} ->
+            item_subcat
+
+          {:error, cg} ->
+            true
+        end
+      end
+
+    :ok
   end
 
   def migrate_new_subcat(arg) do
@@ -82,11 +123,41 @@ defmodule BoatNoodle.UltiMigrator do
     batch =
       for chill_item_cat <- chill_item_cats do
         if chill_item_cat.itemdesc == "" do
-          chill_item_cat = Map.put(chill_item_cat, :itemdesc, "empty")
+          chill_item_cat = Map.put(chill_item_cat, :itemdesc, chill_item_cat.itemname)
         end
 
         if chill_item_cat.itemcode == "" do
           chill_item_cat = Map.put(chill_item_cat, :itemcode, "empty")
+        end
+
+        if chill_item_cat.price_code == "" or chill_item_cat.price_code == nil do
+          chill_item_cat = Map.put(chill_item_cat, :price_code, "A")
+        end
+
+        if chill_item_cat.part_code == "" or chill_item_cat.part_code == nil do
+          chill_item_cat = Map.put(chill_item_cat, :part_code, chill_item_cat.itemcode)
+        end
+
+        if chill_item_cat.product_code == "" or chill_item_cat.product_code == nil do
+          cat =
+            BoatNoodle.RepoChillChill.get_by(
+              BoatNoodle.BN.ItemCat,
+              itemcatid: chill_item_cat.itemcatid,
+              brand_id: 1
+            )
+
+          if cat == nil do
+            catcode = "0"
+          else
+            catcode = cat.itemcatcode
+          end
+
+          chill_item_cat =
+            Map.put(
+              chill_item_cat,
+              :product_code,
+              catcode <> chill_item_cat.part_code <> chill_item_cat.price_code
+            )
         end
 
         cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, chill_item_cat)
@@ -148,6 +219,21 @@ defmodule BoatNoodle.UltiMigrator do
       end
 
     :ok
+  end
+end
+
+defmodule AddBrand5 do
+  use Ecto.Migration
+
+  def change do
+    alter table(:itemsremak) do
+      # remove(:brand_id)
+      add(:brand_id, references(:brand, on_delete: :nothing, type: :integer), default: 1)
+    end
+
+    execute(
+      "ALTER TABLE `itemsremak` DROP PRIMARY KEY, ADD PRIMARY KEY (`itemsremarkid`, `brand_id`);"
+    )
   end
 end
 
