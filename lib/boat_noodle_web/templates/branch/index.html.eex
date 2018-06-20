@@ -6,14 +6,14 @@
       </div>
 
          <div class="dropdown pull-right" style="padding: 10px;">
-      <a  href="/organization/new" class="btn btn-success btn-round" >
+      <a  href="/<%= @conn.params["brand"]%>/organization/new" class="btn btn-success btn-round" >
           <i class="material-icons">group_add</i> New Organization
         <div class="ripple-container"></div>
       </a>
     </div>
 
             <div class="dropdown pull-right" style="padding: 10px;">
-            <a  href="/branch/new" class="btn btn-info btn-round" >
+            <a  href="/<%= @conn.params["brand"]%>/branch/new" class="btn btn-info btn-round" >
                 <i class="material-icons">add_box</i> New Branch
               <div class="ripple-container"></div>
             </a>
@@ -66,10 +66,10 @@
                         <td><%= branch.manager %></td>
                         <td><%= branch.sync_status %></td>
                         <td>
-                          <a href="/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
+                          <a href="/<%= @conn.params["brand"]%>/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a>
-                          <a href="/branch/<%= branch.branchid %>/printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
+                          <a href="/<%= @conn.params["brand"]%>/branch/<%= branch.branchid %>/printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
                             <i class="material-icons">cast</i> Printers
                           <div class="ripple-container"></div></a>
 

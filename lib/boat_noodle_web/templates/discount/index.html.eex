@@ -31,8 +31,8 @@
                 </ul>
                 <div class="tab-content tab-space tab-subcategories" >
             <%= render("discount_category.html", conn: @conn, discount_details: @discount_details)%>
-            <%= render("discount_item.html", discount_items: @discount_items)%>
-            <%= render("discount_catalog.html", discount_catalog: @discount_catalog)%>
+            <%= render("discount_item.html", conn: @conn, discount_items: @discount_items)%>
+            <%= render("discount_catalog.html", conn: @conn, discount_catalog: @discount_catalog)%>
                  
           
 

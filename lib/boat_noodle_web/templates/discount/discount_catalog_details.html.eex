@@ -1,0 +1,147 @@
+<% require IEx %>
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header card-header-rose card-header-text">
+                <div class="card-text">
+                    <h4 class="card-title">Edit Discount - <b><%= @discount_catalog.name %></b>
+                        <%= %>
+                    </h4>
+                </div>
+            </div>
+            <div class="card-body ">
+                <form method="post" action="/<%= BN.get_domain(@conn)%>/edit_discount_detail" class="form-horizontal">
+                    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Discount Catalog Name</label>
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                <input type="text" name="disc[name]" value="<%= @discount_catalog.name %>" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Discount Categories</label>
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                <input type="text" name="disc[descriptions]" value="<%= @discount_catalog.categories %>" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" style="width: 100%;">
+
+                            <table style="float: left;">
+
+                                <tr>
+                                    <th>Discount Categories</th>
+
+
+                                </tr>
+
+                                <%= for discount <- @discounts do %>
+
+                                    <tr>
+                                        <td>
+                                            <div style="margin-top: 3px; margin-bottom: 3px;">
+
+                                                    <%= discount.discname %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="margin-top: 3px; margin-bottom: 3px;">
+
+                                                   <td style="width: 200px; padding-right: 5px;">
+                 
+                     
+                                                <div class="form-check" style="margin-top: 5px; margin-bottom: 5px;             margin-right: 20px; margin-left: 20px;">
+                                                  <label class="form-check-label" style="display: inline;">
+                                                      <input class="form-check-input printer_subcat" name= "" type="checkbox" value="" checked="">
+                                    
+                                                      <span class="form-check-sign" style="padding-right: 0px;">
+                                                          <span class="check"></span>
+                                                      </span>
+                                                    
+                                                  </label>
+                                                </div>
+                                              </td>
+                
+                                            </div>
+                                        </td>
+                                    </tr>
+                                   
+                                    <% end %>
+
+                            </table>
+
+                            <div class="col-lg-8 col-md-3 col-sm-3" style="float: right;">
+
+                          <select class="selectpicker" data-style="btn select-with-transition" id="disc" name="disc"  title="Category" data-size="7">
+                           <%= for a <- @discounts do %>
+                            <option selected value="0" >All Discount</option>
+                            <option value="<%= a.discountid %>" ><%= a.discname %></option>
+                                          <% end %>
+                                        </select>
+
+                                        <div>
+                                          <table id="discount_items" class="table">
+                            <thead align="center">
+                                <tr>
+                                    <th>Discount Name</th>
+                                    <th>Discount Category</th>
+                                    <th>Check All</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody align="center">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table> 
+                                        </div>
+                        </div>
+
+
+                        </div>
+                    </div>
+
+                    
+
+            <div >
+
+            
+            </div>
+
+
+
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Discouts</label>
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                <input type="text" name="disc[discamtpercentage]" value="<%= @discount_catalog.discounts %>" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+            </div>
+            <div class="card-footer">
+                <div class="mr-auto">
+
+                </div>
+                <div class="ml-auto">
+                    <input class="btn btn-next btn-fill btn-rose btn-wd" name="" id="submit" value="Edit Discount" type="submit">
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        </form>
+    </div>
