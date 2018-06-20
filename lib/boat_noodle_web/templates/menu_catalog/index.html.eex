@@ -51,7 +51,7 @@
               
               <table id = "table" style="table-layout: fixed;width: 5000px;margin-left: 20px;">
 
-                <tr>
+                <tr style="height: 50px;">
                   <th  class="headcol"  style="display: none;"></th>
                   <%= for itemcode <- @itemcodes do %>
                     <th style="width: 50px; border: black 1px solid; text-align: right; padding-right: 5px; font-size: 12px;">
