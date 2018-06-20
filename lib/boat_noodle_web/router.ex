@@ -37,6 +37,9 @@ defmodule BoatNoodleWeb.Router do
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
 
     resources("/menu_item", MenuItemController)
+    resources("/brand", BrandController)
+    post("/update_brand", BrandController, :update_brand)
+    post("/update_brand_logo", BrandController, :update_brand_logo)
     get("/combos", MenuItemController, :combos)
     resources("/category", CategoryController)
     resources("/remark", RemarkController)

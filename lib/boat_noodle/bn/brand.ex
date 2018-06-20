@@ -3,13 +3,15 @@ defmodule BoatNoodle.BN.Brand do
   import Ecto.Changeset
 
   schema "brand" do
-    field(:name, :string)
+    field(:bin, :binary)
     field(:domain_name, :string)
+    field(:name, :string)
+    field(:file_name, :string)
   end
 
   @doc false
   def changeset(brand, attrs) do
     brand
-    |> cast(attrs, [:name, :domain_name])
+    |> cast(attrs, [:name, :domain_name, :bin, :file_name])
   end
 end

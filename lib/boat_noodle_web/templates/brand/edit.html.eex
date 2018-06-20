@@ -1,0 +1,5 @@
+<h2>Edit Brand</h2>
+
+<%= render "form.html", Map.put(assigns, :action, brand_path(@conn, :update ,@conn.private.plug_session["brand"] ,@brand)) %>
+
+<span><%= link "Back", to: brand_path(@conn, :index,@conn.private.plug_session["brand"]) %></span>
