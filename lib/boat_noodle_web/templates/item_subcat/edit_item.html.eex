@@ -78,7 +78,7 @@
       </div>
       <div class="card-footer">
         <div class="mr-auto">
-          <a href="/menu_item" class="btn btn-previous btn-fill btn-default btn-wd" type="button">Previous</a>
+          <div class="btn btn-previous btn-fill btn-default btn-wd" aria-label="go_back">Go Back</div>
         </div>
         <div class="ml-auto">
           <input class="btn btn-next btn-fill btn-rose btn-wd" name="item_update" value="Update" type="submit">

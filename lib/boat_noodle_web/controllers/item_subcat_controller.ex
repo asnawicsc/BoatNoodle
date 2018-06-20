@@ -285,8 +285,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         from(
           s in ItemSubcat,
           where:
-            s.itemcode == ^item_subcat.itemcode and s.is_combo == ^0 and s.is_comboitem == ^0 and
-              s.is_delete == ^0,
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0,
           order_by: [asc: s.price_code]
         )
       )
@@ -302,8 +301,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         from(
           s in ItemSubcat,
           where:
-            s.itemcode == ^item_subcat.itemcode and s.is_combo == ^0 and s.is_comboitem == ^0 and
-              s.is_delete == ^0,
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0,
           order_by: [asc: s.price_code]
         )
       )
@@ -317,8 +315,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           left_join: c in ItemCat,
           on: c.itemcatid == s.itemcatid,
           where:
-            s.is_combo == ^0 and s.is_comboitem == ^0 and s.is_delete == ^0 and
-              c.category_type != "COMBO",
+            s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO" and
+              c.brand_id == ^BN.get_brand_id(conn) and s.brand_id == ^BN.get_brand_id(conn),
           group_by: [s.itemcode],
           select: %{code: s.itemcode, name: s.itemname}
         )
@@ -332,7 +330,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       Repo.all(
         from(
           c in ItemCat,
-          where: c.category_type != "COMBO",
+          where: c.category_type != "COMBO" and c.brand_id == ^BN.get_brand_id(conn),
           select: %{
             itemcatid: c.itemcatid,
             itemcatname: c.itemcatname,
