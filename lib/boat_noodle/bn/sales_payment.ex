@@ -5,6 +5,7 @@ defmodule BoatNoodle.BN.SalesPayment do
 @primary_key false
   schema "salespayment" do
     field :after_disc, :decimal
+    field :brand_id,:string
     field :card_no, :integer
     field :cash, :decimal
     field :changes, :decimal
@@ -16,6 +17,8 @@ defmodule BoatNoodle.BN.SalesPayment do
     field :payment_code1, :string
     field :payment_code2, :string
     field :payment_type, :string
+    field :payment_name1, :string
+    field :payment_name2, :string
     field :payment_type_amt1, :decimal
     field :payment_type_amt2, :decimal
     field :payment_type_id1, :integer
@@ -34,6 +37,6 @@ defmodule BoatNoodle.BN.SalesPayment do
   @doc false
   def changeset(sales_payment, attrs) do
     sales_payment
-    |> cast(attrs, [:salespay_id, :salesid, :sub_total, :after_disc, :service_charge, :gst_charge, :rounding, :grand_total, :cash, :changes, :payment_type, :card_no, :taxcode, :disc_amt, :voucher_code, :discountid, :payment_type_id1, :payment_type_am1, :payment_code1, :payment_type_id2, :payment_type_am2, :payment_code2, :updated_at, :created_at])
+    |> cast(attrs, [:salespay_id, :salesid, :sub_total,:payment_name2,:payment_name1, :brand_id, :after_disc, :service_charge, :gst_charge, :rounding, :grand_total, :cash, :changes, :payment_type, :card_no, :taxcode, :disc_amt, :voucher_code, :discountid, :payment_type_id1, :payment_type_amt1, :payment_code1, :payment_type_id2, :payment_type_amt2, :payment_code2, :updated_at, :created_at])
     end
 end
