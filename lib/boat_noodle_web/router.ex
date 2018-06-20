@@ -157,7 +157,8 @@ defmodule BoatNoodleWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", BoatNoodleWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", BoatNoodleWeb do
+    pipe_through :api
+      post("/sales", PageController, :webhook_post)
+  end
 end
