@@ -10,7 +10,6 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:include_spend, :integer, default: 1)
     field(:is_activate, :integer, default: 1)
     field(:is_categorize, :integer, default: 0)
-    field(:is_combo, :integer, default: 0)
     field(:is_comboitem, :integer, default: 0)
     field(:is_default_combo, :integer, default: 0)
     field(:is_delete, :integer, default: 0)
@@ -45,7 +44,6 @@ defmodule BoatNoodle.BN.ItemSubcat do
       :itemimage,
       :is_categorize,
       :is_activate,
-      :is_combo,
       :is_comboitem,
       :is_default_combo,
       :is_delete,

@@ -11,7 +11,7 @@
                         			
                         		</div>
                         		<div class="col-sm-4">
-                        			<a href="/combos/new" class="btn btn-rose btn-round" aria-label="">
+                        			<a href="/<%= @conn.params["brand"] %>/combos/new" class="btn btn-rose btn-round" aria-label="">
 						                      <i class="material-icons">add_box</i> New Combo
 						                    <div class="ripple-container"></div>
 						                  </a>
@@ -47,7 +47,7 @@
 
                               <td>
                                 
-<a href="/combos/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
+<a href="/<%= @conn.params["brand"] %>/combos/<%= elem(combo_menu, 0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
 
 
                               </td>

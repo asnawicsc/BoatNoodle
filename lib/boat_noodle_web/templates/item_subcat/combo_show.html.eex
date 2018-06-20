@@ -44,7 +44,7 @@
           <% ci = @combo_items |> Enum.group_by(fn x -> x.combo_id end) %>
           <%= for same_item <- @same_items do %>
           <tr>
-            <td><a href="/edit_combo/<%= same_item.subcatid %>/<%= same_item.price_code %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a></td>
+            <td><a href="/<%= @brand_name %>/edit_combo/<%= same_item.subcatid %>/<%= same_item.price_code %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a></td>
             <td><%= same_item.price_code %></td>
             <td><%= same_item.itemcatid %></td>
        

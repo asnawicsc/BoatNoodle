@@ -11,7 +11,19 @@ defmodule BoatNoodle.Authorization do
 
   def call(conn, opts) do
     if conn.private.plug_session["brand"] == nil do
-      brands = BoatNoodle.Repo.all(from(b in BoatNoodle.BN.Brand, select: b.domain_name)) |> hd()
+      if conn.params["brand"] != nil do
+        brand = BoatNoodle.Repo.get_by(BoatNoodle.BN.Brand, domain_name: conn.params["brand"])
+
+        if brand != nil do
+          brands = brand.domain_name
+        else
+          brands =
+            BoatNoodle.Repo.all(from(b in BoatNoodle.BN.Brand, select: b.domain_name)) |> hd()
+        end
+      else
+        brands =
+          BoatNoodle.Repo.all(from(b in BoatNoodle.BN.Brand, select: b.domain_name)) |> hd()
+      end
     else
       brands = conn.private.plug_session["brand"]
     end

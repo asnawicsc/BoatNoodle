@@ -61,7 +61,8 @@ defmodule BoatNoodleWeb do
         MenuCatalog,
         ItemSubcat,
         Branch,
-        Tag
+        Tag,
+        Brand
       }
     end
   end
@@ -117,7 +118,8 @@ defmodule BoatNoodleWeb do
         MenuCatalog,
         ItemSubcat,
         Branch,
-        Tag
+        Tag,
+        Brand
       }
     end
   end
@@ -169,7 +171,8 @@ defmodule BoatNoodleWeb do
         MenuCatalog,
         ItemSubcat,
         Branch,
-        Tag
+        Tag,
+        Brand
       }
 
       import Ecto.Query

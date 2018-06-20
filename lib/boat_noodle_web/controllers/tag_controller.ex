@@ -38,7 +38,9 @@ defmodule BoatNoodleWeb.TagController do
       {:ok, tag} ->
         conn
         |> put_flash(:info, "Printer created successfully.")
-        |> redirect(to: branch_path(conn, :printers, tag_params["branch_id"]))
+        |> redirect(
+          to: branch_path(conn, :printers, BN.get_domain(conn), tag_params["branch_id"])
+        )
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn

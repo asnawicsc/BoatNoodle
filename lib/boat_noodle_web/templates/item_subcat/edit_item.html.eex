@@ -9,7 +9,7 @@
 
     </div>
 
-    <%= form_for @conn, menu_item_path(@conn, :update, @item_subcat.subcatid), [method: "PUT",class: "form-horizontal"], fn f -> %>
+    <%= form_for @conn, menu_item_path(@conn, :update, BN.get_domain(@conn), @item_subcat.subcatid), [method: "PUT",class: "form-horizontal"], fn f -> %>
       <div class="card-body">
 
         <div class="row">
@@ -41,18 +41,18 @@
           <div class="col-sm-3">
           	<div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code A</label>
-              <% val =  Enum.filter(@price_codes, fn x -> x.code == "A" end) |> hd() %>
-              <input name="menu_item[price_code][A]" value="<%= val.price %>" class="form-control" type="text" required="">
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "A" end)  %>
+              <input name="menu_item[price_code][A]" value="<%= if val != [], do: hd(val).price %>" class="form-control" type="text" required="">
             </div>
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code B</label>
-              <% val =  Enum.filter(@price_codes, fn x -> x.code == "B" end) |> hd() %>
-              <input name="menu_item[price_code][B]" value="<%= val.price %>" class="form-control" type="text" required="">
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "B" end)  %>
+              <input name="menu_item[price_code][B]" value="<%= if val != [], do: hd(val).price %>" class="form-control" type="text" required="">
             </div>
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code C</label>
-              <% val =  Enum.filter(@price_codes, fn x -> x.code == "C" end) |> hd() %>
-              <input name="menu_item[price_code][C]" value="<%= val.price %>" class="form-control" type="text" required="">
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "C" end)  %>
+              <input name="menu_item[price_code][C]" value="<%= if val != [], do: hd(val).price %>" class="form-control" type="text" required="">
             </div>
           </div>
           <div class="col-sm-3">
