@@ -46,7 +46,7 @@ defmodule BoatNoodleWeb.BrandController do
       {:ok, brand} ->
         conn
         |> put_flash(:info, "Brand updated successfully.")
-        |> redirect(to: brand_path(conn, :show, brand))
+        |> redirect(to: brand_path(conn, :show, BN.get_domain(conn), brand))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", brand: brand, changeset: changeset)
@@ -61,7 +61,7 @@ defmodule BoatNoodleWeb.BrandController do
       {:ok, brand} ->
         conn
         |> put_flash(:info, "Brand updated successfully.")
-        |> redirect(to: brand_path(conn, :index, brand))
+        |> redirect(to: brand_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", brand: brand, changeset: changeset)
