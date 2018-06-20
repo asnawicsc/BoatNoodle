@@ -95,7 +95,7 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
-  def handle_in("toggle_printer", %{"info" => info}, socket) do
+  def handle_in("toggle_printer", %{"info" => info, "brand_id" => brand_id}, socket) do
     tuple_data =
       info
       |> String.replace("][", ",")
@@ -107,8 +107,8 @@ defmodule BoatNoodleWeb.TagHelper do
     tagid = elem(tuple_data, 1)
     subcatid = elem(tuple_data, 2)
 
-    tag = Repo.get(Tag, tagid)
-    subcat = Repo.get(ItemSubcat, subcatid)
+    tag = Repo.get_by(Tag, tagid: tagid, brand_id: brand_id)
+    subcat = Repo.get_by(ItemSubcat, subcatid: subcatid, brand_id: brand_id)
 
     existing_subcats = tag.subcat_ids |> String.split(",")
 

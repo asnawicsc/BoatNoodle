@@ -13,7 +13,7 @@ $(document).ready(function(){
 
 	$("input.printer_subcat").click(function(){
 		var info = $(this).attr("name")
-		tag_channel.push("toggle_printer", {info: info})
+		tag_channel.push("toggle_printer", {info: info, brand_id: window.currentBrand})
 	})
 
 	tag_channel.on("updated_printer", payload => {
@@ -33,7 +33,7 @@ $(document).ready(function(){
 
 	$("input.printer_combo_item").click(function(){
 		var info = $(this).attr("name")
-		tag_channel.push("toggle_printer_combo", {info: info})
+		tag_channel.push("toggle_printer_combo", {info: info, brand_id: window.currentBrand})
 	})
 
 	tag_channel.on("updated_printer_combo", payload => {
