@@ -6,14 +6,18 @@
       </div>
 
          <div class="dropdown pull-right" style="padding: 10px;">
+
       <a  href="/<%= @conn.private.plug_session["brand"] %>/organization/new" class="btn btn-success btn-round" >
+
           <i class="material-icons">group_add</i> New Organization
         <div class="ripple-container"></div>
       </a>
     </div>
 
             <div class="dropdown pull-right" style="padding: 10px;">
+
             <a  href="/<%= @conn.private.plug_session["brand"] %>/branch/new" class="btn btn-info btn-round" >
+
                 <i class="material-icons">add_box</i> New Branch
               <div class="ripple-container"></div>
             </a>
@@ -66,10 +70,12 @@
                         <td><%= branch.manager %></td>
                         <td><%= branch.sync_status %></td>
                         <td>
+
                           <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a>
                           <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
+
                             <i class="material-icons">cast</i> Printers
                           <div class="ripple-container"></div></a>
 

@@ -1,0 +1,143 @@
+<div class="col-md-12">
+              <div class="card ">
+                <div class="card-header card-header-rose card-header-text">
+                  <div class="card-text">
+                    <h4 class="card-title">Edit Discount Item -  <b><%= @discount_a.discitemsname %></b> <%= %></h4>
+                  </div>
+                </div>
+                <div class="card-body ">
+                  <form method="post" action="/<%= BN.get_domain(@conn)%>/edit_discount_detail" class="form-horizontal">
+                     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+
+                    <div class="row">
+                      <label class="col-sm-2 col-form-label">Discount Item</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[name]" value="<%= @discount_a.discitemsname %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-sm-2 col-form-label">Description</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[descriptions]" value="<%= @discount_a.description %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+
+
+                     <div class="row">
+                      <label class="col-sm-2 col-form-label">Discount Type</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.disctype %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                     <div class="row">
+                      <label class="col-sm-2 col-form-label">Discount Category</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.discountcategory %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 col-form-label">Discount Quantity</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.disc_qty %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 col-form-label">Target Category</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.target_menu_category %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                     <div class="row">
+                      <label class="col-sm-2 col-form-label">Target Item</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.target_menu_item %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 col-form-label">Minimun Spend</label>
+                      <div class="col-sm-10">
+                        <div class="form-group">
+                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.min_spend %>" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                      
+         
+
+     
+                
+                    <div class="row">
+                      <label class="col-sm-2 col-form-label">Status</label>
+                      <div class="col-sm-10 checkbox-radios">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                             
+                            <input class="form-check-input" type="checkbox" id="activate" name="activate"  value="" checked> Activate?
+                           
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label>
+                        </div>
+                      
+                      </div>
+                    </div>
+                    
+                 
+                </div>
+                 <div class="card-footer">
+                                    <div class="mr-auto">
+
+                                    </div>
+                                    <div class="ml-auto">
+                                        <input class="btn btn-next btn-fill btn-rose btn-wd" name="" id="submit" value="Edit Discount" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+              </div>
+               </form>
+            </div>
+
+
+            <script type="text/javascript">
+              var x = document.getElementById('activate').value;
+
+if (x == 0) 
+{
+         
+    $("input[name='disc[is_visable]']").removeAttr('checked');
+
+    var s = 0
+     $("input[name='activate']").val(s);
+}
+
+if (x == 1) 
+{
+         
+
+    var s = 1
+     $("input[name='activate']").val(s);
+}
+
+</script>

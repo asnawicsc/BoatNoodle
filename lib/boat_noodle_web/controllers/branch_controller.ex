@@ -9,6 +9,7 @@ defmodule BoatNoodleWeb.BranchController do
   def printers(conn, %{"id" => id}) do
     printers = Repo.all(from(t in Tag, where: t.branch_id == ^id))
 
+
     branch =
       Repo.all(
         from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))
@@ -23,6 +24,7 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
       |> hd()
+
 
     item_ids = menu_cat.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
@@ -153,6 +155,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def edit(conn, %{"id" => id}) do
+
     branch =
       Repo.all(
         from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))

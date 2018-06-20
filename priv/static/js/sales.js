@@ -2158,4 +2158,36 @@ channel.on("display_organization_details", payload => {
 
     })
 
+$('select#disc').on('change', function() {
+
+     var disc= $("#disc option:selected").val();
+
+  channel.push("generate_discount_items", {
+            disc: disc
+           
+        })
+})
+
+  channel.on("generate_discount_item2", payload => {
+        console.log(payload.discount)
+        var data = payload.discount
+
+        $("table#discount_items").DataTable({
+            destroy: true,
+            data: data,
+            columns: [{
+                    data: 'discitemsname'
+                },
+                {
+                    data: 'disctype'
+                },
+                {
+                    data: 'is_visable'
+                }
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
 });

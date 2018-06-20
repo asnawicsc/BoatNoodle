@@ -85,7 +85,69 @@ defmodule BoatNoodleWeb.DiscountController do
   end
 
   def edit_discount_detail(conn, params) do
-    IEx.pry()
+   IEx.pry
+  end
+
+  def discount_item_details(conn, %{"id" => id}) do
+
+  
+    discount_items = Repo.get_by(BN.DiscountItem, brand_id: BN.get_brand_id(conn), discountitemsid: id)
+
+     discount_a =
+      Repo.all(
+        from(
+          s in DiscountItem,
+          left_join: b in Discount,
+          where: b.discountid == s.discountid,
+          left_join: c in ItemCat,
+          where: s.target_cat == c.itemcatid,
+          left_join: d in ItemSubcat,
+          where: s.is_targetmenuitems == d.subcatid and s.discountitemsid==^discount_items.discountitemsid,
+          select: %{
+            discountitemsid: s.discountitemsid,
+            discitemsname: s.discitemsname,
+            description: s.descriptions,
+            disctype: s.disctype,
+            discountcategory: b.discname,
+            disc_qty: s.disc_qty,
+            target_menu_category: c.itemcatname,
+            target_menu_item: d.itemname,
+            activate: s.disc_qty,
+            min_spend: s.min_spend
+          }
+        )
+      )|>hd
+
+
+
+
+    render(
+      conn,
+      "discount_item_details.html",
+      discount_items: discount_items,discount_a: discount_a
+    
+    )
+  end
+
+   def discount_catalog_details(conn, %{"id" => id}) do
+
+  
+    discount_catalog = Repo.get_by(DiscountCatalog, brand_id: BN.get_brand_id(conn), id: id)
+
+      discounts = BN.list_discount()
+
+
+      all_discount_catalog=Repo.all(from DiscountCatalog)
+
+       
+
+
+    render(
+      conn,
+      "discount_catalog_details.html",
+      discount_catalog: discount_catalog,discounts: discounts,all_discount_catalog: all_discount_catalog
+    
+    )
   end
 
   def new(conn, _params) do

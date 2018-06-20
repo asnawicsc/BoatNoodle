@@ -64,10 +64,12 @@ defmodule BoatNoodleWeb.MenuItemController do
           select: %{
             remarkid: r.itemsremarkid,
             itemname: s.itemcatname,
-            itemremark: r.remark
+            itemremark: r.remark,
+            brand_id: r.brand_id
           }
         )
       )
+      |> Enum.filter(fn x -> x.brand_id == BN.get_brand_id(conn) end)
 
     render(
       conn,

@@ -11,7 +11,8 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       Repo.all(
         from(
           s in ItemSubcat,
-          where: s.is_delete == ^0 and s.is_combo == ^0 and s.is_comboitem == ^0,
+          where:
+            s.is_delete == ^0 and s.is_comboitem == ^0 and s.brand_id == ^BN.get_brand_id(conn),
           select: %{
             subcatid: s.subcatid,
             item_code: s.itemcode,

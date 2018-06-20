@@ -26,23 +26,23 @@
 
               <table style="float: left;">
 
-                <tr style="height: 27px;">
+                <tr style="height: 50px;">
                   <th  class="headcol"  ></th>
  
                 </tr>
                 <%= for menu_catalog <- @menu_catalogs do %>
                  
 
-                    <tr style="height: 27px;">
+                    <tr >
 
-                      <th class="headcol" >
+                      <th class="headcol" style="line-height: 21px; ">
                         <%= menu_catalog.name %>
                       </th>
  
                     </tr>
 
                     <% end %>
-                <tr style="height: 27px;">
+                <tr >
                   <th  class="headcol"  ></th>
  
                 </tr>
@@ -51,10 +51,10 @@
               
               <table id = "table" style="table-layout: fixed;width: 5000px;margin-left: 20px;">
 
-                <tr>
+                <tr style="height: 50px;">
                   <th  class="headcol"  style="display: none;"></th>
                   <%= for itemcode <- @itemcodes do %>
-                    <th>
+                    <th style="width: 50px; border: black 1px solid; text-align: right; padding-right: 5px; font-size: 12px;">
                       <%= itemcode %>
                     </th>
                     <% end %>
@@ -70,7 +70,9 @@
                       <%= for itemcode <- @itemcodes do %>
                         <td style="border: black 1px solid; text-align: right; padding-right: 5px;">
                           <% data = @arranged_items[itemcode] %>
-
+                 
+                            
+                         
                             <%= for d <- data do %>
 
                               <%= if Enum.any?(ids, fn x -> x == d.subcatid end) do %>
@@ -91,7 +93,7 @@
                         
                                 <%= if Decimal.to_float(d.itemprice) != 0.0  do %>
                                 
-                              <span class="badge badge-<%= style %>" style="cursor: pointer;" id = "<%= menu_catalog.id %>-<%= d.subcatid %>"aria-label="badge" data-toggle="modal" data-target="#exampleModal" ><%= d.itemprice %></span>
+                              <span class="badge badge-<%= style %>"" style="display: block; cursor: pointer;" id = "<%= menu_catalog.id %>-<%= d.subcatid %>" aria-label="badge" data-toggle="modal" data-target="#exampleModal" ><%= d.itemprice %></span>
                                 <% end %>
                               <% end %>
 

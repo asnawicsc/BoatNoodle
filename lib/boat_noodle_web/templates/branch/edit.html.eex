@@ -10,7 +10,9 @@
 			<div class="card-body">
 				
 
+
 <%= form_for @changeset, branch_path(@conn, :update,@conn.private.plug_session["brand"], @branch.branchid), [class: "form-horizontal"], fn f -> %>
+
 
 <div class="row">
 

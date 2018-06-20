@@ -6,7 +6,7 @@ $(document).ready(function(){
 		var subcat_id = id[1]
 		
 
-		menu_catalog_channel.push("open_modal", {menu_catalog_id: menu_catalog_id, subcat_id: subcat_id})
+		menu_catalog_channel.push("open_modal", {menu_catalog_id: menu_catalog_id, subcat_id: subcat_id, brand_id: window.currentBrand})
 	})
 
 	menu_catalog_channel.on("show_modal", payload => {
@@ -15,7 +15,7 @@ $(document).ready(function(){
 			event.preventDefault();
 			var fr = $("form[aria-label='edit_price_form']").serializeArray();
 
-			menu_catalog_channel.push("update_catalog_price",{map: fr})
+			menu_catalog_channel.push("update_catalog_price",{map: fr, brand_id: window.currentBrand})
 		})
 	})
 
