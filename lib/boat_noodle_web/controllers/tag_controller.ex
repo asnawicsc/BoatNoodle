@@ -33,6 +33,7 @@ defmodule BoatNoodleWeb.TagController do
 
     tag_params = Map.put(tag_params, "subcat_ids", subcat_ids)
     tag_params = Map.put(tag_params, "branch_id", String.to_integer(tag_params["branch_id"]))
+    tag_params = Map.put(tag_params, "brand_id", BN.get_brand_id(conn))
 
     case BN.create_tag(tag_params) do
       {:ok, tag} ->
