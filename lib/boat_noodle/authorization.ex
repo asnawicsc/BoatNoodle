@@ -32,7 +32,8 @@ defmodule BoatNoodle.Authorization do
       if conn.request_path == "/#{brands}/login" or
            conn.request_path == "/#{brands}/authenticate_login" or
            conn.request_path == "/#{brands}/forget_password" or
-           conn.request_path == "/#{brands}/forget_password_email" do
+           conn.request_path == "/#{brands}/forget_password_email" or
+           conn.request_path == "/#{brands}/api/sales" do
         conn
       else
         conn

@@ -61,5 +61,6 @@ defmodule BoatNoodle.BN.SalesPayment do
       :updated_at,
       :created_at
     ])
+    |> unique_constraint(:salespay_id, name: "PRIMARY")
   end
 end

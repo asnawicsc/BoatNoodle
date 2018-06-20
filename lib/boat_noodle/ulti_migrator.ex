@@ -21,6 +21,98 @@ defmodule BoatNoodle.UltiMigrator do
     # Task.start_link(__MODULE__, :migrate_new_remark, [arg])
   end
 
+  def test_api do
+    sales_map = %{
+      "details" => [
+        %{
+          "afterdisc" => "1111",
+          "brand_id" => "1",
+          "combo_id" => "1",
+          "created_at" => "2016-12-02 17:45:38",
+          "discountid" => "11",
+          "is_void" => "0",
+          "itemcustomid" => "3",
+          "itemcode" => "3",
+          "itemid" => "11",
+          "itemname" => "1",
+          "order_price" => "222",
+          "orderid" => "1",
+          "qty" => "27",
+          "remaks" => "1111",
+          "remark" => "",
+          "sales_details" => "987654321",
+          "unit_price" => "111",
+          "updated_at" => "2016-12-02 17:45:38",
+          "voidreason" => "",
+          "void_by" => "0"
+        }
+      ],
+      "payment" => %{
+        "after_disc" => "11",
+        "brand_id" => "1",
+        "card_no" => "",
+        "cash" => "222",
+        "changes" => "0",
+        "created_at" => "2016-12-02 17:45:38",
+        "disc_amt" => "1",
+        "discountid" => "1111",
+        "gst_charge" => "3",
+        "grand_total" => "27",
+        "payment_code1" => "111",
+        "payment_code2" => "1111",
+        "payment_name1" => "111",
+        "payment_name2" => "111",
+        "payment_type" => "0",
+        "payment_type_amt1" => "1111",
+        "payment_type_amt2" => "111",
+        "payment_type_id1" => "1111",
+        "payment_type_id2" => "1111",
+        "rounding" => "3",
+        "sub_total" => "1111",
+        "salespay_id" => "7146",
+        "service_charge" => "1",
+        "taxcode" => "",
+        "updated_at" => "2016-12-02 17:45:38",
+        "voucher_code" => "11"
+      },
+      "sales" => %{
+        "branchid" => "3",
+        "brand_id" => "1",
+        "created_at" => "2016-12-02 17:45:38",
+        "invoiceno" => "123456789",
+        "is_void" => "0",
+        "pax" => "3",
+        "remark" => "",
+        "salesdatetime" => "2016-12-02 17:48:10",
+        "salesid" => "666666",
+        "salesdate" => "2016-12-02",
+        "staffid" => "27",
+        "tbl_no" => "1",
+        "type" => "DINEIN",
+        "updated_at" => "2016-12-02 17:45:38",
+        "voidreason" => "",
+        "void_by" => "0"
+      }
+    }
+
+    json_map = Poison.encode!(sales_map)
+
+    uri = "localhost:4000/boatnoodle/api/sales"
+    # uri = "http://110.4.42.45:80/boatnoodle/api/sales"
+    # HTTPoison.get!(
+    #   uri,
+    #   [{"Content-Type", "application/json"}],
+    #   hackney: [basic_auth: {"admin@test.com", "api_key"}]
+    # )
+
+    HTTPoison.post!(
+      uri,
+      json_map,
+      [{"Content-Type", "application/json"}],
+      hackney: [basic_auth: {"admin@test.com", "api_key"}]
+    )
+  end
+
   def run(arg) do
     case arg do
       "boat_noodle" ->
