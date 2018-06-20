@@ -97,8 +97,9 @@ defmodule BoatNoodle.UltiMigrator do
 
     json_map = Poison.encode!(sales_map)
 
-    uri = "localhost:4000/boatnoodle/api/sales"
-    # uri = "http://110.4.42.45:80/boatnoodle/api/sales"
+    # uri = "localhost:4000/boatnoodle/api/sales"
+    uri = "http://110.4.42.45/boatnoodle/api/sales"
+
     # HTTPoison.get!(
     #   uri,
     #   [{"Content-Type", "application/json"}],
@@ -109,7 +110,9 @@ defmodule BoatNoodle.UltiMigrator do
       uri,
       json_map,
       [{"Content-Type", "application/json"}],
-      hackney: [basic_auth: {"admin@test.com", "api_key"}]
+      hackney: [basic_auth: {"admin@test.com", "api_key"}],
+      timeout: 50_000,
+      recv_timeout: 50_000
     )
   end
 
