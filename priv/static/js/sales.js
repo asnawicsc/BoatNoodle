@@ -68,6 +68,7 @@ channel.on("display_organization_details", payload => {
 
         $("table#outlet_sales").DataTable({
             destroy: true,
+            
             data: data,
             columns: [{
                     data: 'branchname'
@@ -201,6 +202,10 @@ channel.on("display_organization_details", payload => {
         $("table#sales_transaction").DataTable({
             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'salesdate'
                 },
@@ -294,6 +299,10 @@ channel.on("display_organization_details", payload => {
         $("table#hourly_pax_summary").DataTable({
             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'date'
                 },
@@ -441,6 +450,10 @@ channel.on("display_organization_details", payload => {
         $("table#hourly_sales_summary").DataTable({
             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'date'
                 },
@@ -588,6 +601,10 @@ channel.on("display_organization_details", payload => {
         $("table#hourly_transaction_summary").DataTable({
             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'date'
                 },
