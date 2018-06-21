@@ -113,10 +113,10 @@
                         <td><%= branch.manager %></td>
 
                         <td>
-                          <a href="/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a>
-                          <a href="/branch/<%= branch.branchid %>/printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
                             <i class="material-icons">cast</i> Printers
                           <div class="ripple-container"></div></a>
 
@@ -153,7 +153,7 @@
 
 
 
-                          <a href="/organization/1/edit" button class="btn btn-rose btn-round btn-link organizationid" data-original-title="Edit Organization" aria-label="edit_organization">
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/organization/1/edit" button class="btn btn-rose btn-round btn-link organizationid" data-original-title="Edit Organization" aria-label="edit_organization">
                             <i class="material-icons">edit</i> Edit
                           </button>
                         </a>

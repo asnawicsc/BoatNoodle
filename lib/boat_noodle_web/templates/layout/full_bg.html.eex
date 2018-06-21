@@ -147,7 +147,7 @@ $(document).ready(function(){
     dataType: "json"
   }).done(function(j){
     $(j).each(function(){
-      var html = "<li class='nav-item active'><a href='/"+this.name+"/login' class='nav-link'><i class='material-icons'>lock_open</i>"+this.name+"</a></li>"
+      var html = "<li class='nav-item'><a href='/"+this.name+"/login' class='nav-link'><i class='material-icons'>lock_open</i>"+this.name+"</a></li>"
       $("ul[aria-label='various_brands']").append(html)
     })
   })

@@ -1,6 +1,6 @@
 defmodule BoatNoodleWeb.MenuItemController do
   use BoatNoodleWeb, :controller
-
+  use Task
   alias BoatNoodle.BN
   alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, Remark}
 
@@ -206,8 +206,30 @@ defmodule BoatNoodleWeb.MenuItemController do
     render(conn, "edit.html", menu_item: menu_item, changeset: changeset)
   end
 
-  def update(conn, %{"id" => subcatid, "menu_item" => menu_item_params}) do
+  def update_printers(conn, tag_params, subcatid) do
+    branch_names = tag_params |> Map.keys()
+
+    for branch_name <- branch_names do
+      printer_id = tag_params[branch_name]["tag_id"]
+      tag = Repo.get_by(Tag, tagid: printer_id, brand_id: BN.get_brand_id(conn))
+      items_ids = tag.subcat_ids |> String.split(",")
+
+      if Enum.any?(items_ids, fn x -> x == subcatid end) do
+        # remove it
+        nl = List.delete(items_ids, subcatid)
+      else
+        nl = List.insert_at(items_ids, 0, subcatid)
+      end
+
+      new_items = Enum.join(nl, ",")
+
+      Tag.changeset(tag, %{subcat_ids: new_items}) |> Repo.update()
+    end
+  end
+
+  def update(conn, %{"id" => subcatid, "menu_item" => menu_item_params, "tag" => tag_params}) do
     # menu_item = BN.get_menu_item!(id)
+    Task.start_link(__MODULE__, :update_printers, [conn, tag_params, subcatid])
 
     item_subcat =
       Repo.all(
