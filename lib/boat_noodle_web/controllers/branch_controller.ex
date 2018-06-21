@@ -7,8 +7,8 @@ defmodule BoatNoodleWeb.BranchController do
   require IEx
 
   def printers(conn, %{"id" => id}) do
-    printers = Repo.all(from(t in Tag, where: t.branch_id == ^id))
-
+    printers =
+      Repo.all(from(t in Tag, where: t.branch_id == ^id and t.brand_id == ^BN.get_brand_id(conn)))
 
     branch =
       Repo.all(
@@ -25,14 +25,13 @@ defmodule BoatNoodleWeb.BranchController do
       )
       |> hd()
 
-
     item_ids = menu_cat.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
     subcats_data =
       Repo.all(
         from(
           s in ItemSubcat,
-          where: s.subcatid in ^item_ids,
+          where: s.subcatid in ^item_ids and s.brand_id == ^BN.get_brand_id(conn),
           select: %{
             id: s.subcatid,
             name: s.itemname,
@@ -155,7 +154,6 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def edit(conn, %{"id" => id}) do
-
     branch =
       Repo.all(
         from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))

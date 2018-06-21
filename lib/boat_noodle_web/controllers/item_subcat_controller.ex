@@ -359,11 +359,22 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           where:
             t.branch_id != ^0 and t.brand_id == ^BN.get_brand_id(conn) and
               b.brand_id == ^BN.get_brand_id(conn),
-          select: %{tag_id: t.tagid, branch_id: b.branchid, branch: b.branchname, name: t.tagname}
+          select: %{
+            tag_id: t.tagid,
+            branch_id: b.branchid,
+            branch: b.branchname,
+            name: t.tagname,
+            subcat_ids: t.subcat_ids
+          }
         )
       )
       |> Enum.group_by(fn x -> x.branch end)
 
+    branch_names = printers |> Map.keys()
+
+    # the printer has subcat ids
+    # because this item has multiple codes
+    # need to check with each of the tag subcat_ids 
     render(
       conn,
       "edit_item.html",

@@ -207,29 +207,83 @@ defmodule BoatNoodleWeb.MenuItemController do
   end
 
   def update_printers(conn, tag_params, subcatid) do
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: subcatid, brand_id: BN.get_brand_id(conn))
+
+    same_items =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where:
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0,
+          order_by: [asc: s.price_code]
+        )
+      )
+
+    item_codes_str =
+      same_items |> Enum.map(fn x -> x.subcatid end) |> Enum.map(fn x -> Integer.to_string(x) end)
+      |> Enum.sort()
+
     branch_names = tag_params |> Map.keys()
 
     for branch_name <- branch_names do
       printer_id = tag_params[branch_name]["tag_id"]
       tag = Repo.get_by(Tag, tagid: printer_id, brand_id: BN.get_brand_id(conn))
       items_ids = tag.subcat_ids |> String.split(",")
+      branch = Repo.get_by(Branch, branchname: branch_name)
 
-      if Enum.any?(items_ids, fn x -> x == subcatid end) do
+      menu_catalog =
+        Repo.get_by(MenuCatalog, id: branch.menu_catalog, brand_id: BN.get_brand_id(conn))
+
+      subcat_ids = menu_catalog.items |> String.split(",") |> Enum.sort()
+      myers = List.myers_difference(item_codes_str, subcat_ids)
+      answer = myers |> Keyword.get(:eq) |> hd()
+
+      if Enum.any?(items_ids, fn x -> x == answer end) do
         # remove it
-        nl = List.delete(items_ids, subcatid)
+        # nl = List.delete(items_ids, answer) |> Enum.reject(fn x -> x == "" end)
+        # keep it
+        nl = items_ids
       else
-        nl = List.insert_at(items_ids, 0, subcatid)
+        nl = List.insert_at(items_ids, 0, answer) |> Enum.reject(fn x -> x == "" end)
       end
 
       new_items = Enum.join(nl, ",")
 
-      Tag.changeset(tag, %{subcat_ids: new_items}) |> Repo.update()
+      stats = Tag.changeset(tag, %{subcat_ids: new_items}) |> Repo.update()
+
+      case stats do
+        {:ok, tag} ->
+          true
+
+        {:error, stats} ->
+          IO.puts("tag error")
+      end
+
+      tags =
+        Repo.all(
+          from(
+            t in Tag,
+            where:
+              t.branch_id == ^branch.branchid and t.tagid != ^printer_id and
+                t.brand_id == ^BN.get_brand_id(conn)
+          )
+        )
+
+      for tag <- tags do
+        items_ids = tag.subcat_ids |> String.split(",")
+        nl = List.delete(items_ids, answer) |> Enum.reject(fn x -> x == "" end)
+
+        new_items = Enum.join(nl, ",")
+
+        stats = Tag.changeset(tag, %{subcat_ids: new_items}) |> Repo.update()
+      end
+
+      true
     end
   end
 
   def update(conn, %{"id" => subcatid, "menu_item" => menu_item_params, "tag" => tag_params}) do
     # menu_item = BN.get_menu_item!(id)
-    Task.start_link(__MODULE__, :update_printers, [conn, tag_params, subcatid])
 
     item_subcat =
       Repo.all(
@@ -249,6 +303,8 @@ defmodule BoatNoodleWeb.MenuItemController do
           order_by: [asc: s.price_code]
         )
       )
+
+    Task.start_link(__MODULE__, :update_printers, [conn, tag_params, subcatid])
 
     cat =
       Repo.all(

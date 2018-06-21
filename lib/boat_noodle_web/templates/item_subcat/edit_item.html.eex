@@ -141,5 +141,23 @@
 <script type="text/javascript">
   $(document).ready(function() {
     $('select[name="menu_item[itemcatid]"]').selectpicker('val', '<%= @item_subcat.itemcatid %>');
+
+      $("select[title='Choose Printer']").each(function(){
+        var name  = $(this).attr("name")
+        var id = location.pathname.split("/")[3]
+      var brand = location.pathname.split("/")[1]
+
+        $.ajax({
+          url: "/"+brand+"/check_printer", 
+          dataType: "json",
+          data: {name: name, id: id}
+        }).done(function(j){
+          $(j).each(function(){
+         
+            $('select[name="'+j.name+'"]').selectpicker('val', j.tag_id);
+          })
+        })
+      })
+
   })
 </script>
