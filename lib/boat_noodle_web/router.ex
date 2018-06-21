@@ -40,7 +40,7 @@ defmodule BoatNoodleWeb.Router do
   scope "/:brand", BoatNoodleWeb do
     pipe_through(:browser)
 
-    get("/", PageController, :index)
+    get("/", PageController, :index2)
     post("/sales_graph_by_year", PageController, :sales_graph_by_year)
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
 
