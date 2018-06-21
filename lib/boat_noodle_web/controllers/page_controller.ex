@@ -101,12 +101,12 @@ defmodule BoatNoodleWeb.PageController do
       "brand_id"
     ]
 
-    if Enum.all?(sales_required_keys, &Map.has_key?(params["sales"], &1)) &&
+       if Enum.all?(sales_required_keys, &Map.has_key?(params["sales"], &1)) &&
          Enum.all?(salesdetail_required_keys, &Map.has_key?(a, &1)) &&
          Enum.all?(salespayment_required_keys, &Map.has_key?(params["payment"], &1)) == true do
+
       sales_params = for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
       sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
-
       sales_payment_params =
         for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
 
