@@ -25,7 +25,8 @@ defmodule BoatNoodleWeb.Router do
   scope "/", BoatNoodleWeb do
     # Use the default browser stack
     pipe_through(:management)
-
+    get("/", PageController, :index)
+    get("/get_brands", PageController, :get_brands)
     get("/management_login", UserController, :login_management)
   end
 

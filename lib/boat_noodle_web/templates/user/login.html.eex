@@ -32,7 +32,7 @@
                 </span>
               </div>
                 <div style="text-align: right">
-                  <a class="btn btn-rose btn-link" href="/forget_password" >Forget password? Click here !</a>
+                  <a class="btn btn-rose btn-link" href="/<%= @conn.params["brand"]%>/forget_password" >Forget password? Click here !</a>
                 </div>
 
               

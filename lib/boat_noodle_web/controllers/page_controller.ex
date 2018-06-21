@@ -5,8 +5,20 @@ defmodule BoatNoodleWeb.PageController do
   import Ecto.Query
   require IEx
 
+  def get_brands(conn, _params) do
+    brands = Repo.all(Brand) |> Enum.map(fn x -> %{name: x} end) |> Poison.encode!()
+    send_resp(conn, 200, brands)
+  end
+
   def index(conn, _params) do
-    render(conn, "index.html")
+    brands = Repo.all(Brand) |> hd()
+
+    if conn.private.plug_session["brand"] == nil do
+      conn
+      |> redirect(to: user_path(conn, :login, brands.domain_name))
+    else
+      render(conn, "index.html")
+    end
   end
 
   def webhook_get(conn, params) do

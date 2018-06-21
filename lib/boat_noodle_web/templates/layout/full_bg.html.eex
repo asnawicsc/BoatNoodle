@@ -35,14 +35,10 @@
         <span class="navbar-toggler-icon icon-bar"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbar">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav" aria-label="various_brands">
 
 
-          <li class="nav-item  active ">
-            <a href="/login" class="nav-link">
-              <i class="material-icons">lock_open</i> Login
-            </a>
-          </li>
+          
     
         </ul>
       </div>
