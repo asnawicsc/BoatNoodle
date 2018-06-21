@@ -1,16 +1,29 @@
+<% require IEx %>
+<% conn = @conn %>
+<% brand = Repo.all(from b in Brand, where: b.domain_name == ^conn.params["brand"]) |> hd() %>
+
         <div class="col-md-4 col-sm-6 ml-auto mr-auto">
           <form role="form" action="/<%= @conn.params["brand"]%>/authenticate_login" method="post">
                         <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
 
-            <div class="card card-login card-hidden">
-              <div class="card-header card-header-rose text-center">
-                <h4 class="card-title">Log in</h4>
-
+            <div class="card card-profile text-center">
+              <div class="card-header card-header-image" >
+                  <%= if brand.bin == nil do %>
+                    <% path = File.cwd!() <> "/media/default_logo.png" %>
+                    <% {:ok, bin} = File.read(path) %>
+                    <% bin = Base.encode64(bin) %>
+                    <img style="max-height:150px; width: auto; padding: 20px" src="data:image/png;base64, <%= bin %>" alt="..." >
+                  <% else %>
+                    <img style="max-height:150px; width: auto; padding: 20px" src="data:image/png;base64, <%= brand.bin %>" alt="..." >
+                  <% end %>
               </div>
+
               <div class="card-body ">
-               
+               <div style = "text-align: center;">
+                  <h4>Log In</h4>
+               </div>
                 <span class="bmd-form-group">
-                  <div class="input-group">
+                  <div class="input-group" style="margin-left: -3%;">
                     <div class="input-group-prepend">
                       <span class="input-group-text">
                         <i class="material-icons">face</i>
@@ -20,8 +33,8 @@
                   </div>
                 </span>
 
-                <span class="bmd-form-group">
-                  <div class="input-group">
+                <span class="bmd-form-group" >
+                  <div class="input-group" style="margin-left: -3%;">
                     <div class="input-group-prepend">
                       <span class="input-group-text">
                         <i class="material-icons">lock_outline</i>
