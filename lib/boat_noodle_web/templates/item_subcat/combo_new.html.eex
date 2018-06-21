@@ -1,6 +1,6 @@
 <div class="col-md-10 mr-auto ml-auto" aria-label="add_new_item">
 
-          <form method="post" action="/combos/new" class="form-horizontal" aria-label="item_form">
+          <form method="post" action="/<%= @conn.params["brand"] %>/combos/new" class="form-horizontal" aria-label="item_form">
     <div class="card " data-color="rose" >
      
         <div class="card-header text-center">

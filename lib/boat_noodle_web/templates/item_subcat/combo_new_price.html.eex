@@ -1,6 +1,6 @@
 <%require IEx %>
 
-    <form method="post" action="/combos/combo_create_price" class="form-horizontal" aria-label="item_form">
+    <form method="post" action="/<%= @conn.params["brand"] %>/combos/combo_create_price" class="form-horizontal" aria-label="item_form">
 
         <div class="col-sm-12">
             <div class="card ">
@@ -15,7 +15,7 @@
                             <label class="col-sm-2 col-form-label">Item Name</label>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="itemname" value='<%= @params["itemname"] %>' disabled>
+                                    <input type="text" class="form-control" name="item[itemname]" value='<%= @params["itemname"] %>' disabled>
                                     
 
                                 </div>
@@ -25,7 +25,7 @@
                             <label class="col-sm-2 col-form-label">Item Code</label>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="itemcode" value='<%= @params["itemcode"] %>' disabled >
+                                    <input type="text" class="form-control" name="item[itemcode]" value='<%= @params["itemcode"] %>' disabled >
                                   
                                 </div>
                             </div>
@@ -34,7 +34,7 @@
                             <label class="col-sm-2 col-form-label">Item Description</label>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="itemdesc" value='<%= @params["itemdesc"] %>' disabled >
+                                    <input type="text" class="form-control" name="item[itemdesc]" value='<%= @params["itemdesc"] %>' disabled >
                                   
                                 </div>
                             </div>
@@ -43,7 +43,7 @@
                             <label class="col-sm-2 col-form-label">Item Category</label>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="itemcat" value='<%= @itemcat %>' disabled >
+                                    <input type="text" class="form-control" name="item[itemcat]" value='<%= @itemcat %>' disabled >
                                   
                                 </div>
                             </div>
@@ -96,13 +96,13 @@
                                     <% data2=elem(item,1) %>
                                     <% id= data.itemcatid %>
 
-                                <input type="hidden" class="form-control" name="<%= data.itemcatname %>[itemname]" value='<%= @params["itemname"] %>'>
-                                <input type="hidden" class="form-control" name="<%= data.itemcatname %>[itemcode]" value='<%= @params["itemcode"] %>' >
+                                <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemname]" value='<%= @params["itemname"] %>'>
+                                <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcode]" value='<%= @params["itemcode"] %>' >
                                 
 
-                                  <input type="hidden" class="form-control" name="<%= data.itemcatname %>[itemdesc]" value='<%= @params["itemdesc"] %>' >
-                                   <input type="hidden" class="form-control" name="<%= data.itemcatname %>[itemcat]" value='<%= @itemcat %>' >
-                                 <input type="hidden"  name="<%= data.itemcatname %>[all_item]">
+                                  <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemdesc]" value='<%= @params["itemdesc"] %>' >
+                                   <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcat]" value='<%= @itemcat %>' >
+                                 <input type="hidden"  name="a[<%= data.itemcatname %>][all_item]">
                                 
                                   
                                     
@@ -122,7 +122,7 @@
                                                                 <label class="col-sm-2 col-form-label">Category Limit</label>
                                                                 <div class="col-sm-4">
                                                                     <div class="form-group">
-                                                                        <input type="text" class="form-control"  name="<%= data.itemcatname %>[cat_limit]" value='' required>
+                                                                        <input type="text" class="form-control"  name="a[<%= data.itemcatname %>][cat_limit]" value='' required>
                                                                     </div>
                                                                 </div>
                                                             </div>

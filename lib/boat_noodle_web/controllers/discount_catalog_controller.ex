@@ -3,10 +3,20 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.DiscountCatalog
+  alias BoatNoodle.BN.DiscountItem
 
   def index(conn, _params) do
     discount_catalog = Repo.all(DiscountCatalog)
-    render(conn, "index.html", discount_catalog: discount_catalog)
+    discounts = Repo.all(Discount)
+     discounts_items = Repo.all(DiscountItem)
+    render(conn, "index.html",discounts_items: discounts_items,discounts: discounts, discount_catalog: discount_catalog)
+  end
+
+  def discount_discounts_items(conn, _params) do
+    discount_catalog = Repo.all(DiscountCatalog)
+    discounts = Repo.all(Discount)
+     discounts_items = Repo.all(DiscountItem)
+    render(conn, "discount_discounts_items.html",discounts_items: discounts_items,discounts: discounts, discount_catalog: discount_catalog)
   end
 
   def new(conn, _params) do

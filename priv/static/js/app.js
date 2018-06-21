@@ -189,7 +189,7 @@ $(document).ready(function(){
     })
 
     console.log(list[cat])
-    $("input[name='"+cat+"[all_item]'").val(list[cat])
+    $("input[name='a["+cat+"][all_item]'").val(list[cat])
 
     })
 

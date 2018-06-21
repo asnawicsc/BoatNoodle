@@ -1,6 +1,6 @@
 <%require IEx %>
 
-    <form method="post" action="/edit_combo_detail" class="form-horizontal" aria-label="item_form">
+    <form method="post" action="/<%= @conn.params["brand"] %>/edit_combo_detail" class="form-horizontal" aria-label="item_form">
         <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
 
         <input type="hidden" class="form-control" name="subcatid" value='<%= @combo.subcatid %>'>

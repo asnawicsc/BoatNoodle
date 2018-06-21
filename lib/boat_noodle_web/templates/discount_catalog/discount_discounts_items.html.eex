@@ -1,0 +1,102 @@
+
+<h3>Discount Catalog Discount</h3>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12" style="width: 100%;">
+            <table style="float: left;">
+
+              <tr>
+                <th>Catalog</th>
+         
+              </tr>
+
+              <%= for discount_catalog <- @discount_catalog do %>
+
+                <tr>
+                  <td>
+                    <div style="margin-top: 3px; margin-bottom: 3px;">
+                  
+                      <a href="/tag/<%= discount_catalog.id %>/edit">  <%= discount_catalog.name %><i style="font-size: 20px;margin-left: 10px;" class="material-icons">edit</i></a>
+                      </div>
+                    </td>
+                </tr>
+
+                <% end %>
+
+            </table>
+
+            <div style="overflow-x: scroll;overflow-y: hidden;">
+
+              <table style="margin-left: 100px; width: 100%;">
+
+                <tr>
+              
+                  <%= for discounts_items <- @discounts_items do %>
+                    <th style="width: 300px; text-align: center;">
+                      <%= discounts_items.discitemsname %>
+                    </th>
+                    <% end %>
+                </tr>
+
+                <%= for discount_catalog <- @discount_catalog do %>
+                  <% gp = discount_catalog.discounts |> String.split(",") |> Enum.reject(fn x -> x == "" end )%>
+                  <tr>
+
+                    <%= for discounts_items <- @discounts_items do %>
+                      <td style="width: 200px; padding-right: 5px;">
+
+
+                       <%= if Enum.any?(gp, fn x -> x == Integer.to_string(discounts_items.discountid) end) do %>
+                 
+
+                   
+                     
+                          <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 180px; margin-left: 180px;">
+                            <label class="form-check-label" style="display: inline;">
+                                <input class="form-check-input printer_subcat" name= "disc_cat[<%= discount_catalog.id %>][<%= discounts_items.discountid %>]" type="checkbox" value="" checked="">
+              
+                                <span class="form-check-sign" style="padding-right: 0px;">
+                                    <span class="check"></span>
+                                </span>
+                              
+                            </label>
+                          </div>
+                
+                
+
+
+                       <% else %>
+
+                     
+                     
+                          <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 180px; margin-left: 180px;">
+                            <label class="form-check-label" style="display: inline;">
+                                 <input class="form-check-input printer_subcat" name= "disc_cat[<%= discount_catalog.id %>][<%= discounts_items.discountid %>]" type="checkbox" value="" >
+                           
+                                <span class="form-check-sign" style="padding-right: 0px;">
+                                    <span class="check"></span>
+                                </span>
+                              
+                            </label>
+                          </div>
+                
+                       
+                       <% end %>
+                      </td>
+                      <% end %>
+                  </tr>
+
+                  <% end %>
+
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

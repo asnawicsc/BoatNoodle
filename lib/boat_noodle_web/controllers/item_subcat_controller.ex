@@ -55,7 +55,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_create_price(conn, params) do
-    pr = params |> Enum.map(fn x -> x end) |> hd |> elem(1)
+   pa= params["a"]
+    pr = params["a"] |> Enum.map(fn x -> x end) |> hd |> elem(1)
     item_name = pr["itemname"]
     item_desc = pr["itemdesc"]
     item_code = pr["itemcode"]
@@ -64,7 +65,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     render(
       conn,
       "combo_new_price_update.html",
-      params: params,
+      params: pa,
       item_name: item_name,
       item_desc: item_desc,
       item_code: item_code,
@@ -285,7 +286,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         from(
           s in ItemSubcat,
           where:
-            s.itemcode == ^item_subcat.itemcode and s.is_combo == ^0 and s.is_comboitem == ^0 and
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and
               s.is_delete == ^0,
           order_by: [asc: s.price_code]
         )
@@ -302,7 +303,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         from(
           s in ItemSubcat,
           where:
-            s.itemcode == ^item_subcat.itemcode and s.is_combo == ^0 and s.is_comboitem == ^0 and
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and
               s.is_delete == ^0,
           order_by: [asc: s.price_code]
         )
@@ -317,7 +318,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           left_join: c in ItemCat,
           on: c.itemcatid == s.itemcatid,
           where:
-            s.is_combo == ^0 and s.is_comboitem == ^0 and s.is_delete == ^0 and
+             s.is_comboitem == ^0 and s.is_delete == ^0 and
               c.category_type != "COMBO",
           group_by: [s.itemcode],
           select: %{code: s.itemcode, name: s.itemname}
@@ -352,7 +353,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def edit_combo(conn, %{"subcatid" => id, "price_code" => price_code}) do
-    combo = Repo.get_by(ItemSubcat, %{subcatid: id, price_code: price_code})
+    combo = Repo.get_by(ItemSubcat, %{subcatid: id, brand_id: BN.get_brand_id(conn), price_code: price_code})
 
     com =
       Repo.all(
@@ -383,7 +384,9 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
   def edit_combo_detail(conn, params) do
     subcatid = params["subcatid"]
-    item_subcat = BN.get_item_subcat!(subcatid)
+  
+    item_subcat = Repo.get_by(ItemSubcat, %{subcatid: subcatid, brand_id: BN.get_brand_id(conn)})
+
     item_price = params["itemprice"]
 
     price_code = params["price_code"]
@@ -408,7 +411,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     conn
     |> put_flash(:info, "Combo Updated")
-    |> redirect(to: item_subcat_path(conn, :combo_show, subcatid))
+    |> redirect(to: item_subcat_path(conn, :combo_show,BN.get_brand_id(conn), subcatid))
   end
 
   def index(conn, _params) do

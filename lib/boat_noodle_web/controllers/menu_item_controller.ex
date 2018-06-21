@@ -90,7 +90,7 @@ defmodule BoatNoodleWeb.MenuItemController do
           left_join: c in ItemCat,
           on: c.itemcatid == s.itemcatid,
           where:
-            s.is_combo == ^0 and s.is_comboitem == ^0 and s.is_delete == ^0 and
+            s.is_comboitem == ^0 and s.is_delete == ^0 and
               c.category_type != "COMBO",
           group_by: [s.itemcode],
           select: %{code: s.itemcode, name: s.itemname}

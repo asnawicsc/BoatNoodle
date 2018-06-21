@@ -1,6 +1,6 @@
 <%require IEx %>
 
-    <form method="post" action="/combos/finish" class="form-horizontal" aria-label="item_form">
+    <form method="post" action="/<%= @conn.params["brand"] %>/combos/finish" class="form-horizontal" aria-label="item_form">
  <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
 
 <div class="col-sm-12">
@@ -120,8 +120,9 @@
 						<th style="width:80px;">Top Up Price</th>
 					    </thead>
 					    <tbody>
+
 						<%=for param <- @params do %>
-						    <%= if  elem(param,0) != "_csrf_token"  do %>
+						  
 
 							<% a=elem(param,1)%>
 							    <% b=a["cat_limit"]%>
@@ -202,10 +203,7 @@
 									</tr>
 									
 
-									<% else %>
-
-									    <% end %>
-
+									
 
 
 
