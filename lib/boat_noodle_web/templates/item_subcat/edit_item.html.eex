@@ -74,6 +74,24 @@
           </div>
 
         </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group bmd-form-group">
+              <% groups = @printers |> Map.keys %>
+
+              <%= for group <- groups do %>
+  
+              <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;"><%= group %></label>
+                <select name="tag[tag_id]" class="selectpicker" data-style="btn select-with-transition" title="Choose Printer" data-size="10" required="">
+                <%= for cat <- @printers[group] do %>
+                  <option value="<%= cat.tag_id %>"><%= cat.name %> </option>
+                <% end %>
+                </select>
+              <% end %>
+
+            </div>
+          </div>
+        </div>
 
       </div>
       <div class="card-footer">

@@ -266,7 +266,7 @@ defmodule BoatNoodleWeb.UserController do
         |> put_session(:brand, conn.params["brand"])
         |> put_session(:brand_id, BN.brand_id(conn))
         |> put_flash(:info, "Login successfully")
-        |> redirect(to: page_path(conn, :index, conn.params["brand"]))
+        |> redirect(to: page_path(conn, :index2, conn.params["brand"]))
       else
         conn
         |> put_flash(:error, "Wrong password!")
