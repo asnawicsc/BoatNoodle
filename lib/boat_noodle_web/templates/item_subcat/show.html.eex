@@ -56,11 +56,7 @@
                     <i class="material-icons">bookmarks</i> Menu
                   <div class="ripple-container"></div>
                 </button>
-                <button type="button" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Printers">
-
-                    <i class="material-icons">cast</i> Printers
-                  <div class="ripple-container"></div>
-                </button>
+      
                           </td>
             </tr>
             <% end %>
@@ -80,7 +76,7 @@
     <div class="card-header card-header-text card-header-primary">
       <div class="card-text">
         <h4 class="card-title">Menu Catalogs</h4>
-        <p class="card-category">Not Selected <span class="selected_id">none</span></p>
+        <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
       </div>
     </div>
       <div class="card-body" aria-label="menu_cat_list"> 
@@ -107,7 +103,7 @@
     </div>
   </div>
 
-    <div class="col-lg-3">
+    <div class="col-lg-6">
     <div class="card">
     <div class="card-header card-header-text card-header-info">
       <div class="card-text">
@@ -116,7 +112,9 @@
       </div>
     </div>
       <div class="card-body selected_printer"> 
-    
+    <form id="printer_radio">
+      
+    </form>
         
         
       </div>
@@ -127,17 +125,14 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    $('button[data-original-title="Edit Printers"]').click(function() {
-    
-      $("div.selected_printer").html("");
 
-      var subcat_id = $(this).attr("subcat_id");
-      $("span.selected_id").html(subcat_id)
+   
+
       var brand = location.pathname.split("/")[1];
       $.ajax({
         url: "/" + brand + "/list_printer",
         dataType: "json",
-        data: { subcat_id: subcat_id }
+        data: { subcat_id: 0 }
       }).done(function(j) {
 
         var branches = []
@@ -147,22 +142,53 @@
         }
 
         $(branches).each(function(k,branch){
-
+          var div = '<div aria-label="'+branch+'"><label>'+branch+'</label><br><table class="table" style="width: 100%;" aria-label="'+branch+'"></table></div>'
+          $("form#printer_radio").prepend(div)
+              var tr = "<tr class='header' aria-label='"+branch+"'><td></td></tr>"
+          $('table[aria-label="'+branch+'"]').append(tr)
+            $("td.selected").each(function(){
+              var id = $(this).html()
+              var td = "<td>"+id+"</td>"
+               $('tr[aria-label="'+branch+'"]').append(td)
+            })
           var tags = j[branch]
-     
-          var html = "<div class='row'><div class='col-sm-12'><div class='form-group bmd-form-group'><label class='bmd-label-floating' style='font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;'>"+branch+"</label><select name='tag["+branch+"][id]' class='selectpicker' data-style='btn select-with-transition' title='Choose Printer' data-size='10' required=''></select></div></div></div>"
-          $("div.selected_printer").append(html)
+ 
           $(tags).each(function(){
-            var op = "<option value='"+this.tag_id+"'>"+this.tagname+"</option>"
-            $('select[name="tag['+branch+'][id]"]').append(op)
+            
+            var tr = "<tr id='"+this.tag_id+"'><td>"+this.tagname+"</td></tr>"
+
+       
+            $('table[aria-label="'+branch+'"]').append(tr)
+
           })
         })
-        $('.selectpicker').selectpicker({
-      
-          size: 10
-        });
+
+        $(branches).each(function(k,branch){
+
+          var tags = j[branch]
+
+          $(tags).each(function(){
+            var tagname = this.tagname
+            var tid = this.tag_id
+            $("td.selected").each(function(){
+              var id = $(this).html()
+              var td = "<td><input type='radio' name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
+     
+               $("tr#"+tid).append(td)
+            })
+          })
+        })
+
+$("form#printer_radio table input[type='radio']").click(function(){
+var ck = $(this)
+var val = $(this).val()
+if (ck[0].checked) {
+console.log(val)
+}
+})
+
       });
-    });
+   
 
     $('button[data-original-title="Edit Menu"]').click(function() {
       $("ol.not_selected_catalog").html("");
@@ -225,6 +251,9 @@
         })
       $("ol.not_selected_catalog").append(li);
     });
+
+
+
   });
 
 

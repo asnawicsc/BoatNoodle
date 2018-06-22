@@ -50,6 +50,9 @@ defmodule BoatNoodleWeb.TagController do
     send_resp(conn, 200, json)
   end
 
+  def printer_has_item(items, subcatid) do
+  end
+
   def check_printer(conn, %{"name" => name, "id" => id}) do
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
