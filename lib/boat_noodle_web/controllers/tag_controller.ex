@@ -5,6 +5,114 @@ defmodule BoatNoodleWeb.TagController do
   alias BoatNoodle.BN.Tag
   require IEx
 
+  def list_printer(conn, %{"subcat_id" => subcat_id}) do
+    # will have subcat id 
+    # need to list all available printers
+    tags_original =
+      Repo.all(
+        from(
+          t in Tag,
+          left_join: b in Branch,
+          on: t.branch_id == b.branchid,
+          where:
+            t.brand_id == ^BN.get_brand_id(conn) and t.branch_id != 0 and
+              b.brand_id == ^BN.get_brand_id(conn),
+          select: %{
+            tag_id: t.tagid,
+            branchname: b.branchname,
+            tagname: t.tagname,
+            items: t.subcat_ids
+          }
+        )
+      )
+      |> Enum.map(fn x -> Map.put(x, :items, String.split(x.items, ",")) end)
+      |> Enum.group_by(fn x -> x.branchname end)
+
+    # tags =
+    #   for tag <- tags_original do
+    #     if Enum.any?(tag.items, fn x -> x == subcat_id end) do
+    #       tag
+    #     else
+    #       nil
+    #     end
+    #   end
+    #   |> Enum.reject(fn x -> x == nil end)
+    #   |> Enum.map(fn x -> %{tag_id: x.tag_id, branchname: x.branchname} end)
+
+    # all_tags =
+    #   tags_original |> Enum.map(fn x -> %{tag_id: x.tag_id, branchname: x.branchname} end)
+
+    # not_selected = all_tags -- tags
+
+    json = tags_original |> Poison.encode!()
+    # json = %{selected: tags, not_selected: not_selected} |> Poison.encode!()
+
+    send_resp(conn, 200, json)
+  end
+
+  def check_printer(conn, %{"name" => name, "id" => id}) do
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
+
+    same_items =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where:
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0,
+          order_by: [asc: s.price_code]
+        )
+      )
+
+    item_codes_str =
+      same_items |> Enum.map(fn x -> x.subcatid end) |> Enum.map(fn x -> Integer.to_string(x) end)
+      |> Enum.sort()
+
+    branchname =
+      name
+      |> String.split("[")
+      |> Enum.map(fn x -> String.replace(x, "]", "") end)
+      |> List.to_tuple()
+      |> elem(1)
+
+    branch = Repo.get_by(Branch, branchname: branchname)
+
+    tags =
+      Repo.all(
+        from(
+          t in Tag,
+          where: t.branch_id == ^branch.branchid and t.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+
+    a =
+      for tag <- tags do
+        subcat_ids = tag.subcat_ids |> String.split(",")
+        myers = List.myers_difference(item_codes_str, subcat_ids)
+
+        answer = myers |> Keyword.get(:eq)
+
+        if answer != nil do
+          answer = hd(answer)
+          Integer.to_string(tag.tagid)
+        else
+          nil
+        end
+      end
+
+    final_answer = a |> Enum.reject(fn x -> x == nil end)
+
+    if final_answer != [] do
+      tagid = final_answer |> hd()
+    else
+      tagid = hd(a)
+    end
+
+    json = %{name: name, tag_id: tagid} |> Poison.encode!()
+
+    # will pass in the branch id, brand id, and single subitem id 
+    send_resp(conn, 200, json)
+  end
+
   def index(conn, _params) do
     tag = BN.list_tag()
     render(conn, "index.html", tag: tag)

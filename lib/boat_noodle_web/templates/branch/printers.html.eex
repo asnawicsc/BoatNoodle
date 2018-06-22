@@ -42,7 +42,16 @@
                 </tr>
 
                 <%= for printer <- @printers do %>
-                  <% gp = printer.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )%>
+
+                  <% 
+
+                  if printer.subcat_ids == nil do
+                    gp = []
+                    else
+                    gp = printer.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )
+                  end
+
+                  %>
                   <tr>
 
                     <%= for subcat <- @subcats do %>

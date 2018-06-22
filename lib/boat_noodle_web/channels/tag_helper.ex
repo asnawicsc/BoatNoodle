@@ -41,7 +41,7 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
-  def handle_in("toggle_printer_combo", %{"info" => info}, socket) do
+  def handle_in("toggle_printer_combo", %{"info" => info, "brand_id" => brand_id}, socket) do
     tuple_data =
       info
       |> String.replace("][", ",")
@@ -53,7 +53,7 @@ defmodule BoatNoodleWeb.TagHelper do
     tagid = elem(tuple_data, 1)
     combo_item_id = elem(tuple_data, 2)
 
-    tag = Repo.get(Tag, tagid)
+    tag = Repo.get_by(Tag, tagid: tagid, brand_id: brand_id)
     combo_item = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
 
     if tag.combo_item_ids != nil do
@@ -64,13 +64,19 @@ defmodule BoatNoodleWeb.TagHelper do
 
     if Enum.any?(existing_combo_item_ids, fn x -> x == combo_item_id end) do
       new_combo_ids =
-        List.delete(existing_combo_item_ids, combo_item_id) |> Enum.sort() |> Enum.join(",")
+        List.delete(existing_combo_item_ids, combo_item_id)
+        |> Enum.sort()
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
 
       action = "removed from"
       alert = "danger"
     else
       new_combo_ids =
-        List.insert_at(existing_combo_item_ids, 0, combo_item_id) |> Enum.sort() |> Enum.join(",")
+        List.insert_at(existing_combo_item_ids, 0, combo_item_id)
+        |> Enum.sort()
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
 
       action = "added to"
       alert = "success"
@@ -119,13 +125,18 @@ defmodule BoatNoodleWeb.TagHelper do
       |> Enum.map(fn x -> Integer.to_string(x) end)
 
     if Enum.any?(existing_subcats, fn x -> x == subcatid end) do
-      new_subcatids = List.delete(existing_subcats, subcatid) |> Enum.sort() |> Enum.join(",")
+      new_subcatids =
+        List.delete(existing_subcats, subcatid) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
 
       action = "removed from"
       alert = "danger"
     else
       new_subcatids =
-        List.insert_at(existing_subcats, 0, subcatid) |> Enum.sort() |> Enum.join(",")
+        List.insert_at(existing_subcats, 0, subcatid)
+        |> Enum.sort()
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
 
       action = "added to"
       alert = "success"

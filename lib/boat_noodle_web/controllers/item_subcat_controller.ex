@@ -559,6 +559,15 @@ brand = BN.get_brand_id(conn)
     render(conn, "show.html", item_subcat: item_subcat, same_items: same_items)
   end
 
+  @doc """
+  currently they want to add the printers according to branch and printers
+  1 printer can only 1 item price code...
+
+  show all the branch, choose 1 printer to be assigned...
+
+  because 1 item can only exist in 1 printer
+
+  """
   def item_edit(conn, %{"subcatid" => id}) do
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
@@ -607,13 +616,41 @@ brand = BN.get_brand_id(conn)
         )
       )
 
+    # show all the branch's printers, and group them...
+
+    printers =
+      Repo.all(
+        from(
+          t in Tag,
+          left_join: b in Branch,
+          on: b.branchid == t.branch_id,
+          where:
+            t.branch_id != ^0 and t.brand_id == ^BN.get_brand_id(conn) and
+              b.brand_id == ^BN.get_brand_id(conn),
+          select: %{
+            tag_id: t.tagid,
+            branch_id: b.branchid,
+            branch: b.branchname,
+            name: t.tagname,
+            subcat_ids: t.subcat_ids
+          }
+        )
+      )
+      |> Enum.group_by(fn x -> x.branch end)
+
+    branch_names = printers |> Map.keys()
+
+    # the printer has subcat ids
+    # because this item has multiple codes
+    # need to check with each of the tag subcat_ids 
     render(
       conn,
       "edit_item.html",
       item_subcat: item_subcat,
       itemcodes: itemcodes,
       item_cat: item_cat,
-      price_codes: price_codes
+      price_codes: price_codes,
+      printers: printers
     )
   end
 

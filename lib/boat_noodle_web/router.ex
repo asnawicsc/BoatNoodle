@@ -25,7 +25,8 @@ defmodule BoatNoodleWeb.Router do
   scope "/", BoatNoodleWeb do
     # Use the default browser stack
     pipe_through(:management)
-
+    get("/", PageController, :index)
+    get("/get_brands", PageController, :get_brands)
     get("/management_login", UserController, :login_management)
   end
 
@@ -39,7 +40,7 @@ defmodule BoatNoodleWeb.Router do
   scope "/:brand", BoatNoodleWeb do
     pipe_through(:browser)
 
-    get("/", PageController, :index)
+    get("/", PageController, :index2)
     post("/sales_graph_by_year", PageController, :sales_graph_by_year)
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
 
@@ -51,6 +52,10 @@ defmodule BoatNoodleWeb.Router do
     resources("/category", CategoryController)
     resources("/remark", RemarkController)
     resources("/menu_catalog", MenuCatalogController)
+    get("/list_printer", TagController, :list_printer)
+    get("/list_menu_catalog", MenuCatalogController, :list_menu_catalog)
+    get("/insert_into_catalog", MenuCatalogController, :insert_into_catalog)
+    get("/remove_from_catalog", MenuCatalogController, :remove_from_catalog)
     resources("/menu_catalog_master", MenuCatalogMasterController)
     resources("/discount_category", DiscountCategoryController)
     resources("/discount_item", DiscountItemController)
@@ -64,6 +69,7 @@ defmodule BoatNoodleWeb.Router do
     post("/edit_discount_detail", DiscountController, :edit_discount_detail)
 
     resources("/tag", TagController)
+    get("/check_printer", TagController, :check_printer)
     resources("/tag_catalog", TagCatalogController)
     resources("/tag_items", TagItemsController)
     resources("/staff", StaffController)
