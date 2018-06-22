@@ -22,8 +22,8 @@ defmodule BoatNoodleWeb.MenuCatalog do
         from(
           s in ItemSubcat,
           where:
-            s.is_delete == ^0 and s.is_combo == ^0 and s.is_comboitem == ^0 and
-              s.itemcode == ^subcat.itemcode,
+            s.is_delete == ^0 and s.is_comboitem == ^0 and s.itemcode == ^subcat.itemcode and
+              s.brand_id == ^payload["brand_id"],
           select: %{
             subcat_id: s.subcatid,
             price_code: s.price_code,
@@ -58,7 +58,7 @@ defmodule BoatNoodleWeb.MenuCatalog do
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
 
-    subcat = Repo.get_by(ItemSubcat, subcatid: map["subcat_id"])
+    subcat = Repo.get_by(ItemSubcat, subcatid: map["subcat_id"], brand_id: payload["brand_id"])
 
     case subcat.price_code do
       "A" ->

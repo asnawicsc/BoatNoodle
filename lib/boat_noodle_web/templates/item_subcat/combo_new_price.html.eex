@@ -43,11 +43,21 @@
                             <label class="col-sm-2 col-form-label">Item Category</label>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="item[itemcat]" value='<%= @itemcat %>' disabled >
+                                    <input type="text" class="form-control" name="item[itemcat]" value='<%= @params["itemcat"] %>' disabled >
                                   
                                 </div>
                             </div>
                         </div>
+                         <div class="row">
+                            <label class="col-sm-2 col-form-label">Price Code</label>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="item[price_code]" value='<%= @params["price_code"] %>' disabled >
+                                  
+                                </div>
+                            </div>
+                        </div>
+                    
                     
                 </div>
             </div>
@@ -98,10 +108,12 @@
 
                                 <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemname]" value='<%= @params["itemname"] %>'>
                                 <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcode]" value='<%= @params["itemcode"] %>' >
+                                <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][price_code]" value='<%= @params["price_code"] %>' >
                                 
 
                                   <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemdesc]" value='<%= @params["itemdesc"] %>' >
                                    <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcat]" value='<%= @itemcat %>' >
+                                   <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcatid]" value='<%= id %>' >
                                  <input type="hidden"  name="a[<%= data.itemcatname %>][all_item]">
                                 
                                   
@@ -129,7 +141,7 @@
                                                         </div>
                                                         <div class="card-body ">
 
-                                                            <%ala_carte = Repo.all(from s in BoatNoodle.BN.ItemSubcat,left_join: i in BoatNoodle.BN.ItemCat,  on: i.itemcatid == s.itemcatid,where: i.itemcatid == ^data.itemcatid,group_by: s.itemcode, select: %{itemname: s.itemname,itemdesc: s.itemdesc,price_code: s.price_code,itemcode: s.itemcode}, order_by: [asc: s.itemcode])|>Enum.filter(fn x -> x.price_code != "" end)|>Enum.uniq %>
+                                                            <%ala_carte = Repo.all(from s in BoatNoodle.BN.ItemSubcat,left_join: i in BoatNoodle.BN.ItemCat,  on: i.itemcatid == s.itemcatid,where: i.itemcatid == ^data.itemcatid and s.brand_id ==^@brand, select: %{itemname: s.itemname,itemdesc: s.itemdesc,subcatid: s.subcatid,price_code: s.price_code,itemcode: s.itemcode}, order_by: [asc: s.itemcode])|>Enum.filter(fn x -> x.price_code != "" end)|>Enum.uniq %>
 
                                                         
 
@@ -148,8 +160,8 @@
                                                                                 <ol class="item_combo1" id="a1" value="<%= data2 %>" aria-label="<%= data.itemcatname %>">
 
                                                                                     <%= for carte <- ala_carte do %>
-                                                                                        <li style="font-size: 15px; height: 40px;" id="<%= carte.itemcode %>">
-                                                                                            <%= carte.itemname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"><%= carte.itemcode %></span></li>
+                                                                                        <li style="font-size: 15px; height: 40px;" id="<%= carte.subcatid %>">
+                                                                                            <%= carte.itemname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"><%= carte.price_code %></span></li>
                                                                                         <% end %>
                                                                                 </ol>
 

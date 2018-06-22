@@ -43,5 +43,6 @@ defmodule BoatNoodle.BN.Sales do
       :updated_at,
       :created_at
     ])
+    |> unique_constraint(:salesid, name: "PRIMARY")
   end
 end

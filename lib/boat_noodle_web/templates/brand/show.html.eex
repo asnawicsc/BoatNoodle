@@ -1,0 +1,23 @@
+<h2>Show Brand</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @brand.name %>
+  </li>
+
+  <li>
+    <strong>Domain name:</strong>
+    <%= @brand.domain_name %>
+  </li>
+
+  <li>
+    <strong>Bin:</strong>
+    <%= @brand.bin %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: brand_path(@conn, :edit, @brand) %></span>
+<span><%= link "Back", to: brand_path(@conn, :index,@conn.private.plug_session["brand"]) %></span>

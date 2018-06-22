@@ -29,6 +29,13 @@ defmodule BoatNoodleWeb.Router do
     get("/management_login", UserController, :login_management)
   end
 
+  # Other scopes may use custom stacks.
+  scope "/:brand/api", BoatNoodleWeb do
+    pipe_through(:api)
+    get("/sales", PageController, :webhook_get)
+    post("/sales", PageController, :webhook_post)
+  end
+
   scope "/:brand", BoatNoodleWeb do
     pipe_through(:browser)
 
@@ -37,6 +44,9 @@ defmodule BoatNoodleWeb.Router do
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
 
     resources("/menu_item", MenuItemController)
+    resources("/brand", BrandController)
+    post("/update_brand", BrandController, :update_brand)
+    post("/update_brand_logo", BrandController, :update_brand_logo)
     get("/combos", MenuItemController, :combos)
     resources("/category", CategoryController)
     resources("/remark", RemarkController)
@@ -122,6 +132,9 @@ defmodule BoatNoodleWeb.Router do
     post("/combos/new", ItemSubcatController, :combo_create)
     post("/combos/combo_create_price", ItemSubcatController, :combo_create_price)
     post("/combos/combo_create_price_update", ItemSubcatController, :combo_create_price_update)
+    post("/combos/combo_create_price_unselect", ItemSubcatController, :combo_create_price_unselect)
+    post("/combos/branch", ItemSubcatController, :combo_branch)
+    post("/combos/unselect", ItemSubcatController, :combo_unselect)
     post("/combos/finish", ItemSubcatController, :combo_finish)
     resources("/itemcat", ItemCatController)
     resources("/organization", OrganizationController)
@@ -153,9 +166,4 @@ defmodule BoatNoodleWeb.Router do
     resources("/salespayment", SalesPaymentController)
     get("/*path", PageController, :no_page_found)
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", BoatNoodleWeb do
-  #   pipe_through :api
-  # end
 end

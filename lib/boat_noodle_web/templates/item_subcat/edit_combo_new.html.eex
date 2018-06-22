@@ -78,21 +78,7 @@
 
                                         <div class="col-md-12">
                                             <div class="tab-content">
-                                                <%=for item <- @com do %>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-
-                                                            <div class="alert alert-primary">
-                                                                <span>Item Category: <%= item.itemcatname %></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-
-                                                            <div class="alert alert-primary">
-                                                                <span id="cat_limit" name="<%= item.itemcatname %>[cat_limit]">Category Limit: <%= item.combo_qty %></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                          
 
                                                     <table class="table" border="1">
                                                         <thead class=" text-primary">
@@ -102,32 +88,74 @@
                                                         </thead>
                                                         <tbody>
 
-                                                            <% combo_details = Repo.all(from m in BoatNoodle.BN.ComboDetails, where: m.combo_id==^item.combo_id,
-      left_join: s in BoatNoodle.BN.ItemSubcat, where: s.itemcode== m.combo_item_code,
-      left_join: b in BoatNoodle.BN.ItemCat, where: b.itemcatid==s.itemcatid and b.itemcatname==^item.itemcatname,
-       select: %{id: m.id,combo_item_id: m.combo_item_id,itemcatname: b.itemcatname,combo_qty: m.combo_qty,itemname: m.combo_item_name,unit_price: m.unit_price,top_up: m.top_up})|>Enum.uniq %>
 
 
-
-                                                                <%=for param <- combo_details do %>
+                                                                      <%=for item <- @com do %>
 
                                                                     <tr>
                                                                         <td>
-                                                                            <%= param.itemname %>
+                                                                            <%= item.itemname %>
                                                                         </td>
-                                                                        <td><input type="number"  step="0.01" placeholder="0.00" value="<%= param.unit_price %>" name="Item[<%= param.itemname %>][unit_price]" required>
+                                                                        <td><input type="number"  step="0.01" placeholder="0.00" value="<%= item.unit_price %>" name="Item[<%= item.itemname %>][unit_price]" required>
                                                                         </td>
-                                                                        <td><input type="number"  step="0.01" placeholder="0.00" value="<%= param.top_up %>" name="Item[<%= param.itemname %>][top_up]" required></td>
+                                                                        <td><input type="number"  step="0.01" placeholder="0.00" value="<%= item.top_up %>" name="Item[<%= item.itemname %>][top_up]" required></td>
 
-                                                                        <input type="hidden" step="0.01" placeholder="0.00" value="<%= param.combo_item_id %>" name="Item[<%= param.itemname %>][combo_item_id]" required>
+                                                                        <input type="hidden" step="0.01" placeholder="0.00" value="<%= item.combo_item_id %>" name="Item[<%= item.itemname %>][combo_item_id]" required>
 
-                                                                        <input type="hidden" step="0.01" placeholder="0.00" value="<%= param.id %>" name="Item[<%= param.itemname %>][id]" required>
+                                                                        <input type="hidden" step="0.01" placeholder="0.00" value="<%= item.id %>" name="Item[<%= item.itemname %>][id]" required>
                                                                     </tr>
                                                                     <% end %>
                                                         </tbody>
                                                     </table>
                                                     <hr>
-                                                    <% end %>
+
+  
+
+            <input type="hidden" name="a[branch]">
+          
+            
+            <div class="row">
+
+                  <div class="col-sm-6">
+                    <div class="card card-stats">
+                      <div class="card-header card-header-rose card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">Combo Sub items</p>
+                              <h3 class="card-title">Categories</h3>
+                            </div>
+                      <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                       <ol class="item"   id="edit1">
+                                <%= for branch <- @branchs do %>
+                                <li style="font-size: 15px; height: 40px;" id="<%= branch.id %>"><%= branch.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                <% end %>
+                              </ol>
+                        
+                      </div>
+                    </div>
+                    </div>
+          
+              <div class="col-sm-6">
+                 <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">To be included in combo</p>
+                              <h3 class="card-title">Ala Carte</h3>
+                            </div>
+                    <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                      <ol class="item" style="height: 300px; min-width: 300px;" id="edit2">
+                      </ol>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+       
+       
+
 
                                             </div>
                                         </div>

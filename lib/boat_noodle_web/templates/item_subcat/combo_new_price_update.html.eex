@@ -1,6 +1,6 @@
 <%require IEx %>
 
-    <form method="post" action="/<%= @conn.params["brand"] %>/combos/finish" class="form-horizontal" aria-label="item_form">
+    <form method="post" action="/<%= @conn.params["brand"] %>/combos/branch" class="form-horizontal" aria-label="item_form">
  <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
 
 <div class="col-sm-12">
@@ -49,6 +49,16 @@
 				</div>
 			    </div>
 			</div>
+		
+						<div class="row">
+			    <label class="col-sm-2 col-form-label">Price Code</label>
+			    <div class="col-sm-4">
+				<div class="form-group">
+				    <input type="text" class="form-control" name="price_code" value='<%= @price_code %>' disabled >
+				  
+				</div>
+			    </div>
+			</div>
 		    
 		</div>
 	    </div>
@@ -67,43 +77,22 @@
 				    </div>
 				    <h4 class="card-title ">Price Detail</h4>
 				</div>
-				<div class="card-body ">
+		<div class="card-body ">
 		  <div class="row">
-		    <div class="col-lg-2 col-md-4">
-		      <!--
-					color-classes: "nav-pills-primary", "nav-pills-info", "nav-pills-success", "nav-pills-warning","nav-pills-danger"
-				    -->
-		      <ul class="nav nav-pills nav-pills-rose nav-pills-icons flex-column" role="tablist">
-			<li class="nav-item">
-			  <a class="nav-link active" data-toggle="tab" href="#link10" role="tablist">
-			    <i class="material-icons">dashboard</i> Product Code A
-			  </a>
-			</li>
-			<li class="nav-item">
-			  <a class="nav-link" data-toggle="tab" href="#link11" role="tablist">
-			    <i class="material-icons">dashboard</i> Product Code B
-			  </a>
-			</li>
-			<li class="nav-item">
-			  <a class="nav-link" data-toggle="tab" href="#link12" role="tablist">
-			    <i class="material-icons">dashboard</i> Product Code C
-			  </a>
-			</li>
-		      </ul>
-		    </div>
-		    <div class="col-md-10">
+
+		    <div class="col-md-12">
 		      <div class="tab-content">
 			<div class="tab-pane active" id="link10">
 			    <div class="row">
 				<label class="col-sm-2 col-form-label">Total Price</label>
 				<div class="col-sm-4">
 				    <div class="form-group">
-					<input type="number" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,A][total_price]" >
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,A][item_category]" value="<%= @item_cat %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,A][item_name]" value="<%= @item_name %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,A][item_code]" value="<%= @item_code %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,A][item_desc]" value="<%= @item_desc %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,A][product_code]" value="A">
+					<input type="number" class="form-control" step="0.01"  placeholder="0.00" name="com[total_price]" >
+					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[item_category]" value="<%= @item_cat %>">
+					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[item_name]" value="<%= @item_name %>">
+					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[item_code]" value="<%= @item_code %>">
+					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[item_desc]" value="<%= @item_desc %>">
+					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[product_code]" value="<%= @price_code %>">
 
 					
 
@@ -127,6 +116,7 @@
 							<% a=elem(param,1)%>
 							    <% b=a["cat_limit"]%>
 								<% c=a["all_item"]|> String.split(",")%>
+								<% d=a["itemcatid"]%>
 								    <% count=Enum.count(c) %>
 
 
@@ -142,9 +132,9 @@
 									    <td >
 										<%= for item <- c do %>
 
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="A", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 
-											<p name="A,<%= elem(param,0)%>,<%= elem(param,0)%>,<%= b %><%=prev_subcatid.itemname%>[subcat_item]">
+											<p name="item[subcat_item]">
 											    <%= prev_subcatid.itemname %> (<%= prev_subcatid.price_code %>)
 											</p>
 											<%end %>
@@ -154,43 +144,42 @@
 
 										<%= for item <- c do %>
 
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="A", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										     <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 
-											<p><input type="number" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cost_price]" required></p>
+											<p><input type="number" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cost_price]" required></p>
 
-											   <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cat_limit]" value="<%= b %>" >
+											   <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cat_limit]" value="<%= b %>" >
 
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_name]" value="<%=prev_subcatid.itemname%>" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][product_name]" value="<%=prev_subcatid.itemname %>" >
 
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][price_code]" value="A" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][price_code]" value="<%= @price_code %>" >
 
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_cat]" value="<%= @item_cat %>" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][product_cat]" value="<%= @item_cat %>" >
 
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][item_cat]" value="<%= elem(param,0)%>" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][item_cat]" value="<%= elem(param,0)%>" >
 
-				           <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
+				           <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
 
 											<%end %>
 									    </td>
 									    <td>
 										<%= for item <- c do %>
 
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="A", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 
-											<p><input type="number" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][top_up]" required></p>
+											<p><input type="number" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][top_up]" required></p>
 
-											   <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cat_limit]" value="<%= b %>" >
+											   <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cat_limit]" value="<%= b %>" >
 
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_name]" value="<%=prev_subcatid.itemname%>" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][product_name]" value="<%=prev_subcatid.itemname%>" >
 
-				         <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][price_code]" value="A" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][price_code]" value="<%= @price_code %>" >
 
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_cat]" value="<%= @item_cat %>" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][product_cat]" value="<%= @item_cat %>" >
 
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][item_cat]" value="<%= elem(param,0)%>" >
+				          <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][item_cat]" value="<%= elem(param,0)%>" >
 
-
-				           <input type="hidden" step="0.01"  placeholder="0.00" name="all[A,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
+				           <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
 											<%end %>
 									    </td>
 
@@ -210,239 +199,12 @@
 										<%end%>
 					    </tbody>
 					</table>
-				   
-			</div>
-			<div class="tab-pane" id="link11">
-			    <div class="row">
-				<label class="col-sm-2 col-form-label">Total Price</label>
-				<div class="col-sm-4">
-				    <div class="form-group">
-					<input type="number" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,B][total_price]" >
-
-						<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,B][item_category]" value="<%= @item_cat %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,B][item_name]" value="<%= @item_name %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,B][item_code]" value="<%= @item_code %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,B][item_desc]" value="<%= @item_desc %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,B][product_code]" value="B">
-					
-
-				    </div>
-				</div>
-			    </div>
-			 <table class="table" border="1">
-					    <thead class=" text-primary">
-						<th style="width:100px;">Category</th>
-						<th style="width:100px;">Category Limit</th>
-						<th style="width:400px;">Sub Combo Item</th>
-						<th style="width:80px;">Cost Price</th>
-						<th style="width:80px;">Top Up Price</th>
-					    </thead>
-					    <tbody>
-						<%=for param <- @params do %>
-						    <%= if  elem(param,0) != "_csrf_token"  do %>
-
-							<% a=elem(param,1)%>
-							    <% b=a["cat_limit"]%>
-								<% c=a["all_item"]|> String.split(",")%>
-								    <% count=Enum.count(c) %>
-
-
-									<tr>
-									    <td  name="B,<%= elem(param,0)%>[category]">
-										<%= elem(param,0) %>
-									    </td>
-									
-									    <td  name="B,<%= elem(param,0)%>[category_limit" ]>
-										<%= b %>
-									    </td>
-									
-									   <td >
-										<%= for item <- c do %>
-
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="B", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
-
-											<p name="B,<%= elem(param,0)%>,<%= elem(param,0)%>,<%= b %><%=prev_subcatid.itemname%>[subcat_item]">
-											    <%= prev_subcatid.itemname %> (<%= prev_subcatid.price_code %>)
-											</p>
-											<%end %>
-									    </td>
-
-									    <td >
-										<%= for item <- c do %>
-
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="B", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
-
-											<p><input type="number" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cost_price]" required></p>
-
-											<input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cat_limit]" value="<%= b %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_name]" value="<%=prev_subcatid.itemname%>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][price_code]" value="B" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_cat]" value="<%= @item_cat %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][item_cat]" value="<%= elem(param,0)%>" >
-
-				           <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
-
-											<%end %>
-									    </td>
-									    <td >
-										<%= for item <- c do %>
-
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="B", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
-
-											<p><input type="number" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][top_up]" required></p>
-
-											<input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cat_limit]" value="<%= b %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_name]" value="<%=prev_subcatid.itemname%>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][price_code]" value="B" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_cat]" value="<%= @item_cat %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][item_cat]" value="<%= elem(param,0)%>" >
-
-				           <input type="hidden" step="0.01"  placeholder="0.00" name="all[B,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
-											<%end %>
-									    </td>
-
-
-
-									</tr>
-									
-
-									<% else %>
-
-									    <% end %>
-
-
-
-
-										<%end%>
-					    </tbody>
-					</table>
-			</div>
-			<div class="tab-pane" id="link12">
-			    <div class="row">
-				<label class="col-sm-2 col-form-label">Total Price</label>
-				<div class="col-sm-4">
-				    <div class="form-group">
-					<input type="number" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,C][total_price]" >
-
-						<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,C][item_category]" value="<%= @item_cat %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,C][item_name]" value="<%= @item_name %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,C][item_code]" value="<%= @item_code %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,C][item_desc]" value="<%= @item_desc %>">
-					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[<%= @item_cat %>,<%= @item_name %>,<%= @item_code %>,<%= @item_desc %>,C][product_code]" value="C">
-					
-
-				    </div>
-				</div>
-			    </div>
-			 <table class="table" border="1">
-					    <thead class=" text-primary">
-						 <th style="width:100px;">Category</th>
-						<th style="width:100px;">Category Limit</th>
-						<th style="width:400px;">Sub Combo Item</th>
-						<th style="width:80px;">Cost Price</th>
-						<th style="width:80px;">Top Up Price</th>
-					    </thead>
-					    <tbody>
-						<%=for param <- @params do %>
-						    <%= if  elem(param,0) != "_csrf_token"  do %>
-
-							<% a=elem(param,1)%>
-							    <% b=a["cat_limit"]%>
-								<% c=a["all_item"]|> String.split(",")%>
-								    <% count=Enum.count(c) %>
-
-
-									<tr>
-									    <td>
-										<%= elem(param,0) %>
-									    </td>
-									
-									    <td>
-										<%= b %>
-									    </td>
-									
-									    <td >
-										<%= for item <- c do %>
-
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="C", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
-
-											<p name="C,<%= elem(param,0)%>,<%= elem(param,0)%>,<%= b %><%=prev_subcatid.itemname%>[subcat_item]">
-											    <%= prev_subcatid.itemname %> (<%= prev_subcatid.price_code %>)
-											</p>
-											<%end %>
-									    </td>
-									
-
-									    <td>
-										<%= for item <- c do %>
-
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="C", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
-
-											<p><input type="number" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cost_price]" required></p>
-
-											<input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cat_limit]" value="<%= b %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_name]" value="<%=prev_subcatid.itemname%>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][price_code]" value="C" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_cat]" value="<%= @item_cat %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][item_cat]" value="<%= elem(param,0)%>" >
-
-
-				           <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
-											<%end %>
-									    </td>
-									    <td >
-										<%= for item <- c do %>
-
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.itemcode== ^item and c.price_code=="C", select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
-
-											<p><input type="number" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][top_up]" required></p>
-
-											<input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][cat_limit]" value="<%= b %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_name]" value="<%=prev_subcatid.itemname%>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][price_code]" value="C" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][product_cat]" value="<%= @item_cat %>" >
-
-				          <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][item_cat]" value="<%= elem(param,0)%>" >
-
-
-				           <input type="hidden" step="0.01"  placeholder="0.00" name="all[C,<%= elem(param,0)%>,<%= b %>,<%=prev_subcatid.itemname%>][subcatid]" value="<%= prev_subcatid.subcatid%>" >
-											<%end %>
-									    </td>
-
-
-
-									</tr>
-								      
-
-									<% else %>
-
-									    <% end %>
-
-
-
-
-										<%end%>
-					    </tbody>
-					</table>
 			</div>
 		      </div>
 		    </div>
-		  </div></div>
+		  </div>
+		
+		</div>
 				<div class="card-footer">
 				    <div class="mr-auto">
 				      

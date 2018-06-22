@@ -48,7 +48,8 @@ defmodule BoatNoodle.Mixfile do
       {:distillery, "~> 1.5", runtime: false},
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 0.12"},
-      {:countries, "~> 1.5"}
+      {:countries, "~> 1.5"},
+      {:httpoison, "~> 1.0"}
     ]
   end
 

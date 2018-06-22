@@ -4,13 +4,13 @@ defmodule BoatNoodle.BN.ComboDetails do
 
   @primary_key false
   schema "combo_details" do
-    field(:combo_id, :integer, primary_key: true)
+    field(:combo_id, :integer)
     field(:combo_item_code, :string)
     field(:combo_item_id, :integer)
     field(:combo_item_name, :string)
     field(:combo_item_qty, :integer)
     field(:combo_qty, :integer)
-    field(:id, :integer)
+    field(:id, :integer, primary_key: true)
     field(:menu_cat_id, :integer)
     field(:top_up, :decimal)
     field(:unit_price, :decimal)

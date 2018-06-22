@@ -201,6 +201,39 @@ $(document).ready(function(){
   })
            
 
+    
+  $("ol#list5").on("click", "li", function(){
+
+    $("ol#list6").append(this)
+    var list_ids = [] 
+    $("ol#list6 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list6").on("click", "li", function(){
+
+    $("ol#list5").append(this)
+  })
+
+
+   $("ol#edit1").on("click", "li", function(){
+
+    $("ol#edit2").append(this)
+    var list_ids = [] 
+    $("ol#edit2 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='a[branch]']").val(list_ids)
+  })
+
+  $("ol#edit2").on("click", "li", function(){
+
+    $("ol#edit1").append(this)
+  })
 
 
 

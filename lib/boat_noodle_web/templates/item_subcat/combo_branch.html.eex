@@ -1,0 +1,211 @@
+<%require IEx %>
+
+    <form method="post" action="/<%= @conn.params["brand"] %>/combos/finish" class="form-horizontal" aria-label="item_form">
+
+        <div class="col-sm-12">
+            <div class="card ">
+                <div class="card-header card-header-rose card-header-text">
+                    <div class="card-text">
+                        <h4 class="card-title">Combo Details</h4>
+                    </div>
+                </div>
+                <div class="card-body ">
+
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Item Name</label>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="item[itemname]" value='<%= @com["item_name"] %>' disabled>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Item Code</label>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="item[itemcode]" value='<%= @com["item_code"] %>' disabled>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Item Description</label>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="item[itemdesc]" value='<%= @com["item_desc"] %>' disabled>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Item Category</label>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="item[itemcat]" value='<%= @com["item_category"] %>' disabled>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Price Code</label>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="item[price_code]" value='<%= @com["product_code"] %>' disabled>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label">Total Price</label>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="item[total_price]" value='<%= @com["total_price"] %>' disabled>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+            <div class="card " data-color="rose" >
+     
+        <div class="card-header text-center">
+          <h3 class="card-title">
+            Product Details
+          </h3>
+
+        </div>
+
+        <div class="card-body">     
+            <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+
+            <input type="hidden" name="item[itemname]" value='<%= @com["item_name"] %>'>
+            <input type="hidden" name="item[itemcode]" value='<%= @com["item_code"] %>'>
+            <input type="hidden" name="item[itemdesc]" value='<%= @com["item_desc"] %>'>
+            <input type="hidden" name="item[itemcat]" value='<%= @com["item_category"] %>'>
+            <input type="hidden" name="item[price_code]" value='<%= @com["product_code"] %>'>
+            <input type="hidden" name="item[total_price]" value='<%= @com["total_price"] %>'>
+       
+          
+ 
+            
+            <div class="row">
+
+            
+                <table class="table" border="1">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Cat Limit</th>
+                      <th>Subcat Item</th>
+                      <th>Cost Price</th>
+                      <th>Top Up</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                <%= for item <- @items do %>
+                 <input type="hidden" name="all[<%= elem(item,0)%>][subcatid]" value='<%= elem(item,1)["subcatid"] %>'>
+                 <input type="hidden" name="all[<%= elem(item,0)%>][item_cat]" value='<%= elem(item,1)["item_cat"] %>'>
+                 <input type="hidden" name="all[<%= elem(item,0)%>][cat_limit]" value='<%= elem(item,1)["cat_limit"] %>'>
+                 <input type="hidden" name="all[<%= elem(item,0)%>][product_name]" value='<%= elem(item,1)["product_name"] %>'>
+                 <input type="hidden" name="all[<%= elem(item,0)%>][cost_price]" value='<%= elem(item,1)["cost_price"] %>'>
+                 <input type="hidden" name="all[<%= elem(item,0)%>][top_up]" value='<%= elem(item,1)["top_up"] %>'>
+               
+                    <tr>
+                      <td><%= elem(item,1)["item_cat"] %></td>
+                      <td><%= elem(item,1)["cat_limit"] %></td>
+                      <td><%= elem(item,1)["product_name"] %></td>
+                      <td><%= elem(item,1)["cost_price"] %></td>
+                      <td><%= elem(item,1)["top_up"] %></td>
+                    
+
+                    </tr>
+                <% end %>
+                  </tbody>
+                </table>
+          
+             
+            </div>
+
+       
+        </div>
+        
+    
+    </div>
+      
+
+    <div class="card " data-color="rose" >
+     
+        <div class="card-header text-center">
+          <h3 class="card-title">
+            Branch Select
+          </h3>
+
+        </div>
+
+        <div class="card-body">     
+            <input type="hidden" name="branc[branch]">
+       
+          
+ 
+            
+            <div class="row">
+
+                  <div class="col-sm-6">
+                    <div class="card card-stats">
+                      <div class="card-header card-header-rose card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">Combo</p>
+                              <h3 class="card-title">Branch</h3>
+                            </div>
+                      <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                       <ol class="item"   id="list5">
+                                <%= for carte <- @menu_catalog do %>
+                                <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>"><%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                <% end %>
+                              </ol>
+                        
+                      </div>
+                    </div>
+                    </div>
+          
+              <div class="col-sm-6">
+                 <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">To be included in combo</p>
+                              <h3 class="card-title">Branch</h3>
+                            </div>
+                    <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                      <ol class="item" style="height: 300px; min-width: 300px;" id="list6">
+                      </ol>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+       
+        </div>
+        <div class="card-footer">
+        <div class="mr-auto">
+                    <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                    </div>
+          <div class="ml-auto">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Next" type="submit">
+           
+          </div>
+          <div class="clearfix"></div>
+        </div>
+    
+    </div>
+</div>
+    </form>

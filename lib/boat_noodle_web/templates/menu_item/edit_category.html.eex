@@ -49,8 +49,9 @@
         </div>
         <div class="card-footer">
         <div class="mr-auto">
-                      <input class="btn btn-previous btn-fill btn-default btn-wd" name="previous_category" value="Previous" type="button">
-                    </div>
+          <div class="btn btn-previous btn-fill btn-default btn-wd" aria-label="go_back">Go Back</div>
+      
+          </div>
           <div class="ml-auto">
             <input class="btn btn-next btn-fill btn-rose btn-wd" name="category_update" id="" value="Update" type="submit">
            

@@ -3400,4 +3400,136 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_discount(discount)
     end
   end
+
+  describe "brand" do
+    alias BoatNoodle.Bn.Brand
+
+    @valid_attrs %{"": "some ", ",": "some ,", bin: "some bin", domain_name: "some domain_name", name: "some name"}
+    @update_attrs %{"": "some updated ", ",": "some updated ,", bin: "some updated bin", domain_name: "some updated domain_name", name: "some updated name"}
+    @invalid_attrs %{"": nil, ",": nil, bin: nil, domain_name: nil, name: nil}
+
+    def brand_fixture(attrs \\ %{}) do
+      {:ok, brand} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Bn.create_brand()
+
+      brand
+    end
+
+    test "list_brand/0 returns all brand" do
+      brand = brand_fixture()
+      assert Bn.list_brand() == [brand]
+    end
+
+    test "get_brand!/1 returns the brand with given id" do
+      brand = brand_fixture()
+      assert Bn.get_brand!(brand.id) == brand
+    end
+
+    test "create_brand/1 with valid data creates a brand" do
+      assert {:ok, %Brand{} = brand} = Bn.create_brand(@valid_attrs)
+      assert brand. == "some "
+      assert brand., == "some ,"
+      assert brand.bin == "some bin"
+      assert brand.domain_name == "some domain_name"
+      assert brand.name == "some name"
+    end
+
+    test "create_brand/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Bn.create_brand(@invalid_attrs)
+    end
+
+    test "update_brand/2 with valid data updates the brand" do
+      brand = brand_fixture()
+      assert {:ok, brand} = Bn.update_brand(brand, @update_attrs)
+      assert %Brand{} = brand
+      assert brand. == "some updated "
+      assert brand., == "some updated ,"
+      assert brand.bin == "some updated bin"
+      assert brand.domain_name == "some updated domain_name"
+      assert brand.name == "some updated name"
+    end
+
+    test "update_brand/2 with invalid data returns error changeset" do
+      brand = brand_fixture()
+      assert {:error, %Ecto.Changeset{}} = Bn.update_brand(brand, @invalid_attrs)
+      assert brand == Bn.get_brand!(brand.id)
+    end
+
+    test "delete_brand/1 deletes the brand" do
+      brand = brand_fixture()
+      assert {:ok, %Brand{}} = Bn.delete_brand(brand)
+      assert_raise Ecto.NoResultsError, fn -> Bn.get_brand!(brand.id) end
+    end
+
+    test "change_brand/1 returns a brand changeset" do
+      brand = brand_fixture()
+      assert %Ecto.Changeset{} = Bn.change_brand(brand)
+    end
+  end
+
+  describe "brand" do
+    alias BoatNoodle.Bn.Brand
+
+    @valid_attrs %{bin: "some bin", domain_name: "some domain_name", name: "some name"}
+    @update_attrs %{bin: "some updated bin", domain_name: "some updated domain_name", name: "some updated name"}
+    @invalid_attrs %{bin: nil, domain_name: nil, name: nil}
+
+    def brand_fixture(attrs \\ %{}) do
+      {:ok, brand} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Bn.create_brand()
+
+      brand
+    end
+
+    test "list_brand/0 returns all brand" do
+      brand = brand_fixture()
+      assert Bn.list_brand() == [brand]
+    end
+
+    test "get_brand!/1 returns the brand with given id" do
+      brand = brand_fixture()
+      assert Bn.get_brand!(brand.id) == brand
+    end
+
+    test "create_brand/1 with valid data creates a brand" do
+      assert {:ok, %Brand{} = brand} = Bn.create_brand(@valid_attrs)
+      assert brand.bin == "some bin"
+      assert brand.domain_name == "some domain_name"
+      assert brand.name == "some name"
+    end
+
+    test "create_brand/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Bn.create_brand(@invalid_attrs)
+    end
+
+    test "update_brand/2 with valid data updates the brand" do
+      brand = brand_fixture()
+      assert {:ok, brand} = Bn.update_brand(brand, @update_attrs)
+      assert %Brand{} = brand
+      assert brand.bin == "some updated bin"
+      assert brand.domain_name == "some updated domain_name"
+      assert brand.name == "some updated name"
+    end
+
+    test "update_brand/2 with invalid data returns error changeset" do
+      brand = brand_fixture()
+      assert {:error, %Ecto.Changeset{}} = Bn.update_brand(brand, @invalid_attrs)
+      assert brand == Bn.get_brand!(brand.id)
+    end
+
+    test "delete_brand/1 deletes the brand" do
+      brand = brand_fixture()
+      assert {:ok, %Brand{}} = Bn.delete_brand(brand)
+      assert_raise Ecto.NoResultsError, fn -> Bn.get_brand!(brand.id) end
+    end
+
+    test "change_brand/1 returns a brand changeset" do
+      brand = brand_fixture()
+      assert %Ecto.Changeset{} = Bn.change_brand(brand)
+    end
+  end
 end
