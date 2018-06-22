@@ -1,74 +1,231 @@
 <div class="row">
-<div class="col-lg-12">
-  <div class="card card-stats">
-    <div class="card-header card-header-warning card-header-icon">
-      <div class="card-icon">
-        <i class="material-icons">fastfood</i>
+  <div class="col-lg-12">
+    <div class="card card-stats">
+      <div class="card-header card-header-warning card-header-icon">
+        <div class="card-icon">
+          <i class="material-icons">fastfood</i>
+        </div>
+        <p class="card-category"></p>
+        <h3 class="card-title"><%= @item_subcat.itemname %></h3>
       </div>
-      <p class="card-category"></p>
-      <h3 class="card-title"><%= @item_subcat.itemname %></h3>
-    </div>
-    <div class="card-body">
+      <div class="card-body">
 
 
-  
-    </div>
-    <div class="card-footer">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Price Code</th>
-            <th>Cat id</th>
-  
-            <th>Code</th>
-            <th>Product Code</th>
-            <th>Part Code</th>
-      
-            <th>Price</th>
-            <th>Categorize?</th>
-
-            <th>Activate?</th>
-          
-         
-            <th>Deleted?</th>
-            <th>Enable Disc?</th>
-            <th>Include spend?</th>
-            <th>Is print?</th>
-
-            <th>ID</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-
-          <%= for same_item <- @same_items do %>
-          <tr>
-            <td><%= same_item.price_code %></td>
-            <td><%= same_item.itemcatid %></td>
-       
-            <td><%= same_item.itemcode %></td>
-            <td><%= same_item.product_code %></td>
-            <td><%= same_item.part_code %></td>
     
-            <td><%= same_item.itemprice %></td>
-            <td><%= same_item.is_categorize %></td>
+      </div>
+      <div class="card-footer">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Price Code</th>
+              <th>Cat id</th>
+              <th>Code</th>
+              <th>Product Code</th>
+              <th>Part Code</th>      
+              <th>Price</th>
+              <th>Categorize?</th>
+              <th>Activate?</th>         
+              <th>Deleted?</th>
+              <th>Enable Disc?</th>
+              <th>Include spend?</th>
+              <th>Is print?</th>
+              <th>ID</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
 
+            <%= for same_item <- @same_items do %>
+            <tr>
+              <td><%= same_item.price_code %></td>
+              <td><%= same_item.itemcatid %></td>       
+              <td><%= same_item.itemcode %></td>
+              <td><%= same_item.product_code %></td>
+              <td><%= same_item.part_code %></td>    
+              <td><%= same_item.itemprice %></td>
+              <td><%= same_item.is_categorize %></td>
+              <td><%= same_item.is_activate %></td>     
+              <td><%= same_item.is_delete %></td>
+              <td><%= same_item.enable_disc %></td>
+              <td><%= same_item.include_spend %></td>
+              <td><%= same_item.is_print %></td>
+              <td class="selected"><%= same_item.subcatid %></td>
+              <td>
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
 
-            <td><%= same_item.is_activate %></td>
-   
-     
-            <td><%= same_item.is_delete %></td>
-            <td><%= same_item.enable_disc %></td>
-            <td><%= same_item.include_spend %></td>
-            <td><%= same_item.is_print %></td>
-            <td><%= same_item.subcatid %></td>
-            
-          </tr>
-          <% end %>
-        </tbody>
-      </table>
+                    <i class="material-icons">bookmarks</i> Menu
+                  <div class="ripple-container"></div>
+                </button>
+                <button type="button" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Printers">
 
+                    <i class="material-icons">cast</i> Printers
+                  <div class="ripple-container"></div>
+                </button>
+                          </td>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+      </div>
     </div>
   </div>
 </div>
+
+
+
+<div class="row">
+  <div class="col-lg-3">
+    <div class="card">
+    <div class="card-header card-header-text card-header-primary">
+      <div class="card-text">
+        <h4 class="card-title">Menu Catalogs</h4>
+        <p class="card-category">Not Selected <span class="selected_id">none</span></p>
+      </div>
+    </div>
+      <div class="card-body" aria-label="menu_cat_list"> 
+        <ol class="not_selected_catalog">
+          
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="card">
+    <div class="card-header card-header-text card-header-success">
+      <div class="card-text">
+        <h4 class="card-title">Menu Catalogs</h4>
+        <p class="card-category">Selected for <span class="selected_id">none</span></p>
+      </div>
+    </div>
+      <div class="card-body"> 
+        <ol class="selected_catalog">
+          
+        </ol>
+        
+      </div>
+    </div>
+  </div>
+
+    <div class="col-lg-3">
+    <div class="card">
+    <div class="card-header card-header-text card-header-info">
+      <div class="card-text">
+        <h4 class="card-title">Printers</h4>
+        <p class="card-category">Selected for <span class="selected_id">none</span></p>
+      </div>
+    </div>
+      <div class="card-body selected_printer"> 
+    
+        
+        
+      </div>
+    </div>
+  </div>
 </div>
+    
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('button[data-original-title="Edit Printers"]').click(function() {
+    
+      $("div.selected_printer").html("");
+
+      var subcat_id = $(this).attr("subcat_id");
+      $("span.selected_id").html(subcat_id)
+      var brand = location.pathname.split("/")[1];
+      $.ajax({
+        url: "/" + brand + "/list_printer",
+        dataType: "json",
+        data: { subcat_id: subcat_id }
+      }).done(function(j) {
+
+        var branches = []
+        for(var key in j)
+        {
+            branches.push(key);
+        }
+
+        $(branches).each(function(k,branch){
+
+          var tags = j[branch]
+     
+          var html = "<div class='row'><div class='col-sm-12'><div class='form-group bmd-form-group'><label class='bmd-label-floating' style='font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;'>"+branch+"</label><select name='tag["+branch+"][id]' class='selectpicker' data-style='btn select-with-transition' title='Choose Printer' data-size='10' required=''></select></div></div></div>"
+          $("div.selected_printer").append(html)
+          $(tags).each(function(){
+            var op = "<option value='"+this.tag_id+"'>"+this.tagname+"</option>"
+            $('select[name="tag['+branch+'][id]"]').append(op)
+          })
+        })
+        $('.selectpicker').selectpicker({
+      
+          size: 10
+        });
+      });
+    });
+
+    $('button[data-original-title="Edit Menu"]').click(function() {
+      $("ol.not_selected_catalog").html("");
+      $("ol.selected_catalog").html("");
+
+      var subcatid = $(this).attr("subcat_id");
+      $("span.selected_id").html(subcatid)
+      var brand = location.pathname.split("/")[1];
+      $.ajax({
+        url: "/" + brand + "/list_menu_catalog",
+        dataType: "json",
+        data: { subcatid: subcatid }
+      }).done(function(j) {
+        var selected = j.selected;
+        $(selected).each(function() {
+          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
+          $("ol.selected_catalog").append(li);
+        });
+        var not_selected = j.not_selected;
+        $(not_selected).each(function() {
+          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
+          $("ol.not_selected_catalog").append(li);
+        });
+      });
+    });
+
+    $("ol.not_selected_catalog").on("click", "li", function() {
+      var li = $(this);
+
+      var subcat_id = $("span.selected_id").html()
+      var tag_id = $(this).attr("id")
+      var brand = location.pathname.split("/")[1];
+        $.ajax({
+          url: "/"+brand+"/insert_into_catalog", 
+          dataType: "json",
+          data: {subcat_id: subcat_id, tag_id: tag_id}
+        }).done(function(j){
+          $(j).each(function(){
+         
+           
+          })
+        })
+      $("ol.selected_catalog").append(li);
+    });
+
+    $("ol.selected_catalog").on("click", "li", function() {
+      var li = $(this);
+      var subcat_id = $("span.selected_id").html()
+      var tag_id = $(this).attr("id")
+      var brand = location.pathname.split("/")[1];
+        $.ajax({
+          url: "/"+brand+"/remove_from_catalog", 
+          dataType: "json",
+          data: {subcat_id: subcat_id, tag_id: tag_id}
+        }).done(function(j){
+          $(j).each(function(){
+         
+           
+          })
+        })
+      $("ol.not_selected_catalog").append(li);
+    });
+  });
+
+
+</script>
