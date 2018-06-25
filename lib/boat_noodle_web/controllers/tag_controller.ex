@@ -5,6 +5,22 @@ defmodule BoatNoodleWeb.TagController do
   alias BoatNoodle.BN.Tag
   require IEx
 
+  def toggle_printer(conn, params) do
+    IEx.pry()
+
+    tuple =
+      params["item_tag"]
+      |> String.replace("[", "")
+      |> String.replace("]", ",")
+      |> String.split(",")
+      |> Enum.reject(fn x -> x == "" end)
+      |> List.to_tuple()
+
+    subcat_id = elem(tuple, 0)
+    tag_id = elem(tuple, 1)
+    send_resp(conn, 200, "")
+  end
+
   def list_printer(conn, %{"subcat_id" => subcat_id}) do
     # will have subcat id 
     # need to list all available printers
@@ -28,29 +44,9 @@ defmodule BoatNoodleWeb.TagController do
       |> Enum.map(fn x -> Map.put(x, :items, String.split(x.items, ",")) end)
       |> Enum.group_by(fn x -> x.branchname end)
 
-    # tags =
-    #   for tag <- tags_original do
-    #     if Enum.any?(tag.items, fn x -> x == subcat_id end) do
-    #       tag
-    #     else
-    #       nil
-    #     end
-    #   end
-    #   |> Enum.reject(fn x -> x == nil end)
-    #   |> Enum.map(fn x -> %{tag_id: x.tag_id, branchname: x.branchname} end)
-
-    # all_tags =
-    #   tags_original |> Enum.map(fn x -> %{tag_id: x.tag_id, branchname: x.branchname} end)
-
-    # not_selected = all_tags -- tags
-
     json = tags_original |> Poison.encode!()
-    # json = %{selected: tags, not_selected: not_selected} |> Poison.encode!()
 
     send_resp(conn, 200, json)
-  end
-
-  def printer_has_item(items, subcatid) do
   end
 
   def check_printer(conn, %{"name" => name, "id" => id}) do

@@ -170,22 +170,40 @@
           $(tags).each(function(){
             var tagname = this.tagname
             var tid = this.tag_id
+            var items = this.items
+
             $("td.selected").each(function(){
               var id = $(this).html()
-              var td = "<td><input type='radio' name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
+              if ($.inArray(id, items) >= 0) {
+
+              var td = "<td><input type='radio' checked name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
+              } else {
+                var td = "<td><input type='radio' name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
+              }
      
                $("tr#"+tid).append(td)
             })
           })
         })
 
-$("form#printer_radio table input[type='radio']").click(function(){
-var ck = $(this)
-var val = $(this).val()
-if (ck[0].checked) {
-console.log(val)
-}
+        $("form#printer_radio table input[type='radio']").click(function(){
+          var ck = $(this)
+          var val = $(this).val()
+          if (ck[0].checked) {
+
+
+$.ajax({
+  url: "/" + brand + "/toggle_printer",
+  dataType: "json",
+  data: { item_tag: val }
+}).done(function(j) {
+  
 })
+          }
+        })
+
+
+
 
       });
    
