@@ -150,50 +150,10 @@ defmodule BoatNoodleWeb.PageController do
 
 
 
-      if    Map.get(sales_master_params, :sales_details) == nil do
-
-                    salesdetail =
-                           Repo.all(
-                             from(
-                               s in SalesMaster,
-                               select: %{
-                                 sales_details: s.sales_details
-                               },
-                               order_by: [s.sales_details]
-                             )
-                           )
-                           |> Enum.map(fn x -> x.sales_details end)
-                           |> Enum.max()
-
-                           salesdetail = salesdetail+1
-
-                       sales_master_params = Map.put(sales_master_params, :sales_details, salesdetail)
-                     end
-
-
-        if   Map.get(sales_payment_params, :salespay_id) == nil  do
-                       salespay_id =
-                         Repo.all(
-                           from(
-                             s in SalesPayment,
-                             select: %{
-                               salespay_id: s.salespay_id
-                             },
-                             order_by: [s.salespay_id]
-                           )
-                         )
-                         |> Enum.map(fn x -> x.salespay_id end)
-                         |> Enum.max()
-
-                         salespay_id = salespay_id + 1
-                        sales_payment_params = Map.put(sales_payment_params, :salespay_id, salespay_id)
-                        end
 
 
 
        sales_exist = Repo.get_by(Sales,salesid: sales_params.salesid)
-       master_exist = Repo.get_by(SalesMaster,sales_details: sales_master_params.sales_details)
-       payment_exist = Repo.get_by(SalesPayment,salespay_id: sales_payment_params.salespay_id)
 
 
 
@@ -201,13 +161,8 @@ defmodule BoatNoodleWeb.PageController do
           sales_exist != nil ->
             send_resp(conn, 501, "Sales id exist.")
 
-          master_exist !=nil ->
-            send_resp(conn, 502, "Sales details id exist.")
 
-          payment_exist != nil ->
-            send_resp(conn, 503, "Sales pay id exist.")
-
-          sales_exist == nil &&  payment_exist == nil && master_exist ==nil ->
+          sales_exist == nil  ->
 
             case BN.create_sales(sales_params) do
               {:ok, sales} ->
