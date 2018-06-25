@@ -176,9 +176,9 @@
               var id = $(this).html()
               if ($.inArray(id, items) >= 0) {
 
-              var td = "<td><input type='radio' checked name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
+              var td = "<td><input type='checkbox' checked name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
               } else {
-                var td = "<td><input type='radio' name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
+                var td = "<td><input type='checkbox' name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
               }
      
                $("tr#"+tid).append(td)
@@ -186,19 +186,55 @@
           })
         })
 
-        $("form#printer_radio table input[type='radio']").click(function(){
+        $("form#printer_radio table input[type='checkbox']").click(function(){
           var ck = $(this)
           var val = $(this).val()
           if (ck[0].checked) {
 
 
-$.ajax({
-  url: "/" + brand + "/toggle_printer",
-  dataType: "json",
-  data: { item_tag: val }
-}).done(function(j) {
-  
-})
+            $.ajax({
+              url: "/" + brand + "/toggle_printer",
+              dataType: "json",
+              data: { item_tag: val }
+            }).done(function(j) {
+              
+
+                  $.notify({
+                      icon: "notifications",
+                      message: j.item_name+" "+j.action+" "+j.printer_name
+
+                  }, {
+                      type: j.alert,
+                      timer: 100,
+                      placement: {
+                          from: 'bottom',
+                          align: 'right'
+                      }
+                  });
+
+            })
+          } else {
+            $.ajax({
+              url: "/" + brand + "/toggle_printer",
+              dataType: "json",
+              data: { item_tag: val }
+            }).done(function(j) {
+              
+
+                  $.notify({
+                      icon: "notifications",
+                      message: j.item_name+" "+j.action+" "+j.printer_name
+
+                  }, {
+                      type: j.alert,
+                      timer: 100,
+                      placement: {
+                          from: 'bottom',
+                          align: 'right'
+                      }
+                  });
+
+            })
           }
         })
 

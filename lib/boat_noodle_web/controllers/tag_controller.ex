@@ -6,8 +6,6 @@ defmodule BoatNoodleWeb.TagController do
   require IEx
 
   def toggle_printer(conn, params) do
-    IEx.pry()
-
     tuple =
       params["item_tag"]
       |> String.replace("[", "")
@@ -17,8 +15,47 @@ defmodule BoatNoodleWeb.TagController do
       |> List.to_tuple()
 
     subcat_id = elem(tuple, 0)
+    subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
     tag_id = elem(tuple, 1)
-    send_resp(conn, 200, "")
+
+    tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
+
+    if tag.subcat_ids != nil do
+      items = tag.subcat_ids
+    else
+      items = ""
+    end
+
+    subcat_ids = String.split(items, ",")
+
+    if Enum.any?(subcat_ids, fn x -> x == subcat_id end) do
+      new_subcatids =
+        List.delete(subcat_ids, subcat_id) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
+
+      action = "removed from"
+      alert = "danger"
+    else
+      new_subcatids =
+        List.insert_at(subcat_ids, 0, subcat_id)
+        |> Enum.sort()
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
+
+      action = "added to"
+      alert = "success"
+    end
+
+    map =
+      %{
+        printer_name: tag.tagname,
+        item_name: subcat.itemname,
+        action: action,
+        alert: alert
+      }
+      |> Poison.encode!()
+
+    send_resp(conn, 200, map)
   end
 
   def list_printer(conn, %{"subcat_id" => subcat_id}) do
