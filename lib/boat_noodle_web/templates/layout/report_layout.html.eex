@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en">
-<% require IEx %>
-<% conn = @conn %>
-<% brand = Repo.all(from b in Brand, where: b.domain_name == ^conn.params["brand"]) |> hd() %>
+
+
 
 <head>
   <meta charset="utf-8">
@@ -18,36 +17,21 @@
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
   <link rel="stylesheet" href="/assets/css/material-dashboard.css?v=2.0.1">
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
   <!-- Documentation extras -->
   <!-- CSS Just for demo purpose, don't include it in your project -->
-  
+  <!--   Core JS Files   -->
+<script src="/assets/js/core/jquery.min.js"></script>
+<script src="/assets/js/core/popper.min.js"></script>
+<script src="/assets/js/bootstrap-material-design.js"></script>
+<script src="/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
   <!-- iframe removal -->
 </head>
 
-<body class="off-canvas-sidebar login-page">
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg bg-primary navbar-transparent navbar-absolute" color-on-scroll="500">
-    <div class="container">
-      <div class="navbar-wrapper">
-        <a class="navbar-brand" href="#pablo">Gummy Pos V2</a>
-      </div>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="navbar-toggler-icon icon-bar"></span>
-        <span class="navbar-toggler-icon icon-bar"></span>
-        <span class="navbar-toggler-icon icon-bar"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbar">
-        <ul class="navbar-nav" aria-label="various_brands">
+<body class="off-canvas-sidebar ">
 
-<li class="nav-item" id="reports"><a href="/reports/login" class="nav-link"><i class="material-icons">lock_open</i>Report<div class="ripple-container"></div></a></li>
-          
-    
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <!-- End Navbar -->
   <div class="wrapper wrapper-full-page">
     <div class="page-header login-page header-filter" filter-color="black" style="background-image: url('/assets/img/login.jpg'); background-size: cover; background-position: top center;">
       <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
@@ -58,11 +42,7 @@
     </div>
   </div>
 </body>
-<!--   Core JS Files   -->
-<script src="/assets/js/core/jquery.min.js"></script>
-<script src="/assets/js/core/popper.min.js"></script>
-<script src="/assets/js/bootstrap-material-design.js"></script>
-<script src="/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+
 <!--  Google Maps Plugin  -->
 
 <!--  Plugin for Date Time Picker and Full Calendar Plugin  -->
@@ -112,54 +92,7 @@
 <!-- demo init -->
 <script src="/assets/js/plugins/demo.js"></script>
 <script type="text/javascript">
-  $().ready(function() {
-    demo.checkFullPageBackgroundImage();
 
-    setTimeout(function() {
-      // after 1000 ms we add the class animated to the login/register card
-      $('.card').removeClass('card-hidden');
-    }, 700)
-  });
-
-
-  <%= cond do %>
-
-  <% get_flash(@conn, :info) != nil -> %>
-
-  swal(
-    '<%= get_flash(@conn, :info) %>',
-    '',
-    'success'
-  )
-  <% get_flash(@conn, :error) != nil -> %>
-
-  swal(
-    '<%= get_flash(@conn, :error) %>',
-    '',
-    'error'
-  )
-
-  <% true -> %>
-
-  <% end %>
-
-$(document).ready(function(){
-  
-  $.ajax({
-    url: "/get_brands", 
-    dataType: "json"
-  }).done(function(j){
-    $(j).each(function(){
-      var html = "<li class='nav-item' id='"+this.name+"'><a href='/"+this.name+"/login' class='nav-link'><i class='material-icons'>lock_open</i>"+this.name+"</a></li>"
-      $("ul[aria-label='various_brands']").append(html)
-    })
-  var pathname = window.location.pathname;
-  var split_path = pathname.split("/");
-  var domain_name = split_path[1];
-  console.log(domain_name)
-  $("li#"+domain_name).toggleClass("active")
-  })
-})
 
 
 

@@ -22,12 +22,8 @@ defmodule BoatNoodleWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/", BoatNoodleWeb do
-    # Use the default browser stack
-    pipe_through(:management)
-    get("/", PageController, :index)
-    get("/get_brands", PageController, :get_brands)
-    get("/reports", PageController, :report_index)
+  pipeline :report_layout do
+    plug(:put_layout, {BoatNoodleWeb.LayoutView, :report_layout})
   end
 
   # Other scopes may use custom stacks.
@@ -35,6 +31,16 @@ defmodule BoatNoodleWeb.Router do
     pipe_through(:api)
     get("/sales", PageController, :webhook_get)
     post("/sales", PageController, :webhook_post)
+  end
+
+  scope "/", BoatNoodleWeb do
+    # Use the default browser stack
+    pipe_through(:report_layout)
+
+    get("/get_brands", PageController, :get_brands)
+    get("/reports/login", PageController, :report_login)
+    get("/reports", PageController, :report_index)
+    get("/top_sales", SalesController, :top_sales)
   end
 
   scope "/:brand", BoatNoodleWeb do

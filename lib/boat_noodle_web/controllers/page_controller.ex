@@ -3,8 +3,12 @@ defmodule BoatNoodleWeb.PageController do
   import Ecto.Query
   require IEx
 
+  def report_login(conn, params) do
+    render(conn, "index.html")
+  end
+
   def report_index(conn, params) do
-    send_resp(conn, 200, "hello.")
+    render(conn, "index.html")
   end
 
   def get_brands(conn, _params) do

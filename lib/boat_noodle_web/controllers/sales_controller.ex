@@ -1,9 +1,46 @@
 defmodule BoatNoodleWeb.SalesController do
   use BoatNoodleWeb, :controller
 
-  alias BoatNoodle.BN
-  alias BoatNoodle.BN.Sales
   require IEx
+
+  def top_sales(conn, params) do
+    date_setting = params["date"]
+
+    case date_setting do
+      "last_month" ->
+        start_date = Timex.beginning_of_month(Date.utc_today())
+        end_date = Timex.end_of_month(Date.utc_today())
+    end
+
+    outlet_sales =
+      Repo.all(
+        from(
+          sp in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: sp.salesid == s.salesid,
+          left_join: b in BoatNoodle.BN.Branch,
+          on: s.branchid == b.branchid,
+          where: s.salesdate >= ^start_date and s.salesdate <= ^end_date,
+          group_by: s.branchid,
+          select: %{
+            branchname: b.branchname,
+            sub_total: sum(sp.sub_total),
+            service_charge: sum(sp.service_charge),
+            gst_charge: sum(sp.gst_charge),
+            after_disc: sum(sp.after_disc),
+            grand_total: sum(sp.grand_total),
+            rounding: sum(sp.rounding),
+            pax: sum(s.pax)
+          }
+        )
+      )
+      |> Enum.sort_by(fn x -> x.grand_total end)
+      |> Enum.sort_by(fn x -> x.grand_total end)
+      |> Enum.reverse()
+      |> Poison.encode!()
+
+    send_resp(conn, 200, outlet_sales)
+  end
 
   defp branches() do
     Repo.all(from(s in BoatNoodle.BN.Branch, order_by: [asc: s.branchname]))
