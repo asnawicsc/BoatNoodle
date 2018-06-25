@@ -27,7 +27,7 @@ defmodule BoatNoodleWeb.Router do
     pipe_through(:management)
     get("/", PageController, :index)
     get("/get_brands", PageController, :get_brands)
-    get("/management_login", UserController, :login_management)
+    get("/reports", PageController, :report_index)
   end
 
   # Other scopes may use custom stacks.

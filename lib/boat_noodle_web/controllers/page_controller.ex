@@ -1,13 +1,11 @@
-alias BoatNoodle.BN
-alias BoatNoodle.BN.Sales
-alias BoatNoodle.BN.SalesMaster
-alias BoatNoodle.BN.SalesPayment
-alias BoatNoodle.BN.Branch
-
 defmodule BoatNoodleWeb.PageController do
   use BoatNoodleWeb, :controller
   import Ecto.Query
   require IEx
+
+  def report_index(conn, params) do
+    send_resp(conn, 200, "hello.")
+  end
 
   def get_brands(conn, _params) do
     brands = Repo.all(Brand) |> Enum.map(fn x -> %{name: x.domain_name} end) |> Poison.encode!()
@@ -27,6 +25,7 @@ defmodule BoatNoodleWeb.PageController do
 
   def webhook_get(conn, params) do
     IO.inspect(params)
+    # reply the sales id for data insert and temporary key 
     send_resp(conn, 200, "hello.")
   end
 
@@ -102,99 +101,88 @@ defmodule BoatNoodleWeb.PageController do
       "brand_id"
     ]
 
-
-      if Enum.all?(sales_required_keys, &Map.has_key?(params["sales"], &1)) &&
+    if Enum.all?(sales_required_keys, &Map.has_key?(params["sales"], &1)) &&
          Enum.all?(salesdetail_required_keys, &Map.has_key?(a, &1)) &&
          Enum.all?(salespayment_required_keys, &Map.has_key?(params["payment"], &1)) == true do
+      sales_params = for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
+      sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
 
-                 sales_params = for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
-                 sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
-                 sales_payment_params = for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
+      sales_payment_params =
+        for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
 
-              if   Map.get(sales_params, :salesid) == nil do
-                   invoiceno =
-                        Repo.all(
-                          from(
-                            s in Sales,
-                            where: s.branchid == ^sales_params.branchid,
-                            select: %{
-                              invoiceno: s.invoiceno
-                            },
-                            order_by: [s.invoiceno]
-                          )
-                        )
-                        |> Enum.map(fn x -> x.invoiceno end)
-                        |>  Enum.map(fn(x) -> String.to_integer(x) end)
-                        |> Enum.max()
+      if Map.get(sales_params, :salesid) == nil do
+        invoiceno =
+          Repo.all(
+            from(
+              s in Sales,
+              where: s.branchid == ^sales_params.branchid,
+              select: %{
+                invoiceno: s.invoiceno
+              },
+              order_by: [s.invoiceno]
+            )
+          )
+          |> Enum.map(fn x -> x.invoiceno end)
+          |> Enum.map(fn x -> String.to_integer(x) end)
+          |> Enum.max()
 
-                     brach_name =
-                       Repo.all(
-                         from(
-                           b in Branch,
-                           where: b.branchid == ^sales_params.branchid,
-                           select: %{
-                             brachcode: b.branchcode
-                           }
-                         )
-                       )
-                       |> hd()
+        brach_name =
+          Repo.all(
+            from(
+              b in Branch,
+              where: b.branchid == ^sales_params.branchid,
+              select: %{
+                brachcode: b.branchcode
+              }
+            )
+          )
+          |> hd()
 
-                       id = invoiceno + 1
-                       |> Integer.to_string()
-                       salesid = brach_name.brachcode <> "" <> id
+        id =
+          (invoiceno + 1)
+          |> Integer.to_string()
 
+        salesid = brach_name.brachcode <> "" <> id
 
-                   sales_params = Map.put(sales_params, :salesid, salesid)
-                   sales_params = Map.put(sales_params, :invoiceno, id)
+        sales_params = Map.put(sales_params, :salesid, salesid)
+        sales_params = Map.put(sales_params, :invoiceno, id)
+      end
+
+      sales_exist = Repo.get_by(Sales, salesid: sales_params.salesid)
+
+      cond do
+        sales_exist != nil ->
+          send_resp(conn, 501, "Sales id exist.")
+
+        sales_exist == nil ->
+          case BN.create_sales(sales_params) do
+            {:ok, sales} ->
+              conn
+
+              sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+
+              case BN.create_sales_master(sales_master_params) do
+                {:ok, sales_master} ->
+                  conn
+                  sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
+
+                  case BN.create_sales_payment(sales_payment_params) do
+                    {:ok, sales_payment} ->
+                      conn
+                      send_resp(conn, 200, "Sales  create successfully.")
+
+                    {:error, %Ecto.Changeset{} = changeset} ->
+                      send_resp(conn, 504, "Sales payment failed to create.")
+                  end
+
+                {:error, %Ecto.Changeset{} = changeset} ->
+                  send_resp(conn, 505, "Sales master failed to create.")
+              end
+
+            {:error, %Ecto.Changeset{} = changeset} ->
+              send_resp(conn, 506, "Sales failed to create. Please use the latest sales ID")
           end
-
-
-
-
-
-
-       sales_exist = Repo.get_by(Sales,salesid: sales_params.salesid)
-
-
-
-        cond do
-          sales_exist != nil ->
-            send_resp(conn, 501, "Sales id exist.")
-
-
-          sales_exist == nil  ->
-
-            case BN.create_sales(sales_params) do
-              {:ok, sales} ->
-                conn
-
-                sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
-
-                case BN.create_sales_master(sales_master_params) do
-                  {:ok, sales_master} ->
-                    conn
-                    sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
-
-                    case BN.create_sales_payment(sales_payment_params) do
-                      {:ok, sales_payment} ->
-                        conn
-                        send_resp(conn, 200, "Sales  create successfully.")
-
-                      {:error, %Ecto.Changeset{} = changeset} ->
-                        send_resp(conn, 504, "Sales payment failed to create.")
-                    end
-
-                  {:error, %Ecto.Changeset{} = changeset} ->
-                    send_resp(conn, 505, "Sales master failed to create.")
-                end
-
-              {:error, %Ecto.Changeset{} = changeset} ->
-                send_resp(conn, 506, "Sales failed to create. Please use the latest sales ID")
-            end
-          end
-
-
-
+      end
     else
       send_resp(conn, 507, "API failed to transaction. Check your data and try again.")
     end

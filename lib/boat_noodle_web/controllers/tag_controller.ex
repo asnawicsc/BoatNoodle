@@ -46,6 +46,8 @@ defmodule BoatNoodleWeb.TagController do
       alert = "success"
     end
 
+    Repo.update(Tag.changeset(tag, %{subcat_ids: new_subcatids}))
+
     map =
       %{
         printer_name: tag.tagname,

@@ -1,4 +1,10 @@
-<div class="row">
+<style type="text/css">
+  .hidding {
+   display: none;
+  }
+</style>
+
+<div aria-label="item_detail" class="row">
   <div class="col-lg-12">
     <div class="card card-stats">
       <div class="card-header card-header-warning card-header-icon">
@@ -70,7 +76,7 @@
 
 
 
-<div class="row">
+<div aria-label="item_detail" class="row hidding" >
   <div class="col-lg-3">
     <div class="card">
     <div class="card-header card-header-text card-header-primary">
@@ -78,11 +84,19 @@
         <h4 class="card-title">Menu Catalogs</h4>
         <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
       </div>
+
     </div>
       <div class="card-body" aria-label="menu_cat_list"> 
         <ol class="not_selected_catalog">
           
         </ol>
+      </div>
+      <div class="card-footer"> 
+        <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata"  data-original-title="Select All">
+
+                    <i class="material-icons">fast_forward</i> Select All
+                  <div class="ripple-container"></div>
+                </button>
       </div>
     </div>
   </div>
@@ -100,6 +114,13 @@
         </ol>
         
       </div>
+      <div class="card-footer"> 
+        <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata"  data-original-title="Unselect All">
+
+                    <i class="material-icons">fast_rewind</i> Unselect All
+                  <div class="ripple-container"></div>
+                </button>
+      </div>
     </div>
   </div>
 
@@ -110,6 +131,12 @@
         <h4 class="card-title">Printers</h4>
         <p class="card-category">Selected for <span class="selected_id">none</span></p>
       </div>
+      <div class="dropdown pull-right" style="padding: 10px;">
+            <button aria-label="item_summary" class="btn btn-info btn-round">
+                <i class="material-icons">ballot</i> Item Summary
+              <div class="ripple-container"></div>
+            <div class="ripple-container"></div></button>
+          </div>
     </div>
       <div class="card-body selected_printer"> 
     <form id="printer_radio">
@@ -125,8 +152,60 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
+$("button[aria-label='item_summary']").click(function(){
+  
+   $("div[aria-label='item_detail']").toggleClass("hidding")
+})
 
-   
+   $('button[data-original-title="Select All"]').click(function(){
+    var li_list = $('ol.not_selected_catalog').find("li")
+      $(li_list).each(function(){
+
+            var li = $(this);
+            $(li).find(".fa").attr("class", "fa fa-minus-circle")
+            var subcat_id = $("span.selected_id").html()
+            var tag_id = $(this).attr("id")
+            var brand = location.pathname.split("/")[1];
+              $.ajax({
+                url: "/"+brand+"/insert_into_catalog", 
+                dataType: "json",
+                data: {subcat_id: subcat_id, tag_id: tag_id}
+              }).done(function(j){
+                $(j).each(function(){
+               
+                 
+                })
+              })
+            $("ol.selected_catalog").append(li);
+      })
+
+
+   })
+
+   $('button[data-original-title="Unselect All"]').click(function(){
+    var li_list = $('ol.selected_catalog').find("li")
+      $(li_list).each(function(){
+        
+            var li = $(this);
+            $(li).find(".fa").attr("class", "fa fa-plus-circle")
+            var subcat_id = $("span.selected_id").html()
+            var tag_id = $(this).attr("id")
+            var brand = location.pathname.split("/")[1];
+              $.ajax({
+                url: "/"+brand+"/remove_from_catalog", 
+                dataType: "json",
+                data: {subcat_id: subcat_id, tag_id: tag_id}
+              }).done(function(j){
+                $(j).each(function(){
+               
+                 
+                })
+              })
+            $("ol.not_selected_catalog").append(li);
+      })
+
+
+   })
 
       var brand = location.pathname.split("/")[1];
       $.ajax({
@@ -245,6 +324,7 @@
    
 
     $('button[data-original-title="Edit Menu"]').click(function() {
+            $("div[aria-label='item_detail']").toggleClass("hidding")
       $("ol.not_selected_catalog").html("");
       $("ol.selected_catalog").html("");
 
@@ -258,12 +338,12 @@
       }).done(function(j) {
         var selected = j.selected;
         $(selected).each(function() {
-          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
+          var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
           $("ol.selected_catalog").append(li);
         });
         var not_selected = j.not_selected;
         $(not_selected).each(function() {
-          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
+          var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
           $("ol.not_selected_catalog").append(li);
         });
       });
@@ -271,7 +351,7 @@
 
     $("ol.not_selected_catalog").on("click", "li", function() {
       var li = $(this);
-
+      $(li).find(".fa").attr("class", "fa fa-minus-circle")
       var subcat_id = $("span.selected_id").html()
       var tag_id = $(this).attr("id")
       var brand = location.pathname.split("/")[1];
@@ -290,6 +370,7 @@
 
     $("ol.selected_catalog").on("click", "li", function() {
       var li = $(this);
+      $(li).find(".fa").attr("class", "fa fa-plus-circle")
       var subcat_id = $("span.selected_id").html()
       var tag_id = $(this).attr("id")
       var brand = location.pathname.split("/")[1];

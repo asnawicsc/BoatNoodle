@@ -1,20 +1,31 @@
-    if (localStorage.getItem("bn_user") != null) {
+if (localStorage.getItem("bn_user") != null) {
 
-      var map = JSON.parse(localStorage.getItem("bn_user"))
-      var html = "<img style='border-radius: 50%;  width: 34px; height: 34px;' src='data:image/jpg;base64, "+map.bin +"'>" 
-      $("div[aria-lable='photo']").html(html)
-      $("span[aria-label='username']").append(map.name)
-    } else {
+  var map = JSON.parse(localStorage.getItem("bn_user"))
+  var html = "<img style='border-radius: 50%;  width: 34px; height: 34px;' src='data:image/jpg;base64, "+map.bin +"'>" 
+  $("div[aria-lable='photo']").html(html)
+  $("span[aria-label='username']").append(map.name)
+} else {
 
-      channel.push("load_user_sidebar", {userid: window.currentUser})
-    }
+  channel.push("load_user_sidebar", {userid: window.currentUser})
+
+
+}
+
 $(document).ready(function(){
 
-
+    $("a#logout").click(function(){
+      localStorage.removeItem("bn_user")
+    })
 
     channel.on("save_user_local_storage", payload => {
 
       localStorage.setItem("bn_user", payload.map)
+
+
+  var map = JSON.parse(localStorage.getItem("bn_user"))
+  var html = "<img style='border-radius: 50%;  width: 34px; height: 34px;' src='data:image/jpg;base64, "+map.bin +"'>" 
+  $("div[aria-lable='photo']").html(html)
+  $("span[aria-label='username']").append(map.name)
     })
 
     $("button[aria-label='go_back']").click(function(){
