@@ -2541,21 +2541,19 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("generate_discount_items", %{"disc" => disc}, socket) do
+    id = disc
 
-    id= disc
     if id == "0" do
-      discount= Repo.all(from s in BoatNoodle.BN.DiscountItem )
-
+      discount = Repo.all(from(s in BoatNoodle.BN.DiscountItem))
     else
-    discount= Repo.all(from s in BoatNoodle.BN.DiscountItem, where: s.discountid==^id )
-
+      discount = Repo.all(from(s in BoatNoodle.BN.DiscountItem, where: s.discountid == ^id))
     end
-IEx.pry
 
- broadcast(socket, "generate_discount_item2", %{discount: discount })
+    IEx.pry()
+
+    broadcast(socket, "generate_discount_item2", %{discount: discount})
 
     {:noreply, socket}
-
   end
 
   defp authorized?(_payload) do

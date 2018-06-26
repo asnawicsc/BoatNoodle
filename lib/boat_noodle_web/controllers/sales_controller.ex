@@ -37,9 +37,12 @@ defmodule BoatNoodleWeb.SalesController do
       |> Enum.sort_by(fn x -> x.grand_total end)
       |> Enum.sort_by(fn x -> x.grand_total end)
       |> Enum.reverse()
+
+    json_map =
+      %{outlet_sales: outlet_sales, start_date: start_date, end_date: end_date}
       |> Poison.encode!()
 
-    send_resp(conn, 200, outlet_sales)
+    send_resp(conn, 200, json_map)
   end
 
   defp branches() do

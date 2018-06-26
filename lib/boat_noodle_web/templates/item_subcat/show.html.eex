@@ -151,245 +151,247 @@
     
 
 <script type="text/javascript">
-  $(document).ready(function() {
-$("button[aria-label='item_summary']").click(function(){
-  
-   $("div[aria-label='item_detail']").toggleClass("hidding")
-})
+$(document).ready(function() {
+  $("button[aria-label='item_summary']").click(function() {
+    $("div[aria-label='item_detail']").toggleClass("hidding");
+  });
 
-   $('button[data-original-title="Select All"]').click(function(){
-    var li_list = $('ol.not_selected_catalog').find("li")
-      $(li_list).each(function(){
-
-            var li = $(this);
-            $(li).find(".fa").attr("class", "fa fa-minus-circle")
-            var subcat_id = $("span.selected_id").html()
-            var tag_id = $(this).attr("id")
-            var brand = location.pathname.split("/")[1];
-              $.ajax({
-                url: "/"+brand+"/insert_into_catalog", 
-                dataType: "json",
-                data: {subcat_id: subcat_id, tag_id: tag_id}
-              }).done(function(j){
-                $(j).each(function(){
-               
-                 
-                })
-              })
-            $("ol.selected_catalog").append(li);
-      })
-
-
-   })
-
-   $('button[data-original-title="Unselect All"]').click(function(){
-    var li_list = $('ol.selected_catalog').find("li")
-      $(li_list).each(function(){
-        
-            var li = $(this);
-            $(li).find(".fa").attr("class", "fa fa-plus-circle")
-            var subcat_id = $("span.selected_id").html()
-            var tag_id = $(this).attr("id")
-            var brand = location.pathname.split("/")[1];
-              $.ajax({
-                url: "/"+brand+"/remove_from_catalog", 
-                dataType: "json",
-                data: {subcat_id: subcat_id, tag_id: tag_id}
-              }).done(function(j){
-                $(j).each(function(){
-               
-                 
-                })
-              })
-            $("ol.not_selected_catalog").append(li);
-      })
-
-
-   })
-
-      var brand = location.pathname.split("/")[1];
-      $.ajax({
-        url: "/" + brand + "/list_printer",
-        dataType: "json",
-        data: { subcat_id: 0 }
-      }).done(function(j) {
-
-        var branches = []
-        for(var key in j)
-        {
-            branches.push(key);
-        }
-
-        $(branches).each(function(k,branch){
-          var div = '<div aria-label="'+branch+'"><label>'+branch+'</label><br><table class="table" style="width: 100%;" aria-label="'+branch+'"></table></div>'
-          $("form#printer_radio").prepend(div)
-              var tr = "<tr class='header' aria-label='"+branch+"'><td></td></tr>"
-          $('table[aria-label="'+branch+'"]').append(tr)
-            $("td.selected").each(function(){
-              var id = $(this).html()
-              var td = "<td>"+id+"</td>"
-               $('tr[aria-label="'+branch+'"]').append(td)
-            })
-          var tags = j[branch]
- 
-          $(tags).each(function(){
-            
-            var tr = "<tr id='"+this.tag_id+"'><td>"+this.tagname+"</td></tr>"
-
-       
-            $('table[aria-label="'+branch+'"]').append(tr)
-
-          })
-        })
-
-        $(branches).each(function(k,branch){
-
-          var tags = j[branch]
-
-          $(tags).each(function(){
-            var tagname = this.tagname
-            var tid = this.tag_id
-            var items = this.items
-
-            $("td.selected").each(function(){
-              var id = $(this).html()
-              if ($.inArray(id, items) >= 0) {
-
-              var td = "<td><input type='checkbox' checked name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
-              } else {
-                var td = "<td><input type='checkbox' name='tag["+branch+"]' value='["+id+"]["+tid+"]'></td>"
-              }
-     
-               $("tr#"+tid).append(td)
-            })
-          })
-        })
-
-        $("form#printer_radio table input[type='checkbox']").click(function(){
-          var ck = $(this)
-          var val = $(this).val()
-          if (ck[0].checked) {
-
-
-            $.ajax({
-              url: "/" + brand + "/toggle_printer",
-              dataType: "json",
-              data: { item_tag: val }
-            }).done(function(j) {
-              
-
-                  $.notify({
-                      icon: "notifications",
-                      message: j.item_name+" "+j.action+" "+j.printer_name
-
-                  }, {
-                      type: j.alert,
-                      timer: 100,
-                      placement: {
-                          from: 'bottom',
-                          align: 'right'
-                      }
-                  });
-
-            })
-          } else {
-            $.ajax({
-              url: "/" + brand + "/toggle_printer",
-              dataType: "json",
-              data: { item_tag: val }
-            }).done(function(j) {
-              
-
-                  $.notify({
-                      icon: "notifications",
-                      message: j.item_name+" "+j.action+" "+j.printer_name
-
-                  }, {
-                      type: j.alert,
-                      timer: 100,
-                      placement: {
-                          from: 'bottom',
-                          align: 'right'
-                      }
-                  });
-
-            })
-          }
-        })
-
-
-
-
-      });
-   
-
-    $('button[data-original-title="Edit Menu"]').click(function() {
-            $("div[aria-label='item_detail']").toggleClass("hidding")
-      $("ol.not_selected_catalog").html("");
-      $("ol.selected_catalog").html("");
-
-      var subcatid = $(this).attr("subcat_id");
-      $("span.selected_id").html(subcatid)
-      var brand = location.pathname.split("/")[1];
-      $.ajax({
-        url: "/" + brand + "/list_menu_catalog",
-        dataType: "json",
-        data: { subcatid: subcatid }
-      }).done(function(j) {
-        var selected = j.selected;
-        $(selected).each(function() {
-          var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
-          $("ol.selected_catalog").append(li);
-        });
-        var not_selected = j.not_selected;
-        $(not_selected).each(function() {
-          var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
-          $("ol.not_selected_catalog").append(li);
-        });
-      });
-    });
-
-    $("ol.not_selected_catalog").on("click", "li", function() {
+  $('button[data-original-title="Select All"]').click(function() {
+    var li_list = $("ol.not_selected_catalog").find("li");
+    $(li_list).each(function() {
       var li = $(this);
-      $(li).find(".fa").attr("class", "fa fa-minus-circle")
-      var subcat_id = $("span.selected_id").html()
-      var tag_id = $(this).attr("id")
+      $(li)
+        .find(".fa")
+        .attr("class", "fa fa-minus-circle");
+      var subcat_id = $("span.selected_id").html();
+      var tag_id = $(this).attr("id");
       var brand = location.pathname.split("/")[1];
-        $.ajax({
-          url: "/"+brand+"/insert_into_catalog", 
-          dataType: "json",
-          data: {subcat_id: subcat_id, tag_id: tag_id}
-        }).done(function(j){
-          $(j).each(function(){
-         
-           
-          })
-        })
+      $.ajax({
+        url: "/" + brand + "/insert_into_catalog",
+        dataType: "json",
+        data: { subcat_id: subcat_id, tag_id: tag_id }
+      }).done(function(j) {
+        $(j).each(function() {});
+      });
       $("ol.selected_catalog").append(li);
     });
+  });
 
-    $("ol.selected_catalog").on("click", "li", function() {
+  $('button[data-original-title="Unselect All"]').click(function() {
+    var li_list = $("ol.selected_catalog").find("li");
+    $(li_list).each(function() {
       var li = $(this);
-      $(li).find(".fa").attr("class", "fa fa-plus-circle")
-      var subcat_id = $("span.selected_id").html()
-      var tag_id = $(this).attr("id")
+      $(li)
+        .find(".fa")
+        .attr("class", "fa fa-plus-circle");
+      var subcat_id = $("span.selected_id").html();
+      var tag_id = $(this).attr("id");
       var brand = location.pathname.split("/")[1];
-        $.ajax({
-          url: "/"+brand+"/remove_from_catalog", 
-          dataType: "json",
-          data: {subcat_id: subcat_id, tag_id: tag_id}
-        }).done(function(j){
-          $(j).each(function(){
-         
-           
-          })
-        })
+      $.ajax({
+        url: "/" + brand + "/remove_from_catalog",
+        dataType: "json",
+        data: { subcat_id: subcat_id, tag_id: tag_id }
+      }).done(function(j) {
+        $(j).each(function() {});
+      });
       $("ol.not_selected_catalog").append(li);
     });
-
-
-
   });
+
+  var brand = location.pathname.split("/")[1];
+  $.ajax({
+    url: "/" + brand + "/list_printer",
+    dataType: "json",
+    data: { subcat_id: 0 }
+  }).done(function(j) {
+    var branches = [];
+    for (var key in j) {
+      branches.push(key);
+    }
+
+    $(branches).each(function(k, branch) {
+      var div =
+        '<div aria-label="' +
+        branch +
+        '"><label>' +
+        branch +
+        '</label><br><table class="table" style="width: 100%;" aria-label="' +
+        branch +
+        '"></table></div>';
+      $("form#printer_radio").prepend(div);
+      var tr = "<tr class='header' aria-label='" + branch + "'><td></td></tr>";
+      $('table[aria-label="' + branch + '"]').append(tr);
+      $("td.selected").each(function() {
+        var id = $(this).html();
+        var td = "<td>" + id + "</td>";
+        $('tr[aria-label="' + branch + '"]').append(td);
+      });
+      var tags = j[branch];
+
+      $(tags).each(function() {
+        var tr =
+          "<tr id='" + this.tag_id + "'><td>" + this.tagname + "</td></tr>";
+
+        $('table[aria-label="' + branch + '"]').append(tr);
+      });
+    });
+
+    $(branches).each(function(k, branch) {
+      var tags = j[branch];
+
+      $(tags).each(function() {
+        var tagname = this.tagname;
+        var tid = this.tag_id;
+        var items = this.items;
+
+        $("td.selected").each(function() {
+          var id = $(this).html();
+          if ($.inArray(id, items) >= 0) {
+            var td =
+              "<td><input type='checkbox' checked name='tag[" +
+              branch +
+              "]' value='[" +
+              id +
+              "][" +
+              tid +
+              "]'></td>";
+          } else {
+            var td =
+              "<td><input type='checkbox' name='tag[" +
+              branch +
+              "]' value='[" +
+              id +
+              "][" +
+              tid +
+              "]'></td>";
+          }
+
+          $("tr#" + tid).append(td);
+        });
+      });
+    });
+
+    $("form#printer_radio table input[type='checkbox']").click(function() {
+      var ck = $(this);
+      var val = $(this).val();
+      if (ck[0].checked) {
+        $.ajax({
+          url: "/" + brand + "/toggle_printer",
+          dataType: "json",
+          data: { item_tag: val }
+        }).done(function(j) {
+          $.notify(
+            {
+              icon: "notifications",
+              message: j.item_name + " " + j.action + " " + j.printer_name
+            },
+            {
+              type: j.alert,
+              timer: 100,
+              placement: {
+                from: "bottom",
+                align: "right"
+              }
+            }
+          );
+        });
+      } else {
+        $.ajax({
+          url: "/" + brand + "/toggle_printer",
+          dataType: "json",
+          data: { item_tag: val }
+        }).done(function(j) {
+          $.notify(
+            {
+              icon: "notifications",
+              message: j.item_name + " " + j.action + " " + j.printer_name
+            },
+            {
+              type: j.alert,
+              timer: 100,
+              placement: {
+                from: "bottom",
+                align: "right"
+              }
+            }
+          );
+        });
+      }
+    });
+  });
+
+  $('button[data-original-title="Edit Menu"]').click(function() {
+    $("div[aria-label='item_detail']").toggleClass("hidding");
+    $("ol.not_selected_catalog").html("");
+    $("ol.selected_catalog").html("");
+
+    var subcatid = $(this).attr("subcat_id");
+    $("span.selected_id").html(subcatid);
+    var brand = location.pathname.split("/")[1];
+    $.ajax({
+      url: "/" + brand + "/list_menu_catalog",
+      dataType: "json",
+      data: { subcatid: subcatid }
+    }).done(function(j) {
+      var selected = j.selected;
+      $(selected).each(function() {
+        var li =
+          "<li id='" +
+          this.id +
+          "'>" +
+          this.name +
+          "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
+        $("ol.selected_catalog").append(li);
+      });
+      var not_selected = j.not_selected;
+      $(not_selected).each(function() {
+        var li =
+          "<li id='" +
+          this.id +
+          "'>" +
+          this.name +
+          "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
+        $("ol.not_selected_catalog").append(li);
+      });
+    });
+  });
+
+  $("ol.not_selected_catalog").on("click", "li", function() {
+    var li = $(this);
+    $(li)
+      .find(".fa")
+      .attr("class", "fa fa-minus-circle");
+    var subcat_id = $("span.selected_id").html();
+    var tag_id = $(this).attr("id");
+    var brand = location.pathname.split("/")[1];
+    $.ajax({
+      url: "/" + brand + "/insert_into_catalog",
+      dataType: "json",
+      data: { subcat_id: subcat_id, tag_id: tag_id }
+    }).done(function(j) {
+      $(j).each(function() {});
+    });
+    $("ol.selected_catalog").append(li);
+  });
+
+  $("ol.selected_catalog").on("click", "li", function() {
+    var li = $(this);
+    $(li)
+      .find(".fa")
+      .attr("class", "fa fa-plus-circle");
+    var subcat_id = $("span.selected_id").html();
+    var tag_id = $(this).attr("id");
+    var brand = location.pathname.split("/")[1];
+    $.ajax({
+      url: "/" + brand + "/remove_from_catalog",
+      dataType: "json",
+      data: { subcat_id: subcat_id, tag_id: tag_id }
+    }).done(function(j) {
+      $(j).each(function() {});
+    });
+    $("ol.not_selected_catalog").append(li);
+  });
+});
 
 
 </script>

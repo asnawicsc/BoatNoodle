@@ -1,9 +1,4 @@
-<style type="text/css">
-	.hidding {
-		display: none;
-	}
-</style>
-<div class="row" aria-label="index_content">
+<div class="row" aria-label="index_content" >
 	<div class="col-sm-12" >
 		<div class="card">
 			<div class="card-header"></div>
@@ -15,7 +10,21 @@
 			</div>
 		</div>
 	</div>
-<div class="row hidding" aria-label="index_setting">
+	<div class="row" aria-label="branch_list" style="display: none;">
+	<div class="col-sm-12" >
+		<div class="card">
+			<div class="card-header"></div>
+			<div class="card-body">
+			  <div class="branch-list">
+					<ol class="branches">
+						
+					</ol>
+			  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+<div class="row" aria-label="index_setting" style="display: none;">
 	<div class="col-sm-12" >
 		<div class="card">
 			<div class="card-header">Settings</div>
@@ -38,49 +47,82 @@
 	</div>
 			
 </div>
-		
-<div class="btn-group" style="position: fixed; bottom: 0px; ">
-  <button type="button" aria-label="top_sales" class="btn btn-sm btn-info">Top Sales</button>
-  <button type="button" class="btn btn-sm  btn-info">Branches</button>
-  <button type="button" aria-label="report_settings" class="btn btn-sm  btn-info">Settings</button>
+
+			
+<div class="btn-group" style="position: fixed; bottom: 20px; width: 100%;">
+  <button style="width: 33.33%;" type="button" aria-label="top_sales" class="btn btn-info">Top Sales</button>
+  <button style="width: 33.33%;" type="button" aria-label="branch_list" class="btn btn-info">Branches</button>
+  <button style="width: 33.33%;" type="button" aria-label="report_settings" class="btn btn-info">Settings</button>
 </div>
+		
 
 <script type="text/javascript">
-	$(document).ready(function(){
+$(document).ready(function() {
+ 
+    if ($(".single-item").children().length > 0) {
+      $(".single-item").slick("unslick");
+    }
+    $(".single-item").html("");
+		$("ol.branches").html("");
+    var date = localStorage.getItem("settings_date");
+    $.ajax({
+      url: "/top_sales",
+      dataType: "json",
+      data: { date: date }
+    }).done(function(j) {
+    	var header = "<h3>Top Sales</h3><small>from "+j.start_date+" to "+j.end_date+"</small>"
+    	$("div[aria-label='index_content']").find(".card-header").html(header)
+    	var outlet_sales = j.outlet_sales
+	  
+
+      $(outlet_sales).each(function(k, v) {
+        var name = this.branchname;
+      	var li = "<li  ><div class='btn btn-sm btn-rose branch' id='"+k+"' style='width: 80%;'>"+name+"</div></li>"
+      	$("ol.branches").append(li)
+        var html =
+          "<div>" +
+          name +
+          "<table class='table'><tr><td>Pax</td><td>" +
+          this.pax +
+          "</td></tr><tr><td>Grandtotal</td><td> RM " +
+          this.grand_total +
+          "</td></tr></table></div>";
+        $(".single-item").append(html);
+      });
+      $(".single-item").slick({ arrows: false });
+      $("div.branch").click(function(){
+      	var id = $(this).attr("id")
+       $(".single-item").slick("slickGoTo", id)
+      })
+
+    });
 
 
-
-		$("button[aria-label='top_sales']").click(function(){
-if ($(".single-item").children().length > 0) {
-	$(".single-item").slick("unslick")
-}
-$(".single-item").html("")
-
-				var date = localStorage.getItem("settings_date")
-            $.ajax({
-              url: "/top_sales",
-              dataType: "json",
-              data: { date: date }
-            }).done(function(j) {
-              
-$(j).each(function(){
-	
-var name = this.branchname
-var html = "<div>"+name+"<table class='table'><tr><td>Pax</td><td>"+this.pax+"</td></tr><tr><td>Grandtotal</td><td> RM "+this.grand_total+"</td></tr></table></div>"
-$(".single-item").append(html)
+$("button[aria-label='branch_list']").click(function(){
+	$("div[aria-label='branch_list']").show()
+	$("div[aria-label='index_content']").hide()
+	$("div[aria-label='index_setting']").hide()
 })
-	$('.single-item').slick({arrows: false});
-            })
-		});
 
-		if (localStorage.getItem("settings_date") == null) {
-			localStorage.setItem("settings_date", "last_month")
-		}
-		$("select[name='settings[date]']").on('changed.bs.select', function (e) {
-				var val = $("select[name='settings[date]']").val()
-				localStorage.setItem("settings_date", val)
-		});
+$("button[aria-label='top_sales']").click(function(){
+	$("div[aria-label='branch_list']").hide()
+	$("div[aria-label='index_content']").show()
+	$("div[aria-label='index_setting']").hide()
+})
 
-	
-	});
+$("button[aria-label='report_settings']").click(function(){
+	$("div[aria-label='branch_list']").hide()
+	$("div[aria-label='index_content']").hide()
+	$("div[aria-label='index_setting']").show()
+})
+
+  if (localStorage.getItem("settings_date") == null) {
+    localStorage.setItem("settings_date", "last_month");
+  }
+  $("select[name='settings[date]']").on("changed.bs.select", function(e) {
+    var val = $("select[name='settings[date]']").val();
+    localStorage.setItem("settings_date", val);
+  });
+});
+
 </script>
