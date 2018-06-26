@@ -40,7 +40,6 @@ defmodule BoatNoodle.UltiMigrator do
           "qty" => "27",
           "remaks" => "1111",
           "remark" => "",
-          "sales_details" => "987654321",
           "unit_price" => "111",
           "updated_at" => "2016-12-02 17:45:38",
           "voidreason" => "",
@@ -69,14 +68,13 @@ defmodule BoatNoodle.UltiMigrator do
         "payment_type_id2" => "1111",
         "rounding" => "3",
         "sub_total" => "1111",
-        "salespay_id" => "7146",
         "service_charge" => "1",
         "taxcode" => "",
         "updated_at" => "2016-12-02 17:45:38",
         "voucher_code" => "11"
       },
       "sales" => %{
-        "branchid" => "3",
+        "branchid" => "13",
         "brand_id" => "1",
         "created_at" => "2016-12-02 17:45:38",
         "invoiceno" => "123456789",
@@ -84,7 +82,6 @@ defmodule BoatNoodle.UltiMigrator do
         "pax" => "3",
         "remark" => "",
         "salesdatetime" => "2016-12-02 17:48:10",
-        "salesid" => "666666",
         "salesdate" => "2016-12-02",
         "staffid" => "27",
         "tbl_no" => "1",
@@ -97,7 +94,7 @@ defmodule BoatNoodle.UltiMigrator do
 
     json_map = Poison.encode!(sales_map)
 
-    # uri = "http://110.4.42.45/boatnoodle/api/sales"
+    # uri = "http://110.4.42.45/boatnoodle/api/sales?fields=sales_id&branch_id=13"
     uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=13"
 
     HTTPoison.get!(
@@ -105,6 +102,8 @@ defmodule BoatNoodle.UltiMigrator do
       [{"Content-Type", "application/json"}],
       hackney: [basic_auth: {"admin@test.com", "api_key"}]
     )
+
+    uri = "http://110.4.42.45/boatnoodle/api/sales"
 
     HTTPoison.post!(
       uri,

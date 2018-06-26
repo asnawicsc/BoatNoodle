@@ -179,7 +179,7 @@ defmodule BoatNoodleWeb.PageController do
               b in Branch,
               where: b.branchid == ^sales_params.branchid,
               select: %{
-                brachcode: b.branchcode
+                branchcode: b.branchcode
               }
             )
           )
@@ -216,7 +216,7 @@ defmodule BoatNoodleWeb.PageController do
                   case BN.create_sales_payment(sales_payment_params) do
                     {:ok, sales_payment} ->
                       conn
-                      send_resp(conn, 200, "Sales  create successfully.")
+                      send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
 
                     {:error, %Ecto.Changeset{} = changeset} ->
                       send_resp(conn, 504, "Sales payment failed to create.")
