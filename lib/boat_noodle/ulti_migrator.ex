@@ -97,14 +97,14 @@ defmodule BoatNoodle.UltiMigrator do
 
     json_map = Poison.encode!(sales_map)
 
-    # uri = "localhost:4000/boatnoodle/api/sales"
-    uri = "http://110.4.42.45/boatnoodle/api/sales"
+    # uri = "http://110.4.42.45/boatnoodle/api/sales"
+    uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=13"
 
-    # HTTPoison.get!(
-    #   uri,
-    #   [{"Content-Type", "application/json"}],
-    #   hackney: [basic_auth: {"admin@test.com", "api_key"}]
-    # )
+    HTTPoison.get!(
+      uri,
+      [{"Content-Type", "application/json"}],
+      hackney: [basic_auth: {"admin@test.com", "api_key"}]
+    )
 
     HTTPoison.post!(
       uri,

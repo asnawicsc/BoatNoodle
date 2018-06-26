@@ -28,9 +28,52 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def webhook_get(conn, params) do
-    IO.inspect(params)
-    # reply the sales id for data insert and temporary key 
-    send_resp(conn, 200, "hello.")
+    auth = conn.req_headers |> Enum.filter(fn x -> elem(x, 0) == "authorization" end)
+
+    cond do
+      auth == [] ->
+        send_resp(conn, 400, "please include username password.")
+
+      params["branch_id"] == nil ->
+        send_resp(conn, 400, "please include branch id.")
+
+      params["fields"] == nil ->
+        send_resp(conn, 400, "please include sales id in field.")
+
+      params["branch_id"] != nil and params["branch_id"] != nil and auth != [] ->
+        branch_id = params["branch_id"]
+        brand = params["brand"]
+        fields = params["sales_id"]
+        bb = Repo.get_by(Brand, domain_name: brand)
+        branch = Repo.get_by(Branch, branchid: branch_id, brand_id: bb.id)
+
+        if branch != nil do
+          invoiceno =
+            Repo.all(
+              from(
+                s in Sales,
+                where: s.branchid == ^branch_id and s.brand_id == ^bb.id,
+                select: %{
+                  invoiceno: s.invoiceno
+                },
+                order_by: [s.invoiceno]
+              )
+            )
+            |> Enum.map(fn x -> x.invoiceno end)
+            |> Enum.map(fn x -> String.to_integer(x) end)
+            |> Enum.max()
+
+          id =
+            (invoiceno + 1)
+            |> Integer.to_string()
+
+          salesid = branch.branchcode <> "" <> id
+          json_map = %{salesid: salesid} |> Poison.encode!()
+          send_resp(conn, 200, json_map)
+        else
+          send_resp(conn, 400, "branch doesnt exist.")
+        end
+    end
   end
 
   def webhook_post(conn, params) do
@@ -146,7 +189,7 @@ defmodule BoatNoodleWeb.PageController do
           (invoiceno + 1)
           |> Integer.to_string()
 
-        salesid = brach_name.brachcode <> "" <> id
+        salesid = brach_name.branchcode <> "" <> id
 
         sales_params = Map.put(sales_params, :salesid, salesid)
         sales_params = Map.put(sales_params, :invoiceno, id)
