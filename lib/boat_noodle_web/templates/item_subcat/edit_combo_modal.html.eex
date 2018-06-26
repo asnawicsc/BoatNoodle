@@ -1,0 +1,49 @@
+
+
+<form action="" aria-label = "edit_combo_price_form">
+<h4>Combo</h4>
+<div class="table-responsive">
+  <table class="table" border="1">
+     <thead class=" text-primary">
+    <th>Name</th>
+    <th>Total Price</th>
+    </thead>
+    <tbody>
+    <tr><input type="hidden" class="form-control" name="id" value="<%= @subcatid %>">
+      <td><input type="text" class="form-control" name="name" value="<%= @name %>"></td>
+      <td><input type="number" class="form-control" name="price" value="<%= @price %>"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+  <%=if @combo != [] do %>
+  <hr>
+<h4>Combo Item</h4>
+
+<div class="table-responsive">
+
+
+      
+  <table class="table" border="1">
+     <thead class=" text-primary">
+
+    <th>Name</th>
+    <th>Cost Price</th>
+    <th>Top Up</th>
+    </thead>
+
+
+     <%= for item <- @combo do %>
+     <tbody>
+    <tr>  
+      <td><%= item.combo_item_name %></td>
+      <td><input type="number" step="0.01" class="form-control" name="<%= item.combo_item_id%>[cost_price]" value="<%= item.unit_price %>"></td>
+      <td><input type="number" step="0.01" class="form-control" name="<%= item.combo_item_id%>[top_up]" value="<%= item.top_up %>"></td>
+      </tr>
+    </tbody>
+       <%end%>
+  </table>
+     <% end %>
+    <button type="submit" class="btn btn-primary" id="submit_edit_form_combo" >Update</button>
+</form>
+
