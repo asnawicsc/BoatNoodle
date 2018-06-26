@@ -92,7 +92,6 @@ defmodule BoatNoodleWeb.MenuItemController do
           where:
             s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO" and
               c.brand_id == ^BN.get_brand_id(conn) and s.brand_id == ^BN.get_brand_id(conn),
-
           group_by: [s.itemcode],
           select: %{code: s.itemcode, name: s.itemname}
         )
@@ -120,7 +119,7 @@ defmodule BoatNoodleWeb.MenuItemController do
 
   def create(conn, %{"menu_item" => item_subcat_params}) do
     cat_id = item_subcat_params["itemcatid"]
-    cat = Repo.get(BoatNoodle.BN.ItemCat, cat_id)
+    cat = Repo.get_by(BoatNoodle.BN.ItemCat, itemcatid: cat_id, brand_id: BN.get_brand_id(conn))
     itemcode = item_subcat_params["itemcode"]
     first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
 
@@ -139,44 +138,57 @@ defmodule BoatNoodleWeb.MenuItemController do
 
         price_codes = item_subcat_params["price_code"] |> Map.keys()
 
-        for price_code <- price_codes do
-          price = item_subcat_params["price_code"][price_code] |> Decimal.new()
+        listings =
+          for price_code <- price_codes do
+            price = item_subcat_params["price_code"][price_code] |> Decimal.new()
 
-          item_param = Map.put(item_param, "itemprice", price)
-          item_param = Map.put(item_param, "price_code", price_code)
-          product_code = cat.itemcatcode <> part_code <> price_code
+            item_param = Map.put(item_param, "itemprice", price)
+            item_param = Map.put(item_param, "price_code", price_code)
+            product_code = cat.itemcatcode <> part_code <> price_code
 
-          item_param = Map.put(item_param, "product_code", product_code)
+            item_param = Map.put(item_param, "product_code", product_code)
 
-          a =
-            Repo.all(
-              from(
-                s in ItemSubcat,
-                left_join: c in ItemCat,
-                on: c.itemcatid == s.itemcatid,
-                where: s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO",
-                select: s.subcatid,
-                order_by: [asc: s.subcatid]
+            a =
+              Repo.all(
+                from(
+                  s in ItemSubcat,
+                  left_join: c in ItemCat,
+                  on: c.itemcatid == s.itemcatid,
+                  where:
+                    s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO" and
+                      s.brand_id == ^BN.get_brand_id(conn),
+                  select: s.subcatid,
+                  order_by: [asc: s.subcatid]
+                )
               )
-            )
-            |> List.last()
+              |> List.last()
 
-          item_param = Map.put(item_param, "subcatid", a + 1)
-          cg2 = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param)
+            item_param = Map.put(item_param, "subcatid", a + 1)
+            cg2 = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param)
 
-          case Repo.insert(cg2) do
-            {:ok, item_cat} ->
-              true
+            case Repo.insert(cg2) do
+              {:ok, item_cat} ->
+                item_cat
 
-            _ ->
-              IO.puts("failed item create")
-              false
+              {:error, cg2} ->
+                IEx.pry()
+                false
+            end
           end
-        end
 
-        conn
-        |> put_flash(:info, "Menu item created successfully.")
-        |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
+        if Enum.any?(listings, fn x -> x == false end) do
+          conn
+          |> put_flash(:error, "Errors in creating items")
+          |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
+        else
+          item_cat = listings |> hd()
+
+          conn
+          |> put_flash(:info, "Menu item created successfully.")
+          |> redirect(
+            to: item_subcat_path(conn, :item_show, BN.get_domain(conn), item_cat.subcatid)
+          )
+        end
       else
         conn
         |> put_flash(:info, "code behind are not numbers")

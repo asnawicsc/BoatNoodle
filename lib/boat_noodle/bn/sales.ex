@@ -45,4 +45,5 @@ defmodule BoatNoodle.BN.Sales do
     ])
     |> unique_constraint(:salesid, name: "PRIMARY")
   end
+
 end

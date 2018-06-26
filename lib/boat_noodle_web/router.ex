@@ -22,12 +22,8 @@ defmodule BoatNoodleWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/", BoatNoodleWeb do
-    # Use the default browser stack
-    pipe_through(:management)
-    get("/", PageController, :index)
-    get("/get_brands", PageController, :get_brands)
-    get("/management_login", UserController, :login_management)
+  pipeline :report_layout do
+    plug(:put_layout, {BoatNoodleWeb.LayoutView, :report_layout})
   end
 
   # Other scopes may use custom stacks.
@@ -35,6 +31,16 @@ defmodule BoatNoodleWeb.Router do
     pipe_through(:api)
     get("/sales", PageController, :webhook_get)
     post("/sales", PageController, :webhook_post)
+  end
+
+  scope "/", BoatNoodleWeb do
+    # Use the default browser stack
+    pipe_through(:report_layout)
+
+    get("/get_brands", PageController, :get_brands)
+    get("/reports/login", PageController, :report_login)
+    get("/reports", PageController, :report_index)
+    get("/top_sales", SalesController, :top_sales)
   end
 
   scope "/:brand", BoatNoodleWeb do
@@ -76,6 +82,7 @@ defmodule BoatNoodleWeb.Router do
 
     resources("/tag", TagController)
     get("/check_printer", TagController, :check_printer)
+    get("/toggle_printer", TagController, :toggle_printer)
     resources("/tag_catalog", TagCatalogController)
     resources("/tag_items", TagItemsController)
     resources("/staff", StaffController)
@@ -144,7 +151,13 @@ defmodule BoatNoodleWeb.Router do
     post("/combos/new", ItemSubcatController, :combo_create)
     post("/combos/combo_create_price", ItemSubcatController, :combo_create_price)
     post("/combos/combo_create_price_update", ItemSubcatController, :combo_create_price_update)
-    post("/combos/combo_create_price_unselect", ItemSubcatController, :combo_create_price_unselect)
+
+    post(
+      "/combos/combo_create_price_unselect",
+      ItemSubcatController,
+      :combo_create_price_unselect
+    )
+
     post("/combos/branch", ItemSubcatController, :combo_branch)
     post("/combos/unselect", ItemSubcatController, :combo_unselect)
     post("/combos/finish", ItemSubcatController, :combo_finish)

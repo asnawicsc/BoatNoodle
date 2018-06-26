@@ -5,6 +5,61 @@ defmodule BoatNoodleWeb.TagController do
   alias BoatNoodle.BN.Tag
   require IEx
 
+  def toggle_printer(conn, params) do
+    tuple =
+      params["item_tag"]
+      |> String.replace("[", "")
+      |> String.replace("]", ",")
+      |> String.split(",")
+      |> Enum.reject(fn x -> x == "" end)
+      |> List.to_tuple()
+
+    subcat_id = elem(tuple, 0)
+    subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
+    tag_id = elem(tuple, 1)
+
+    tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
+
+    if tag.subcat_ids != nil do
+      items = tag.subcat_ids
+    else
+      items = ""
+    end
+
+    subcat_ids = String.split(items, ",")
+
+    if Enum.any?(subcat_ids, fn x -> x == subcat_id end) do
+      new_subcatids =
+        List.delete(subcat_ids, subcat_id) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
+
+      action = "removed from"
+      alert = "danger"
+    else
+      new_subcatids =
+        List.insert_at(subcat_ids, 0, subcat_id)
+        |> Enum.sort()
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
+
+      action = "added to"
+      alert = "success"
+    end
+
+    Repo.update(Tag.changeset(tag, %{subcat_ids: new_subcatids}))
+
+    map =
+      %{
+        printer_name: tag.tagname,
+        item_name: subcat.itemname,
+        action: action,
+        alert: alert
+      }
+      |> Poison.encode!()
+
+    send_resp(conn, 200, map)
+  end
+
   def list_printer(conn, %{"subcat_id" => subcat_id}) do
     # will have subcat id 
     # need to list all available printers
@@ -28,24 +83,7 @@ defmodule BoatNoodleWeb.TagController do
       |> Enum.map(fn x -> Map.put(x, :items, String.split(x.items, ",")) end)
       |> Enum.group_by(fn x -> x.branchname end)
 
-    # tags =
-    #   for tag <- tags_original do
-    #     if Enum.any?(tag.items, fn x -> x == subcat_id end) do
-    #       tag
-    #     else
-    #       nil
-    #     end
-    #   end
-    #   |> Enum.reject(fn x -> x == nil end)
-    #   |> Enum.map(fn x -> %{tag_id: x.tag_id, branchname: x.branchname} end)
-
-    # all_tags =
-    #   tags_original |> Enum.map(fn x -> %{tag_id: x.tag_id, branchname: x.branchname} end)
-
-    # not_selected = all_tags -- tags
-
     json = tags_original |> Poison.encode!()
-    # json = %{selected: tags, not_selected: not_selected} |> Poison.encode!()
 
     send_resp(conn, 200, json)
   end

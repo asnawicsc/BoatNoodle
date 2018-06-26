@@ -1,9 +1,15 @@
-alias BoatNoodle.BN
-
 defmodule BoatNoodleWeb.PageController do
   use BoatNoodleWeb, :controller
   import Ecto.Query
   require IEx
+
+  def report_login(conn, params) do
+    render(conn, "index.html")
+  end
+
+  def report_index(conn, params) do
+    render(conn, "index.html")
+  end
 
   def get_brands(conn, _params) do
     brands = Repo.all(Brand) |> Enum.map(fn x -> %{name: x.domain_name} end) |> Poison.encode!()
@@ -23,6 +29,7 @@ defmodule BoatNoodleWeb.PageController do
 
   def webhook_get(conn, params) do
     IO.inspect(params)
+    # reply the sales id for data insert and temporary key 
     send_resp(conn, 200, "hello.")
   end
 
@@ -31,7 +38,6 @@ defmodule BoatNoodleWeb.PageController do
     a = params["details"] |> hd()
 
     sales_required_keys = [
-      "salesid",
       "invoiceno",
       "salesdate",
       "salesdatetime",
@@ -50,7 +56,6 @@ defmodule BoatNoodleWeb.PageController do
     ]
 
     salesdetail_required_keys = [
-      "sales_details",
       "orderid",
       "itemid",
       "itemname",
@@ -73,7 +78,6 @@ defmodule BoatNoodleWeb.PageController do
     ]
 
     salespayment_required_keys = [
-      "salespay_id",
       "sub_total",
       "after_disc",
       "service_charge",
@@ -110,35 +114,81 @@ defmodule BoatNoodleWeb.PageController do
       sales_payment_params =
         for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
 
-      case BN.create_sales(sales_params) do
-        {:ok, sales} ->
-          conn
+      if Map.get(sales_params, :salesid) == nil do
+        invoiceno =
+          Repo.all(
+            from(
+              s in Sales,
+              where: s.branchid == ^sales_params.branchid,
+              select: %{
+                invoiceno: s.invoiceno
+              },
+              order_by: [s.invoiceno]
+            )
+          )
+          |> Enum.map(fn x -> x.invoiceno end)
+          |> Enum.map(fn x -> String.to_integer(x) end)
+          |> Enum.max()
 
-          sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+        brach_name =
+          Repo.all(
+            from(
+              b in Branch,
+              where: b.branchid == ^sales_params.branchid,
+              select: %{
+                brachcode: b.branchcode
+              }
+            )
+          )
+          |> hd()
 
-          case BN.create_sales_master(sales_master_params) do
-            {:ok, sales_master} ->
+        id =
+          (invoiceno + 1)
+          |> Integer.to_string()
+
+        salesid = brach_name.brachcode <> "" <> id
+
+        sales_params = Map.put(sales_params, :salesid, salesid)
+        sales_params = Map.put(sales_params, :invoiceno, id)
+      end
+
+      sales_exist = Repo.get_by(Sales, salesid: sales_params.salesid)
+
+      cond do
+        sales_exist != nil ->
+          send_resp(conn, 501, "Sales id exist.")
+
+        sales_exist == nil ->
+          case BN.create_sales(sales_params) do
+            {:ok, sales} ->
               conn
-              sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
 
-              case BN.create_sales_payment(sales_payment_params) do
-                {:ok, sales_payment} ->
+              sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+
+              case BN.create_sales_master(sales_master_params) do
+                {:ok, sales_master} ->
                   conn
-                  send_resp(conn, 200, "Sales  create successfully.")
+                  sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
+
+                  case BN.create_sales_payment(sales_payment_params) do
+                    {:ok, sales_payment} ->
+                      conn
+                      send_resp(conn, 200, "Sales  create successfully.")
+
+                    {:error, %Ecto.Changeset{} = changeset} ->
+                      send_resp(conn, 504, "Sales payment failed to create.")
+                  end
 
                 {:error, %Ecto.Changeset{} = changeset} ->
-                  send_resp(conn, 500, "Sales payment failed to create.")
+                  send_resp(conn, 505, "Sales master failed to create.")
               end
 
             {:error, %Ecto.Changeset{} = changeset} ->
-              send_resp(conn, 500, "Sales master failed to create.")
+              send_resp(conn, 506, "Sales failed to create. Please use the latest sales ID")
           end
-
-        {:error, %Ecto.Changeset{} = changeset} ->
-          send_resp(conn, 500, "Sales failed to create. Please use the latest sales ID")
       end
     else
-      send_resp(conn, 500, "API failed to transaction. Check your data and try again.")
+      send_resp(conn, 507, "API failed to transaction. Check your data and try again.")
     end
   end
 

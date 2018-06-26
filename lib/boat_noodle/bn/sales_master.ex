@@ -4,7 +4,7 @@ defmodule BoatNoodle.BN.SalesMaster do
 
   @primary_key false
   schema "salesdetail" do
-    field(:brand_id, :string)
+    field(:brand_id, :integer)
     field(:itemcode, :string)
     field(:itemname, :string)
     field(:void_by, :string)
