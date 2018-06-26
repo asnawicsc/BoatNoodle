@@ -1,3 +1,5 @@
+
+
 <div class="row" aria-label="index_content" >
 	<div class="col-sm-12" >
 		<div class="card">
@@ -24,7 +26,7 @@
 			</div>
 		</div>
 	</div>
-<div class="row" aria-label="index_setting" style="display: none;">
+<div class="row" aria-label="index_setting" style="display: none; height: 500px;">
 	<div class="col-sm-12" >
 		<div class="card">
 			<div class="card-header">Settings</div>
@@ -33,9 +35,9 @@
 					<div class="col-sm-12">
 					<label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Date</label>
 						<select name="settings[date]" class="selectpicker" data-style="btn select-with-transition" title="Choose Date Format" data-size="10">
-						 <option value="daily">Daily</option>
-						<option value="weekly">Weekly</option>
-						<option value="last_month">Last Month</option>
+						  <option value="daily">Daily</option>
+							<option value="weekly">Weekly</option>
+							<option value="last_month">Last Month</option>
 
 						</select>
 
@@ -57,8 +59,12 @@
 		
 
 <script type="text/javascript">
+
+
+
 $(document).ready(function() {
- 
+
+
     if ($(".single-item").children().length > 0) {
       $(".single-item").slick("unslick");
     }
@@ -70,11 +76,10 @@ $(document).ready(function() {
       dataType: "json",
       data: { date: date }
     }).done(function(j) {
-    	var header = "<h3>Top Sales</h3><small>from "+j.start_date+" to "+j.end_date+"</small>"
+    	var header = "<h3>"+j.dat+" Top Sales</h3><small>from "+j.start_date+" to "+j.end_date+"</small>"
     	$("div[aria-label='index_content']").find(".card-header").html(header)
     	var outlet_sales = j.outlet_sales
 	  
-
       $(outlet_sales).each(function(k, v) {
         var name = this.branchname;
       	var li = "<li  ><div class='btn btn-sm btn-rose branch' id='"+k+"' style='width: 80%;'>"+name+"</div></li>"
@@ -86,17 +91,33 @@ $(document).ready(function() {
           this.pax +
           "</td></tr><tr><td>Grandtotal</td><td> RM " +
           this.grand_total +
-          "</td></tr></table></div>";
+          "</td></tr></table><div id='b_"+this.branch_id+"' class='ct-chart'></div></div>";
         $(".single-item").append(html);
+
+            var dataSimpleBarChart = {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                series: [
+                    [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
+                ]
+            };
+
+      
+
+   
+
+            var simpleBarChart = Chartist.Bar('#b_'+this.branch_id, dataSimpleBarChart);
+
       });
       $(".single-item").slick({ arrows: false });
       $("div.branch").click(function(){
       	var id = $(this).attr("id")
        $(".single-item").slick("slickGoTo", id)
+				$("div[aria-label='branch_list']").hide()
+				$("div[aria-label='index_content']").show()
+				$("div[aria-label='index_setting']").hide()
       })
 
     });
-
 
 $("button[aria-label='branch_list']").click(function(){
 	$("div[aria-label='branch_list']").show()
@@ -122,7 +143,69 @@ $("button[aria-label='report_settings']").click(function(){
   $("select[name='settings[date]']").on("changed.bs.select", function(e) {
     var val = $("select[name='settings[date]']").val();
     localStorage.setItem("settings_date", val);
+
+    if ($(".single-item").children().length > 0) {
+      $(".single-item").slick("unslick");
+    }
+    $(".single-item").html("");
+		$("ol.branches").html("");
+    var date = localStorage.getItem("settings_date");
+    $.ajax({
+      url: "/top_sales",
+      dataType: "json",
+      data: { date: date }
+    }).done(function(j) {
+    	var header = "<h3>"+j.dat+" Top Sales</h3><small>from "+j.start_date+" to "+j.end_date+"</small>"
+    	$("div[aria-label='index_content']").find(".card-header").html(header)
+    	var outlet_sales = j.outlet_sales
+	  
+      $(outlet_sales).each(function(k, v) {
+        var name = this.branchname;
+      	var li = "<li  ><div class='btn btn-sm btn-rose branch' id='"+k+"' style='width: 80%;'>"+name+"</div></li>"
+      	$("ol.branches").append(li)
+        var html =
+          "<div>" +
+          name +
+          "<table class='table'><tr><td>Pax</td><td>" +
+          this.pax +
+          "</td></tr><tr><td>Grandtotal</td><td> RM " +
+          this.grand_total +
+          "</td></tr></table><div id='b_"+this.branch_id+"' class='ct-chart'></div></div>";
+        $(".single-item").append(html);
+
+            var dataSimpleBarChart = {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                series: [
+                    [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
+                ]
+            };
+
+      
+
+   
+
+            var simpleBarChart = Chartist.Bar('#b_'+this.branch_id, dataSimpleBarChart);
+      });
+  $("div[aria-label='branch_list']").hide()
+  $("div[aria-label='index_content']").show()
+  $("div[aria-label='index_setting']").hide()
+      $(".single-item").slick({ arrows: false });
+     
+      $("div.branch").click(function(){
+      	var id = $(this).attr("id")
+       $(".single-item").slick("slickGoTo", id)
+				$("div[aria-label='branch_list']").hide()
+				$("div[aria-label='index_content']").show()
+				$("div[aria-label='index_setting']").hide()
+      })
+
+
+
+    });
+
   });
+
+
 });
 
 </script>

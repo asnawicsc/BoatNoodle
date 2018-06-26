@@ -10,6 +10,17 @@ defmodule BoatNoodleWeb.SalesController do
       "last_month" ->
         start_date = Timex.beginning_of_month(Date.utc_today())
         end_date = Timex.end_of_month(Date.utc_today())
+        dat = "Monthly"
+
+      "weekly" ->
+        start_date = Timex.beginning_of_week(Date.utc_today()) |> Timex.shift(months: -3)
+        end_date = Timex.end_of_week(Date.utc_today()) |> Timex.shift(months: -3)
+        dat = "Weekly"
+
+      "daily" ->
+        start_date = Date.utc_today() |> Timex.shift(months: -3)
+        end_date = Date.utc_today() |> Timex.shift(months: -3)
+        dat = "Daily"
     end
 
     outlet_sales =
@@ -23,6 +34,7 @@ defmodule BoatNoodleWeb.SalesController do
           where: s.salesdate >= ^start_date and s.salesdate <= ^end_date,
           group_by: s.branchid,
           select: %{
+            branch_id: s.branchid,
             branchname: b.branchname,
             sub_total: sum(sp.sub_total),
             service_charge: sum(sp.service_charge),
@@ -35,11 +47,10 @@ defmodule BoatNoodleWeb.SalesController do
         )
       )
       |> Enum.sort_by(fn x -> x.grand_total end)
-      |> Enum.sort_by(fn x -> x.grand_total end)
       |> Enum.reverse()
 
     json_map =
-      %{outlet_sales: outlet_sales, start_date: start_date, end_date: end_date}
+      %{outlet_sales: outlet_sales, start_date: start_date, end_date: end_date, dat: dat}
       |> Poison.encode!()
 
     send_resp(conn, 200, json_map)
