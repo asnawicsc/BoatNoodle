@@ -143,10 +143,10 @@
 
                              <%= if  @discount_a.is_visable == 0  do   %>
                    
-                               <input class="form-check-input" value="0" type="checkbox" name="is_visable" > Active?
+                               <input class="form-check-input"  type="checkbox" name="is_visable" > Active?
                           <% else %>
                         
-                             <input class="form-check-input" value="1" type="checkbox" name="is_visable" checked="checked" > Active?
+                             <input class="form-check-input"  type="checkbox" name="is_visable" checked="checked" > Active?
 
                           <% end %> 
                            

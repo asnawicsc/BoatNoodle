@@ -20,7 +20,7 @@ defmodule BoatNoodleWeb.DiscountController do
             discountid: s.discountid,
             discount_name: s.discname,
             discount_description: s.descriptions,
-            activate: s.disc_qty
+            activate: s.is_visable
           }
         )
       )
@@ -333,10 +333,6 @@ defmodule BoatNoodleWeb.DiscountController do
     )
   end
 
-  def edit_discount_detail(conn, params) do
-    IEx.pry()
-  end
-
   def discount_item_details(conn, %{"id" => id}) do
     brand = BN.get_brand_id(conn)
 
@@ -409,8 +405,6 @@ defmodule BoatNoodleWeb.DiscountController do
         )
       )
       |> hd
-
-    IEx.pry()
 
     render(
       conn,
@@ -517,6 +511,12 @@ defmodule BoatNoodleWeb.DiscountController do
     target_cat = params["target_cat"] |> String.to_integer()
     voucher_amount = params["voucher_amount"]
 
+    if params["is_visable"] == "on" do
+      is_visable = 1
+    else
+      is_visable = 0
+    end
+
     discount_type = Repo.get_by(BoatNoodle.BN.DiscountType, disctypeid: disctype)
     disctype = discount_type.disctypename
 
@@ -533,7 +533,8 @@ defmodule BoatNoodleWeb.DiscountController do
            discountitemsid: discountitemsid,
            disctype: disctype,
            is_targetmenuitems: is_targetmenuitems,
-           target_cat: target_cat
+           target_cat: target_cat,
+           is_visable: is_visable
          }) do
       {:ok, discount_item} ->
         conn

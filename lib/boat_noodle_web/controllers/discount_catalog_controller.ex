@@ -8,15 +8,29 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
   def index(conn, _params) do
     discount_catalog = Repo.all(DiscountCatalog)
     discounts = Repo.all(Discount)
-     discounts_items = Repo.all(DiscountItem)
-    render(conn, "index.html",discounts_items: discounts_items,discounts: discounts, discount_catalog: discount_catalog)
+    discounts_items = Repo.all(DiscountItem)
+
+    render(
+      conn,
+      "index.html",
+      discounts_items: discounts_items,
+      discounts: discounts,
+      discount_catalog: discount_catalog
+    )
   end
 
   def discount_discounts_items(conn, _params) do
     discount_catalog = Repo.all(DiscountCatalog)
     discounts = Repo.all(Discount)
-     discounts_items = Repo.all(DiscountItem)
-    render(conn, "discount_discounts_items.html",discounts_items: discounts_items,discounts: discounts, discount_catalog: discount_catalog)
+    discounts_items = Repo.all(DiscountItem)
+
+    render(
+      conn,
+      "discount_discounts_items.html",
+      discounts_items: discounts_items,
+      discounts: discounts,
+      discount_catalog: discount_catalog
+    )
   end
 
   def new(conn, _params) do
@@ -42,7 +56,10 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
         "tag_id" => catalog_id
       }) do
     cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-    items = cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+
+    items =
+      cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+
     # write the menu catalog 
     # get the items from the menu catalog
     # split and join
@@ -61,49 +78,67 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
       }) do
-     cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-    items = cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+    cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
+
+    items =
+      cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+
     # write the menu catalog 
     # get the items from the menu catalog
     # split and join
 
-    unless Enum.any?(items, fn x -> x == subcat_id end) do
+    unless Enum.any?(items, fn x -> x == catalog_id end) do
       # insert...
-      items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
+      items = List.insert_at(items, 0, catalog_id) |> Enum.sort() |> Enum.join(",")
       DiscountCatalog.changeset(cata, %{categories: items}) |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
   end
 
-    def list_discount_catalog(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
- 
+  def list_discount_catalog(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
+    # get the discount catalog
+    # list all the discount category from this discount catalog
 
-    catalogs_ori =
-      Repo.all(from(m in DiscountCatalog, select: %{id: m.id, name: m.name, categories: m.categories}))
-      |> Enum.map(fn x -> Map.put(x, :categories, String.split(x.categories, ",")) end)
+    disc_cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
+    categories = disc_cata.categories |> String.split(",") |> Enum.sort()
 
-    catalogs =
-      for catalog <- catalogs_ori do
-        if Enum.any?(catalog.categories, fn x -> x == subcat_id end) do
-          catalog
-        else
-          nil
-        end
-      end
-      |> Enum.reject(fn x -> x == nil end)
-      |> Enum.map(fn x -> %{id: x.id, name: x.name} end)
+    all_cata = Repo.all(from(d in Discount, select: %{id: d.discountid, name: d.discname}))
 
-    all_cata = catalogs_ori |> Enum.map(fn x -> %{id: x.id, name: x.name} end)
-    not_selected = all_cata -- catalogs
+    disc_cat =
+      Repo.all(
+        from(
+          d in Discount,
+          where: d.discountid in ^categories,
+          select: %{id: d.discountid, name: d.discname}
+        )
+      )
 
-    json = %{selected: catalogs, not_selected: not_selected} |> Poison.encode!()
+    # catalogs_ori =
+    #   Repo.all(
+    #     from(m in DiscountCatalog, select: %{id: m.id, name: m.name, categories: m.categories})
+    #   )
+    #   |> Enum.map(fn x -> Map.put(x, :categories, String.split(x.categories, ",")) end)
+
+    # catalogs =
+    #   for catalog <- catalogs_ori do
+    #     if Enum.any?(catalog.categories, fn x -> x == subcat_id end) do
+    #       catalog
+    #     else
+    #       nil
+    #     end
+    #   end
+    #   |> Enum.reject(fn x -> x == nil end)
+    #   |> Enum.map(fn x -> %{id: x.id, name: x.name} end)
+
+    # all_cata = catalogs_ori |> Enum.map(fn x -> %{id: x.id, name: x.name} end)
+    not_selected = all_cata -- disc_cat
+
+    json = %{selected: disc_cat, not_selected: not_selected} |> Poison.encode!()
     send_resp(conn, 200, json)
   end
 
-  
-
-   def discount_remove_from_catalog2(conn, %{
+  def discount_remove_from_catalog2(conn, %{
         "brand" => brand,
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
@@ -128,7 +163,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
       }) do
-     cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
+    cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
     items = cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
     # write the menu catalog 
     # get the items from the menu catalog
@@ -143,11 +178,11 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     send_resp(conn, 200, "ok")
   end
 
-    def list_discount_catalog2(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
- 
-
+  def list_discount_catalog2(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
     catalogs_ori =
-      Repo.all(from(m in DiscountCatalog, select: %{id: m.id, name: m.name, discounts: m.discounts}))
+      Repo.all(
+        from(m in DiscountCatalog, select: %{id: m.id, name: m.name, discounts: m.discounts})
+      )
       |> Enum.map(fn x -> Map.put(x, :discounts, String.split(x.discounts, ",")) end)
 
     catalogs =
