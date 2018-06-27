@@ -11,12 +11,8 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       }) do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
     items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
-    # write the menu catalog 
-    # get the items from the menu catalog
-    # split and join
 
     if Enum.any?(items, fn x -> x == subcat_id end) do
-      # insert...
       items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
       MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
     end
@@ -31,17 +27,25 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       }) do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
     items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
-    # write the menu catalog 
-    # get the items from the menu catalog
-    # split and join
+    IEx.pry()
 
-    unless Enum.any?(items, fn x -> x == subcat_id end) do
-      # insert...
-      items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-      MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
+    if String.length(subcat_id) == 6 do
+      details =
+        Repo.all(from(c in ComboDetails, where: c.combo_id == ^subcat_id, select: c.id))
+        |> Enum.map(fn x -> Integer.to_string(x) end)
+    else
+      unless Enum.any?(items, fn x -> x == subcat_id end) do
+        items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
+        MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
+      end
+
+      send_resp(conn, 200, "ok")
     end
 
-    send_resp(conn, 200, "ok")
+    # figure out if this is a combo.. normally wth 6 digits..
+    # if its a combo, then check in the combo details if there's any combo id matches the current subcat id
+    # if yes, then the combo details id are to be inserted in the menu catalog's combo items column
+    # if no, then the combo is non selection to be inserted in the items column
   end
 
   def list_menu_catalog(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
