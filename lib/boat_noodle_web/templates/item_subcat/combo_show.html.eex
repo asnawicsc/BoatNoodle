@@ -1,348 +1,593 @@
-<h2>Show Combo</h2>
-
-<div class="row">
-<div class="col-lg-12">
-  <div class="card card-stats">
-    <div class="card-header card-header-warning card-header-icon">
-      <div class="card-icon">
-        <i class="material-icons">fastfood</i>
-      </div>
-      <p class="card-category"></p>
-      <h3 class="card-title"><%= @item_subcat.itemname %></h3>
-    </div>
-    <div class="card-body">
-      <table class="table">
-        <thead>
-          <tr align="left">
-
-            <th>Price Code</th>
-            <th>Cat id</th>
-  
-            <th>Code</th>
-            <th>Product Code</th>
-            <th>Part Code</th>
-      
-            <th>Price</th>
-            <th>Categorize?</th>
-
-            <th>Activate?</th>
-          
-         
-            <th>Deleted?</th>
-            <th>Enable Disc?</th>
-            <th>Include spend?</th>
-            <th>Is print?</th>
-
-            <th>ID</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% ci = @combo_items |> Enum.group_by(fn x -> x.combo_id end) %>
-          <%= for same_item <- @same_items do %>
-          <tr align="left">
-
-            <td><%= same_item.price_code %></td>
-            <td><%= same_item.itemcatid %></td>
-       
-            <td><%= same_item.itemcode %></td>
-             <td><%= same_item.product_code %></td>
-            <td><%= same_item.part_code %></td>
-    
-            <td><%= same_item.itemprice %></td>
-            <td><%= same_item.is_categorize %></td>
+<style type="text/css">
+    .hidding {
+        display: none;
+    }
+</style>
 
 
-            <td><%= same_item.is_activate %></td>
-   
-     
-            <td><%= same_item.is_delete %></td>
-            <td><%= same_item.enable_disc %></td>
-            <td><%= same_item.include_spend %></td>
-            <td><%= same_item.is_print %></td>
-            <td><%= same_item.subcatid %></td>
-            <td>
-                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
+<div aria-label="item_detail" class="row">
+    <div class="col-lg-12">
+        <div class="card card-stats">
+            <div class="card-header card-header-warning card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">fastfood</i>
+                </div>
+                <p class="card-category"></p>
+                <h3 class="card-title">
+                    <%= @item_subcat.itemname %>
+                </h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr align="left">
+
+                            <th>Price Code</th>
+                            <th>Cat id</th>
+
+                            <th>Code</th>
+                            <th>Product Code</th>
+                            <th>Part Code</th>
+
+                            <th>Price</th>
+                            <th>Categorize?</th>
+
+                            <th>Activate?</th>
+
+
+                            <th>Deleted?</th>
+                            <th>Enable Disc?</th>
+                            <th>Include spend?</th>
+                            <th>Is print?</th>
+
+                            <th>ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ci = @combo_items |> Enum.group_by(fn x -> x.combo_id end) %>
+                            <%= for same_item <- @same_items do %>
+                                <tr align="left">
+
+                                    <td>
+                                        <%= same_item.price_code %>
+                                    </td>
+                                    <td>
+                                        <%= same_item.itemcatid %>
+                                    </td>
+
+                                    <td>
+                                        <%= same_item.itemcode %>
+                                    </td>
+                                    <td>
+                                        <%= same_item.product_code %>
+                                    </td>
+                                    <td>
+                                        <%= same_item.part_code %>
+                                    </td>
+
+                                    <td>
+                                        <%= same_item.itemprice %>
+                                    </td>
+                                    <td>
+                                        <%= same_item.is_categorize %>
+                                    </td>
+
+
+                                    <td>
+                                        <%= same_item.is_activate %>
+                                    </td>
+
+
+                                    <td>
+                                        <%= same_item.is_delete %>
+                                    </td>
+                                    <td>
+                                        <%= same_item.enable_disc %>
+                                    </td>
+                                    <td>
+                                        <%= same_item.include_spend %>
+                                    </td>
+                                    <td>
+                                        <%= same_item.is_print %>
+                                    </td>
+                                    <td class="selected">
+                                        <%= same_item.subcatid %>
+                                    </td>
+                                    <td>
+                                        <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
 
                     <i class="material-icons">bookmarks</i> Menu
                   <div class="ripple-container"></div>
                 </button>
-                 <button type="button" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Printers">
 
-                    <i class="material-icons">cast</i> Printers
-                  <div class="ripple-container"></div>
+                                       <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>" data-toggle="modal" aria-label="price"  data-target="#model1"  data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>Edit                   <div class="ripple-container"></div>                 </button>
                 </button>
-                <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>" data-toggle="modal" aria-label="price"  data-target="#model1"  data-original-title="Edit Item">
-
-                    <i class="material-icons">autorenew</i>Edit
-                  <div class="ripple-container"></div>
-                </button>
-               
-                          </td>
-
-          </tr>
 
 
 
- <%= if @combo_items != [] do %>
-          <tr>
-            <td colspan="13">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Combo Qty</th>
-                    <th>Item Qty</th>
-                    <th>Unit Price</th>
-                    <th>Topup Price</th>
-                    <th>Code</th>
-                    <th>ItemSubcat ID</th>
-              
-                  </tr>
-                </thead>
-                <tbody>
-              <%= for combo_item <- ci[same_item.subcatid] |> Enum.sort_by(fn x -> x.combo_item_code end)  do %>
-              
-                  <tr>
-                    <td><%= combo_item.combo_item_name %></td>
-                    <td><%= combo_item.combo_qty %></td>
-                    <td><%= combo_item.combo_item_qty %></td>
-                    <td><%= combo_item.unit_price %></td>
-                     <td><%= combo_item.top_up %></td>
-                    <td><%= combo_item.combo_item_code %></td>
-                    <td>
-                      
-                      <% codes =  String.split(Integer.to_string(combo_item.combo_item_id), "") |> Enum.reject(fn x -> x == "" end) |> Enum.chunk_every(3)%>
-                      <%= for code <- codes do %>
-                      <%= Enum.join(code) %>,
+                                    </td>
 
-                      <% end %>
-                     
-                    </td>
-                    
-                  </tr>
-              <% end %>
-                </tbody>
-              </table>
-
-            </td>
-          </tr>
-            <% end %>
-          <% end %>
-          <%= for same_item <- @no_selection_combo_items do %>
-          <tr>
-            <td><%= same_item.price_code %></td>
-            <td><%= same_item.itemcatid %></td>
-       
-            <td><%= same_item.itemcode %></td>
-            <td><%= same_item.product_code %></td>
-             <td><%= same_item.itemname %></td>
-            <td><%= same_item.part_code %></td>
-    
-            <td><%= same_item.itemprice %></td>
-            <td><%= same_item.is_categorize %></td>
+                                </tr>
 
 
-            <td><%= same_item.is_activate %></td>
-   
-     
-            <td><%= same_item.is_delete %></td>
-            <td><%= same_item.enable_disc %></td>
-            <td><%= same_item.include_spend %></td>
-            <td><%= same_item.is_print %></td>
-            <td><%= same_item.subcatid %></td>
-          </tr>
-           
-          <% end %>
-        </tbody>
-      </table>
 
-  
+                                <%= if @combo_items != [] do %>
+                                    <tr>
+                                        <td colspan="13">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Combo Qty</th>
+                                                        <th>Item Qty</th>
+                                                        <th>Unit Price</th>
+                                                        <th>Topup Price</th>
+                                                        <th>Code</th>
+                                                        <th>ItemSubcat ID</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <%= for combo_item <- ci[same_item.subcatid] |> Enum.sort_by(fn x -> x.combo_item_code end)  do %>
+
+                                                        <tr>
+                                                            <td>
+                                                                <%= combo_item.combo_item_name %>
+                                                            </td>
+                                                            <td>
+                                                                <%= combo_item.combo_qty %>
+                                                            </td>
+                                                            <td>
+                                                                <%= combo_item.combo_item_qty %>
+                                                            </td>
+                                                            <td>
+                                                                <%= combo_item.unit_price %>
+                                                            </td>
+                                                            <td>
+                                                                <%= combo_item.top_up %>
+                                                            </td>
+                                                            <td>
+                                                                <%= combo_item.combo_item_code %>
+                                                            </td>
+                                                            <td>
+
+                                                                <% codes =  String.split(Integer.to_string(combo_item.combo_item_id), "") |> Enum.reject(fn x -> x == "" end) |> Enum.chunk_every(3)%>
+                                                                    <%= for code <- codes do %>
+                                                                        <%= Enum.join(code) %>,
+
+                                                                            <% end %>
+
+                                                            </td>
+
+                                                        </tr>
+                                                        <% end %>
+                                                </tbody>
+                                            </table>
+
+                                        </td>
+                                    </tr>
+                                    <% end %>
+                                        <% end %>
+                                            <%= for same_item <- @no_selection_combo_items do %>
+                                                <tr>
+                                                    <td>
+                                                        <%= same_item.price_code %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.itemcatid %>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= same_item.itemcode %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.product_code %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.itemname %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.part_code %>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= same_item.itemprice %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.is_categorize %>
+                                                    </td>
+
+
+                                                    <td>
+                                                        <%= same_item.is_activate %>
+                                                    </td>
+
+
+                                                    <td>
+                                                        <%= same_item.is_delete %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.enable_disc %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.include_spend %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.is_print %>
+                                                    </td>
+                                                    <td>
+                                                        <%= same_item.subcatid %>
+                                                    </td>
+                                                </tr>
+
+                                                <% end %>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+        </div>
     </div>
-
-  </div>
 </div>
-</div>
 
 
 
-<div class="row">
-  <div class="col-lg-3">
-    <div class="card">
-    <div class="card-header card-header-text card-header-primary">
-      <div class="card-text">
-        <h4 class="card-title">Menu Catalogs</h4>
-        <p class="card-category">Not Selected <span class="selected_id">none</span></p>
-      </div>
-    </div>
-      <div class="card-body" aria-label="menu_cat_list"> 
-        <ol class="not_selected_catalog">
-          
-        </ol>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-3">
-    <div class="card">
-    <div class="card-header card-header-text card-header-success">
-      <div class="card-text">
-        <h4 class="card-title">Menu Catalogs</h4>
-        <p class="card-category">Selected for <span class="selected_id">none</span></p>
-      </div>
-    </div>
-      <div class="card-body"> 
-        <ol class="selected_catalog">
-          
-        </ol>
-        
-      </div>
-    </div>
-  </div>
 
+<div aria-label="item_detail" class="row hidding">
     <div class="col-lg-3">
-    <div class="card">
-    <div class="card-header card-header-text card-header-info">
-      <div class="card-text">
-        <h4 class="card-title">Printers</h4>
-        <p class="card-category">Selected for <span class="selected_id">none</span></p>
-      </div>
+        <div class="card">
+            <div class="card-header card-header-text card-header-primary">
+                <div class="card-text">
+                    <h4 class="card-title">Menu Catalogs</h4>
+                    <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
+                </div>
+
+            </div>
+            <div class="card-body" aria-label="menu_cat_list">
+                <ol class="not_selected_catalog">
+
+                </ol>
+            </div>
+            <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+
+                    <i class="material-icons">fast_forward</i> Select All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
+        </div>
     </div>
-      <div class="card-body selected_printer"> 
-    
-        
-        
-      </div>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-header card-header-text card-header-success">
+                <div class="card-text">
+                    <h4 class="card-title">Menu Catalogs</h4>
+                    <p class="card-category">Selected for <span class="selected_id">none</span></p>
+                </div>
+            </div>
+            <div class="card-body">
+                <ol class="selected_catalog">
+
+                </ol>
+
+            </div>
+            <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
+
+                    <i class="material-icons">fast_rewind</i> Unselect All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header card-header-text card-header-info">
+                <div class="card-text">
+                    <h4 class="card-title">Printers</h4>
+                    <p class="card-category">Selected for <span class="selected_id">none</span></p>
+                </div>
+                <div class="dropdown pull-right" style="padding: 10px;">
+                    <button aria-label="item_summary" class="btn btn-info btn-round">
+                <i class="material-icons">ballot</i> COMBO Summary
+              <div class="ripple-container"></div>
+            <div class="ripple-container"></div></button>
+                </div>
+            </div>
+            <div class="card-body selected_printer">
+                <form id="printer_radio">
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
 </div>
 
 
 
 <div class="modal fade" id="model1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document"  style="width: 1000px; margin-left: 550px;" >
-    <div class="modal-content"  style="width: 1000px;" >
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Price</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <div class="modal-dialog" role="document" style="width: 1000px; margin-left: 550px;">
+        <div class="modal-content" style="width: 1000px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Price</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-      </div>
-      <div class="modal-body" id = "modal_form1">
-        
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+            </div>
+            <div class="modal-body" id="modal_form1">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
 
 <script type="text/javascript">
-  $(document).ready(function() {
-    $('button[data-original-title="Edit Printers"]').click(function() {
-    
-      $("div.selected_printer").html("");
+    $(document).ready(function() {
+        $("button[aria-label='item_summary']").click(function() {
 
-      var subcat_id = $(this).attr("subcat_id");
-      $("span.selected_id").html(subcat_id)
-      var brand = location.pathname.split("/")[1];
-      $.ajax({
-        url: "/" + brand + "/list_printer",
-        dataType: "json",
-        data: { subcat_id: subcat_id }
-      }).done(function(j) {
-
-        var branches = []
-        for(var key in j)
-        {
-            branches.push(key);
-        }
-
-        $(branches).each(function(k,branch){
-
-          var tags = j[branch]
-     
-          var html = "<div class='row'><div class='col-sm-12'><div class='form-group bmd-form-group'><label class='bmd-label-floating' style='font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;'>"+branch+"</label><select name='tag["+branch+"][id]' class='selectpicker' data-style='btn select-with-transition' title='Choose Printer' data-size='10' required=''></select></div></div></div>"
-          $("div.selected_printer").append(html)
-          $(tags).each(function(){
-            var op = "<option value='"+this.tag_id+"'>"+this.tagname+"</option>"
-            $('select[name="tag['+branch+'][id]"]').append(op)
-          })
+            $("div[aria-label='item_detail']").toggleClass("hidding")
         })
-        $('.selectpicker').selectpicker({
-      
-          size: 10
-        });
-      });
-    });
 
-    $('button[data-original-title="Edit Menu"]').click(function() {
-      $("ol.not_selected_catalog").html("");
-      $("ol.selected_catalog").html("");
+        $('button[data-original-title="Select All"]').click(function() {
+            var li_list = $('ol.not_selected_catalog').find("li")
+            $(li_list).each(function() {
 
-      var subcatid = $(this).attr("subcat_id");
-      $("span.selected_id").html(subcatid)
-      var brand = location.pathname.split("/")[1];
-      $.ajax({
-        url: "/" + brand + "/list_menu_catalog",
-        dataType: "json",
-        data: { subcatid: subcatid }
-      }).done(function(j) {
-        var selected = j.selected;
-        $(selected).each(function() {
-          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
-          $("ol.selected_catalog").append(li);
-        });
-        var not_selected = j.not_selected;
-        $(not_selected).each(function() {
-          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
-          $("ol.not_selected_catalog").append(li);
-        });
-      });
-    });
+                var li = $(this);
+                $(li).find(".fa").attr("class", "fa fa-minus-circle")
+                var subcat_id = $("span.selected_id").html()
+                var tag_id = $(this).attr("id")
+                var brand = location.pathname.split("/")[1];
+                $.ajax({
+                    url: "/" + brand + "/insert_into_catalog",
+                    dataType: "json",
+                    data: {
+                        subcat_id: subcat_id,
+                        tag_id: tag_id
+                    }
+                }).done(function(j) {
+                    $(j).each(function() {
 
-    $("ol.not_selected_catalog").on("click", "li", function() {
-      var li = $(this);
 
-      var subcat_id = $("span.selected_id").html()
-      var tag_id = $(this).attr("id")
-      var brand = location.pathname.split("/")[1];
+                    })
+                })
+                $("ol.selected_catalog").append(li);
+            })
+
+
+        })
+
+        $('button[data-original-title="Unselect All"]').click(function() {
+            var li_list = $('ol.selected_catalog').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+                $(li).find(".fa").attr("class", "fa fa-plus-circle")
+                var subcat_id = $("span.selected_id").html()
+                var tag_id = $(this).attr("id")
+                var brand = location.pathname.split("/")[1];
+                $.ajax({
+                    url: "/" + brand + "/remove_from_catalog",
+                    dataType: "json",
+                    data: {
+                        subcat_id: subcat_id,
+                        tag_id: tag_id
+                    }
+                }).done(function(j) {
+                    $(j).each(function() {
+
+
+                    })
+                })
+                $("ol.not_selected_catalog").append(li);
+            })
+
+
+        })
+
+        var brand = location.pathname.split("/")[1];
         $.ajax({
-          url: "/"+brand+"/insert_into_catalog", 
-          dataType: "json",
-          data: {subcat_id: subcat_id, tag_id: tag_id}
-        }).done(function(j){
-          $(j).each(function(){
-         
-           
-          })
-        })
-      $("ol.selected_catalog").append(li);
+            url: "/" + brand + "/list_printer",
+            dataType: "json",
+            data: {
+                subcat_id: 0
+            }
+        }).done(function(j) {
+
+            var branches = []
+            for (var key in j) {
+                branches.push(key);
+            }
+
+            $(branches).each(function(k, branch) {
+                var div = '<div aria-label="' + branch + '"><label>' + branch + '</label><br><table class="table" style="width: 100%;" aria-label="' + branch + '"></table></div>'
+                $("form#printer_radio").prepend(div)
+                var tr = "<tr class='header' aria-label='" + branch + "'><td></td></tr>"
+                $('table[aria-label="' + branch + '"]').append(tr)
+                $("td.selected").each(function() {
+                    var id = $(this).html()
+                    var td = "<td>" + id + "</td>"
+                    $('tr[aria-label="' + branch + '"]').append(td)
+                })
+                var tags = j[branch]
+
+                $(tags).each(function() {
+
+                    var tr = "<tr id='" + this.tag_id + "'><td>" + this.tagname + "</td></tr>"
+
+
+                    $('table[aria-label="' + branch + '"]').append(tr)
+
+                })
+            })
+
+            $(branches).each(function(k, branch) {
+
+                var tags = j[branch]
+
+                $(tags).each(function() {
+                    var tagname = this.tagname
+                    var tid = this.tag_id
+                    var items = this.items
+
+                    $("td.selected").each(function() {
+                        var id = $(this).html()
+                        if ($.inArray(id, items) >= 0) {
+
+                            var td = "<td><input type='checkbox' checked name='tag[" + branch + "]' value='[" + id + "][" + tid + "]'></td>"
+                        } else {
+                            var td = "<td><input type='checkbox' name='tag[" + branch + "]' value='[" + id + "][" + tid + "]'></td>"
+                        }
+
+                        $("tr#" + tid).append(td)
+                    })
+                })
+            })
+
+            $("form#printer_radio table input[type='checkbox']").click(function() {
+                var ck = $(this)
+                var val = $(this).val()
+                if (ck[0].checked) {
+
+
+                    $.ajax({
+                        url: "/" + brand + "/toggle_printer_combo",
+                        dataType: "json",
+                        data: {
+                            item_tag: val
+                        }
+                    }).done(function(j) {
+
+
+                        $.notify({
+                            icon: "notifications",
+                            message: j.item_name + " " + j.action + " " + j.printer_name
+
+                        }, {
+                            type: j.alert,
+                            timer: 100,
+                            placement: {
+                                from: 'bottom',
+                                align: 'right'
+                            }
+                        });
+
+                    })
+                } else {
+                    $.ajax({
+                        url: "/" + brand + "/toggle_printer_combo",
+                        dataType: "json",
+                        data: {
+                            item_tag: val
+                        }
+                    }).done(function(j) {
+
+
+                        $.notify({
+                            icon: "notifications",
+                            message: j.item_name + " " + j.action + " " + j.printer_name
+
+                        }, {
+                            type: j.alert,
+                            timer: 100,
+                            placement: {
+                                from: 'bottom',
+                                align: 'right'
+                            }
+                        });
+
+                    })
+                }
+            })
+
+
+
+
+        });
+
+
+        $('button[data-original-title="Edit Menu"]').click(function() {
+            $("div[aria-label='item_detail']").toggleClass("hidding")
+            $("ol.not_selected_catalog").html("");
+            $("ol.selected_catalog").html("");
+
+            var subcatid = $(this).attr("subcat_id");
+            $("span.selected_id").html(subcatid)
+            var brand = location.pathname.split("/")[1];
+            $.ajax({
+                url: "/" + brand + "/list_menu_catalog",
+                dataType: "json",
+                data: {
+                    subcatid: subcatid
+                }
+            }).done(function(j) {
+                var selected = j.selected;
+                $(selected).each(function() {
+                    var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
+                    $("ol.selected_catalog").append(li);
+                });
+                var not_selected = j.not_selected;
+                $(not_selected).each(function() {
+                    var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
+                    $("ol.not_selected_catalog").append(li);
+                });
+            });
+        });
+
+        $("ol.not_selected_catalog").on("click", "li", function() {
+            var li = $(this);
+            $(li).find(".fa").attr("class", "fa fa-minus-circle")
+            var subcat_id = $("span.selected_id").html()
+            var tag_id = $(this).attr("id")
+            var brand = location.pathname.split("/")[1];
+            $.ajax({
+                url: "/" + brand + "/insert_into_catalog",
+                dataType: "json",
+                data: {
+                    subcat_id: subcat_id,
+                    tag_id: tag_id
+                }
+            }).done(function(j) {
+                $(j).each(function() {
+
+
+                })
+            })
+            $("ol.selected_catalog").append(li);
+        });
+
+        $("ol.selected_catalog").on("click", "li", function() {
+            var li = $(this);
+            $(li).find(".fa").attr("class", "fa fa-plus-circle")
+            var subcat_id = $("span.selected_id").html()
+            var tag_id = $(this).attr("id")
+            var brand = location.pathname.split("/")[1];
+            $.ajax({
+                url: "/" + brand + "/remove_from_catalog",
+                dataType: "json",
+                data: {
+                    subcat_id: subcat_id,
+                    tag_id: tag_id
+                }
+            }).done(function(j) {
+                $(j).each(function() {
+
+
+                })
+            })
+            $("ol.not_selected_catalog").append(li);
+        });
+
+
+
     });
-
-    $("ol.selected_catalog").on("click", "li", function() {
-      var li = $(this);
-      var subcat_id = $("span.selected_id").html()
-      var tag_id = $(this).attr("id")
-      var brand = location.pathname.split("/")[1];
-        $.ajax({
-          url: "/"+brand+"/remove_from_catalog", 
-          dataType: "json",
-          data: {subcat_id: subcat_id, tag_id: tag_id}
-        }).done(function(j){
-          $(j).each(function(){
-         
-           
-          })
-        })
-      $("ol.not_selected_catalog").append(li);
-    });
-  });
-
-
-
-
-
 </script>

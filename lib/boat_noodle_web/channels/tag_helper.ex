@@ -13,6 +13,7 @@ defmodule BoatNoodleWeb.TagHelper do
   def handle_in("query_branch_subcats", %{"id" => id}, socket) do
     branch = BN.get_branch!(id)
     menu_cat = Repo.get(MenuCatalog, branch.menu_catalog)
+  
 
     item_ids = menu_cat.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
     combo_ids = menu_cat.combo_items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
@@ -52,7 +53,7 @@ defmodule BoatNoodleWeb.TagHelper do
 
     tagid = elem(tuple_data, 1)
     combo_item_id = elem(tuple_data, 2)
-
+IEx.pry
     tag = Repo.get_by(Tag, tagid: tagid, brand_id: brand_id)
     combo_item = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
 

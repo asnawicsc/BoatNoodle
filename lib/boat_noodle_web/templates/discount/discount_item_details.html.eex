@@ -1,145 +1,263 @@
-<div class="col-md-12">
-              <div class="card ">
+       <div class="col-sm-12">
+            <div class="card ">
+
+
+
+
+
                 <div class="card-header card-header-rose card-header-text">
-                  <div class="card-text">
-                    <h4 class="card-title">Edit Discount Item -  <b><%= @discount_a.discitemsname %></b> <%= %></h4>
-                  </div>
+                    <div class="card-text">
+                        <h4 class="card-title">Edit Discount Item</h4>
+                    </div>
                 </div>
-                <div class="card-body ">
-                  <form method="post" action="/<%= BN.get_domain(@conn)%>/edit_discount_detail" class="form-horizontal">
-                     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                <div class="card-body">
 
-                    <div class="row">
-                      <label class="col-sm-2 col-form-label">Discount Item</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[name]" value="<%= @discount_a.discitemsname %>" class="form-control">
+
+
+                  <div class="row justify-content-left">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Discount Item</label>
+                                <input type="text" class="form-control" required="required" value="<%= @discount_a.discitemsname %>" name="item[discount_item]"  >
+                            </div>
                         </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                <input type="text" class="form-control" value="<%= @discount_a.description %>" name="item[description]" required="required">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-3">
+                          <select class="selectpicker" data-style="btn select-with-transition" onchange="changeFunc();" id="dis_type" value="<%= @discount_a.disctype %>"  name="item[discount_type]"  data-size="7">
+                                           
+                                           <%= for item <- @discount_type do %>
+                                             <option value="<%= item.disctypeid %>" ><%= item.disctypename %>
+                                            </option>
+                                           
+                                             
+                                          <% end %>
+                                          
+                                        </select>
+                                    </div>
+
+                    </div>
+      
+                    <div class="row justify-content-left" >
+                      <div class="col-sm-3" id="discount_category">
+                          <select class="selectpicker" data-style="btn select-with-transition"  onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  title="Discount Category" data-size="7">
+                                           
+                                           <%= for item <- @discount do %>
+                                             <option value="<%= item.discountid %>" ><%= item.discname %>
+                                            </option>
+                                           
+                                             
+                                          <% end %>
+                                          
+                                        </select>
+                        </div>
+                      <div class="col-sm-3" id="discount_quantity">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Discount Quantity</label>
+                                <input type="number" class="form-control" name="item[discount_quantity]"  >
+                            </div>
+                      </div>
+                      <div class="col-sm-3" id="discount_percentage">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Discount Percentage</label>
+                                 <input type="number" class="form-control" name="item[discount_percentage]"  >
+                            </div>
+                      </div>
+                       <div class="col-sm-3" id="voucher_amount">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Voucher Amount</label>
+                                  <input type="number" class="form-control" name="item[voucher_amount]"  >
+                            </div>
+                      </div>
+                      <div class="col-sm-3" id="discount_amount">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Discount Amount</label>
+                                  <input type="number" class="form-control" name="item[discount_amount]"  >
+                            </div>
+                      </div>
+                      <div class="col-sm-3" id="target_category">
+                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="select_target_category" name="item[target_category]"  title="Target Category" data-size="7">
+                                           
+                                            <%= for item <- @categories do %>
+                                             <option value="<%= item.id %>" ><%= item.name %>
+                                            </option>
+                                           
+                                             
+                                          <% end %>
+                                          
+                                        </select>
                       </div>
                     </div>
-                    <div class="row">
-                      <label class="col-sm-2 col-form-label">Description</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[descriptions]" value="<%= @discount_a.description %>" class="form-control">
+
+                    <div class="row justify-content-left" >
+                      <div class="col-sm-5" id="target_item">
+                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_item" name="item[target_item]"  title="Target Item" data-size="7">
+                                           
+                                           <%= for item <- @item_subcat do %>
+                                             <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                            </option>
+                                           
+                                             
+                                          <% end %>
+                                          
+                                        </select>
                         </div>
-                      </div>
-                    </div>
-
-
-
-                     <div class="row">
-                      <label class="col-sm-2 col-form-label">Discount Type</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.disctype %>" class="form-control">
+                      <div class="col-sm-3" id="minimum_spend">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
+                                <input type="text" class="form-control" name="item[minimum_spend]" >
+                            </div>
                         </div>
-                      </div>
-                    </div>
-
-                     <div class="row">
-                      <label class="col-sm-2 col-form-label">Discount Category</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.discountcategory %>" class="form-control">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <label class="col-sm-2 col-form-label">Discount Quantity</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.disc_qty %>" class="form-control">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <label class="col-sm-2 col-form-label">Target Category</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.target_menu_category %>" class="form-control">
-                        </div>
-                      </div>
-                    </div>
-
-                     <div class="row">
-                      <label class="col-sm-2 col-form-label">Target Item</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.target_menu_item %>" class="form-control">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <label class="col-sm-2 col-form-label">Minimun Spend</label>
-                      <div class="col-sm-10">
-                        <div class="form-group">
-                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount_a.min_spend %>" class="form-control">
-                        </div>
-                      </div>
-                    </div>
                       
-         
+                    </div>
 
-     
-                
-                    <div class="row">
-                      <label class="col-sm-2 col-form-label">Status</label>
-                      <div class="col-sm-10 checkbox-radios">
-                        <div class="form-check">
+                  
+
+
+
+                    <div class="row justify-content-left">
+                        <div class="col-sm-3">
+                            <div class="form-check form-check-inline">
                           <label class="form-check-label">
-                             
-                            <input class="form-check-input" type="checkbox" id="activate" name="activate"  value="" checked> Activate?
-                           
+                            <input class="form-check-input" type="checkbox" name="item[status]" > Active?
                             <span class="form-check-sign">
                               <span class="check"></span>
                             </span>
                           </label>
                         </div>
-                      
-                      </div>
+                        </div>
                     </div>
-                    
-                 
+
+
+                   
                 </div>
-                 <div class="card-footer">
-                                    <div class="mr-auto">
 
-                                    </div>
-                                    <div class="ml-auto">
-                                        <input class="btn btn-next btn-fill btn-rose btn-wd" name="" id="submit" value="Edit Discount" type="submit">
+     
+     
+        <div class="card-footer">
+        <div class="mr-auto">
+                    <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                    </div>
+          <div class="ml-auto">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+           
+          </div>
+          <div class="clearfix"></div>
+        </div>
+    
+    </div>
+</div>
+ </div>
+    </form>
 
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
-              </div>
-               </form>
-            </div>
+<script type="text/javascript">
+$("#discount_category").hide();
+$("#discount_percentage").hide();
+$("#discount_quantity").hide();
+$("#target_category").hide();
+$("#target_item").hide();
+$("#minimum_spend").hide();
+$("#voucher_amount").hide();
+$("#discount_amount").hide();
 
-          
 
 
-            <script type="text/javascript">
-              var x = document.getElementById('activate').value;
 
-if (x == 0) 
-{
-         
-    $("input[name='disc[is_visable]']").removeAttr('checked');
+function changeFunc() {
+    var selectBox = document.getElementById("dis_type");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
 
-    var s = 0
-     $("input[name='activate']").val(s);
-}
+    if (selectedValue == 5) {
+    $("#discount_category").show();
+    $("#discount_quantity").show();
+    $("#target_category").show();
+    $("#target_item").show();
+    $("#minimum_spend").show();
 
-if (x == 1) 
-{
-         
+$("#voucher_amount").hide();
+$("#discount_percentage").hide();
+$("#discount_amount").hide();
 
-    var s = 1
-     $("input[name='activate']").val(s);
-}
 
-</script>
+   }
+
+     if (selectedValue == 2) {
+    $("#discount_percentage").show();
+     $("#discount_category").show();
+     $("#minimum_spend").show();
+
+$("#voucher_amount").hide();
+$("#target_item").hide();
+$("#target_category").hide();
+$("#discount_quantity").hide();
+$("#discount_amount").hide();
+
+   }
+
+     if (selectedValue == 3) {
+    $("#voucher_amount").show();
+     $("#discount_category").show();
+     $("#minimum_spend").show();
+
+$("#discount_percentage").hide();
+$("#target_item").hide();
+$("#target_category").hide();
+$("#discount_quantity").hide();
+$("#discount_amount").hide();
+
+
+   }
+
+   if (selectedValue == 6) {
+
+    $("#minimum_spend").show();
+    $("#target_item").show();
+    $("#target_category").show();
+     $("#discount_percentage").show(); 
+ 
+
+    $("#discount_quantity").hide(); 
+$("#voucher_amount").hide();
+$("#discount_category").hide();
+$("#discount_amount").hide();
+
+
+   }
+
+    if (selectedValue == 1) {
+
+    $("#minimum_spend").show();
+    $("#target_item").show();
+    $("#target_category").show();
+    $("#discount_amount").show();
+
+     $("#discount_quantity").hide();   
+ $("#discount_percentage").hide();   
+$("#voucher_amount").hide();
+$("#discount_category").hide();
+
+   }
+
+
+    if (selectedValue == 4) {
+
+$("#discount_category").hide();
+$("#discount_percentage").hide();
+$("#discount_quantity").hide();
+$("#target_category").hide();
+$("#target_item").hide();
+$("#minimum_spend").hide();
+$("#voucher_amount").hide();
+$("#discount_amount").hide();
+
+
+   }
+
+ }
+
+
+  </script>
