@@ -71,6 +71,13 @@
                               </ol>
                         
                       </div>
+                <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+
+                    <i class="material-icons">fast_forward</i> Select All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
                     </div>
                     </div>
           
@@ -81,12 +88,20 @@
                                 <i class="material-icons">equalizer</i>
                               </div>
                               <p class="card-category">To be included in combo</p>
-                              <h3 class="card-title">Ala Carte</h3>
+                              <h3 class="card-title">Categories</h3>
                             </div>
                     <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
                       <ol class="item" style="height: 300px; min-width: 300px;" id="list2">
                       </ol>
                     </div>
+                     <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
+
+                    <i class="material-icons">fast_rewind</i> Unselect All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
+
                   </div>
               </div>
             </div>

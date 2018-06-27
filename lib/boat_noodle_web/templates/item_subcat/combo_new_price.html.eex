@@ -1,222 +1,237 @@
 <%require IEx %>
 
-    <form method="post" action="/<%= @conn.params["brand"] %>/combos/combo_create_price" class="form-horizontal" aria-label="item_form">
+	<form method="post" action="/<%= @conn.params["brand"] %>/combos/combo_create_price" class="form-horizontal" aria-label="item_form">
 
-        <div class="col-sm-12">
-            <div class="card ">
-                <div class="card-header card-header-rose card-header-text">
-                    <div class="card-text">
-                        <h4 class="card-title">Combo Details A</h4>
-                    </div>
-                </div>
-                <div class="card-body ">
-                  
-                        <div class="row">
-                            <label class="col-sm-2 col-form-label">Item Name</label>
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="item[itemname]" value='<%= @params["itemname"] %>' disabled>
-                                    
+		<div class="col-sm-12">
+			<div class="card ">
+				<div class="card-header card-header-rose card-header-text">
+					<div class="card-text">
+						<h4 class="card-title">Combo Details A</h4>
+					</div>
+				</div>
+				<div class="card-body ">
+				  
+						<div class="row">
+							<label class="col-sm-2 col-form-label">Item Name</label>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<input type="text" class="form-control" name="item[itemname]" value='<%= @params["itemname"] %>' disabled>
+									
 
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label class="col-sm-2 col-form-label">Item Code</label>
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="item[itemcode]" value='<%= @params["itemcode"] %>' disabled >
-                                  
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label class="col-sm-2 col-form-label">Item Description</label>
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="item[itemdesc]" value='<%= @params["itemdesc"] %>' disabled >
-                                  
-                                </div>
-                            </div>
-                        </div>
-                         <div class="row">
-                            <label class="col-sm-2 col-form-label">Item Category</label>
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="item[itemcat]" value='<%= @params["itemcat"] %>' disabled >
-                                  
-                                </div>
-                            </div>
-                        </div>
-                         <div class="row">
-                            <label class="col-sm-2 col-form-label">Price Code</label>
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="item[price_code]" value='<%= @params["price_code"] %>' disabled >
-                                  
-                                </div>
-                            </div>
-                        </div>
-                    
-                    
-                </div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<label class="col-sm-2 col-form-label">Item Code</label>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<input type="text" class="form-control" name="item[itemcode]" value='<%= @params["itemcode"] %>' disabled >
+								  
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<label class="col-sm-2 col-form-label">Item Description</label>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<input type="text" class="form-control" name="item[itemdesc]" value='<%= @params["itemdesc"] %>' disabled >
+								  
+								</div>
+							</div>
+						</div>
+						 <div class="row">
+							<label class="col-sm-2 col-form-label">Item Category</label>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<input type="text" class="form-control" name="item[itemcat]" value='<%= @params["itemcat"] %>' disabled >
+								  
+								</div>
+							</div>
+						</div>
+						 <div class="row">
+							<label class="col-sm-2 col-form-label">Price Code</label>
+							<div class="col-sm-4">
+								<div class="form-group">
+									<input type="text" class="form-control" name="item[price_code]" value='<%= @params["price_code"] %>' disabled >
+								  
+								</div>
+							</div>
+						</div>
+					
+					
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col-lg-12">
+			<div class="card ">
+				<div class="card-header ">
+					<h4 class="card-title">Combo Details
+
+					</h4>
+				</div>
+				<div class="card-body ">
+					<div class="row">
+						<div class="col-lg-2 col-md-4">
+							<!--
+										color-classes: "nav-pills-primary", "nav-pills-info", "nav-pills-success", "nav-pills-warning","nav-pills-danger"
+									-->
+
+								  
+								 
+							<ul class="nav nav-pills nav-pills-rose nav-pills-icons flex-column" role="tablist">
+								<%= for item <- @all|>Enum.with_index do %>
+								 <% data=elem(item,0) %>
+								 <% data2=elem(item,1) %>
+								
+
+
+									 <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+								 
+
+									<li class="nav-item">
+										<a class="nav-link" data-toggle="tab" href="#<%= data.itemcatcode %>" role="tablist">
+										<i class="material-icons">dashboard</i> <%= data.itemcatname %>
+									  </a>
+									</li>
+									<% end %>
+
+							</ul>
+						</div>
+						<div class="col-md-10">
+							<div class="tab-content" ">
+								<%= for item <- @all|>Enum.with_index do %>
+								  <% data=elem(item,0) %>
+									<% data2=elem(item,1) %>
+									<% id= data.itemcatid %>
+
+								<input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemname]" value='<%= @params["itemname"] %>'>
+								<input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcode]" value='<%= @params["itemcode"] %>' >
+								<input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][price_code]" value='<%= @params["price_code"] %>' >
+								
+
+								  <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemdesc]" value='<%= @params["itemdesc"] %>' >
+								   <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcat]" value='<%= @itemcat %>' >
+								   <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcatid]" value='<%= id %>' >
+								 <input type="hidden"  name="a[<%= data.itemcatname %>][all_item]">
+								
+								  
+									
+										<div class="tab-pane" id="<%= data.itemcatcode %>" value="">
+											<div class="row">
+
+												<div class="col-sm-12">
+
+													<div class="card ">
+														<div class="card-header card-header-rose card-header-text">
+															<div class="card-text">
+																<h4 class="card-title">
+																	<%= data.itemcatname %>
+																</h4>
+															</div>
+															<div class="row">
+																<label class="col-sm-2 col-form-label">Category Limit</label>
+																<div class="col-sm-4">
+																	<div class="form-group">
+																		<input type="text" class="form-control"  name="a[<%= data.itemcatname %>][cat_limit]" value='' required>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div class="card-body ">
+
+															<%ala_carte = Repo.all(from s in BoatNoodle.BN.ItemSubcat,left_join: i in BoatNoodle.BN.ItemCat,  on: i.itemcatid == s.itemcatid,where: i.itemcatid == ^data.itemcatid and s.brand_id ==^@brand, select: %{itemname: s.itemname,itemdesc: s.itemdesc,subcatid: s.subcatid,price_code: s.price_code,itemcode: s.itemcode}, order_by: [asc: s.itemcode])|>Enum.filter(fn x -> x.price_code != "" end)|>Enum.uniq %>
+
+														
+
+																<div class="row">
+
+																	<div class="col-sm-6">
+																		<div class="card card-stats">
+																			<div class="card-header card-header-rose card-header-icon">
+																				<div class="card-icon">
+																					<i class="material-icons">equalizer</i>
+																				</div>
+																				<p class="card-category">Combo Sub items</p>
+																				<h3 class="card-title">Categories</h3>
+																			</div>
+																			<div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+																				<ol class="item_combo1" id="a1" value="<%= data2 %>" aria-label="<%= data.itemcatname %>">
+
+																					<%= for carte <- ala_carte do %>
+																						<li style="font-size: 15px; height: 40px;" id="<%= carte.subcatid %>">
+																							<%= carte.itemname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"><%= carte.price_code %></span></li>
+																						<% end %>
+																				</ol>
+
+																			</div>
+																			  <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+
+                    <i class="material-icons">fast_forward</i> Select All
+                  <div class="ripple-container"></div>
+                </button>
             </div>
-        </div>
 
+																		</div>
+																	</div>
+																	
+																	<div class="col-sm-6">
+																		<div class="card card-stats">
+																			<div class="card-header card-header-info card-header-icon">
+																				<div class="card-icon">
+																					<i class="material-icons">equalizer</i>
+																				</div>
+																				<p class="card-category">To be included in combo</p>
+																				<h3 class="card-title">Ala Carte</h3>
+																			</div>
+																			<div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+																				<ol class="item_combo2" style="height: 300px; min-width: 300px;" id="a2" value="<%= data2 %>" aria-label="<%= data.itemcatname %>">
+																				</ol>
+																			</div>
+																			 <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
 
-        <div class="col-lg-12">
-            <div class="card ">
-                <div class="card-header ">
-                    <h4 class="card-title">Combo Details
-
-                    </h4>
-                </div>
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-lg-2 col-md-4">
-                            <!--
-                                        color-classes: "nav-pills-primary", "nav-pills-info", "nav-pills-success", "nav-pills-warning","nav-pills-danger"
-                                    -->
-
-                                  
-                                 
-                            <ul class="nav nav-pills nav-pills-rose nav-pills-icons flex-column" role="tablist">
-                                <%= for item <- @all|>Enum.with_index do %>
-                                 <% data=elem(item,0) %>
-                                 <% data2=elem(item,1) %>
-                                
-
-
-                                     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-                                 
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#<%= data.itemcatcode %>" role="tablist">
-                                        <i class="material-icons">dashboard</i> <%= data.itemcatname %>
-                                      </a>
-                                    </li>
-                                    <% end %>
-
-                            </ul>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="tab-content" ">
-                                <%= for item <- @all|>Enum.with_index do %>
-                                  <% data=elem(item,0) %>
-                                    <% data2=elem(item,1) %>
-                                    <% id= data.itemcatid %>
-
-                                <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemname]" value='<%= @params["itemname"] %>'>
-                                <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcode]" value='<%= @params["itemcode"] %>' >
-                                <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][price_code]" value='<%= @params["price_code"] %>' >
-                                
-
-                                  <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemdesc]" value='<%= @params["itemdesc"] %>' >
-                                   <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcat]" value='<%= @itemcat %>' >
-                                   <input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcatid]" value='<%= id %>' >
-                                 <input type="hidden"  name="a[<%= data.itemcatname %>][all_item]">
-                                
-                                  
-                                    
-                                        <div class="tab-pane" id="<%= data.itemcatcode %>" value="">
-                                            <div class="row">
-
-                                                <div class="col-sm-12">
-
-                                                    <div class="card ">
-                                                        <div class="card-header card-header-rose card-header-text">
-                                                            <div class="card-text">
-                                                                <h4 class="card-title">
-                                                                    <%= data.itemcatname %>
-                                                                </h4>
-                                                            </div>
-                                                            <div class="row">
-                                                                <label class="col-sm-2 col-form-label">Category Limit</label>
-                                                                <div class="col-sm-4">
-                                                                    <div class="form-group">
-                                                                        <input type="text" class="form-control"  name="a[<%= data.itemcatname %>][cat_limit]" value='' required>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-body ">
-
-                                                            <%ala_carte = Repo.all(from s in BoatNoodle.BN.ItemSubcat,left_join: i in BoatNoodle.BN.ItemCat,  on: i.itemcatid == s.itemcatid,where: i.itemcatid == ^data.itemcatid and s.brand_id ==^@brand, select: %{itemname: s.itemname,itemdesc: s.itemdesc,subcatid: s.subcatid,price_code: s.price_code,itemcode: s.itemcode}, order_by: [asc: s.itemcode])|>Enum.filter(fn x -> x.price_code != "" end)|>Enum.uniq %>
-
-                                                        
-
-                                                                <div class="row">
-
-                                                                    <div class="col-sm-6">
-                                                                        <div class="card card-stats">
-                                                                            <div class="card-header card-header-rose card-header-icon">
-                                                                                <div class="card-icon">
-                                                                                    <i class="material-icons">equalizer</i>
-                                                                                </div>
-                                                                                <p class="card-category">Combo Sub items</p>
-                                                                                <h3 class="card-title">Categories</h3>
-                                                                            </div>
-                                                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
-                                                                                <ol class="item_combo1" id="a1" value="<%= data2 %>" aria-label="<%= data.itemcatname %>">
-
-                                                                                    <%= for carte <- ala_carte do %>
-                                                                                        <li style="font-size: 15px; height: 40px;" id="<%= carte.subcatid %>">
-                                                                                            <%= carte.itemname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"><%= carte.price_code %></span></li>
-                                                                                        <% end %>
-                                                                                </ol>
-
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    
-                                                                    <div class="col-sm-6">
-                                                                        <div class="card card-stats">
-                                                                            <div class="card-header card-header-info card-header-icon">
-                                                                                <div class="card-icon">
-                                                                                    <i class="material-icons">equalizer</i>
-                                                                                </div>
-                                                                                <p class="card-category">To be included in combo</p>
-                                                                                <h3 class="card-title">Ala Carte</h3>
-                                                                            </div>
-                                                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
-                                                                                <ol class="item_combo2" style="height: 300px; min-width: 300px;" id="a2" value="<%= data2 %>" aria-label="<%= data.itemcatname %>">
-                                                                                </ol>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                        </div>
-                                                    </div>
-
-
-                                                </div>
-
-
-
-
-
-                                            </div>
-                                        </div>
-                                        <% end %>
-                                       
-
-
-
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="mr-auto">
-                        <%#  <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
-                    </div>
-                    <div class="ml-auto">
-                        <input class="btn btn-next btn-fill btn-rose btn-wd" name="" id="submit" value="Next" type="submit">
-
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
+                    <i class="material-icons">fast_rewind</i> Unselect All
+                  <div class="ripple-container"></div>
+                </button>
             </div>
-        </div>
-    </form>
+																		</div>
+																	</div>
+																</div>
+														</div>
+													</div>
+
+
+												</div>
+
+
+
+
+
+											</div>
+										</div>
+										<% end %>
+									   
+
+
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-footer">
+					<div class="mr-auto">
+						<%#  <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+					</div>
+					<div class="ml-auto">
+						<input class="btn btn-next btn-fill btn-rose btn-wd" name="" id="submit" value="Next" type="submit">
+
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			</div>
+		</div>
+	</form>

@@ -294,6 +294,17 @@ item_subcat=Repo.all(from b in BoatNoodle.BN.ItemSubcat, select: %{subcatid: b.s
 
   def discount_item_details(conn, %{"id" => id}) do
 
+brand = BN.get_brand_id(conn)
+
+
+ discount_catalog=Repo.all(from m in BoatNoodle.BN.DiscountCatalog, select: %{id: m.id, name: m.name})
+
+ discount=Repo.all(from m in BoatNoodle.BN.Discount, select: %{discountid: m.discountid, discname: m.discname})
+discount_type=Repo.all(from s in BoatNoodle.BN.DiscountType)
+
+item_subcat=Repo.all(from b in BoatNoodle.BN.ItemSubcat, select: %{subcatid: b.subcatid, itemname: b.itemname,itemprice: b.itemprice,price_code: b.price_code})
+
+  categories=Repo.all(from s in BoatNoodle.BN.ItemCat,where: s.brand_id==^brand, select: %{id: s.itemcatid, name: s.itemcatname})
   
     discount_items = Repo.get_by(BN.DiscountItem, brand_id: BN.get_brand_id(conn), discountitemsid: id)
 
@@ -327,7 +338,8 @@ item_subcat=Repo.all(from b in BoatNoodle.BN.ItemSubcat, select: %{subcatid: b.s
 
     render(
       conn,
-      "discount_item_details.html",
+      "discount_item_details.html",discount_catalog: discount_catalog,
+      discount: discount,discount_type: discount_type,item_subcat: item_subcat,categories: categories,discount_items: discount_items,
       discount_items: discount_items,discount_a: discount_a
     
     )
