@@ -24,17 +24,16 @@ defmodule BoatNoodle.BN.Discount do
     discount
     |> cast(attrs, [
       :brand_id,
-      :discount_id,
       :discname,
       :descriptions,
       :discamtpercentage,
       :target_cat,
       :is_used,
       :disc_qty,
-      :targer_itemcode,
+      :target_itemcode,
       :disctype,
       :is_categorize,
-      :is_visible,
+      :is_visable,
       :is_delete
     ])
   end

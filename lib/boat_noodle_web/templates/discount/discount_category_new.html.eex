@@ -1,0 +1,188 @@
+<%require IEx %>
+
+    <form method="post" action="/<%= @conn.params[" brand "] %>/create_discount_category_new" class="form-horizontal" aria-label="item_form">
+        <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+        <div class="col-sm-12">
+            <div class="card ">
+                <div class="card-header card-header-rose card-header-text">
+                    <div class="card-text">
+                        <h4 class="card-title">Combo Details</h4>
+                    </div>
+                </div>
+                <div class="card-body ">
+
+
+                    <div class="row justify-content-center">
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Discount Category</label>
+                                <input type="text" class="form-control" name="item[discount_name]" required="required">
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                <input type="text" class="form-control" name="item[description]" required="required">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-sm-5">
+                            <div class="form-group">
+
+                                <select class="selectpicker" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc();" title="Discount Type" data-size="7" required="required">
+                           
+                                            <option value="0"  >Other Discount
+                                            </option>
+                                             <option value="1"  >Full Amount Discount
+                                            </option>
+                                        
+                                        </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-5" id="show">
+                            <div class="form-group">
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-sm-5" id="amt_now">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Amount Percentage</label>
+                                <input type="number" class="form-control" name="item[description]" required="required">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-5" id="show2">
+                            <div class="form-group">
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-sm-5">
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">
+                            <input class="form-check-input" name="item[status]" type="checkbox" > Active?
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-5" id="show2">
+                            <div class="form-group">
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+                <div class="card-header text-center">
+
+
+                </div>
+
+                <div class="card-body">
+                    <input type="hidden" name="branc[branch]">
+
+
+
+
+                    <div class="row">
+
+                        <div class="col-sm-6">
+                            <div class="card card-stats">
+                                <div class="card-header card-header-rose card-header-icon">
+                                    <div class="card-icon">
+                                        <i class="material-icons">equalizer</i>
+                                    </div>
+                                    <p class="card-category">Discount</p>
+                                    <h3 class="card-title">Branch</h3>
+                                </div>
+                                <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                    <ol class="item" id="list5">
+                                        <%= for carte <- @discount_catalog do %>
+                                            <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                            <% end %>
+                                    </ol>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="card card-stats">
+                                <div class="card-header card-header-info card-header-icon">
+                                    <div class="card-icon">
+                                        <i class="material-icons">equalizer</i>
+                                    </div>
+                                    <p class="card-category">To be included in combo</p>
+                                    <h3 class="card-title">Branch</h3>
+                                </div>
+                                <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                    <ol class="item" style="height: 300px; min-width: 300px;" id="list6">
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="card-footer">
+                    <div class="mr-auto">
+                        <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                    </div>
+                    <div class="ml-auto">
+                        <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Next" type="submit">
+
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+    </form>
+    <script type="text/javascript">
+        $("#amt_now").hide();
+
+        $("#show").show();
+        $("#show2").show();
+
+        function changeFunc() {
+            var selectBox = document.getElementById("selectBox");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+
+            if (selectedValue == 1) {
+                $("#amt_now").show();
+
+
+
+            }
+
+            if (selectedValue == 0) {
+                $("#amt_now").hide();
+
+
+
+            }
+        }
+    </script>

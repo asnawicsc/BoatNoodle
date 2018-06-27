@@ -1,0 +1,153 @@
+<%require IEx %>
+
+    <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_catalog_new" class="form-horizontal" aria-label="item_form">
+    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+        <div class="col-sm-12">
+            <div class="card ">
+                <div class="card-header card-header-rose card-header-text">
+                    <div class="card-text">
+                        <h4 class="card-title">Add Discount Catalog</h4>
+                    </div>
+                </div>
+                <div class="card-body ">
+
+                  <div class="row justify-content-center">
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label for="exampleInput1" class="bmd-label-floating">Discount Catalog Name</label>
+                                <input type="text" class="form-control" name="name" required="required" value='' >
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    
+     
+
+                </div>
+       
+   
+     
+        <div class="card-header text-center">
+          <h3 class="card-title">
+            Discount Categories
+          </h3>
+
+        </div>
+
+        <div class="card-body">     
+            <input type="hidden" name="cat">
+       
+          
+ 
+            
+            <div class="row">
+
+                  <div class="col-sm-6">
+                    <div class="card card-stats">
+                      <div class="card-header card-header-rose card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">Discount</p>
+                              <h3 class="card-title">Discount Categories</h3>
+                            </div>
+                      <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                       <ol class="item"   id="list0">
+                                <%= for carte <- @discount do %>
+                                <li style="font-size: 15px; height: 40px;" id="<%= carte.discountid %>"><%= carte.discname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                <% end %>
+                              </ol>
+                        
+                      </div>
+                    </div>
+                    </div>
+          
+              <div class="col-sm-6">
+                 <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">To be included in Discount Catalog</p>
+                              <h3 class="card-title">Discount Categories</h3>
+                            </div>
+                    <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                      <ol class="item" style="height: 300px; min-width: 300px;" id="list9">
+                      </ol>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+        <div class="card-header text-center">
+          <h3 class="card-title">
+            Discount Items
+          </h3>
+
+        </div>
+
+<input type="hidden" name="items">
+               <div class="row">
+
+                  <div class="col-sm-6">
+                    <div class="card card-stats">
+                      <div class="card-header card-header-rose card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">Discount</p>
+                              <h3 class="card-title">Discount Categories</h3>
+                            </div>
+                      <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                       <ol class="item"   id="list7">
+                                <%= for carte <- @discount_items do %>
+                                <li style="font-size: 15px; height: 40px;" id="<%= carte.discountitemsid %>"><%= carte.discitemname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;">(<%= carte.discname %>)</span></li>
+                                <% end %>
+                              </ol>
+                        
+                      </div>
+                    </div>
+                    </div>
+          
+              <div class="col-sm-6">
+                 <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">To be included in Discount Catalog</p>
+                              <h3 class="card-title">Discount Items</h3>
+                            </div>
+                    <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                      <ol class="item" style="height: 300px; min-width: 300px;" id="list8">
+                      </ol>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+       
+        </div>
+        <div class="card-footer">
+        <div class="mr-auto">
+                    <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                    </div>
+          <div class="ml-auto">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Next" type="submit">
+           
+          </div>
+          <div class="clearfix"></div>
+        </div>
+    
+    </div>
+</div>
+ </div>
+    </form>
+
+    <script type="text/javascript">
+       var value $("#select_dis_type").val();
+    alert(value);
+    </script>
+
+                                    

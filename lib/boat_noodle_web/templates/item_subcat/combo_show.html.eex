@@ -1,8 +1,5 @@
 <h2>Show Combo</h2>
 
-
-
-
 <div class="row">
 <div class="col-lg-12">
   <div class="card card-stats">
@@ -16,14 +13,13 @@
     <div class="card-body">
       <table class="table">
         <thead>
-          <tr>
-            <th></th>
+          <tr align="left">
+
             <th>Price Code</th>
             <th>Cat id</th>
   
             <th>Code</th>
             <th>Product Code</th>
-            <th>Product Name</th>
             <th>Part Code</th>
       
             <th>Price</th>
@@ -38,19 +34,19 @@
             <th>Is print?</th>
 
             <th>ID</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <% ci = @combo_items |> Enum.group_by(fn x -> x.combo_id end) %>
           <%= for same_item <- @same_items do %>
-          <tr>
-            <td><a href="/<%= @brand_name %>/edit_combo/<%= same_item.subcatid %>/<%= same_item.price_code %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a></td>
+          <tr align="left">
+
             <td><%= same_item.price_code %></td>
             <td><%= same_item.itemcatid %></td>
        
             <td><%= same_item.itemcode %></td>
              <td><%= same_item.product_code %></td>
-            <td><%= same_item.itemname %></td>
             <td><%= same_item.part_code %></td>
     
             <td><%= same_item.itemprice %></td>
@@ -65,8 +61,30 @@
             <td><%= same_item.include_spend %></td>
             <td><%= same_item.is_print %></td>
             <td><%= same_item.subcatid %></td>
+            <td>
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
+
+                    <i class="material-icons">bookmarks</i> Menu
+                  <div class="ripple-container"></div>
+                </button>
+                 <button type="button" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Printers">
+
+                    <i class="material-icons">cast</i> Printers
+                  <div class="ripple-container"></div>
+                </button>
+                <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>" data-toggle="modal" aria-label="price"  data-target="#model1"  data-original-title="Edit Item">
+
+                    <i class="material-icons">autorenew</i>Edit
+                  <div class="ripple-container"></div>
+                </button>
+               
+                          </td>
+
           </tr>
-            <%= if @combo_items != [] do %>
+
+
+
+ <%= if @combo_items != [] do %>
           <tr>
             <td colspan="13">
               <table class="table">
@@ -79,6 +97,7 @@
                     <th>Topup Price</th>
                     <th>Code</th>
                     <th>ItemSubcat ID</th>
+              
                   </tr>
                 </thead>
                 <tbody>
@@ -96,8 +115,11 @@
                       <% codes =  String.split(Integer.to_string(combo_item.combo_item_id), "") |> Enum.reject(fn x -> x == "" end) |> Enum.chunk_every(3)%>
                       <%= for code <- codes do %>
                       <%= Enum.join(code) %>,
+
                       <% end %>
+                     
                     </td>
+                    
                   </tr>
               <% end %>
                 </tbody>
@@ -130,6 +152,7 @@
             <td><%= same_item.is_print %></td>
             <td><%= same_item.subcatid %></td>
           </tr>
+           
           <% end %>
         </tbody>
       </table>
@@ -137,9 +160,189 @@
   
     </div>
 
-    <div class="card-footer">
-
-    </div>
   </div>
 </div>
 </div>
+
+
+
+<div class="row">
+  <div class="col-lg-3">
+    <div class="card">
+    <div class="card-header card-header-text card-header-primary">
+      <div class="card-text">
+        <h4 class="card-title">Menu Catalogs</h4>
+        <p class="card-category">Not Selected <span class="selected_id">none</span></p>
+      </div>
+    </div>
+      <div class="card-body" aria-label="menu_cat_list"> 
+        <ol class="not_selected_catalog">
+          
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="card">
+    <div class="card-header card-header-text card-header-success">
+      <div class="card-text">
+        <h4 class="card-title">Menu Catalogs</h4>
+        <p class="card-category">Selected for <span class="selected_id">none</span></p>
+      </div>
+    </div>
+      <div class="card-body"> 
+        <ol class="selected_catalog">
+          
+        </ol>
+        
+      </div>
+    </div>
+  </div>
+
+    <div class="col-lg-3">
+    <div class="card">
+    <div class="card-header card-header-text card-header-info">
+      <div class="card-text">
+        <h4 class="card-title">Printers</h4>
+        <p class="card-category">Selected for <span class="selected_id">none</span></p>
+      </div>
+    </div>
+      <div class="card-body selected_printer"> 
+    
+        
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="model1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document"  style="width: 1000px; margin-left: 550px;" >
+    <div class="modal-content"  style="width: 1000px;" >
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Price</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id = "modal_form1">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('button[data-original-title="Edit Printers"]').click(function() {
+    
+      $("div.selected_printer").html("");
+
+      var subcat_id = $(this).attr("subcat_id");
+      $("span.selected_id").html(subcat_id)
+      var brand = location.pathname.split("/")[1];
+      $.ajax({
+        url: "/" + brand + "/list_printer",
+        dataType: "json",
+        data: { subcat_id: subcat_id }
+      }).done(function(j) {
+
+        var branches = []
+        for(var key in j)
+        {
+            branches.push(key);
+        }
+
+        $(branches).each(function(k,branch){
+
+          var tags = j[branch]
+     
+          var html = "<div class='row'><div class='col-sm-12'><div class='form-group bmd-form-group'><label class='bmd-label-floating' style='font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;'>"+branch+"</label><select name='tag["+branch+"][id]' class='selectpicker' data-style='btn select-with-transition' title='Choose Printer' data-size='10' required=''></select></div></div></div>"
+          $("div.selected_printer").append(html)
+          $(tags).each(function(){
+            var op = "<option value='"+this.tag_id+"'>"+this.tagname+"</option>"
+            $('select[name="tag['+branch+'][id]"]').append(op)
+          })
+        })
+        $('.selectpicker').selectpicker({
+      
+          size: 10
+        });
+      });
+    });
+
+    $('button[data-original-title="Edit Menu"]').click(function() {
+      $("ol.not_selected_catalog").html("");
+      $("ol.selected_catalog").html("");
+
+      var subcatid = $(this).attr("subcat_id");
+      $("span.selected_id").html(subcatid)
+      var brand = location.pathname.split("/")[1];
+      $.ajax({
+        url: "/" + brand + "/list_menu_catalog",
+        dataType: "json",
+        data: { subcatid: subcatid }
+      }).done(function(j) {
+        var selected = j.selected;
+        $(selected).each(function() {
+          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
+          $("ol.selected_catalog").append(li);
+        });
+        var not_selected = j.not_selected;
+        $(not_selected).each(function() {
+          var li = "<li id='" + this.id + "'>" + this.name + "</li>";
+          $("ol.not_selected_catalog").append(li);
+        });
+      });
+    });
+
+    $("ol.not_selected_catalog").on("click", "li", function() {
+      var li = $(this);
+
+      var subcat_id = $("span.selected_id").html()
+      var tag_id = $(this).attr("id")
+      var brand = location.pathname.split("/")[1];
+        $.ajax({
+          url: "/"+brand+"/insert_into_catalog", 
+          dataType: "json",
+          data: {subcat_id: subcat_id, tag_id: tag_id}
+        }).done(function(j){
+          $(j).each(function(){
+         
+           
+          })
+        })
+      $("ol.selected_catalog").append(li);
+    });
+
+    $("ol.selected_catalog").on("click", "li", function() {
+      var li = $(this);
+      var subcat_id = $("span.selected_id").html()
+      var tag_id = $(this).attr("id")
+      var brand = location.pathname.split("/")[1];
+        $.ajax({
+          url: "/"+brand+"/remove_from_catalog", 
+          dataType: "json",
+          data: {subcat_id: subcat_id, tag_id: tag_id}
+        }).done(function(j){
+          $(j).each(function(){
+         
+           
+          })
+        })
+      $("ol.not_selected_catalog").append(li);
+    });
+  });
+
+
+
+
+
+</script>

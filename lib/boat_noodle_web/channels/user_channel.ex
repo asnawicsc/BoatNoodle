@@ -2556,6 +2556,134 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
+  def handle_in("combo_edit", payload, socket) do
+       id1=payload["subcat_id"]
+    id = payload["subcat_id"]|>String.to_integer
+    price_code = payload["price_code"]
+
+    
+    subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat,subcatid: id,price_code: price_code)
+    
+    combo = Repo.all(from s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1)
+
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.ItemSubcatView,
+        "edit_combo_modal.html",
+        subcatid: subcat.subcatid,
+        name: subcat.itemname,
+        price: subcat.itemprice,
+        combo: combo
+   
+      )
+
+    broadcast(socket, "show_combo_modal", %{
+      html: html
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("update_combo_price", payload, socket) do
+    
+
+    
+
+     map =
+      payload["map"]
+      |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
+      |> Enum.flat_map(fn x -> x end)
+      |> Enum.into(%{})
+      |> Enum.sort
+
+     a=for item <- map do
+
+          id=elem(item,0)|>String.split_at(9)|>elem(0)
+          c=elem(item,0)|>String.split_at(9)|>elem(1)
+          price= item|>elem(1)
+           
+            %{id: id,item: c, price: price}
+       
+     end|>Enum.group_by(fn x -> x.id end) 
+
+
+       t=a["id"]|>hd
+       id=t.price|>String.to_integer
+       r=a["name"]|>hd
+       name=r.price
+
+       s=a["price"]|>hd
+       price=s.price
+
+       brand_id=payload["brand_id"]|>String.to_integer
+
+ 
+
+
+ subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat,subcatid: id,brand_id: brand_id)
+
+        BN.update_item_subcat(subcat, %{itemname: name, itemprice: price})  
+
+
+     for insert <- a do
+   
+        if elem(insert,0) != "name" && elem(insert,0) != "price"  && elem(insert,0) != "id" do
+       
+       
+              id=elem(insert,0)|>String.to_integer
+                combo = Repo.all(from s in BoatNoodle.BN.ComboDetails, where: s.combo_item_id == ^id) |>hd
+                 a=for item <- elem(insert,1) do
+
+                    if item.item=="[cost_price]" do
+
+                       %{item: item.item,price: item.price}
+                     
+                   end
+                 end|>Enum.filter(fn x -> x !=nil end)|>hd
+
+                  b=for item <- elem(insert,1) do
+
+                    if item.item=="[top_up]" do
+
+                       %{item: item.item,price: item.price}
+                    end
+                 end|>Enum.filter(fn x -> x !=nil end)|>hd
+
+              unit_price= a.price 
+              top_up= b.price 
+
+             BN.update_combo_details(combo, %{top_up: top_up, unit_price: unit_price})
+
+        else
+
+       
+        end
+
+
+
+      end
+          
+  broadcast(socket, "updated_combo_price", %{
+   
+           
+          })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("select_target_cat", payload, socket) do
+
+IEx.pry
+
+
+
+    {:noreply, socket}
+
+  end
+
+
+
+
   defp authorized?(_payload) do
     true
   end

@@ -2207,4 +2207,49 @@ $('select#disc').on('change', function() {
         $("#backdrop").delay(500).fadeOut()
     })
 
+
+
+
+
+  $("button[aria-label='price']").click(function(){
+    var price = $(this).html() 
+    var id = $(this).attr('id')
+    var price_code = $(this).attr('name')
+
+    var subcat_id = id
+    
+
+    channel.push("combo_edit", {price_code: price_code, subcat_id: subcat_id, brand_id: window.currentBrand})
+  })
+
+  channel.on("show_combo_modal", payload => {
+    $("#modal_form1").html(payload.html);
+    $("button#submit_edit_form_combo").click(function(event){
+      event.preventDefault();
+      var fr= []
+      var fr = $("form[aria-label='edit_combo_price_form']").serializeArray();
+
+      channel.push("update_combo_price",{map: fr, brand_id: window.currentBrand})
+    })
+  })
+
+  channel.on("updated_combo_price", payload => {
+    $('#model1').modal('toggle');
+    $("#backdrop").fadeIn()
+     location.reload();
+     $("#backdrop").delay(500).fadeOut()
+   
+  })
+
+
+$("select#select_target_category").select(function(){
+
+  var selectBox = document.getElementById("select_target_category");
+  var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+
+     channel.push("select_target_cat", {selectedValue: selectedValue, brand_id: window.currentBrand})
+
+   })
+
+
 });

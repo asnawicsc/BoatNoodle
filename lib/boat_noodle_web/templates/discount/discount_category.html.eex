@@ -12,7 +12,7 @@
           <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
             <li>
 
-              <a href="/<%= @conn.params["brand"]%>/menu_item/new">New Discount Category</a>
+              <a href="/<%= @conn.params["brand"]%>/discount_category_new">New Discount Category</a>
 
 
             </li>

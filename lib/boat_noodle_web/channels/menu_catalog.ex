@@ -103,6 +103,7 @@ defmodule BoatNoodleWeb.MenuCatalog do
         items: item_list
       }
 
+
       case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
         {:ok, menu_catalog} ->
           broadcast(socket, "updated_catalog_price", %{
