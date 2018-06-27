@@ -27,6 +27,12 @@ defmodule BoatNoodleWeb.Router do
   end
 
   # Other scopes may use custom stacks.
+  scope "/api", BoatNoodleWeb do
+    pipe_through(:api)
+    get("/sales", PageController, :webhook_get)
+    post("/sales", PageController, :webhook_post)
+  end
+
   scope "/:brand/api", BoatNoodleWeb do
     pipe_through(:api)
     get("/sales", PageController, :webhook_get)
@@ -35,10 +41,11 @@ defmodule BoatNoodleWeb.Router do
 
   scope "/", BoatNoodleWeb do
     # Use the default browser stack
-    pipe_through(:report_layout)
+    pipe_through([:management, :report_layout])
 
+    get("/", PageController, :report_login)
+    post("/report_authenticate_login", PageController, :authenticate_login)
     get("/get_brands", PageController, :get_brands)
-    get("/reports/login", PageController, :report_login)
     get("/reports", PageController, :report_index)
     get("/top_sales", SalesController, :top_sales)
   end
@@ -83,8 +90,18 @@ defmodule BoatNoodleWeb.Router do
     get("/discount_insert_into_catalog", DiscountCatalogController, :discount_insert_into_catalog)
     get("/discount_remove_from_catalog", DiscountCatalogController, :discount_remove_from_catalog)
     get("/list_discount_catalog2", DiscountCatalogController, :list_discount_catalog2)
-    get("/discount_insert_into_catalog2", DiscountCatalogController, :discount_insert_into_catalog2)
-    get("/discount_remove_from_catalog2", DiscountCatalogController, :discount_remove_from_catalog2)
+
+    get(
+      "/discount_insert_into_catalog2",
+      DiscountCatalogController,
+      :discount_insert_into_catalog2
+    )
+
+    get(
+      "/discount_remove_from_catalog2",
+      DiscountCatalogController,
+      :discount_remove_from_catalog2
+    )
 
     resources("/tag", TagController)
     get("/check_printer", TagController, :check_printer)

@@ -1,14 +1,39 @@
 defmodule BoatNoodleWeb.PageController do
   use BoatNoodleWeb, :controller
+  use Task
   import Ecto.Query
   require IEx
 
+  def authenticate_login(conn, %{"username" => username, "password" => password}) do
+    user = Repo.get_by(User, username: username)
+
+    if user != nil do
+      p2 = String.replace(user.password, "$2y", "$2b")
+
+      if Comeonin.Bcrypt.checkpw(password, p2) do
+        conn
+        |> put_session(:user_id, user.id)
+        |> redirect(to: page_path(conn, :report_index))
+      else
+        conn
+        |> put_flash(:error, "Wrong password!")
+        |> redirect(to: page_path(conn, :report_login))
+      end
+    else
+      conn
+      |> put_flash(:error, "User not found")
+      |> redirect(to: page_path(conn, :report_login))
+    end
+  end
+
   def report_login(conn, params) do
-    render(conn, "index.html")
+    render(conn, "login.html")
   end
 
   def report_index(conn, params) do
-    render(conn, "index.html")
+    brands = Repo.all(from(b in Brand, select: %{name: b.domain_name, id: b.id}))
+
+    render(conn, "index.html", brands: brands)
   end
 
   def get_brands(conn, _params) do
@@ -24,7 +49,7 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def index2(conn, _params) do
-    render(conn, "index.html")
+    render(conn, "dashboard.html")
   end
 
   def webhook_get(conn, params) do
@@ -33,6 +58,9 @@ defmodule BoatNoodleWeb.PageController do
     cond do
       auth == [] ->
         send_resp(conn, 400, "please include username password.")
+
+      params["brand"] == nil ->
+        send_resp(conn, 400, "please include brand name.")
 
       params["branch_id"] == nil ->
         send_resp(conn, 400, "please include branch id.")
@@ -77,7 +105,6 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def webhook_post(conn, params) do
-    IO.inspect(params)
     a = params["details"] |> hd()
 
     sales_required_keys = [
@@ -216,6 +243,13 @@ defmodule BoatNoodleWeb.PageController do
                   case BN.create_sales_payment(sales_payment_params) do
                     {:ok, sales_payment} ->
                       conn
+
+                      Task.start_link(__MODULE__, :inform_sales_update, [
+                        sales.brand_id,
+                        sales.branchid,
+                        sales.created_at
+                      ])
+
                       send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
 
                     {:error, %Ecto.Changeset{} = changeset} ->
@@ -233,6 +267,45 @@ defmodule BoatNoodleWeb.PageController do
     else
       send_resp(conn, 507, "API failed to transaction. Check your data and try again.")
     end
+  end
+
+  def inform_sales_update(brand_id, branchid, created_at) do
+    topic = "sales:#{brand_id}_#{branchid}"
+    event = "update_sales_grandtotal"
+
+    # start_date = created_at |> DateTime.to_date()
+    # end_date = created_at |> DateTime.to_date() |> Timex.shift(days: 1)
+    start_date = Date.new(2018, 6, 14) |> elem(1)
+    end_date = Date.new(2018, 6, 15) |> elem(1)
+
+    outlet_sales =
+      Repo.all(
+        from(
+          sp in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: sp.salesid == s.salesid,
+          left_join: b in BoatNoodle.BN.Branch,
+          on: s.branchid == b.branchid,
+          where:
+            s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.branchid == ^branchid and
+              s.brand_id == ^brand_id,
+          group_by: s.branchid,
+          select: %{
+            brand_id: s.brand_id,
+            branch_id: s.branchid,
+            branchname: b.branchname,
+            sub_total: sum(sp.sub_total),
+            service_charge: sum(sp.service_charge),
+            gst_charge: sum(sp.gst_charge),
+            after_disc: sum(sp.after_disc),
+            grand_total: sum(sp.grand_total),
+            rounding: sum(sp.rounding),
+            pax: sum(s.pax)
+          }
+        )
+      )
+
+    BoatNoodleWeb.Endpoint.broadcast(topic, event, hd(outlet_sales))
   end
 
   def no_page_found(conn, _params) do

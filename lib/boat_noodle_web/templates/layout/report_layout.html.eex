@@ -20,41 +20,21 @@
   <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
   <!-- Documentation extras -->
   <!-- CSS Just for demo purpose, don't include it in your project -->
-  <!--   Core JS Files   -->
+<!--   Core JS Files   -->
 <script src="/assets/js/core/jquery.min.js"></script>
 <script src="/assets/js/core/popper.min.js"></script>
 <script src="/assets/js/bootstrap-material-design.js"></script>
 <script src="/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-
-  <!-- iframe removal -->
-</head>
-
-<body class=" ">
-
- 
-    
-      <div class="">
-<%= render @view_module, @view_template, assigns %>
-</div>
-
-    
-
-</body>
-
 <!--  Google Maps Plugin  -->
 
-<!--  Plugin for Date Time Picker and Full Calendar Plugin  -->
-<%# <script src="/assets/js/plugins/moment.min.js"></script> %>
-<!--	Plugin for the Datepicker, full documentation here: https://github.com/Eonasdan/bootstrap-datetimepicker -->
-<%# <script src="/assets/js/plugins/bootstrap-datetimepicker.min.js"></script> %>
-<!--	Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+
+<!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
 <script src="/assets/js/plugins/nouislider.min.js"></script>
-<!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+<!--  Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
 <script src="/assets/js/plugins/bootstrap-selectpicker.js"></script>
-<!--	Plugin for Tags, full documentation here: http://xoxco.com/projects/code/tagsinput/  -->
+<!--  Plugin for Tags, full documentation here: http://xoxco.com/projects/code/tagsinput/  -->
 <script src="/assets/js/plugins/bootstrap-tagsinput.js"></script>
-<!--	Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+<!--  Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
 <script src="/assets/js/plugins/jasny-bootstrap.min.js"></script>
 <!-- Plugins for presentation and navigation  -->
 <script src="/assets/assets-for-demo/js/modernizr.js"></script>
@@ -84,17 +64,33 @@
 <script src="/assets/js/plugins/jquery.datatables.js"></script>
 <!-- Sweet Alert 2 plugin, full documentation here: https://limonte.github.io/sweetalert2/ -->
 <script src="/assets/js/plugins/sweetalert2.js"></script>
-<!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
-<script src="/assets/js/plugins/jasny-bootstrap.min.js"></script>
-<!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
-<%# <script src="/assets/js/plugins/fullcalendar.min.js"></script> %>
-<!-- demo init -->
-<script src="/assets/js/plugins/demo.js"></script>
+
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="/js/jquery.animateNumber.min.js"></script>
+</head>
+
+
+<%= render @view_module, @view_template, assigns %>
+
+
+
+
 <script type="text/javascript">
+    window.userToken = "<%= assigns[:user_token] %>";
+  <%= if @conn.private.plug_session["user_id"] == nil do %>
+
+    window.currentUser = "lobby";
 
 
+  <% else %>
 
-
+    window.currentUser = '<%=  @conn.private.plug_session["user_id"] %>';
+  <% end %>
 </script>
 
+
+<script src="/js/phoenix.js"></script>
+
+
+<script src="/js/app.js"></script>
 </html>

@@ -40,7 +40,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbar">
         <ul class="navbar-nav" aria-label="various_brands">
 
-<li class="nav-item" id="reports"><a href="/reports/login" class="nav-link"><i class="material-icons">lock_open</i>Report<div class="ripple-container"></div></a></li>
+<li class="nav-item" id="reports"><a href="/" class="nav-link"><i class="material-icons">lock_open</i>Report<div class="ripple-container"></div></a></li>
           
     
         </ul>

@@ -28,7 +28,7 @@ defmodule BoatNoodle.UltiMigrator do
           "afterdisc" => "1111",
           "brand_id" => "1",
           "combo_id" => "1",
-          "created_at" => "2016-12-02 17:45:38",
+          "created_at" => "2018-06-14 17:45:38",
           "discountid" => "11",
           "is_void" => "0",
           "itemcustomid" => "3",
@@ -41,7 +41,7 @@ defmodule BoatNoodle.UltiMigrator do
           "remaks" => "1111",
           "remark" => "",
           "unit_price" => "111",
-          "updated_at" => "2016-12-02 17:45:38",
+          "updated_at" => "2018-06-14 17:45:38",
           "voidreason" => "",
           "void_by" => "0"
         }
@@ -52,7 +52,7 @@ defmodule BoatNoodle.UltiMigrator do
         "card_no" => "",
         "cash" => "222",
         "changes" => "0",
-        "created_at" => "2016-12-02 17:45:38",
+        "created_at" => "2018-06-14 17:45:38",
         "disc_amt" => "1",
         "discountid" => "1111",
         "gst_charge" => "3",
@@ -70,40 +70,30 @@ defmodule BoatNoodle.UltiMigrator do
         "sub_total" => "1111",
         "service_charge" => "1",
         "taxcode" => "",
-        "updated_at" => "2016-12-02 17:45:38",
+        "updated_at" => "2018-06-14 17:45:38",
         "voucher_code" => "11"
       },
       "sales" => %{
-        "branchid" => "13",
+        "branchid" => "46",
         "brand_id" => "1",
-        "created_at" => "2016-12-02 17:45:38",
-        "invoiceno" => "123456789",
+        "created_at" => "2018-06-14 17:45:38",
+        "invoiceno" => "123456790",
         "is_void" => "0",
         "pax" => "3",
         "remark" => "",
-        "salesdatetime" => "2016-12-02 17:48:10",
-        "salesdate" => "2016-12-02",
+        "salesdatetime" => "2018-06-14 17:48:10",
+        "salesdate" => "2018-06-14",
         "staffid" => "27",
         "tbl_no" => "1",
         "type" => "DINEIN",
-        "updated_at" => "2016-12-02 17:45:38",
+        "updated_at" => "2018-06-14 17:45:38",
         "voidreason" => "",
         "void_by" => "0"
       }
     }
 
     json_map = Poison.encode!(sales_map)
-
-    # uri = "http://110.4.42.45/boatnoodle/api/sales?fields=sales_id&branch_id=13"
-    uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=13"
-
-    HTTPoison.get!(
-      uri,
-      [{"Content-Type", "application/json"}],
-      hackney: [basic_auth: {"admin@test.com", "api_key"}]
-    )
-
-    uri = "http://110.4.42.45/boatnoodle/api/sales"
+    uri = "localhost:4000/boatnoodle/api/sales"
 
     HTTPoison.post!(
       uri,
@@ -113,6 +103,17 @@ defmodule BoatNoodle.UltiMigrator do
       timeout: 50_000,
       recv_timeout: 50_000
     )
+
+    # uri = "http://110.4.42.45/boatnoodle/api/sales?fields=sales_id&branch_id=13"
+    # uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=46"
+
+    HTTPoison.get!(
+      uri,
+      [{"Content-Type", "application/json"}],
+      hackney: [basic_auth: {"admin@test.com", "api_key"}]
+    )
+
+    uri = "http://110.4.42.45/boatnoodle/api/sales"
   end
 
   def run(arg) do

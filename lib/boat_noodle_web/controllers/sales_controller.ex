@@ -18,8 +18,10 @@ defmodule BoatNoodleWeb.SalesController do
         dat = "Weekly"
 
       "daily" ->
-        start_date = Date.utc_today() |> Timex.shift(months: -3)
-        end_date = Date.utc_today() |> Timex.shift(months: -3)
+        # start_date = Date.utc_today
+        #   end_date = Date.utc_today
+        start_date = Date.new(2018, 6, 14) |> elem(1)
+        end_date = Date.new(2018, 6, 14) |> elem(1)
         dat = "Daily"
     end
 
@@ -34,6 +36,7 @@ defmodule BoatNoodleWeb.SalesController do
           where: s.salesdate >= ^start_date and s.salesdate <= ^end_date,
           group_by: s.branchid,
           select: %{
+            brand_id: s.brand_id,
             branch_id: s.branchid,
             branchname: b.branchname,
             sub_total: sum(sp.sub_total),

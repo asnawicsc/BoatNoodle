@@ -1983,58 +1983,6 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
-  # def handle_in("generate_sales_charts", payload, socket) do
-  #   year = payload["year"]
-  #   month = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
-  #   branch = Repo.get(BoatNoodle.BN.Branch, payload["branch_id"])
-
-  #   monthly_sales =
-  #     for each_month <- month do
-  #       start_date = Date.from_iso8601!(year <> "-" <> each_month <> "-01")
-  #       last_day = Date.days_in_month(start_date) |> to_string()
-  #       end_date = Date.from_iso8601!(year <> "-" <> each_month <> "-" <> last_day)
-
-  #       Repo.all(
-  #         from(
-  #           p in BoatNoodle.BN.SalesPayment,
-  #           left_join: s in BoatNoodle.BN.Sales,
-  #           on: p.salesid == s.salesid,
-  #           where:
-  #             s.branchid == ^payload["branch_id"] and s.salesdate >= ^start_date and
-  #               s.salesdate <= ^end_date,
-  #           select: %{
-  #             grand_total: sum(p.grand_total),
-  #             sales_date: s.salesdate
-  #           }
-  #         )
-  #       )
-  #     end
-  #     |> List.flatten()
-  #     |> Enum.reject(fn x -> x.grand_total == nil end)
-  #     |> Enum.map(fn x ->
-  #       %{
-  #         grand_total: Decimal.to_float(x.grand_total),
-  #         month: Timex.month_name(x.sales_date.month)
-  #       }
-  #     end)
-
-  #   html =
-  #     Phoenix.View.render_to_string(
-  #       BoatNoodleWeb.SalesView,
-  #       "sales_chart_template.html",
-  #       conn: socket
-  #     )
-
-  #   broadcast(socket, "show_sales_chart", %{
-  #     html: html,
-  #     monthly_sales: Poison.encode!(monthly_sales),
-  #     branchname: branch.branchname,
-  #     year: year
-  #   })
-
-  #   {:noreply, socket}
-  # end
-
   defp cashinout(branches, s_date, e_date) do
     a = Date.from_iso8601!(s_date)
     b = Date.from_iso8601!(e_date)
@@ -2549,22 +2497,19 @@ defmodule BoatNoodleWeb.UserChannel do
       discount = Repo.all(from(s in BoatNoodle.BN.DiscountItem, where: s.discountid == ^id))
     end
 
-    IEx.pry()
-
     broadcast(socket, "generate_discount_item2", %{discount: discount})
 
     {:noreply, socket}
   end
 
   def handle_in("combo_edit", payload, socket) do
-       id1=payload["subcat_id"]
-    id = payload["subcat_id"]|>String.to_integer
+    id1 = payload["subcat_id"]
+    id = payload["subcat_id"] |> String.to_integer()
     price_code = payload["price_code"]
 
-    
-    subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat,subcatid: id,price_code: price_code)
-    
-    combo = Repo.all(from s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1)
+    subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: id, price_code: price_code)
+
+    combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1))
 
     html =
       Phoenix.View.render_to_string(
@@ -2574,7 +2519,6 @@ defmodule BoatNoodleWeb.UserChannel do
         name: subcat.itemname,
         price: subcat.itemprice,
         combo: combo
-   
       )
 
     broadcast(socket, "show_combo_modal", %{
@@ -2585,104 +2529,78 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("update_combo_price", payload, socket) do
-    
-
-    
-
-     map =
+    map =
       payload["map"]
       |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
-      |> Enum.sort
+      |> Enum.sort()
 
-     a=for item <- map do
+    a =
+      for item <- map do
+        id = elem(item, 0) |> String.split_at(9) |> elem(0)
+        c = elem(item, 0) |> String.split_at(9) |> elem(1)
+        price = item |> elem(1)
 
-          id=elem(item,0)|>String.split_at(9)|>elem(0)
-          c=elem(item,0)|>String.split_at(9)|>elem(1)
-          price= item|>elem(1)
-           
-            %{id: id,item: c, price: price}
-       
-     end|>Enum.group_by(fn x -> x.id end) 
-
-
-       t=a["id"]|>hd
-       id=t.price|>String.to_integer
-       r=a["name"]|>hd
-       name=r.price
-
-       s=a["price"]|>hd
-       price=s.price
-
-       brand_id=payload["brand_id"]|>String.to_integer
-
- 
-
-
- subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat,subcatid: id,brand_id: brand_id)
-
-        BN.update_item_subcat(subcat, %{itemname: name, itemprice: price})  
-
-
-     for insert <- a do
-   
-        if elem(insert,0) != "name" && elem(insert,0) != "price"  && elem(insert,0) != "id" do
-       
-       
-              id=elem(insert,0)|>String.to_integer
-                combo = Repo.all(from s in BoatNoodle.BN.ComboDetails, where: s.combo_item_id == ^id) |>hd
-                 a=for item <- elem(insert,1) do
-
-                    if item.item=="[cost_price]" do
-
-                       %{item: item.item,price: item.price}
-                     
-                   end
-                 end|>Enum.filter(fn x -> x !=nil end)|>hd
-
-                  b=for item <- elem(insert,1) do
-
-                    if item.item=="[top_up]" do
-
-                       %{item: item.item,price: item.price}
-                    end
-                 end|>Enum.filter(fn x -> x !=nil end)|>hd
-
-              unit_price= a.price 
-              top_up= b.price 
-
-             BN.update_combo_details(combo, %{top_up: top_up, unit_price: unit_price})
-
-        else
-
-       
-        end
-
-
-
+        %{id: id, item: c, price: price}
       end
-          
-  broadcast(socket, "updated_combo_price", %{
-   
-           
-          })
+      |> Enum.group_by(fn x -> x.id end)
+
+    t = a["id"] |> hd
+    id = t.price |> String.to_integer()
+    r = a["name"] |> hd
+    name = r.price
+
+    s = a["price"] |> hd
+    price = s.price
+
+    brand_id = payload["brand_id"] |> String.to_integer()
+
+    subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: id, brand_id: brand_id)
+
+    BN.update_item_subcat(subcat, %{itemname: name, itemprice: price})
+
+    for insert <- a do
+      if elem(insert, 0) != "name" && elem(insert, 0) != "price" && elem(insert, 0) != "id" do
+        id = elem(insert, 0) |> String.to_integer()
+
+        combo =
+          Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_item_id == ^id)) |> hd
+
+        a =
+          for item <- elem(insert, 1) do
+            if item.item == "[cost_price]" do
+              %{item: item.item, price: item.price}
+            end
+          end
+          |> Enum.filter(fn x -> x != nil end)
+          |> hd
+
+        b =
+          for item <- elem(insert, 1) do
+            if item.item == "[top_up]" do
+              %{item: item.item, price: item.price}
+            end
+          end
+          |> Enum.filter(fn x -> x != nil end)
+          |> hd
+
+        unit_price = a.price
+        top_up = b.price
+
+        BN.update_combo_details(combo, %{top_up: top_up, unit_price: unit_price})
+      else
+      end
+    end
+
+    broadcast(socket, "updated_combo_price", %{})
 
     {:noreply, socket}
   end
 
   def handle_in("select_target_cat", payload, socket) do
-
-IEx.pry
-
-
-
     {:noreply, socket}
-
   end
-
-
-
 
   defp authorized?(_payload) do
     true
