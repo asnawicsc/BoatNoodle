@@ -10,7 +10,7 @@ defmodule BoatNoodleWeb.DiscountController do
 
   def index(conn, _params) do
     discount = BN.list_discount()
-
+brand = BN.get_brand_id(conn)
     discount_details =
       Repo.all(
         from(
@@ -28,24 +28,15 @@ defmodule BoatNoodleWeb.DiscountController do
       Repo.all(
         from(
           s in DiscountItem,
-          left_join: b in Discount,
-          where: b.discountid == s.discountid,
-          left_join: c in ItemCat,
-          where: s.target_cat == c.itemcatid,
-          left_join: d in ItemSubcat,
-          where: s.is_targetmenuitems == d.subcatid,
           select: %{
             discountitemsid: s.discountitemsid,
             discitemsname: s.discitemsname,
             description: s.descriptions,
-            discamtpercentage: s.discamtpercentage,
-            discountcategory: b.discname,
-            target_menu_category: c.itemcatname,
-            target_menu_item: d.itemname,
-            activate: s.disc_qty
+            discamtpercentage: s.discamtpercentage,where: s.brand_id==^brand
+           
           }
         )
-      )
+      )|>Enum.uniq
 
     discount_catalog =
       Repo.all(
@@ -312,29 +303,19 @@ item_subcat=Repo.all(from b in BoatNoodle.BN.ItemSubcat, select: %{subcatid: b.s
       Repo.all(
         from(
           s in DiscountItem,
-          left_join: b in Discount,
-          where: b.discountid == s.discountid,
-          left_join: c in ItemCat,
-          where: s.target_cat == c.itemcatid,
-          left_join: d in ItemSubcat,
-          where: s.is_targetmenuitems == d.subcatid and s.discountitemsid==^discount_items.discountitemsid,
-          select: %{
-            discountitemsid: s.discountitemsid,
-            discitemsname: s.discitemsname,
-            description: s.descriptions,
-            disctype: s.disctype,
-            discountcategory: b.discname,
-            disc_qty: s.disc_qty,
-            target_menu_category: c.itemcatname,
-            target_menu_item: d.itemname,
-            activate: s.disc_qty,
-            min_spend: s.min_spend
-          }
+          where:  s.discountitemsid==^discount_items.discountitemsid,
+          left_join: b in ItemCat, on: s.target_cat==b.itemcatid,
+          left_join: c in DiscountType, on: s.disctype==c.disctypename,
+          left_join: e in Discount, on: s.discountid==e.discountid,
+          select: %{descriptions: s.descriptions,disc_qty: s.disc_qty,
+          discamtpercentage: s.discamtpercentage,discitemsname: s.discitemsname,
+          discountid: s.discountid,discountitemsid: s.discountitemsid,disctype: s.disctype,
+          is_categorize: s.is_categorize,is_targetmenuitems: s.is_targetmenuitems,is_visable: s.is_visable,
+          min_spend: s.min_spend,target_cat: s.target_cat,itemcatname: b.itemcatname,disctypeid: c.disctypeid,discname: e.discname}
+         
+       
         )
       )|>hd
-
-
-
 
     render(
       conn,
@@ -364,6 +345,91 @@ item_subcat=Repo.all(from b in BoatNoodle.BN.ItemSubcat, select: %{subcatid: b.s
       discount_catalog: discount_catalog,discounts: discounts,all_discount_catalog: all_discount_catalog
     
     )
+  end
+
+  def edit_discount_catalog_detail(conn, params) do
+      brand = BN.get_brand_id(conn)
+
+      id=params["id"]|>String.to_integer
+      name=params["name"]
+    discount_catalog = Repo.get_by(BoatNoodle.BN.DiscountCatalog,id: id,brand_id: brand)
+
+    case BN.update_discount_catalog(discount_catalog, %{name: name}) do
+      {:ok, discount_catalog} ->
+        conn
+        |> put_flash(:info, "Discount Catalog updated successfully.")
+        |> redirect(to: discount_path(conn, :discount_catalog_details, BN.get_domain(conn), id))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "discount_catalog_details.html", discount_catalog: discount_catalog, changeset: changeset)
+    end
+  end
+
+  def edit_discount_category_detail(conn, params) do
+      brand = BN.get_brand_id(conn)
+
+      id=params["discountid"]|>String.to_integer
+      discname=params["name"]
+      descriptions=params["descriptions"]
+      discount_type=params["discount_type"]|>String.to_integer
+      discamtpercentage=params["discamtpercentage"]
+      is_visable=params["is_visable"]|>String.to_integer
+       discount = Repo.get_by(BoatNoodle.BN.Discount,discountid: id,brand_id: brand)
+
+       # discount_type=BN.get_discount_type!(discount_type)
+
+    case BN.update_discount(discount, %{is_categorize: discount_type,discname: discname,descriptions: descriptions,discamtpercentage: discamtpercentage,is_visable: is_visable}) do
+      {:ok, discount} ->
+        conn
+        |> put_flash(:info, "Discount Category updated successfully.")
+        |> redirect(to: discount_path(conn, :discount_category_details, BN.get_domain(conn), id))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "discount_category_details.html", discount: discount, changeset: changeset)
+    end
+  end
+
+   def edit_discount_item_details(conn, params) do
+brand = BN.get_brand_id(conn)
+
+   descriptions= params["descriptions"]
+   disc_qty= params["disc_qty"]|>String.to_integer
+   discamtpercentage= params["discamtpercentage"]
+   discitemsname= params["discitemsname"]
+   discount_amount= params["discount_amount"]
+   discountid= params["discountid"]|>String.to_integer
+   discountitemsid=params["discountitemsid"]
+   disctype=params["disctype"]|>String.to_integer
+   is_targetmenuitems=params["is_targetmenuitems"]
+   min_spend=params["min_spend"]
+   target_cat=params["target_cat"]|>String.to_integer
+   voucher_amount=params["voucher_amount"]
+
+   discount_type=Repo.get_by(BoatNoodle.BN.DiscountType,disctypeid: disctype)
+   disctype= discount_type.disctypename
+ discount_item = Repo.get_by(BoatNoodle.BN.DiscountItem,discountitemsid: discountitemsid,brand_id: brand)
+ case BN.update_discount_item(discount_item, 
+  %{descriptions: descriptions,
+  disc_qty: disc_qty,
+  descriptions: descriptions,
+  discamtpercentage: discamtpercentage,
+  discitemsname: discitemsname,
+  discountid: discountid,
+  discountitemsid: discountitemsid,
+  disctype: disctype,
+  is_targetmenuitems: is_targetmenuitems,
+  target_cat: target_cat
+  }) do
+      {:ok, discount_item} ->
+        conn
+        |> put_flash(:info, "Discount Item updated successfully.")
+        |> redirect(to: discount_path(conn, :discount_item_details, BN.get_domain(conn), discountitemsid))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "discount_item_details.html", discount_item: discount_item, changeset: changeset)
+    end
+
+     
   end
 
   def new(conn, _params) do

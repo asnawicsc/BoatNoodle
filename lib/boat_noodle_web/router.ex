@@ -85,6 +85,10 @@ defmodule BoatNoodleWeb.Router do
     get("/list_discount_catalog2", DiscountCatalogController, :list_discount_catalog2)
     get("/discount_insert_into_catalog2", DiscountCatalogController, :discount_insert_into_catalog2)
     get("/discount_remove_from_catalog2", DiscountCatalogController, :discount_remove_from_catalog2)
+    post("/edit_discount_catalog_detail", DiscountController, :edit_discount_catalog_detail)
+    post("/edit_discount_category_detail", DiscountController, :edit_discount_category_detail)
+    post("/edit_discount_item_details", DiscountController, :edit_discount_item_details)
+
 
     resources("/tag", TagController)
     get("/check_printer", TagController, :check_printer)

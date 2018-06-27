@@ -10,14 +10,14 @@
                 </div>
                 <div class="card-body ">
 
-                  <form method="post" action="/<%= BN.get_domain(@conn)%>/edit_discount_detail" class="form-horizontal">
+                  <form method="post" action="/<%= BN.get_domain(@conn)%>/edit_discount_category_detail" class="form-horizontal">
                      <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-
+                  <input type="hidden" name="discountid" value="<%= @discount.discountid %>">
                     <div class="row">
                       <label class="col-sm-2 col-form-label">Discount Name</label>
                       <div class="col-sm-5">
                         <div class="form-group">
-                          <input type="text" name="disc[name]" value="<%= @discount.discname %>" class="form-control">
+                          <input type="text" name="name" value="<%= @discount.discname %>" class="form-control">
                         </div>
                       </div>
                     </div>
@@ -25,7 +25,7 @@
                       <label class="col-sm-2 col-form-label">Description</label>
                       <div class="col-sm-5">
                         <div class="form-group">
-                          <input type="text" name="disc[descriptions]" value="<%= @discount.descriptions %>" class="form-control">
+                          <input type="text" name="descriptions" value="<%= @discount.descriptions %>" class="form-control">
                         </div>
                       </div>
                     </div>
@@ -35,33 +35,46 @@
                         <div class="col-sm-5">
                             <div class="form-group">
 
-                                <select class="selectpicker" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc3();" value="<%= @discount.is_categorize %>" data-size="7" >
+                                  <%= if  @discount.is_categorize == 0  do   %>
+
+                                <select class="selectpicker" name="discount_type" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc3();" value="<%= @discount.is_categorize %>" data-size="7" >
                            
-                                            <option value="0"  >Other Discount
+                                            <option  value="0" selected="selected"  >Other Discount
                                             </option>
                                              <option value="1"  >Full Amount Discount
                                             </option>
                                         
-                                        </select>
+                                </select>
+                                <% else %>
+
+                                 <select class="selectpicker" name="discount_type" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc3();" value="<%= @discount.is_categorize %>" data-size="7" >
+                           
+                                            <option  value="0"  >Other Discount
+                                            </option>
+                                             <option value="1" selected="selected" >Full Amount Discount
+                                            </option>
+                                        
+                                </select>
+
+                                <% end %>
                             </div>
                         </div>
                       </div>
 
-
+ 
 
 
                      <div class="row" id="amt_now">
                       <label class="col-sm-2 col-form-label">Amount Percentage</label>
                       <div class="col-sm-5">
                         <div class="form-group">
-                          <input type="text" name="disc[discamtpercentage]" value="<%= @discount.discamtpercentage %>" class="form-control">
+                          <input type="text" name="discamtpercentage" value="<%= @discount.discamtpercentage %>" class="form-control">
                         </div>
                       </div>
                     </div>
                       
          
 
-     
                 
                     <div class="row">
                       <label class="col-sm-2 col-form-label">Is Activate</label>
@@ -69,8 +82,17 @@
                         <div class="form-check">
                           <label class="form-check-label">
                              
-                            <input class="form-check-input" type="checkbox" id="is_visable" name="disc[is_visable]"  value="<%= @discount.is_visable %>" checked> Activate?
-                           
+                    
+
+                       <%= if  @discount.is_visable == 0  do   %>
+                   
+                              <input class="form-check-input" type="checkbox" id="is_visable" name="is_visable"  value="<%= @discount.is_visable %>" > Activate?
+                          <% else %>
+                        
+                             <input class="form-check-input" type="checkbox" id="is_visable" name="is_visable"  value="<%= @discount.is_visable %>" checked> Activate?
+
+                          <% end %> 
+
                             <span class="form-check-sign">
                               <span class="check"></span>
                             </span>
@@ -116,12 +138,12 @@
 
             </div>
             <div class="card-body" aria-label="menu_cat_list">
-                <ol class="not_selected_catalog">
+                <ol class="not_selected_catalog_category_details">
 
                 </ol>
             </div>
             <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All Category Details">
 
                     <i class="material-icons">fast_forward</i> Select All
                   <div class="ripple-container"></div>
@@ -138,13 +160,13 @@
                 </div>
             </div>
             <div class="card-body">
-                <ol class="selected_catalog">
+                <ol class="selected_catalog_category_details">
 
                 </ol>
 
             </div>
             <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All Category Details">
 
                     <i class="material-icons">fast_rewind</i> Unselect All
                   <div class="ripple-container"></div>
@@ -158,7 +180,27 @@
   
           $("#amt_now").hide();
 
+         var selectBox = document.getElementById("selectBox");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+
+            if (selectedValue == 1) {
+                $("#amt_now").show();
+
+
+
+            }
+            
+            if (selectedValue == 0) {
+                $("#amt_now").hide();
+
+
+
+            }
+
+
  
+var checkedValue = $('.checkbox:checked').val();
+    $("input[name='disc[is_visable]'").attr("value", checkedValue)
 
         function changeFunc3() {
             var selectBox = document.getElementById("selectBox");
@@ -194,21 +236,22 @@
             $("div[aria-label='item_detail']").toggleClass("hidding")
         })
 
-        $('button[data-original-title="Select All"]').click(function() {
-            var li_list = $('ol.not_selected_catalog').find("li")
+        $('button[data-original-title="Select All Category Details"]').click(function() {
+            var li_list = $('ol.not_selected_catalog_category_details').find("li")
             $(li_list).each(function() {
 
                 var li = $(this);
                 $(li).find(".fa").attr("class", "fa fa-minus-circle")
                 var subcat_id = $("span.selected_id").html()
-                var tag_id = $(this).attr("id")
+                var tag_id = $(this).attr("id");
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/insert_into_catalog",
+                    url: "/" + brand + "/discount_insert_into_catalog",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
-                        tag_id: tag_id
+                         tag_id: tag_id
+                      
                     }
                 }).done(function(j) {
                     $(j).each(function() {
@@ -216,27 +259,28 @@
 
                     })
                 })
-                $("ol.selected_catalog").append(li);
+                $("ol.selected_catalog_category_details").append(li);
             })
 
 
         })
 
-        $('button[data-original-title="Unselect All"]').click(function() {
-            var li_list = $('ol.selected_catalog').find("li")
+        $('button[data-original-title="Unselect All Category Details"]').click(function() {
+            var li_list = $('ol.selected_catalog_category_details').find("li")
             $(li_list).each(function() {
 
                 var li = $(this);
                 $(li).find(".fa").attr("class", "fa fa-plus-circle")
                 var subcat_id = $("span.selected_id").html()
-                var tag_id = $(this).attr("id")
+                var tag_id = $(this).attr("id");
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/remove_from_catalog",
+                    url: "/" + brand + "/discount_remove_from_catalog",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
                         tag_id: tag_id
+
                     }
                 }).done(function(j) {
                     $(j).each(function() {
@@ -244,7 +288,7 @@
 
                     })
                 })
-                $("ol.not_selected_catalog").append(li);
+                $("ol.not_selected_catalog_category_details").append(li);
             })
 
 
@@ -252,44 +296,48 @@
 
         $('button[data-original-title="Edit Menu"]').click(function() {
             $("div[aria-label='item_detail']").toggleClass("hidding")
-            $("ol.not_selected_catalog").html("");
-            $("ol.selected_catalog").html("");
-
+            $("ol.not_selected_catalog_category_details").html("");
+            $("ol.selected_catalog_category_details").html("");
+ 
             var subcatid = $(this).attr("subcat_id");
+              var tag_id = $(this).attr("id");
             $("span.selected_id").html(subcatid)
             var brand = location.pathname.split("/")[1];
             $.ajax({
                 url: "/" + brand + "/list_discount_catalog",
                 dataType: "json",
                 data: {
-                    subcatid: subcatid
+                    subcatid: subcatid,
+                    tag_id: tag_id
+                  
                 }
             }).done(function(j) {
                 var selected = j.selected;
                 $(selected).each(function() {
                     var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
-                    $("ol.selected_catalog").append(li);
+                    $("ol.selected_catalog_category_details").append(li);
                 });
                 var not_selected = j.not_selected;
                 $(not_selected).each(function() {
                     var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
-                    $("ol.not_selected_catalog").append(li);
+                    $("ol.not_selected_catalog_category_details").append(li);
                 });
             });
         });
 
-        $("ol.not_selected_catalog").on("click", "li", function() {
+        $("ol.not_selected_catalog_category_details").on("click", "li", function() {
             var li = $(this);
             $(li).find(".fa").attr("class", "fa fa-minus-circle")
             var subcat_id = $("span.selected_id").html()
-            var tag_id = $(this).attr("id")
+            var tag_id = $(this).attr("id");
             var brand = location.pathname.split("/")[1];
             $.ajax({
                 url: "/" + brand + "/discount_insert_into_catalog",
                 dataType: "json",
                 data: {
                     subcat_id: subcat_id,
-                    tag_id: tag_id
+                     tag_id: tag_id
+          
                 }
             }).done(function(j) {
                 $(j).each(function() {
@@ -297,21 +345,22 @@
 
                 })
             })
-            $("ol.selected_catalog").append(li);
+            $("ol.selected_catalog_category_details").append(li);
         });
 
-        $("ol.selected_catalog").on("click", "li", function() {
+        $("ol.selected_catalog_category_details").on("click", "li", function() {
             var li = $(this);
             $(li).find(".fa").attr("class", "fa fa-plus-circle")
             var subcat_id = $("span.selected_id").html()
-            var tag_id = $(this).attr("id")
+            var tag_id = $(this).attr("id");
             var brand = location.pathname.split("/")[1];
             $.ajax({
                 url: "/" + brand + "/discount_remove_from_catalog",
                 dataType: "json",
                 data: {
                     subcat_id: subcat_id,
-                    tag_id: tag_id
+                     tag_id: tag_id
+
                 }
             }).done(function(j) {
                 $(j).each(function() {
@@ -319,7 +368,7 @@
 
                 })
             })
-            $("ol.not_selected_catalog").append(li);
+            $("ol.not_selected_catalog_category_details").append(li);
         });
 
 

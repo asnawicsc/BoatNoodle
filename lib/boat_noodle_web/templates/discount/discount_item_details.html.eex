@@ -3,8 +3,9 @@
 
 
 
-
-
+ <form method="post" action="/<%= @conn.params["brand"] %>/edit_discount_item_details" class="form-horizontal" aria-label="item_form">
+    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+ <input type="hidden" name="discountitemsid" value="<%= @discount_a.discountitemsid %>">
                 <div class="card-header card-header-rose card-header-text">
                     <div class="card-text">
                         <h4 class="card-title">Edit Discount Item</h4>
@@ -18,25 +19,33 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Discount Item</label>
-                                <input type="text" class="form-control" required="required" value="<%= @discount_a.discitemsname %>" name="item[discount_item]"  >
+                                <input type="text" class="form-control" required="required" value="<%= @discount_a.discitemsname %>" name="discitemsname"  >
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Description</label>
-                                <input type="text" class="form-control" value="<%= @discount_a.description %>" name="item[description]" required="required">
+                                <input type="text" class="form-control" value="<%= @discount_a.descriptions %>" name="descriptions" required="required">
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-sm-3">
-                          <select class="selectpicker" data-style="btn select-with-transition" onchange="changeFunc();" id="dis_type" value="<%= @discount_a.disctype %>"  name="item[discount_type]"  data-size="7">
-                                           
-                                           <%= for item <- @discount_type do %>
-                                             <option value="<%= item.disctypeid %>" ><%= item.disctypename %>
-                                            </option>
-                                           
+                          <select class="selectpicker" data-style="btn select-with-transition" onchange="changeFunc();" id="dis_type" value="<%= @discount_a.disctypeid %>"  name="disctype"  data-size="7">
+
+                            <%= for item <- @discount_type do %>
+                               <%=if item.disctypeid== @discount_a.disctypeid do %>
                                              
-                                          <% end %>
+                                             <option value="<%= item.disctypeid %>" selected="<%= @discount_a.disctypeid %>" ><%=item.disctypename %>
+                                            </option>
+
+                                          <%else %>
+
+                                          <option value="<%= item.disctypeid %>" ><%=item.disctypename %>
+                                            </option>
+
+                                           <% end %>
+                  
                                           
+                                          <% end%>
                                         </select>
                                     </div>
 
@@ -44,13 +53,21 @@
       
                     <div class="row justify-content-left" >
                       <div class="col-sm-3" id="discount_category">
-                          <select class="selectpicker" data-style="btn select-with-transition"  onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  title="Discount Category" data-size="7">
+                          <select class="selectpicker" data-style="btn select-with-transition"  onchange="select_target_category();" value="<%= @discount_a.discountid %>"  id="dis_cat" name="discountid" data-size="7">
                                            
                                            <%= for item <- @discount do %>
-                                             <option value="<%= item.discountid %>" ><%= item.discname %>
-                                            </option>
-                                           
+                                           <%=if item.discountid== @discount_a.discountid do %>
                                              
+                                             <option value="<%= item.discountid %>" selected="<%= @discount_a.discountid %>" ><%=item.discname %>
+                                            </option>
+
+                                          <%else %>
+
+                                          <option value="<%= item.discountid %>" ><%=item.discname %>
+                                            </option>
+
+                                           <% end %>
+
                                           <% end %>
                                           
                                         </select>
@@ -58,29 +75,29 @@
                       <div class="col-sm-3" id="discount_quantity">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Discount Quantity</label>
-                                <input type="number" class="form-control" name="item[discount_quantity]"  >
+                                <input type="number" step="0.01" value="<%= @discount_a.disc_qty %>" class="form-control" name="disc_qty"  >
                             </div>
                       </div>
                       <div class="col-sm-3" id="discount_percentage">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Discount Percentage</label>
-                                 <input type="number" class="form-control" name="item[discount_percentage]"  >
+                                 <input type="number" step="0.01" value="<%= @discount_a.discamtpercentage %>" class="form-control" name="discamtpercentage"  >
                             </div>
                       </div>
                        <div class="col-sm-3" id="voucher_amount">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Voucher Amount</label>
-                                  <input type="number" class="form-control" name="item[voucher_amount]"  >
+                                  <input type="number" step="0.01" value="<%= @discount_a.discamtpercentage %>" class="form-control" name="voucher_amount"  >
                             </div>
                       </div>
                       <div class="col-sm-3" id="discount_amount">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Discount Amount</label>
-                                  <input type="number" class="form-control" name="item[discount_amount]"  >
+                                  <input type="number" step="0.01" value="<%= @discount_a.discamtpercentage %>" class="form-control" name="discount_amount"  >
                             </div>
                       </div>
                       <div class="col-sm-3" id="target_category">
-                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="select_target_category" name="item[target_category]"  title="Target Category" data-size="7">
+                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" value="<%= @discount_a.target_cat %>"  id="select_target_category" name="target_cat"   data-size="7">
                                            
                                             <%= for item <- @categories do %>
                                              <option value="<%= item.id %>" ><%= item.name %>
@@ -95,7 +112,7 @@
 
                     <div class="row justify-content-left" >
                       <div class="col-sm-5" id="target_item">
-                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_item" name="item[target_item]"  title="Target Item" data-size="7">
+                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" value="<%= @discount_a.is_targetmenuitems %>" id="target_item" name="is_targetmenuitems"  data-size="7">
                                            
                                            <%= for item <- @item_subcat do %>
                                              <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
@@ -109,7 +126,7 @@
                       <div class="col-sm-3" id="minimum_spend">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
-                                <input type="text" class="form-control" name="item[minimum_spend]" >
+                                <input type="text" class="form-control" value="<%= @discount_a.min_spend %>"  name="min_spend" >
                             </div>
                         </div>
                       
@@ -123,7 +140,16 @@
                         <div class="col-sm-3">
                             <div class="form-check form-check-inline">
                           <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+
+                             <%= if  @discount_a.is_visable == 0  do   %>
+                   
+                               <input class="form-check-input" value="0" type="checkbox" name="is_visable" > Active?
+                          <% else %>
+                        
+                             <input class="form-check-input" value="1" type="checkbox" name="is_visable" checked="checked" > Active?
+
+                          <% end %> 
+                           
                             <span class="form-check-sign">
                               <span class="check"></span>
                             </span>
@@ -140,20 +166,75 @@
      
         <div class="card-footer">
         <div class="mr-auto">
-                    <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                   <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= @discount_a.discountitemsid %>" data-original-title="Edit Menu4">
+
+                    <i class="material-icons">bookmarks</i>Update Discount Catalog
+                  <div class="ripple-container"></div>
+                </button>
                     </div>
           <div class="ml-auto">
-            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Update" type="submit">
            
           </div>
           <div class="clearfix"></div>
         </div>
     
     </div>
-</div>
- </div>
+
+
     </form>
 
+
+
+<div aria-label="item_detail" class="row  ">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header card-header-text card-header-primary">
+                <div class="card-text">
+                    <h4 class="card-title">Discount Catalogs</h4>
+                    <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
+                </div>
+
+            </div>
+            <div class="card-body" aria-label="menu_cat_list">
+                <ol class="not_selected_catalog_items_details">
+
+                </ol>
+            </div>
+            <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All Items Details">
+
+                    <i class="material-icons">fast_forward</i> Select All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header card-header-text card-header-success">
+                <div class="card-text">
+                    <h4 class="card-title">Discount Catalogs</h4>
+                    <p class="card-category">Selected for <span class="selected_id">none</span></p>
+                </div>
+            </div>
+            <div class="card-body">
+                <ol class="selected_catalog_items_details">
+
+                </ol>
+
+            </div>
+            <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All Items Details">
+
+                    <i class="material-icons">fast_rewind</i> Unselect All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+  </div>   
+</div>
 <script type="text/javascript">
 $("#discount_category").hide();
 $("#discount_percentage").hide();
@@ -164,7 +245,96 @@ $("#minimum_spend").hide();
 $("#voucher_amount").hide();
 $("#discount_amount").hide();
 
+var selectBox = document.getElementById("dis_type");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+      if (selectedValue == 5) {
+    $("#discount_category").show();
+    $("#discount_quantity").show();
+    $("#target_category").show();
+    $("#target_item").show();
+    $("#minimum_spend").show();
 
+$("#voucher_amount").hide();
+$("#discount_percentage").hide();
+$("#discount_amount").hide();
+
+
+   }
+
+     if (selectedValue == 2) {
+    $("#discount_percentage").show();
+     $("#discount_category").show();
+     $("#minimum_spend").show();
+
+$("#voucher_amount").hide();
+$("#target_item").hide();
+$("#target_category").hide();
+$("#discount_quantity").hide();
+$("#discount_amount").hide();
+
+   }
+
+     if (selectedValue == 3) {
+    $("#voucher_amount").show();
+     $("#discount_category").show();
+     $("#minimum_spend").show();
+
+$("#discount_percentage").hide();
+$("#target_item").hide();
+$("#target_category").hide();
+$("#discount_quantity").hide();
+$("#discount_amount").hide();
+
+
+   }
+
+   if (selectedValue == 6) {
+
+    $("#minimum_spend").show();
+    $("#target_item").show();
+    $("#target_category").show();
+     $("#discount_percentage").show(); 
+ 
+
+    $("#discount_quantity").hide(); 
+$("#voucher_amount").hide();
+$("#discount_category").hide();
+$("#discount_amount").hide();
+
+
+   }
+
+    if (selectedValue == 1) {
+
+    $("#minimum_spend").show();
+    $("#target_item").show();
+    $("#target_category").show();
+    $("#discount_amount").show();
+
+     $("#discount_quantity").hide();   
+ $("#discount_percentage").hide();   
+$("#voucher_amount").hide();
+$("#discount_category").hide();
+
+   }
+
+
+    if (selectedValue == 4) {
+
+$("#discount_category").hide();
+$("#discount_percentage").hide();
+$("#discount_quantity").hide();
+$("#target_category").hide();
+$("#target_item").hide();
+$("#minimum_spend").hide();
+$("#voucher_amount").hide();
+$("#discount_amount").hide();
+
+
+   }
+
+var checkedValue = $('.checkbox:checked').val();
+    $("input[name='is_visable'").attr("value", checkedValue)
 
 
 function changeFunc() {
@@ -261,3 +431,154 @@ $("#discount_amount").hide();
 
 
   </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+
+
+
+
+        $("button[aria-label='item_summary']").click(function() {
+
+            $("div[aria-label='item_detail']").toggleClass("hidding")
+        })
+
+        $('button[data-original-title="Select All Items Details"]').click(function() {
+            var li_list = $('ol.not_selected_catalog_items_details').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+                $(li).find(".fa").attr("class", "fa fa-minus-circle")
+                var subcat_id = $("span.selected_id").html()
+                var tag_id = $(this).attr("id");
+                var brand = location.pathname.split("/")[1];
+                $.ajax({
+                    url: "/" + brand + "/discount_insert_into_catalog2",
+                    dataType: "json",
+                    data: {
+                        subcat_id: subcat_id,
+                         tag_id: tag_id
+                      
+                    }
+                }).done(function(j) {
+                    $(j).each(function() {
+
+
+                    })
+                })
+                $("ol.selected_catalog_items_details").append(li);
+            })
+
+
+        })
+
+        $('button[data-original-title="Unselect All Items Details"]').click(function() {
+            var li_list = $('ol.selected_catalog_items_details').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+                $(li).find(".fa").attr("class", "fa fa-plus-circle")
+                var subcat_id = $("span.selected_id").html()
+                var tag_id = $(this).attr("id");
+                var brand = location.pathname.split("/")[1];
+                $.ajax({
+                    url: "/" + brand + "/discount_remove_from_catalog2",
+                    dataType: "json",
+                    data: {
+                        subcat_id: subcat_id,
+                        tag_id: tag_id
+
+                    }
+                }).done(function(j) {
+                    $(j).each(function() {
+
+
+                    })
+                })
+                $("ol.not_selected_catalog_items_details").append(li);
+            })
+
+
+        })
+
+        $('button[data-original-title="Edit Menu4"]').click(function() {
+            $("div[aria-label='item_detail']").toggleClass("hidding")
+            $("ol.not_selected_catalog_items_details").html("");
+            $("ol.selected_catalog_items_details").html("");
+ 
+            var subcatid = $(this).attr("subcat_id");
+              var tag_id = $(this).attr("id");
+            $("span.selected_id").html(subcatid)
+            var brand = location.pathname.split("/")[1];
+            $.ajax({
+                url: "/" + brand + "/list_discount_catalog2",
+                dataType: "json",
+                data: {
+                    subcatid: subcatid,
+                    tag_id: tag_id
+                  
+                }
+            }).done(function(j) {
+                var selected = j.selected;
+                $(selected).each(function() {
+                    var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
+                    $("ol.selected_catalog_items_details").append(li);
+                });
+                var not_selected = j.not_selected;
+                $(not_selected).each(function() {
+                    var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
+                    $("ol.not_selected_catalog_items_details").append(li);
+                });
+            });
+        });
+
+        $("ol.not_selected_catalog_items_details").on("click", "li", function() {
+            var li = $(this);
+            $(li).find(".fa").attr("class", "fa fa-minus-circle")
+            var subcat_id = $("span.selected_id").html()
+            var tag_id = $(this).attr("id");
+            var brand = location.pathname.split("/")[1];
+            $.ajax({
+                url: "/" + brand + "/discount_insert_into_catalog2",
+                dataType: "json",
+                data: {
+                    subcat_id: subcat_id,
+                     tag_id: tag_id
+          
+                }
+            }).done(function(j) {
+                $(j).each(function() {
+
+
+                })
+            })
+            $("ol.selected_catalog_items_details").append(li);
+        });
+
+        $("ol.selected_catalog_items_details").on("click", "li", function() {
+            var li = $(this);
+            $(li).find(".fa").attr("class", "fa fa-plus-circle")
+            var subcat_id = $("span.selected_id").html()
+            var tag_id = $(this).attr("id");
+            var brand = location.pathname.split("/")[1];
+            $.ajax({
+                url: "/" + brand + "/discount_remove_from_catalog2",
+                dataType: "json",
+                data: {
+                    subcat_id: subcat_id,
+                     tag_id: tag_id
+
+                }
+            }).done(function(j) {
+                $(j).each(function() {
+
+
+                })
+            })
+            $("ol.not_selected_catalog_items_details").append(li);
+        });
+
+
+
+    });
+</script>
