@@ -90,6 +90,12 @@ defmodule BoatNoodleWeb.Router do
     get("/discount_insert_into_catalog", DiscountCatalogController, :discount_insert_into_catalog)
     get("/discount_remove_from_catalog", DiscountCatalogController, :discount_remove_from_catalog)
     get("/list_discount_catalog2", DiscountCatalogController, :list_discount_catalog2)
+     get("/list_discount_catalog3", DiscountCatalogController, :list_discount_catalog3)
+    get("/discount_insert_into_catalog3", DiscountCatalogController, :discount_insert_into_catalog3)
+    get("/discount_remove_from_catalog3", DiscountCatalogController, :discount_remove_from_catalog3)
+    get("/list_discount_catalog4", DiscountCatalogController, :list_discount_catalog4)
+    get("/discount_insert_into_catalog4", DiscountCatalogController, :discount_insert_into_catalog4)
+    get("/discount_remove_from_catalog4", DiscountCatalogController, :discount_remove_from_catalog4)
 
     get(
       "/discount_insert_into_catalog2",

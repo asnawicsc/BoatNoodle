@@ -453,7 +453,7 @@ $("#discount_amount").hide();
                 var tag_id = $(this).attr("id");
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/discount_insert_into_catalog2",
+                    url: "/" + brand + "/discount_insert_into_catalog4",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
@@ -482,7 +482,7 @@ $("#discount_amount").hide();
                 var tag_id = $(this).attr("id");
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/discount_remove_from_catalog2",
+                    url: "/" + brand + "/discount_remove_from_catalog4",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
@@ -511,7 +511,7 @@ $("#discount_amount").hide();
             $("span.selected_id").html(subcatid)
             var brand = location.pathname.split("/")[1];
             $.ajax({
-                url: "/" + brand + "/list_discount_catalog2",
+                url: "/" + brand + "/list_discount_catalog4",
                 dataType: "json",
                 data: {
                     subcatid: subcatid,
@@ -539,7 +539,7 @@ $("#discount_amount").hide();
             var tag_id = $(this).attr("id");
             var brand = location.pathname.split("/")[1];
             $.ajax({
-                url: "/" + brand + "/discount_insert_into_catalog2",
+                url: "/" + brand + "/discount_insert_into_catalog4",
                 dataType: "json",
                 data: {
                     subcat_id: subcat_id,
@@ -562,7 +562,7 @@ $("#discount_amount").hide();
             var tag_id = $(this).attr("id");
             var brand = location.pathname.split("/")[1];
             $.ajax({
-                url: "/" + brand + "/discount_remove_from_catalog2",
+                url: "/" + brand + "/discount_remove_from_catalog4",
                 dataType: "json",
                 data: {
                     subcat_id: subcat_id,

@@ -304,7 +304,7 @@ var checkedValue = $('.checkbox:checked').val();
             $("span.selected_id").html(subcatid)
             var brand = location.pathname.split("/")[1];
             $.ajax({
-                url: "/" + brand + "/list_discount_catalog",
+                url: "/" + brand + "/list_discount_catalog3",
                 dataType: "json",
                 data: {
                     subcatid: subcatid,
@@ -332,7 +332,7 @@ var checkedValue = $('.checkbox:checked').val();
             var tag_id = $(this).attr("id");
             var brand = location.pathname.split("/")[1];
             $.ajax({
-                url: "/" + brand + "/discount_insert_into_catalog",
+                url: "/" + brand + "/discount_insert_into_catalog3",
                 dataType: "json",
                 data: {
                     subcat_id: subcat_id,
@@ -355,7 +355,7 @@ var checkedValue = $('.checkbox:checked').val();
             var tag_id = $(this).attr("id");
             var brand = location.pathname.split("/")[1];
             $.ajax({
-                url: "/" + brand + "/discount_remove_from_catalog",
+                url: "/" + brand + "/discount_remove_from_catalog3",
                 dataType: "json",
                 data: {
                     subcat_id: subcat_id,
