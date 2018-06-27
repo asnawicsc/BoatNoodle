@@ -103,6 +103,10 @@ defmodule BoatNoodleWeb.Router do
       :discount_remove_from_catalog2
     )
 
+    post("/edit_discount_catalog_detail", DiscountController, :edit_discount_catalog_detail)
+    post("/edit_discount_category_detail", DiscountController, :edit_discount_category_detail)
+    post("/edit_discount_item_details", DiscountController, :edit_discount_item_details)
+
     resources("/tag", TagController)
     get("/check_printer", TagController, :check_printer)
     get("/toggle_printer", TagController, :toggle_printer)

@@ -101,6 +101,8 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     send_resp(conn, 200, json)
   end
 
+  
+
    def discount_remove_from_catalog2(conn, %{
         "brand" => brand,
         "subcat_id" => subcat_id,

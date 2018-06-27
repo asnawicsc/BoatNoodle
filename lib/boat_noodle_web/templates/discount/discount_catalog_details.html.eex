@@ -10,14 +10,14 @@
                 </div>
             </div>
             <div class="card-body ">
-                <form method="post" action="/<%= BN.get_domain(@conn)%>/edit_discount_detail" class="form-horizontal">
+                <form method="post" action="/<%= BN.get_domain(@conn)%>/edit_discount_catalog_detail" class="form-horizontal">
                     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-
+                  <input type="hidden" name="id" value="<%= @discount_catalog.id %>"> 
                     <div class="row">
                         <label class="col-sm-2 col-form-label">Discount Catalog Name</label>
                         <div class="col-sm-10">
                             <div class="form-group">
-                                <input type="text" name="disc[name]" value="<%= @discount_catalog.name %>" class="form-control">
+                                <input type="text" name="name" value="<%= @discount_catalog.name %>" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -55,12 +55,12 @@
 
             </div>
             <div class="card-body" aria-label="menu_cat_list">
-                <ol class="not_selected_catalog">
+                <ol class="not_selected_catalog_categories">
 
                 </ol>
             </div>
             <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All Categories">
 
                     <i class="material-icons">fast_forward</i> Select All
                   <div class="ripple-container"></div>
@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <ol class="selected_catalog">
+                <ol class="selected_catalog_categories">
 
                 </ol>
 
@@ -101,7 +101,7 @@
 
             </div>
             <div class="card-body" aria-label="menu_cat_list">
-                <ol class="not_selected_catalog2">
+                <ol class="not_selected_catalog_item">
 
                 </ol>
             </div>
@@ -123,7 +123,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <ol class="selected_catalog2">
+                <ol class="selected_catalog_item">
 
                 </ol>
 
@@ -154,8 +154,8 @@
             $("div[aria-label='item_detail']").toggleClass("hidding")
         })
 
-        $('button[data-original-title="Select All"]').click(function() {
-            var li_list = $('ol.not_selected_catalog').find("li")
+        $('button[data-original-title="Select All Categories"]').click(function() {
+            var li_list = $('ol.not_selected_catalog_categories').find("li")
             $(li_list).each(function() {
 
                 var li = $(this);
@@ -164,7 +164,7 @@
                 var tag_id = $(this).attr("id")
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/insert_into_catalog",
+                    url: "/" + brand + "/discount_insert_into_catalog",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
@@ -176,14 +176,14 @@
 
                     })
                 })
-                $("ol.selected_catalog").append(li);
+                $("ol.selected_catalog_categories").append(li);
             })
 
 
         })
 
         $('button[data-original-title="Unselect All"]').click(function() {
-            var li_list = $('ol.selected_catalog').find("li")
+            var li_list = $('ol.selected_catalog_categories').find("li")
             $(li_list).each(function() {
 
                 var li = $(this);
@@ -192,7 +192,7 @@
                 var tag_id = $(this).attr("id")
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/remove_from_catalog",
+                    url: "/" + brand + "/discount_remove_from_catalog",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
@@ -204,7 +204,7 @@
 
                     })
                 })
-                $("ol.not_selected_catalog").append(li);
+                $("ol.not_selected_catalog_categories").append(li);
             })
 
 
@@ -212,8 +212,8 @@
 
         $('button[data-original-title="Edit Menu"]').click(function() {
             $("div[aria-label='item_detail']").toggleClass("hidding")
-            $("ol.not_selected_catalog").html("");
-            $("ol.selected_catalog").html("");
+            $("ol.not_selected_catalog_categories").html("");
+            $("ol.selected_catalog_categories").html("");
 
             var subcatid = $(this).attr("subcat_id");
             $("span.selected_id").html(subcatid)
@@ -228,17 +228,17 @@
                 var selected = j.selected;
                 $(selected).each(function() {
                     var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
-                    $("ol.selected_catalog").append(li);
+                    $("ol.selected_catalog_categories").append(li);
                 });
                 var not_selected = j.not_selected;
                 $(not_selected).each(function() {
                     var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
-                    $("ol.not_selected_catalog").append(li);
+                    $("ol.not_selected_catalog_categories").append(li);
                 });
             });
         });
 
-        $("ol.not_selected_catalog").on("click", "li", function() {
+        $("ol.not_selected_catalog_categories").on("click", "li", function() {
             var li = $(this);
             $(li).find(".fa").attr("class", "fa fa-minus-circle")
             var subcat_id = $("span.selected_id").html()
@@ -257,10 +257,10 @@
 
                 })
             })
-            $("ol.selected_catalog").append(li);
+            $("ol.selected_catalog_categories").append(li);
         });
 
-        $("ol.selected_catalog").on("click", "li", function() {
+        $("ol.selected_catalog_categories").on("click", "li", function() {
             var li = $(this);
             $(li).find(".fa").attr("class", "fa fa-plus-circle")
             var subcat_id = $("span.selected_id").html()
@@ -279,12 +279,12 @@
 
                 })
             })
-            $("ol.not_selected_catalog").append(li);
+            $("ol.not_selected_catalog_categories").append(li);
         });
 
 
           $('button[data-original-title="Select All2"]').click(function() {
-            var li_list = $('ol.not_selected_catalog2').find("li")
+            var li_list = $('ol.not_selected_catalog_item').find("li")
             $(li_list).each(function() {
 
                 var li = $(this);
@@ -293,7 +293,7 @@
                 var tag_id = $(this).attr("id")
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/insert_into_catalog2",
+                    url: "/" + brand + "/discount_insert_into_catalog2",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
@@ -305,14 +305,14 @@
 
                     })
                 })
-                $("ol.selected_catalog").append(li);
+                $("ol.selected_catalog_item").append(li);
             })
 
 
         })
 
         $('button[data-original-title="Unselect All2"]').click(function() {
-            var li_list = $('ol.selected_catalog').find("li")
+            var li_list = $('ol.selected_catalog_item').find("li")
             $(li_list).each(function() {
 
                 var li = $(this);
@@ -321,7 +321,7 @@
                 var tag_id = $(this).attr("id")
                 var brand = location.pathname.split("/")[1];
                 $.ajax({
-                    url: "/" + brand + "/remove_from_catalog2",
+                    url: "/" + brand + "/discount_remove_from_catalog2",
                     dataType: "json",
                     data: {
                         subcat_id: subcat_id,
@@ -333,7 +333,7 @@
 
                     })
                 })
-                $("ol.not_selected_catalog").append(li);
+                $("ol.not_selected_catalog_item").append(li);
             })
 
 
@@ -341,8 +341,8 @@
 
         $('button[data-original-title="Edit Menu"]').click(function() {
             $("div[aria-label='item_detail']").toggleClass("hidding")
-            $("ol.not_selected_catalog2").html("");
-            $("ol.selected_catalog2").html("");
+            $("ol.not_selected_catalog_item").html("");
+            $("ol.selected_catalog_item").html("");
 
             var subcatid = $(this).attr("subcat_id");
             $("span.selected_id").html(subcatid)
@@ -357,17 +357,17 @@
                 var selected = j.selected;
                 $(selected).each(function() {
                     var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
-                    $("ol.selected_catalog2").append(li);
+                    $("ol.selected_catalog_item").append(li);
                 });
                 var not_selected = j.not_selected;
                 $(not_selected).each(function() {
                     var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
-                    $("ol.not_selected_catalog2").append(li);
+                    $("ol.not_selected_catalog_item").append(li);
                 });
             });
         });
 
-        $("ol.not_selected_catalog2").on("click", "li", function() {
+        $("ol.not_selected_catalog_item").on("click", "li", function() {
             var li = $(this);
             $(li).find(".fa").attr("class", "fa fa-minus-circle")
             var subcat_id = $("span.selected_id").html()
@@ -386,10 +386,10 @@
 
                 })
             })
-            $("ol.selected_catalog2").append(li);
+            $("ol.selected_catalog_item").append(li);
         });
 
-        $("ol.selected_catalog2").on("click", "li", function() {
+        $("ol.selected_catalog_item").on("click", "li", function() {
             var li = $(this);
             $(li).find(".fa").attr("class", "fa fa-plus-circle")
             var subcat_id = $("span.selected_id").html()
@@ -408,7 +408,7 @@
 
                 })
             })
-            $("ol.not_selected_catalog2").append(li);
+            $("ol.not_selected_catalog_item").append(li);
         });
 
 
