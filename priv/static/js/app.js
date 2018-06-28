@@ -32,6 +32,25 @@ if (localStorage.getItem("bn_user") != null) {
 
 $(document).ready(function(){
 
+  channel.on("append_api_log", payload => {
+    var messages = payload.messages
+$("div.jumbotron").html("")
+    $(messages).each(function(){
+      $("div.jumbotron").append("<p>"+this.time+"<div class='badge badge-warning'>"+this.username+"</div>: <ul aria-label='"+this.id+"'></ul></p>")
+        msg = JSON.parse(this.message) 
+        var id = this.id
+         $(msg).each(function(){
+            $.map(this, function(k, i){
+               var li = "<li>"+i+":"+k+"</li>"
+       
+              $("ul[aria-label='"+id+"']").append(li)
+            })
+         })
+
+    })
+  })
+
+
     $("a#logout").click(function(){
       localStorage.removeItem("bn_user")
     })

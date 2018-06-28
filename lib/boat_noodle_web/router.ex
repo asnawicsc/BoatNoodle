@@ -222,6 +222,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/user_role", UserRoleController)
     resources("/voiditems", VoidItemsController)
     resources("/salespayment", SalesPaymentController)
+    resources "/api_log", ApiLogController
     get("/*path", PageController, :no_page_found)
   end
 end

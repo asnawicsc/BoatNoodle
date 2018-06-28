@@ -4344,4 +4344,100 @@ defmodule BoatNoodle.BN do
   def change_brand(%Brand{} = brand) do
     Brand.changeset(brand, %{})
   end
+
+  alias BoatNoodle.BN.ApiLog
+
+  @doc """
+  Returns the list of api_log.
+
+  ## Examples
+
+      iex> list_api_log()
+      [%ApiLog{}, ...]
+
+  """
+  def list_api_log do
+    Repo.all(ApiLog)
+  end
+
+  @doc """
+  Gets a single api_log.
+
+  Raises `Ecto.NoResultsError` if the Api log does not exist.
+
+  ## Examples
+
+      iex> get_api_log!(123)
+      %ApiLog{}
+
+      iex> get_api_log!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_api_log!(id), do: Repo.get!(ApiLog, id)
+
+  @doc """
+  Creates a api_log.
+
+  ## Examples
+
+      iex> create_api_log(%{field: value})
+      {:ok, %ApiLog{}}
+
+      iex> create_api_log(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_api_log(attrs \\ %{}) do
+    %ApiLog{}
+    |> ApiLog.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a api_log.
+
+  ## Examples
+
+      iex> update_api_log(api_log, %{field: new_value})
+      {:ok, %ApiLog{}}
+
+      iex> update_api_log(api_log, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_api_log(%ApiLog{} = api_log, attrs) do
+    api_log
+    |> ApiLog.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ApiLog.
+
+  ## Examples
+
+      iex> delete_api_log(api_log)
+      {:ok, %ApiLog{}}
+
+      iex> delete_api_log(api_log)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_api_log(%ApiLog{} = api_log) do
+    Repo.delete(api_log)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking api_log changes.
+
+  ## Examples
+
+      iex> change_api_log(api_log)
+      %Ecto.Changeset{source: %ApiLog{}}
+
+  """
+  def change_api_log(%ApiLog{} = api_log) do
+    ApiLog.changeset(api_log, %{})
+  end
 end

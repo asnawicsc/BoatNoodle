@@ -9,7 +9,7 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-
+BoatNoodle.UltiMigrator.test_api
 "
 ALTER TABLE `posgb_boatnoodle`.`tag_tbl` 
 ADD COLUMN `branch_id` INT NOT NULL AFTER `created_at`,

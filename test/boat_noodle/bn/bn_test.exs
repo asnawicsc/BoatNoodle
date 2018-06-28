@@ -3532,4 +3532,64 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = Bn.change_brand(brand)
     end
   end
+
+  describe "api_log" do
+    alias BoatNoodle.BN.ApiLog
+
+    @valid_attrs %{message: "some message"}
+    @update_attrs %{message: "some updated message"}
+    @invalid_attrs %{message: nil}
+
+    def api_log_fixture(attrs \\ %{}) do
+      {:ok, api_log} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_api_log()
+
+      api_log
+    end
+
+    test "list_api_log/0 returns all api_log" do
+      api_log = api_log_fixture()
+      assert BN.list_api_log() == [api_log]
+    end
+
+    test "get_api_log!/1 returns the api_log with given id" do
+      api_log = api_log_fixture()
+      assert BN.get_api_log!(api_log.id) == api_log
+    end
+
+    test "create_api_log/1 with valid data creates a api_log" do
+      assert {:ok, %ApiLog{} = api_log} = BN.create_api_log(@valid_attrs)
+      assert api_log.message == "some message"
+    end
+
+    test "create_api_log/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_api_log(@invalid_attrs)
+    end
+
+    test "update_api_log/2 with valid data updates the api_log" do
+      api_log = api_log_fixture()
+      assert {:ok, api_log} = BN.update_api_log(api_log, @update_attrs)
+      assert %ApiLog{} = api_log
+      assert api_log.message == "some updated message"
+    end
+
+    test "update_api_log/2 with invalid data returns error changeset" do
+      api_log = api_log_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_api_log(api_log, @invalid_attrs)
+      assert api_log == BN.get_api_log!(api_log.id)
+    end
+
+    test "delete_api_log/1 deletes the api_log" do
+      api_log = api_log_fixture()
+      assert {:ok, %ApiLog{}} = BN.delete_api_log(api_log)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_api_log!(api_log.id) end
+    end
+
+    test "change_api_log/1 returns a api_log changeset" do
+      api_log = api_log_fixture()
+      assert %Ecto.Changeset{} = BN.change_api_log(api_log)
+    end
+  end
 end

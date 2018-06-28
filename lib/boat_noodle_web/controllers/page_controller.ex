@@ -69,6 +69,7 @@ defmodule BoatNoodleWeb.PageController do
         send_resp(conn, 400, "please include sales id in field.")
 
       params["branch_id"] != nil and params["branch_id"] != nil and auth != [] ->
+
         branch_id = params["branch_id"]
         brand = params["brand"]
         fields = params["sales_id"]
@@ -175,8 +176,13 @@ defmodule BoatNoodleWeb.PageController do
       "brand_id"
     ]
     auth = conn.req_headers |> Enum.filter(fn x -> elem(x, 0) == "authorization" end)
+    credentials = auth |> hd() |> elem(1) |> String.split(" ") |> List.last |> Base.decode64! |> String.split(":") 
+    username = credentials |> List.first 
+    password = credentials |> List.last
 
-    if auth != []  do
+    user = Repo.get_by(User, username: username, password: password)
+     
+    if auth != [] and user != nil do
       if Enum.all?(sales_required_keys, &Map.has_key?(params["sales"], &1)) &&
            Enum.all?(salesdetail_required_keys, &Map.has_key?(a, &1)) &&
            Enum.all?(salespayment_required_keys, &Map.has_key?(params["payment"], &1)) == true do
@@ -233,18 +239,18 @@ defmodule BoatNoodleWeb.PageController do
           sales_exist == nil ->
             case BN.create_sales(sales_params) do
               {:ok, sales} ->
-                conn
-
+            
+                Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), username])
                 sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
 
                 case BN.create_sales_master(sales_master_params) do
                   {:ok, sales_master} ->
-                    conn
+                         Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), username])
                     sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
 
                     case BN.create_sales_payment(sales_payment_params) do
                       {:ok, sales_payment} ->
-                        conn
+                        Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), username])
 
                         Task.start_link(__MODULE__, :inform_sales_update, [
                           sales.brand_id,
@@ -270,10 +276,21 @@ defmodule BoatNoodleWeb.PageController do
         send_resp(conn, 507, "API failed to transaction. Check your data and try again.")
       end
     else 
-       send_resp(conn, 400, "please include username password.")
+       send_resp(conn, 400, "user credentials are incorrect.")
 
     end
 
+  end
+
+  def log_api(message, username) do
+    message = message |> Map.to_list |> Enum.reject(fn x -> elem(x, 1) == nil end)  |> List.delete_at(0) |> List.delete_at(0) |> Enum.map(fn {k,v} -> %{Atom.to_string(k) => v} end) |> Poison.encode!
+    a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username}) 
+    Repo.insert(a)
+
+    messages = Repo.all(from a in ApiLog, order_by: [desc: a.id], select: %{id: a.id, message: a.message, username: a.username, time: a.inserted_at}, limit: 20)
+      topic = "user:1"
+      event = "append_api_log"
+      BoatNoodleWeb.Endpoint.broadcast(topic, event, %{messages: messages})
   end
 
   def inform_sales_update(brand_id, branchid, created_at) do
