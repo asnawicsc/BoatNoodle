@@ -99,12 +99,12 @@ defmodule BoatNoodle.UltiMigrator do
         "created_at" => "2018-06-14 17:45:38",
         "invoiceno" => "123456790",
         "is_void" => "0",
-        "pax" => "3",
+    
         "remark" => "",
         "salesdatetime" => "2018-06-14 17:48:10",
         "salesdate" => "2018-06-14",
         "staffid" => "27",
-        "tbl_no" => "1",
+        "tbl_no" => "2",
         "type" => "DINEIN",
         "updated_at" => "2018-06-14 17:45:38",
         
@@ -113,8 +113,8 @@ defmodule BoatNoodle.UltiMigrator do
     }
 
     json_map = Poison.encode!(sales_map)
-# uri = "https://gummypos.resertech.com/boatnoodle/api/sales"
-uri = "localhost:4000/boatnoodle/api/sales"
+uri = "https://gummypos.resertech.com/boatnoodle/api/sales"
+# uri = "localhost:4000/boatnoodle/api/sales"
     HTTPoison.post!(
       uri,
       json_map,
