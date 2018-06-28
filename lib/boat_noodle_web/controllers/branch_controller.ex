@@ -83,7 +83,7 @@ defmodule BoatNoodleWeb.BranchController do
   def get_api(conn, %{"brand" => brand, "id" => branch_id}) do
     branch = Repo.get_by(Branch, branchid: branch_id, brand_id: BN.get_brand_id(conn))
 
-    api_key = Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
+    api_key = Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y") |> Base.url_encode64()
     cg = Branch.changeset(branch, %{api_key: api_key})
     map = %{key: api_key} |> Poison.encode!()
 

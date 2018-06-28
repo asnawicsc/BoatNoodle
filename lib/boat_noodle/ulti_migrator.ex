@@ -42,8 +42,9 @@ defmodule BoatNoodle.UltiMigrator do
           "remark" => "",
           "unit_price" => "111",
           "updated_at" => "2018-06-14 17:45:38",
-          "voidreason" => "",
-          "void_by" => false
+          "voidreason" => "2",
+          "void_by" => "1",
+             "remark" => "none"
         },%{
           "afterdisc" => "1112",
           "brand_id" => "1",
@@ -62,8 +63,9 @@ defmodule BoatNoodle.UltiMigrator do
           "remark" => "",
           "unit_price" => "111",
           "updated_at" => "2018-06-14 17:45:38",
-          "voidreason" => "",
-          "void_by" => "0"
+          "voidreason" => "2",
+          "void_by" => "0",
+             "remark" => "none"
         }
       ],
       "payment" => %{
@@ -99,7 +101,7 @@ defmodule BoatNoodle.UltiMigrator do
         "created_at" => "2018-06-14 17:45:38",
         "invoiceno" => "123456790",
         "is_void" => "0",
-    
+        "pax" => "20",
         "remark" => "",
         "salesdatetime" => "2018-06-14 17:48:10",
         "salesdate" => "2018-06-14",
@@ -107,6 +109,10 @@ defmodule BoatNoodle.UltiMigrator do
         "tbl_no" => "2",
         "type" => "DINEIN",
         "updated_at" => "2018-06-14 17:45:38",
+        "void_by" => "1",
+        "voidreason" => "none",
+        "remark" => "none"
+
         
        
       }
@@ -115,24 +121,24 @@ defmodule BoatNoodle.UltiMigrator do
     json_map = Poison.encode!(sales_map)
 
 # uri = "https://gummypos.resertech.com/boatnoodle/api/sales?user=alvis&key=JDJ5JDEwJElCRGhIYXNMZGZ6S0QvWUo1ZzBMemVOU0VTNXdmdnZVSGVZOHZXeGhqOXY3dW9Xb0JJRWZX"
-uri = "localhost:4000/boatnoodle/api/sales?user=alvis&key=JDJ5JDEwJElCRGhIYXNMZGZ6S0QvWUo1ZzBMemVOU0VTNXdmdnZVSGVZOHZXeGhqOXY3dW9Xb0JJRWZX"
-    HTTPoison.post!(
-      uri,
-      json_map,
-      [{"Content-Type", "application/json"}],
+# uri = "localhost:4000/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+    # HTTPoison.post!(
+    #   uri,
+    #   json_map,
+    #   [{"Content-Type", "application/json"}],
  
-      timeout: 50_000,
-      recv_timeout: 50_000
-    )
+    #   timeout: 50_000,
+    #   recv_timeout: 50_000
+    # )
 
     # # uri = "http://110.4.42.45/boatnoodle/api/sales?fields=sales_id&branch_id=13"
-    # # uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=46"
-    #     # uri = "http://110.4.42.45/boatnoodle/api/sales"
-    # HTTPoison.get!(
-    #   uri,
-    #   [{"Content-Type", "application/json"}],
-    #   hackney: [basic_auth: {"admin@test.com", "api_key"}]
-    # )
+    uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=46&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+        # uri = "http://110.4.42.45/boatnoodle/api/sales"
+    HTTPoison.get!(
+      uri,
+      [{"Content-Type", "application/json"}],
+      hackney: [basic_auth: {"admin@test.com", "api_key"}]
+    )
   end
 
   def run(arg) do

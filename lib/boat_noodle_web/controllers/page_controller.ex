@@ -54,13 +54,10 @@ defmodule BoatNoodleWeb.PageController do
 
   def webhook_get(conn, params) do
    
-
     cond do
       params["key"]  == nil ->
         send_resp(conn, 400, "please include key .")
-      params["user"] == nil  ->
-        send_resp(conn, 400, "please include username .")
-
+  
       params["brand"] == nil ->
         send_resp(conn, 400, "please include brand name.")
 
@@ -70,38 +67,51 @@ defmodule BoatNoodleWeb.PageController do
       params["fields"] == nil ->
         send_resp(conn, 400, "please include sales id in field.")
 
-      params["branch_id"] != nil and params["branch_id"] != nil and params["key"] != nil and params["user"] != nil ->
-        branch_id = params["branch_id"]
-        brand = params["brand"]
-        fields = params["sales_id"]
-        bb = Repo.get_by(Brand, domain_name: brand)
-        branch = Repo.get_by(Branch, branchid: branch_id, brand_id: bb.id)
+      params["branch_id"] != nil and params["branch_id"] != nil and params["key"] != nil and params["code"] != nil ->
+        brb = Repo.get_by(Branch, branchcode: params["code"] , api_key: params["key"] )
+        if brb != nil do
+            branch_id = params["branch_id"]
+            brand = params["brand"]
+            fields = params["sales_id"]
+            bb = Repo.get_by(Brand, domain_name: brand)
+            branch = Repo.get_by(Branch, branchid: branch_id, brand_id: bb.id)
 
-        if branch != nil do
-          invoiceno =
-            Repo.all(
-              from(
-                s in Sales,
-                where: s.branchid == ^branch_id and s.brand_id == ^bb.id,
-                select: %{
-                  invoiceno: s.invoiceno
-                },
-                order_by: [s.invoiceno]
-              )
-            )
-            |> Enum.map(fn x -> x.invoiceno end)
-            |> Enum.map(fn x -> String.to_integer(x) end)
-            |> Enum.max()
+            if branch != nil do
+              invoiceno =
+                Repo.all(
+                  from(
+                    s in Sales,
+                    where: s.branchid == ^branch_id and s.brand_id == ^bb.id,
+                    select: %{
+                      invoiceno: s.invoiceno
+                    },
+                    order_by: [s.invoiceno]
+                  )
+                )
+                |> Enum.map(fn x -> x.invoiceno end)
+                |> Enum.map(fn x -> String.to_integer(x) end)
+                |> Enum.max()
 
-          id =
-            (invoiceno + 1)
-            |> Integer.to_string()
+              id =
+                (invoiceno + 1)
+                |> Integer.to_string()
 
-          salesid = branch.branchcode <> "" <> id
-          json_map = %{salesid: salesid} |> Poison.encode!()
-          send_resp(conn, 200, json_map)
-        else
-          send_resp(conn, 400, "branch doesnt exist.")
+              salesid = branch.branchcode <> "" <> id
+              json_map = %{salesid: salesid} |> Poison.encode!()
+
+               message = List.insert_at(conn.req_headers, 0, {"sales id", "#{salesid}"})
+                log_error_api(message, "API GET - sales")
+              send_resp(conn, 200, json_map)
+            else
+            message = List.insert_at(conn.req_headers, 0, {"branch", "db cant find branch"})
+            log_error_api(message, "API GET")
+              send_resp(conn, 400, "branch doesnt exist.")
+            end
+          else 
+            message = List.insert_at(conn.req_headers, 0, {"authentication", "wrong combination"})
+            log_error_api(message, "API GET")
+       
+            send_resp(conn, 500, "branch doesnt exist.")
         end
     end
   end
@@ -113,15 +123,15 @@ defmodule BoatNoodleWeb.PageController do
 
     cond do
       params["key"] == nil ->
-        message = List.insert_at(conn.req_headers, 0, {"user", "key value is empty"})
+        message = List.insert_at(conn.req_headers, 0, {"api key", "key value is empty"})
         log_error_api(message, "API POST")
         send_resp(conn, 400, "please include key .")
-      params["user"] == nil  ->
-        message = List.insert_at(conn.req_headers, 0, {"user", "user value is empty"})
+      params["code"] == nil  ->
+        message = List.insert_at(conn.req_headers, 0, {"branch code", "code value is empty"})
         log_error_api(message, "API POST")
-        send_resp(conn, 400, "please include username .")
+        send_resp(conn, 400, "please include code .")
       true ->
-        user = Repo.get_by(User, username: params["user"] , password: Base.url_decode64!(params["key"]) )
+        user = Repo.get_by(Branch, branchcode: params["code"] , api_key: params["key"] )
 
         if user != nil do
 
@@ -180,7 +190,7 @@ defmodule BoatNoodleWeb.PageController do
             cond do
               sales_exist != nil ->
                 message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
-                log_error_api(message, "API POST")
+                log_error_api(message, "API POST - sales")
                 send_resp(conn, 501, "Sales id exist.")
 
               sales_exist == nil ->
@@ -188,7 +198,7 @@ defmodule BoatNoodleWeb.PageController do
                   {:ok, sales} ->
                     sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
 
-                    Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["user"]])
+                    Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
 
                     sd =
                       for sales_master_params <- sales_master_params_list do
@@ -196,7 +206,7 @@ defmodule BoatNoodleWeb.PageController do
 
                         case BN.create_sales_master(sales_master_params) do
                           {:ok, sales_master} ->
-                            Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), params["user"]])
+                            Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), params["code"]])
 
                             :ok
 
@@ -204,7 +214,7 @@ defmodule BoatNoodleWeb.PageController do
                             model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                             type = changeset.errors |> hd() |> elem(1) |> elem(0)
                             message = List.insert_at(conn.req_headers, 0, {model, type})
-                            log_error_api(message, "API POST")
+                            log_error_api(message, "API POST - sales details")
                             :error
                         end
                       end
@@ -220,12 +230,12 @@ defmodule BoatNoodleWeb.PageController do
                       Repo.delete(sales)
 
                       message = List.insert_at(conn.req_headers, 0, {"sales details", "one of it has issues, the created sales and other sales details will be deleted."})
-                      log_error_api(message, "API POST")
+                      log_error_api(message, "API POST - sales details")
                       send_resp(conn, 500, "Sales master failed to create.")
                     else
                       case BN.create_sales_payment(sales_payment_params) do
                         {:ok, sales_payment} ->
-                          Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), params["user"]])
+                          Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), params["code"]])
 
                           Task.start_link(__MODULE__, :inform_sales_update, [
                             sales.brand_id,
@@ -239,7 +249,7 @@ defmodule BoatNoodleWeb.PageController do
                           model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                           type = changeset.errors |> hd() |> elem(1) |> elem(0)
                           message = List.insert_at(conn.req_headers, 0, {model, type})
-                          log_error_api(message, "API POST")
+                          log_error_api(message, "API POST - sales payment")
                           send_resp(conn, 500, "Sales master failed to create.")
                           send_resp(conn, 500, "Sales payment failed to create.")
                       end
@@ -249,9 +259,9 @@ defmodule BoatNoodleWeb.PageController do
                     model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                     type = changeset.errors |> hd() |> elem(1) |> elem(0)
                     message = List.insert_at(conn.req_headers, 0, {model, type})
-                    log_error_api(message, "API POST")
-                    send_resp(conn, 500, "Sales master failed to create.")
-                    send_resp(conn, 500, "Sales failed to create. Please use the latest sales ID")
+                    log_error_api(message, "API POST - sales")
+          
+                    send_resp(conn, 500, "Sales to create. Please use the latest sales ID")
                 end
             end
 
@@ -260,12 +270,12 @@ defmodule BoatNoodleWeb.PageController do
      
 
             user == nil ->
-              message = List.insert_at(conn.req_headers, 0, {"user", "cant find the user"})
+              message = List.insert_at(conn.req_headers, 0, {"authentication", "code and key doesnt match"})
               log_error_api(message, "API POST")
               send_resp(conn, 400, "User not found.")
 
             true ->
-              message = List.insert_at(conn.req_headers, 0, {"user", "unknown"})
+              message = List.insert_at(conn.req_headers, 0, {"authentication", "unknown"})
               log_error_api(message, "API POST")
               send_resp(conn, 400, "user credentials are incorrect.")
           end

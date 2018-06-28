@@ -65,10 +65,9 @@ defmodule BoatNoodle.BN.SalesMaster do
       :afterdisc,
       :discountid,
       :combo_id,
-      :remark,
-      :voidreason,
+   
       :is_void,
-      :sales_details,
+  
       :orderid,
       :salesid,
       :itemid,
