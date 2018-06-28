@@ -91,7 +91,7 @@
 								 
 
 									<li class="nav-item">
-										<a class="nav-link" data-toggle="tab" href="#<%= data.itemcatcode %>" role="tablist">
+										<a class="nav-link" data-toggle="tab"  href="#<%= data.itemcatcode %>" role="tablist">
 										<i class="material-icons">dashboard</i> <%= data.itemcatname %>
 									  </a>
 									</li>
@@ -167,7 +167,7 @@
 
 																			</div>
 																			  <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo price">
 
                     <i class="material-icons">fast_forward</i> Select All
                   <div class="ripple-container"></div>
@@ -191,7 +191,7 @@
 																				</ol>
 																			</div>
 																			 <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo price">
 
                     <i class="material-icons">fast_rewind</i> Unselect All
                   <div class="ripple-container"></div>
@@ -235,3 +235,4 @@
 			</div>
 		</div>
 	</form>
+

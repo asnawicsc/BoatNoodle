@@ -251,6 +251,7 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("sales_transaction", payload, socket) do
+
     branchid = payload["branch_id"]
 
     if branchid == "0" do
@@ -260,7 +261,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sp.salesid,
-            where: s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+            where: s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id== sp.brand_id,
             select: %{
               salesdate: s.salesdate,
               invoiceno: s.invoiceno,
@@ -2598,7 +2599,20 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  def handle_in("select_target_cat", payload, socket) do
+  def handle_in("upload_voucher", payload, socket) do
+
+    discount= Repo.all(from s in Discount, select: %{discountid: s.discountid,discname: s.discname})
+     html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.ItemSubcatView,
+        "show_voucher.html",
+        discount: discount
+      )
+
+    broadcast(socket, "show_voucher", %{
+      html: html
+    })
+
     {:noreply, socket}
   end
 

@@ -69,6 +69,9 @@ defmodule BoatNoodleWeb.Router do
     get("/list_menu_catalog", MenuCatalogController, :list_menu_catalog)
     get("/insert_into_catalog", MenuCatalogController, :insert_into_catalog)
     get("/remove_from_catalog", MenuCatalogController, :remove_from_catalog)
+    get("/list_menu_catalog_combo", MenuCatalogController, :list_menu_catalog_combo)
+    get("/insert_into_catalog_combo", MenuCatalogController, :insert_into_catalog_combo)
+    get("/remove_from_catalog_combo", MenuCatalogController, :remove_from_catalog_combo)
     resources("/menu_catalog_master", MenuCatalogMasterController)
     resources("/discount_category", DiscountCategoryController)
     resources("/discount_item", DiscountItemController)
@@ -96,6 +99,9 @@ defmodule BoatNoodleWeb.Router do
     get("/list_discount_catalog4", DiscountCatalogController, :list_discount_catalog4)
     get("/discount_insert_into_catalog4", DiscountCatalogController, :discount_insert_into_catalog4)
     get("/discount_remove_from_catalog4", DiscountCatalogController, :discount_remove_from_catalog4)
+
+    get("/discount_catalog_copy/:id", DiscountController, :discount_catalog_copy)
+    post("/create_discount_catalog_copy", DiscountController, :create_discount_catalog_copy)
 
     get(
       "/discount_insert_into_catalog2",

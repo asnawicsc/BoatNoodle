@@ -29,19 +29,19 @@ defmodule BoatNoodleWeb.RemarkController do
   end
 
   def show(conn, %{"id" => id}) do
-    remark = BN.get_remark!(id)
+   remark = Repo.get_by(BoatNoodle.BN.Remark,itemsremarkid: id, brand_id: BN.get_brand_id(conn) )
     render(conn, "show.html", remark: remark)
   end
 
   def edit(conn, %{"id" => id}) do
-    remark = BN.get_remark!(id)
+    remark = Repo.get_by(BoatNoodle.BN.Remark,itemsremarkid: id, brand_id: BN.get_brand_id(conn) )
     changeset = BN.change_remark(remark)
     item = BN.list_itemcat() |> Enum.map(fn x -> {x.itemcatname, x.itemcatid} end)
     render(conn, "edit.html", remark: remark, changeset: changeset, item: item)
   end
 
   def update(conn, %{"id" => id, "remark" => remark_params}) do
-    remark = BN.get_remark!(id)
+    remark = Repo.get_by(BoatNoodle.BN.Remark,itemsremarkid: id, brand_id: BN.get_brand_id(conn) )
 
     case BN.update_remark(remark, remark_params) do
       {:ok, remark} ->
@@ -55,7 +55,7 @@ defmodule BoatNoodleWeb.RemarkController do
   end
 
   def delete(conn, %{"id" => id}) do
-    remark = BN.get_remark!(id)
+ remark = Repo.get_by(BoatNoodle.BN.Remark,itemsremarkid: id, brand_id: BN.get_brand_id(conn) )
     {:ok, _remark} = BN.delete_remark(remark)
 
     conn

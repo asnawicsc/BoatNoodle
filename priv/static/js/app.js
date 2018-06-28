@@ -275,7 +275,229 @@ $(document).ready(function(){
 
 
 
+  $('button[data-original-title="combo new"]').click(function() {
+            var li_list = $('ol#list1').find("li")
+             var list_ids = [] 
+            $(li_list).each(function() {
+              var id = $(this).attr("id")
+                 list_ids.push(id)
+                var li = $(this);
+      
+             
+              
+                $("ol#list2").append(li);
+            })
+
+               $("input[name='item[itemcode]']").val(list_ids)
+
+
+  })
+
+
+
+        $('button[data-original-title="un combo new"]').click(function() {
+            var li_list = $('ol#list2').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+           
+                
+                $("ol#list1").append(li);
+            })
+
+
+        })
+
+ // var list ={} 
+ //  $('button[data-original-title="combo price"]').click(function() {
+ //               var li_list = $('ol#a1').find("li")
+ //             var cat = $(this).parent().attr("aria-label")
+ //                 var sublist =[]
+ //            $("ol#a1[aria-label='"+cat+"'] li").each(function(){
+ //              var id = $(this).attr("id")
+ //              sublist.push(id)
+ //          list[cat]=sublist;
+ // var li = $(this);
+
+ //                $("ol#a1[aria-label='"+cat+"'] li").append(list[cat]);
+     
+     
+ //            })
+
+          
+ //    console.log(list[cat])
+ //    $("input[name='a["+cat+"][all_item]'").val(list[cat])
+
+ //  })
+
+
+
+ //  $('button[data-original-title="un combo price"]').click(function() {
+ //            var li_list = $('ol#a2').find("li")
+ //            $(li_list).each(function() {
+
+ //                var li = $(this);
+           
+                
+ //                $("ol#a1").append(li);
+ //            })
+
+
+ //  })
+
+
+
+  $('button[data-original-title="combo branch"]').click(function() {
+            var li_list = $('ol#list5').find("li")
+             var list_ids = [] 
+            $(li_list).each(function() {
+              var id = $(this).attr("id")
+                 list_ids.push(id)
+                var li = $(this);
+      
+             
+              
+                $("ol#list6").append(li);
+            })
+
+               $("input[name='branc[branch]']").val(list_ids)
+
+
+  })
+
+
+
+        $('button[data-original-title="un combo branch"]').click(function() {
+            var li_list = $('ol#list6').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+           
+                
+                $("ol#list5").append(li);
+            })
+
+
+        })
+
+
+
+  $('button[data-original-title="combo branch2"]').click(function() {
+            var li_list = $('ol#list7').find("li")
+             var list_ids = [] 
+            $(li_list).each(function() {
+              var id = $(this).attr("id")
+                 list_ids.push(id)
+                var li = $(this);
+      
+             
+              
+                $("ol#list8").append(li);
+            })
+
+               $("input[name='branc[branch]']").val(list_ids)
+
+
+  })
+
+
+
+        $('button[data-original-title="un combo branch2"]').click(function() {
+            var li_list = $('ol#list8').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+           
+                
+                $("ol#list7").append(li);
+            })
+
+
+        })
+
+
+
+          $('button[data-original-title="dis"]').click(function() {
+            var li_list = $('ol#dis1').find("li")
+             var list_ids = [] 
+            $(li_list).each(function() {
+              var id = $(this).attr("id")
+                 list_ids.push(id)
+                var li = $(this);
+      
+             
+              
+                $("ol#dis2").append(li);
+            })
+
+               $("input[name='cat']").val(list_ids)
+
+
+  })
+
+
+
+        $('button[data-original-title="un dis"]').click(function() {
+            var li_list = $('ol#dis2').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+           
+                
+                $("ol#dis1").append(li);
+            })
+
+
+        })
+
+
+ $('button[data-original-title="diss"]').click(function() {
+            var li_list = $('ol#dis3').find("li")
+             var list_ids = [] 
+            $(li_list).each(function() {
+              var id = $(this).attr("id")
+                 list_ids.push(id)
+                var li = $(this);
+      
+             
+              
+                $("ol#dis4").append(li);
+            })
+
+               $("input[name='items']").val(list_ids)
+
+
+  })
+
+
+
+        $('button[data-original-title="un diss"]').click(function() {
+            var li_list = $('ol#dis4').find("li")
+            $(li_list).each(function() {
+
+                var li = $(this);
+           
+                
+                $("ol#dis3").append(li);
+            })
+
+
+        })
+
+
+
+
+
+
+
+
+
+
+
 
 });
 
-      
+
+
+
+

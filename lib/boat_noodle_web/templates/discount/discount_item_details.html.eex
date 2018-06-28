@@ -5,7 +5,7 @@
 
  <form method="post" action="/<%= @conn.params["brand"] %>/edit_discount_item_details" class="form-horizontal" aria-label="item_form">
     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
- <input type="hidden" name="discountitemsid" value="<%= @discount_a.discountitemsid %>">
+ <input type="hidden" name="discountitemsid" id="discountitemsid" value="<%= @discount_a.discountitemsid %>">
                 <div class="card-header card-header-rose card-header-text">
                     <div class="card-text">
                         <h4 class="card-title">Edit Discount Item</h4>
@@ -166,11 +166,7 @@
      
         <div class="card-footer">
         <div class="mr-auto">
-                   <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= @discount_a.discountitemsid %>" data-original-title="Edit Menu4">
-
-                    <i class="material-icons">bookmarks</i>Update Discount Catalog
-                  <div class="ripple-container"></div>
-                </button>
+                  
                     </div>
           <div class="ml-auto">
             <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Update" type="submit">
@@ -186,7 +182,7 @@
 
 
 
-<div aria-label="item_detail" class="row  ">
+  <div aria-label="item_detail" class="row  ">
     <div class="col-lg-6">
         <div class="card">
             <div class="card-header card-header-text card-header-primary">
@@ -235,6 +231,7 @@
     </div>
   </div>   
 </div>
+
 <script type="text/javascript">
 $("#discount_category").hide();
 $("#discount_percentage").hide();
@@ -501,12 +498,12 @@ $("#discount_amount").hide();
 
         })
 
-        $('button[data-original-title="Edit Menu4"]').click(function() {
+       
             $("div[aria-label='item_detail']").toggleClass("hidding")
             $("ol.not_selected_catalog_items_details").html("");
             $("ol.selected_catalog_items_details").html("");
  
-            var subcatid = $(this).attr("subcat_id");
+            var subcatid = document.getElementById('discountitemsid').value;
               var tag_id = $(this).attr("id");
             $("span.selected_id").html(subcatid)
             var brand = location.pathname.split("/")[1];
@@ -530,7 +527,7 @@ $("#discount_amount").hide();
                     $("ol.not_selected_catalog_items_details").append(li);
                 });
             });
-        });
+      
 
         $("ol.not_selected_catalog_items_details").on("click", "li", function() {
             var li = $(this);

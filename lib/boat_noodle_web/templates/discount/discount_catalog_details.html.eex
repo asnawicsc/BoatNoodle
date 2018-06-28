@@ -1,5 +1,5 @@
 
-<div aria-label="item_detail" class="row">
+
     <div class="col-md-12">
         <div class="card ">
             <div class="card-header card-header-rose card-header-text">
@@ -22,15 +22,11 @@
                         </div>
                     </div>
           
-           
+            <input type="hidden" name="discount_catalog_id" id="discount_catalog_id" value="<%= @discount_catalog.id %>" class="form-control">
 
             <div class="card-footer">
                 <div class="mr-auto">
- <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= @discount_catalog.id %>" data-original-title="Edit Menu">
-
-                    <i class="material-icons">bookmarks</i>Update Discount Catalog
-                  <div class="ripple-container"></div>
-                </button>
+               
                 </div>
                 <div class="ml-auto">
                     <input class="btn btn-next btn-fill btn-rose btn-wd" name="" id="submit" value="Update Discount Catalog" type="submit">
@@ -41,102 +37,104 @@
         </div>
         </form>
     </div>
-</div>
 
 
-<div aria-label="item_detail" class="row hidding">
-    <div class="col-lg-3">
-        <div class="card">
-            <div class="card-header card-header-text card-header-primary">
-                <div class="card-text">
-                    <h4 class="card-title">Discount Categories</h4>
-                    <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
+
+    <div aria-label="item_detail" class="row hidding">
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header card-header-text card-header-primary">
+                    <div class="card-text">
+                        <h4 class="card-title">Discount Categories</h4>
+                        <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
+                    </div>
+
                 </div>
+                <div class="card-body" aria-label="menu_cat_list">
+                    <ol class="not_selected_catalog_categories">
 
+                    </ol>
+                </div>
+                <div class="card-footer">
+                    <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All Categories">
+
+                        <i class="material-icons">fast_forward</i> Select All
+                      <div class="ripple-container"></div>
+                    </button>
+                </div>
             </div>
-            <div class="card-body" aria-label="menu_cat_list">
-                <ol class="not_selected_catalog_categories">
+        </div>
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header card-header-text card-header-success">
+                    <div class="card-text">
+                        <h4 class="card-title">Discount Categories</h4>
+                        <p class="card-category">Selected for <span class="selected_id">none</span></p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ol class="selected_catalog_categories">
 
-                </ol>
+                    </ol>
+
+                </div>
+                <div class="card-footer">
+                    <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
+
+                        <i class="material-icons">fast_rewind</i> Unselect All
+                      <div class="ripple-container"></div>
+                    </button>
+                </div>
             </div>
-            <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All Categories">
+        </div>
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header card-header-text card-header-danger">
+                    <div class="card-text">
+                        <h4 class="card-title">Discount Items</h4>
+                        <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
+                    </div>
 
-                    <i class="material-icons">fast_forward</i> Select All
-                  <div class="ripple-container"></div>
-                </button>
+                </div>
+                <div class="card-body" aria-label="menu_cat_list">
+                    <ol class="not_selected_catalog_item">
+
+                    </ol>
+                </div>
+                <div class="card-footer">
+                    <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm show_menu_cata" data-original-title="Select All2">
+
+                        <i class="material-icons">fast_forward</i> Select All
+                      <div class="ripple-container"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header card-header-text card-header-info">
+                    <div class="card-text">
+                        <h4 class="card-title">Discount Items</h4>
+                        <p class="card-category">Selected for <span class="selected_id">none</span></p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ol class="selected_catalog_item">
+
+                    </ol>
+
+                </div>
+                <div class="card-footer">
+                    <button type="button" rel="tooltip" title="" class="btn btn-info btn-link btn-sm show_menu_cata" data-original-title="Unselect All2">
+
+                        <i class="material-icons">fast_rewind</i> Unselect All
+                      <div class="ripple-container"></div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-3">
-        <div class="card">
-            <div class="card-header card-header-text card-header-success">
-                <div class="card-text">
-                    <h4 class="card-title">Discount Categories</h4>
-                    <p class="card-category">Selected for <span class="selected_id">none</span></p>
-                </div>
-            </div>
-            <div class="card-body">
-                <ol class="selected_catalog_categories">
 
-                </ol>
-
-            </div>
-            <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
-
-                    <i class="material-icons">fast_rewind</i> Unselect All
-                  <div class="ripple-container"></div>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <div class="card">
-            <div class="card-header card-header-text card-header-danger">
-                <div class="card-text">
-                    <h4 class="card-title">Discount Items</h4>
-                    <p class="card-category">Not Selected for <span class="selected_id">none</span></p>
-                </div>
-
-            </div>
-            <div class="card-body" aria-label="menu_cat_list">
-                <ol class="not_selected_catalog_item">
-
-                </ol>
-            </div>
-            <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm show_menu_cata" data-original-title="Select All2">
-
-                    <i class="material-icons">fast_forward</i> Select All
-                  <div class="ripple-container"></div>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <div class="card">
-            <div class="card-header card-header-text card-header-info">
-                <div class="card-text">
-                    <h4 class="card-title">Discount Items</h4>
-                    <p class="card-category">Selected for <span class="selected_id">none</span></p>
-                </div>
-            </div>
-            <div class="card-body">
-                <ol class="selected_catalog_item">
-
-                </ol>
-
-            </div>
-            <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-info btn-link btn-sm show_menu_cata" data-original-title="Unselect All2">
-
-                    <i class="material-icons">fast_rewind</i> Unselect All
-                  <div class="ripple-container"></div>
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 
 
@@ -210,12 +208,12 @@
 
         })
 
-        $('button[data-original-title="Edit Menu"]').click(function() {
+
             $("div[aria-label='item_detail']").toggleClass("hidding")
             $("ol.not_selected_catalog_categories").html("");
             $("ol.selected_catalog_categories").html("");
-
-            var subcatid = $(this).attr("subcat_id");
+            var subcatid = document.getElementById('discount_catalog_id').value;
+          
             $("span.selected_id").html(subcatid)
             var brand = location.pathname.split("/")[1];
             $.ajax({
@@ -236,7 +234,7 @@
                     $("ol.not_selected_catalog_categories").append(li);
                 });
             });
-        });
+
 
         $("ol.not_selected_catalog_categories").on("click", "li", function() {
             var li = $(this);
@@ -339,12 +337,12 @@
 
         })
 
-        $('button[data-original-title="Edit Menu"]').click(function() {
+
             $("div[aria-label='item_detail']").toggleClass("hidding")
             $("ol.not_selected_catalog_item").html("");
             $("ol.selected_catalog_item").html("");
 
-            var subcatid = $(this).attr("subcat_id");
+            var subcatid = document.getElementById('discount_catalog_id').value;
             $("span.selected_id").html(subcatid)
             var brand = location.pathname.split("/")[1];
             $.ajax({
@@ -365,7 +363,7 @@
                     $("ol.not_selected_catalog_item").append(li);
                 });
             });
-        });
+
 
         $("ol.not_selected_catalog_item").on("click", "li", function() {
             var li = $(this);

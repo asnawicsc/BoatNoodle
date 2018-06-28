@@ -1,0 +1,33 @@
+     <form method="post" action="/<%= BN.get_domain(@conn)%>/create_discount_catalog_copy" class="form-horizontal">
+       <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+  <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card ">
+                <div class="card-header card-header-rose card-header-icon">
+                  <div class="card-icon">
+                    <i class="material-icons">mail_outline</i>
+                  </div>
+                  <h4 class="card-title">Copy Discount Catalog <b><%= @discount_catalog.name %></b></h4>
+                </div>
+                <div class="card-body ">
+              
+                    <div class="form-group">
+                      <label  class="bmd-label-floating">Discount Catalog Name</label>
+                      <input type="text" class="form-control" name="name">
+                    </div>
+                    
+                     <input type="hidden" class="form-control" name="categories" value="<%= @discount_catalog.categories %>">
+                 <input type="hidden" class="form-control" name="discounts" value="<%= @discount_catalog.discounts %>">
+                </div>
+                <div class="card-footer ">
+                  <button type="submit" class="btn btn-fill btn-rose">Copy Catalog</button>
+                </div>
+              </div>
+            </div>
+ 
+          </div>
+        </div>
+      </div> 
+        </form>

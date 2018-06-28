@@ -1,0 +1,30 @@
+
+
+<form action="" aria-label = "edit_combo_price_form">
+
+<div class="table-responsive">
+  <table class="table" border="1">
+     <thead class=" text-primary">
+    <th>Discount Category</th>
+    <th>Upload Voucher Code(.csv)</th>
+    </thead>
+    <tbody>
+    <tr>
+      <td></td>
+     
+                       
+      <td><input type="file" name="sad"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+ <select class="selectpicker" data-style="btn select-with-transition"  data-size="7">
+                           <%= for a <- @discount do %>
+                          
+                                            <option value="<%= a.discountid %>" ><%= a.discname %>
+                                            </option>
+                                          <% end %>
+                                        </select>
+    <button type="submit" class="btn btn-primary" id="submit_edit_form_combo" >Update</button>
+</form>
+

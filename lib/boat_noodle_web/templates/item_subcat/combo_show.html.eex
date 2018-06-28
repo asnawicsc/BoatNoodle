@@ -214,7 +214,7 @@
 </div>
 
 <div aria-label="item_detail" class="row hidding">
-  <div class="col-lg-3">
+  <div class="col-lg-6">
     <div class="card">
       <div class="card-header card-header-text card-header-primary">
         <div class="card-text">
@@ -237,12 +237,18 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3">
+  <div class="col-lg-6">
     <div class="card">
       <div class="card-header card-header-text card-header-success">
         <div class="card-text">
           <h4 class="card-title">Menu Catalogs</h4>
           <p class="card-category">Selected for <span class="selected_id">none</span></p>
+        </div>
+         <div class="dropdown pull-right" style="padding: 10px;">
+          <button aria-label="item_summary" class="btn btn-info btn-round">
+                <i class="material-icons">ballot</i> COMBO Summary
+              <div class="ripple-container"></div>
+            <div class="ripple-container"></div></button>
         </div>
       </div>
       <div class="card-body">
@@ -261,28 +267,7 @@
     </div>
   </div>
 
-  <div class="col-lg-6">
-    <div class="card">
-      <div class="card-header card-header-text card-header-info">
-        <div class="card-text">
-          <h4 class="card-title">Printers</h4>
-          <p class="card-category">Selected for <span class="selected_id">none</span></p>
-        </div>
-        <div class="dropdown pull-right" style="padding: 10px;">
-          <button aria-label="item_summary" class="btn btn-info btn-round">
-                <i class="material-icons">ballot</i> COMBO Summary
-              <div class="ripple-container"></div>
-            <div class="ripple-container"></div></button>
-        </div>
-      </div>
-      <div class="card-body selected_printer">
-        <form id="printer_radio">
-
-        </form>
-
-      </div>
-    </div>
-  </div>
+ 
 </div>
 
 <div class="modal fade" id="model1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -359,84 +344,6 @@ $(document).ready(function() {
     });
   });
 
-  var brand = location.pathname.split("/")[1];
-  $.ajax({
-    url: "/" + brand + "/list_printer",
-    dataType: "json",
-    data: {
-      subcat_id: 0
-    }
-  }).done(function(j) {
-    var branches = [];
-    for (var key in j) {
-      branches.push(key);
-    }
-
-    $(branches).each(function(k, branch) {
-      var div =
-        '<div aria-label="' +
-        branch +
-        '"><label>' +
-        branch +
-        '</label><br><table class="table" style="width: 100%;" aria-label="' +
-        branch +
-        '"></table></div>';
-      $("form#printer_radio").prepend(div);
-      var tr = "<tr class='header' aria-label='" + branch + "'><td></td></tr>";
-      $('table[aria-label="' + branch + '"]').append(tr);
-      $("td.selected").each(function() {
-        var id = $(this).html();
-        var td = "<td>" + id + "</td>";
-        $('tr[aria-label="' + branch + '"]').append(td);
-      });
-      var tags = j[branch];
-
-      $(tags).each(function() {
-        var tr =
-          "<tr id='" + this.tag_id + "'><td>" + this.tagname + "</td></tr>";
-
-        $('table[aria-label="' + branch + '"]').append(tr);
-      });
-    });
-
-    $(branches).each(function(k, branch) {
-      var tags = j[branch];
-
-      $(tags).each(function() {
-        var tagname = this.tagname;
-        var tid = this.tag_id;
-        var items = this.items;
-
-        $("td.selected").each(function() {
-          var id = $(this).html();
-          if ($.inArray(id, items) >= 0) {
-            var td =
-              "<td><input type='checkbox' checked name='tag[" +
-              branch +
-              "]' value='[" +
-              id +
-              "][" +
-              tid +
-              "]'></td>";
-          } else {
-            var td =
-              "<td><input type='checkbox' name='tag[" +
-              branch +
-              "]' value='[" +
-              id +
-              "][" +
-              tid +
-              "]'></td>";
-          }
-
-          $("tr#" + tid).append(td);
-        });
-      });
-    });
-
-
-  });
-
   $('button[data-original-title="Edit Menu"]').click(function() {
     $("div[aria-label='item_detail']").toggleClass("hidding");
     $("ol.not_selected_catalog").html("");
@@ -484,7 +391,7 @@ $(document).ready(function() {
     var tag_id = $(this).attr("id");
     var brand = location.pathname.split("/")[1];
     $.ajax({
-      url: "/" + brand + "/insert_into_catalog",
+      url: "/" + brand + "/insert_into_catalog_combo",
       dataType: "json",
       data: {
         subcat_id: subcat_id,
@@ -505,7 +412,7 @@ $(document).ready(function() {
     var tag_id = $(this).attr("id");
     var brand = location.pathname.split("/")[1];
     $.ajax({
-      url: "/" + brand + "/remove_from_catalog",
+      url: "/" + brand + "/remove_from_catalog_combo",
       dataType: "json",
       data: {
         subcat_id: subcat_id,

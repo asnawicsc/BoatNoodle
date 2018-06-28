@@ -7,13 +7,15 @@ defmodule BoatNoodleWeb.MenuItemController do
   require IEx
 
   def combos(conn, _params) do
+
+        brand = BN.get_brand_id(conn)
     combo_menus =
       Repo.all(
         from(
           i in ItemSubcat,
           left_join: c in ItemCat,
           on: c.itemcatid == i.itemcatid,
-          where: c.category_type == ^"COMBO",
+          where: c.category_type == ^"COMBO" and i.brand_id==^brand,
           group_by: [i.itemcode],
           select: %{
             itemcode: i.itemcode,

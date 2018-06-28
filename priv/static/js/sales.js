@@ -257,7 +257,7 @@ channel.on("display_organization_details", payload => {
                 {
                     data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+                        $(nTd).html("<a href='/boatnoodle/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
                     }
                 },
             ]
@@ -965,7 +965,7 @@ channel.on("display_organization_details", payload => {
                 {
                    data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"'  target='_blank'>View Details</a>");
+                        $(nTd).html("<a href='/boatnoodle/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"'  target='_blank'>View Details</a>");
                     }
                 }
             ]
@@ -2277,6 +2277,25 @@ $("select#select_target_category").select(function(){
      channel.push("select_target_cat", {selectedValue: selectedValue, brand_id: window.currentBrand})
 
    })
+
+
+
+ $("button[aria-label='upload_voucher']").click(function(){
+   
+
+    channel.push("upload_voucher", { brand_id: window.currentBrand})
+  })
+
+   channel.on("show_voucher", payload => {
+    $("#modal_form1").html(payload.html);
+    $("button#submit_edit_form_combo").click(function(event){
+      event.preventDefault();
+      var fr= []
+      var fr = $("form[aria-label='edit_combo_price_form']").serializeArray();
+
+      channel.push("update_combo_price",{map: fr, brand_id: window.currentBrand})
+    })
+  })
 
 
 });

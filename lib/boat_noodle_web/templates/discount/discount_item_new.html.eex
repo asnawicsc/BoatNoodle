@@ -20,7 +20,7 @@
     border: 2px solid #DB7093;
     padding: 20px; 
     width: 800px;
-    height: auto; margin-right: 300px; margin-left: 300px; " >
+    height: auto; margin-right: auto; margin-left: auto; " >
                                    
                                         <ul>
                                            <b>Discount items instructions:</b>
@@ -125,13 +125,13 @@
                        <div class="col-sm-3" id="voucher_amount">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Voucher Amount</label>
-                                  <input type="number" class="form-control" name="item[voucher_amount]"  >
+                                  <input type="number" step="0.01" class="form-control" name="item[voucher_amount]"  >
                             </div>
                       </div>
                       <div class="col-sm-3" id="discount_amount">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Discount Amount</label>
-                                  <input type="number" class="form-control" name="item[discount_amount]"  >
+                                  <input type="number" step="0.01" class="form-control" name="item[discount_amount]"  >
                             </div>
                       </div>
                       <div class="col-sm-3" id="target_category">
@@ -225,7 +225,7 @@
                         
                       </div>
                        <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
 
                     <i class="material-icons">fast_forward</i> Select All
                   <div class="ripple-container"></div>
@@ -248,7 +248,7 @@
                       </ol>
                     </div>
                       <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
 
                     <i class="material-icons">fast_rewind</i> Unselect All
                   <div class="ripple-container"></div>
