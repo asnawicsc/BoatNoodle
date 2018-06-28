@@ -115,7 +115,7 @@
                         <tbody>
                           <%= for combo_item <- ci[same_item.subcatid] |> Enum.sort_by(fn x -> x.combo_item_code end)  do %>
 
-                            <tr>
+                            <tr id="<%= same_item.subcatid %>">
                               <td>
                                 <%= combo_item.combo_item_name %>
                               </td>
@@ -148,7 +148,7 @@
                   <% end %>
                     <% end %>
                       <%= for same_item <- @no_selection_combo_items do %>
-                        <tr>
+                        <tr id="<%= same_item.itemcatid %>">
                           <td>
                             <%= same_item.price_code %>
                           </td>
@@ -355,84 +355,7 @@ $(document).ready(function() {
     });
   });
 
-  var brand = location.pathname.split("/")[1];
-  $.ajax({
-    url: "/" + brand + "/list_printer",
-    dataType: "json",
-    data: {
-      subcat_id: 0
-    }
-  }).done(function(j) {
-    var branches = [];
-    for (var key in j) {
-      branches.push(key);
-    }
 
-    $(branches).each(function(k, branch) {
-      var div =
-        '<div aria-label="' +
-        branch +
-        '"><label>' +
-        branch +
-        '</label><br><table class="table" style="width: 100%;" aria-label="' +
-        branch +
-        '"></table></div>';
-      $("form#printer_radio").prepend(div);
-      var tr = "<tr class='header' aria-label='" + branch + "'><td></td></tr>";
-      $('table[aria-label="' + branch + '"]').append(tr);
-      $("td.selected").each(function() {
-        var id = $(this).html();
-        var product_name = $(this).attr("product")
-        var td = "<td>" + product_name + "</td>";
-        $('tr[aria-label="' + branch + '"]').append(td);
-      });
-      var tags = j[branch];
-
-      $(tags).each(function() {
-        var tr =
-          "<tr id='" + this.tag_id + "'><td>" + this.tagname + "</td></tr>";
-
-        $('table[aria-label="' + branch + '"]').append(tr);
-      });
-    });
-
-    $(branches).each(function(k, branch) {
-      var tags = j[branch];
-
-      $(tags).each(function() {
-        var tagname = this.tagname;
-        var tid = this.tag_id;
-        var items = this.items;
-
-        $("td.selected").each(function() {
-          var id = $(this).html();
-          if ($.inArray(id, items) >= 0) {
-            var td =
-              "<td><input type='checkbox' checked name='tag[" +
-              branch +
-              "]' value='[" +
-              id +
-              "][" +
-              tid +
-              "]'></td>";
-          } else {
-            var td =
-              "<td><input type='checkbox' name='tag[" +
-              branch +
-              "]' value='[" +
-              id +
-              "][" +
-              tid +
-              "]'></td>";
-          }
-
-          $("tr#" + tid).append(td);
-        });
-      });
-    });
-
-
-  });
 
   $('button[data-original-title="Edit Menu"]').click(function() {
     $("div[aria-label='item_detail']").toggleClass("hidding");
@@ -470,6 +393,138 @@ $(document).ready(function() {
         $("ol.not_selected_catalog").append(li);
       });
     });
+
+   
+    $.ajax({
+      url: "/" + brand + "/list_printer",
+      dataType: "json",
+      data: {
+        subcat_id: 0
+      }
+    }).done(function(j) {
+      var branches = [];
+      for (var key in j) {
+        branches.push(key);
+      }
+      $("form#printer_radio").html("")
+      $(branches).each(function(k, branch) {
+        var div =
+          '<div aria-label="' +
+          branch +
+          '"><label>' +
+          branch +
+          '</label><br><table class="table" style="width: 100%;" aria-label="' +
+          branch +
+          '"></table></div>';
+        $("form#printer_radio").prepend(div);
+        var tr = "<tr class='header' aria-label='" + branch + "'><td></td></tr>";
+        $('table[aria-label="' + branch + '"]').append(tr);
+        $("tr#"+subcatid+" td.selected").each(function() {
+          var id = $(this).html();
+          var product_name = $(this).attr("product")
+          var td = "<td>" + product_name + "</td>";
+          $('tr[aria-label="' + branch + '"]').append(td);
+        });
+        var tags = j[branch];
+
+        $(tags).each(function() {
+          var tr =
+            "<tr id='" + this.tag_id + "'><td>" + this.tagname + "</td></tr>";
+
+          $('table[aria-label="' + branch + '"]').append(tr);
+        });
+      });
+
+      $(branches).each(function(k, branch) {
+        var tags = j[branch];
+
+        $(tags).each(function() {
+          var tagname = this.tagname;
+          var tid = this.tag_id;
+          var combos = this.combos;
+
+          
+          $("tr#"+subcatid+" td.selected").each(function() {
+            var id = $.trim($(this).html());
+      
+            if ($.inArray(id, combos) >= 0) {
+              var td =
+                "<td><input class='combo_item_tag' type='checkbox' checked name='tag[" +
+                branch +
+                "]' value='[" +
+                subcatid +
+                "][" +
+                tid +
+                "]["+id+"]'></td>";
+            } else {
+              var td =
+                "<td><input class='combo_item_tag' type='checkbox' name='tag[" +
+                branch +
+                "]' value='[" +
+                subcatid +
+                "][" +
+                tid +
+                "]["+id+"]'></td>";
+            }
+
+            $("tr#" + tid).append(td);
+          });
+        });
+      });
+
+$("input.combo_item_tag").click(function(){
+
+      var ck = $(this);
+      var val = $(this).val();
+      if (ck[0].checked) {
+        $.ajax({
+          url: "/" + brand + "/toggle_printer_combo",
+          dataType: "json",
+          data: { item_tag: val }
+        }).done(function(j) {
+          $.notify(
+            {
+              icon: "notifications",
+              message: j.item_name + " " + j.action + " " + j.printer_name
+            },
+            {
+              type: j.alert,
+              timer: 100,
+              placement: {
+                from: "bottom",
+                align: "right"
+              }
+            }
+          );
+        });
+      } else {
+        $.ajax({
+          url: "/" + brand + "/toggle_printer_combo",
+          dataType: "json",
+          data: { item_tag: val }
+        }).done(function(j) {
+          $.notify(
+            {
+              icon: "notifications",
+              message: j.item_name + " " + j.action + " " + j.printer_name
+            },
+            {
+              type: j.alert,
+              timer: 100,
+              placement: {
+                from: "bottom",
+                align: "right"
+              }
+            }
+          );
+        });
+      }
+})
+
+    });
+
+
+
   });
 
   $("ol.not_selected_catalog").on("click", "li", function() {

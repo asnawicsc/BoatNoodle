@@ -113,13 +113,14 @@ defmodule BoatNoodle.UltiMigrator do
     }
 
     json_map = Poison.encode!(sales_map)
-uri = "https://gummypos.resertech.com/boatnoodle/api/sales"
-# uri = "localhost:4000/boatnoodle/api/sales"
+
+# uri = "https://gummypos.resertech.com/boatnoodle/api/sales?user=alvis&key=JDJ5JDEwJElCRGhIYXNMZGZ6S0QvWUo1ZzBMemVOU0VTNXdmdnZVSGVZOHZXeGhqOXY3dW9Xb0JJRWZX"
+uri = "localhost:4000/boatnoodle/api/sales?user=alvis&key=JDJ5JDEwJElCRGhIYXNMZGZ6S0QvWUo1ZzBMemVOU0VTNXdmdnZVSGVZOHZXeGhqOXY3dW9Xb0JJRWZX"
     HTTPoison.post!(
       uri,
       json_map,
       [{"Content-Type", "application/json"}],
-      hackney: [basic_auth: {"alvis", "$2y$10$IBDhHasLdfzKD/YJ5g0LzeNSES5wfvvUHeY8vWxhj9v7uoWoBIEfW"}],
+ 
       timeout: 50_000,
       recv_timeout: 50_000
     )

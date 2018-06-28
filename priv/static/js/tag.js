@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	
 
+
 	$('select[name="tag[branch_id]"]').on('hide.bs.select', function (e) {
 	var id = $('select[name="tag[branch_id]"]').val()
 	  tag_channel.push("query_branch_subcats", {id: id})

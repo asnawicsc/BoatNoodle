@@ -5,6 +5,63 @@ defmodule BoatNoodleWeb.TagController do
   alias BoatNoodle.BN.Tag
   require IEx
 
+  def toggle_printer_combo(conn, params) do
+    tuple =
+      params["item_tag"]
+      |> String.replace("[", "")
+      |> String.replace("]", ",")
+      |> String.split(",")
+      |> Enum.reject(fn x -> x == "" end)
+      |> List.to_tuple()
+
+    subcat_id = elem(tuple, 0)
+    subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
+    tag_id = elem(tuple, 1)
+    combo_item_id = elem(tuple,2)|> String.trim
+    tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
+    combo_detail = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
+
+
+    if tag.combo_item_ids != nil do
+      items = tag.combo_item_ids
+    else
+      items = ""
+    end
+
+    combo_item_ids = String.split(items, ",")
+
+    if Enum.any?(combo_item_ids, fn x -> x == combo_item_id end) do
+      new_subcatids =
+        List.delete(combo_item_ids, combo_item_id) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
+
+      action = "removed from"
+      alert = "danger"
+    else
+      new_subcatids =
+        List.insert_at(combo_item_ids, 0, combo_item_id)
+        |> Enum.sort()
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(",")
+
+      action = "added to"
+      alert = "success"
+    end
+
+    Repo.update(Tag.changeset(tag, %{combo_item_ids: new_subcatids}))
+
+    map =
+      %{
+        printer_name: tag.tagname,
+        item_name: combo_detail.combo_item_name,
+        action: action,
+        alert: alert
+      }
+      |> Poison.encode!()
+
+    send_resp(conn, 200, map)
+  end
+
   def toggle_printer(conn, params) do
     tuple =
       params["item_tag"]
@@ -76,11 +133,13 @@ defmodule BoatNoodleWeb.TagController do
             tag_id: t.tagid,
             branchname: b.branchname,
             tagname: t.tagname,
-            items: t.subcat_ids
+            items: t.subcat_ids,
+            combos: t.combo_item_ids
           }
         )
       )
       |> Enum.map(fn x -> Map.put(x, :items, String.split(x.items, ",")) end)
+      |> Enum.map(fn x -> Map.put(x, :combos, String.split(x.combos, ",")) end)
       |> Enum.group_by(fn x -> x.branchname end)
 
     json = tags_original |> Poison.encode!()

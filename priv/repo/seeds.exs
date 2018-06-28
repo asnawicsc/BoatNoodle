@@ -16,6 +16,7 @@ ADD COLUMN `branch_id` INT NOT NULL AFTER `created_at`,
 ADD COLUMN `subcat_ids` BINARY NULL AFTER `branch_id`,
 ADD COLUMN `printer_IP` VARCHAR(255) NULL AFTER `subcat_ids`;
 
+
 ALTER TABLE `posgb_boatnoodle`.`tag_tbl` 
 CHANGE COLUMN `subcat_ids` `subcat_ids` TEXT NULL DEFAULT NULL ;
 

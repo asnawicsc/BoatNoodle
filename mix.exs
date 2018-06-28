@@ -50,6 +50,8 @@ defmodule BoatNoodle.Mixfile do
       {:bcrypt_elixir, "~> 0.12"},
       {:countries, "~> 1.5"},
       {:httpoison, "~> 1.0"}
+
+
     ]
   end
 

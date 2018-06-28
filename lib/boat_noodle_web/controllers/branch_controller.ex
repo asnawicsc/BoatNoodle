@@ -149,7 +149,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def show(conn, %{"id" => id}) do
-    branch = BN.get_branch!(id)
+    branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
     render(conn, "show.html", branch: branch)
   end
 
@@ -191,7 +191,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def update(conn, %{"id" => id, "branch" => branch_params}) do
-    branch = BN.get_branch!(id)
+    branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
 
     case BN.update_branch(branch, branch_params) do
       {:ok, branch} ->
@@ -205,7 +205,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def delete(conn, %{"id" => id}) do
-    branch = BN.get_branch!(id)
+    branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
     {:ok, _branch} = BN.delete_branch(branch)
 
     conn
