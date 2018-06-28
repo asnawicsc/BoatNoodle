@@ -79,7 +79,7 @@
                   <td>
                     <%= same_item.is_print %>
                   </td>
-                  <td class="selected">
+                  <td >
                     <%= same_item.subcatid %>
                   </td>
                   <td>
@@ -134,15 +134,9 @@
                               <td>
                                 <%= combo_item.combo_item_code %>
                               </td>
-                              <td>
-
-                                <% codes =  String.split(Integer.to_string(combo_item.combo_item_id), "") |> Enum.reject(fn x -> x == "" end) |> Enum.chunk_every(3)%>
-                                  <%= for code <- codes do %>
-                                    <%= Enum.join(code) %>,
-
-                                      <% end %>
-
-                              </td>
+                              <td class="selected" product="<%= combo_item.combo_item_name %>">
+                            <%= combo_item.combo_item_id %>
+                          </td>
 
                             </tr>
                             <% end %>
@@ -198,7 +192,7 @@
                           <td>
                             <%= same_item.is_print %>
                           </td>
-                          <td>
+                          <td class="selected" product="<%= same_item.itemname %>">
                             <%= same_item.subcatid %>
                           </td>
                         </tr>
@@ -230,7 +224,7 @@
             <div class="ripple-container"></div></button>
         </div>
       </div>
-      <div class="card-body selected_printer">
+      <div class="card-body selected_printer" style="width: 100%; overflow-x: scroll;">
         <form id="printer_radio">
 
         </form>
@@ -388,7 +382,8 @@ $(document).ready(function() {
       $('table[aria-label="' + branch + '"]').append(tr);
       $("td.selected").each(function() {
         var id = $(this).html();
-        var td = "<td>" + id + "</td>";
+        var product_name = $(this).attr("product")
+        var td = "<td>" + product_name + "</td>";
         $('tr[aria-label="' + branch + '"]').append(td);
       });
       var tags = j[branch];

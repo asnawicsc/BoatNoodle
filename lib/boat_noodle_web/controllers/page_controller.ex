@@ -181,13 +181,22 @@ defmodule BoatNoodleWeb.PageController do
     password = credentials |> List.last
 
     user = Repo.get_by(User, username: username, password: password)
-     
-    if auth != [] and user != nil do
-      if Enum.all?(sales_required_keys, &Map.has_key?(params["sales"], &1)) &&
-       
-           Enum.all?(salespayment_required_keys, &Map.has_key?(params["payment"], &1)) == true do
-        sales_params = for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
 
+    if auth != [] and user != nil do
+
+sales_checker = sales_required_keys -- Map.keys(params["sales"])
+sales_details_checker = 
+for details_map <- params["details"] do
+  
+  a = salesdetail_required_keys -- Map.keys(details_map)
+end |> List.flatten
+
+sales_payment_checker = salespayment_required_keys -- Map.keys(params["payment"])
+checker = sales_checker ++ sales_details_checker ++ sales_payment_checker
+
+      if checker != [] do
+
+        sales_params = for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
         sales_master_params_list = 
         for a <- a_list do
           
@@ -239,6 +248,8 @@ defmodule BoatNoodleWeb.PageController do
 
         cond do
           sales_exist != nil ->
+            message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
+            log_error_api(message, "API POST") 
             send_resp(conn, 501, "Sales id exist.")
 
           sales_exist == nil ->
@@ -248,19 +259,30 @@ defmodule BoatNoodleWeb.PageController do
             
                 Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), username])
 
-
+                sd = 
                 for sales_master_params <- sales_master_params_list do
                 sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
                   
                   case BN.create_sales_master(sales_master_params) do
                     {:ok, sales_master} ->
                            Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), username])
-
+                           :ok
 
                     {:error, %Ecto.Changeset{} = changeset} ->
-                      send_resp(conn, 505, "Sales master failed to create.")
+                 
+                      model = changeset.errors |> hd() |> elem(0) |> Atom.to_string
+                      type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                      message = List.insert_at(conn.req_headers, 0, {model, type})
+                      log_error_api(message, "API POST") 
+                      :error
+                      # send_resp(conn, 500, "Sales master failed to create.")
                   end
                 end
+if  (sd |> Enum.any?(fn x -> x == :error end )) do
+  else
+end
+          
+
                 case BN.create_sales_payment(sales_payment_params) do
                   {:ok, sales_payment} ->
                     Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), username])
@@ -274,25 +296,90 @@ defmodule BoatNoodleWeb.PageController do
                     send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
 
                   {:error, %Ecto.Changeset{} = changeset} ->
-                    send_resp(conn, 504, "Sales payment failed to create.")
+                    model = changeset.errors |> hd() |> elem(0) |> Atom.to_string
+                      type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                      message = List.insert_at(conn.req_headers, 0, {model, type})
+                      log_error_api(message, "API POST") 
+                      send_resp(conn, 500, "Sales master failed to create.")
+                    send_resp(conn, 500, "Sales payment failed to create.")
                 end
 
               {:error, %Ecto.Changeset{} = changeset} ->
-                send_resp(conn, 506, "Sales failed to create. Please use the latest sales ID")
+                model = changeset.errors |> hd() |> elem(0) |> Atom.to_string
+                      type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                      message = List.insert_at(conn.req_headers, 0, {model, type})
+                      log_error_api(message, "API POST") 
+                      send_resp(conn, 500, "Sales master failed to create.")
+                send_resp(conn, 500, "Sales failed to create. Please use the latest sales ID")
             end
         end
       else
-        send_resp(conn, 507, "API failed to transaction. Check your data and try again.")
+
+cond do
+  sales_checker != [] ->
+    dat = Enum.join(sales_checker, ",")
+    message = List.insert_at(conn.req_headers, 0, {"sales keys is missing", dat})
+            log_error_api(message, "API POST") 
+
+    sales_details_checker != [] ->
+          dat = Enum.join(sales_details_checker, ",")
+    message = List.insert_at(conn.req_headers, 0, {"sales details keys is missing", dat})
+            log_error_api(message, "API POST")  
+      sales_payment_checker != [] ->
+            dat = Enum.join(sales_payment_checker, ",")
+    message = List.insert_at(conn.req_headers, 0, {"sales payment keys is missing", dat})
+            log_error_api(message, "API POST") 
+        true ->
+          message = List.insert_at(conn.req_headers, 0, {"sales", "unknown"})
+            log_error_api(message, "API POST") 
+end
+        send_resp(conn, 500, "API failed to transaction. Check your data and try again.")
+ 
+ 
+
+
       end
     else 
+      cond do
+        auth == [] ->
+          message = List.insert_at(conn.req_headers, 0, {"user", "no basic auth"})
+            log_error_api(message, "API POST")
+           send_resp(conn, 400, "Please include authentication.")
+           user == nil ->
+            message = List.insert_at(conn.req_headers, 0, {"user", "cant find the user"})
+            log_error_api(message, "API POST")
+               send_resp(conn, 400, "User not found.")
+        true ->
+          message = List.insert_at(conn.req_headers, 0, {"user", "unknown"})
+            log_error_api(message, "API POST")
        send_resp(conn, 400, "user credentials are incorrect.")
+      end
 
     end
 
   end
 
+  def log_error_api(message, username) do
+    # a list of single maps
+    message = message  |> Enum.reject(fn x -> elem(x, 1) == nil end)   |> Enum.map(fn {k,v} -> %{k => v} end)  |> Poison.encode!
+    a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username}) 
+    Repo.insert(a)
+
+    messages = Repo.all(from a in ApiLog, order_by: [desc: a.id], select: %{id: a.id, message: a.message, username: a.username, time: a.inserted_at}, limit: 20)
+      topic = "user:1"
+      event = "append_api_log"
+      BoatNoodleWeb.Endpoint.broadcast(topic, event, %{messages: messages})
+  end
+
+
   def log_api(message, username) do
-    message = message |> Map.to_list |> Enum.reject(fn x -> elem(x, 1) == nil end)  |> List.delete_at(0) |> List.delete_at(0) |> Enum.map(fn {k,v} -> %{Atom.to_string(k) => v} end) |> Poison.encode!
+    message = message 
+    |> Map.to_list 
+    |> Enum.reject(fn x -> elem(x, 1) == nil end)  
+    |> List.delete_at(0) 
+    |> List.delete_at(0) 
+    |> Enum.map(fn {k,v} -> %{Atom.to_string(k) => v} end) 
+    |> Poison.encode!
     a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username}) 
     Repo.insert(a)
 
