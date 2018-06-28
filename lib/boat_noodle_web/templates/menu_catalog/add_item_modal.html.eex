@@ -1,0 +1,18 @@
+<h4>Please select a price: </h4>
+
+<form action="" aria-label = "add_price_form">
+  <input type="hidden" id="menu_catalog_id" name="menu_catalog_id" value="<%= @menu_catalog_id %>">
+    <%= for item <- @items do %>
+  <div class="form-check">
+    <label class="form-check-label">
+      
+        <input class="form-check-input" type="radio" name="subcatid" value="<%= item.subcatid %>"><%= item.price_code %> :  RM <%= item.itemprice %>
+      
+      <span class="circle">
+        <span class="check"></span>
+      </span>
+    </label>
+  </div>
+    <% end %>
+    <button type="submit" class="btn btn-primary" id="submit_add_form" >Add price</button>
+</form>

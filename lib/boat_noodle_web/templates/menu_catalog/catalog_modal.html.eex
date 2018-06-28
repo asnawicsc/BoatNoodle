@@ -1,3 +1,11 @@
+<style>
+  #delete_item:hover {
+    color: white !important;
+    background-color: red;
+    
+  }
+</style>
+
 <h4>Please select a price: </h4>
 
 <form action="" aria-label = "edit_price_form">
@@ -18,5 +26,7 @@
   </div>
     <% end %>
     <button type="submit" class="btn btn-primary" id="submit_edit_form" >Save changes</button>
+    <button class="btn btn-secondary" id="delete_item" style="float: right; color: red" >Delete Item</button>
 </form>
+
 

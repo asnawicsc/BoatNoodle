@@ -70,9 +70,11 @@
                       <%= for itemcode <- @itemcodes do %>
                         <td style="border: black 1px solid; text-align: right; padding-right: 5px;">
                           <% data = @arranged_items[itemcode] %>
-                 
-                            
-                         
+                          <% current_subcatid_string = data |> Enum.map( fn x -> to_string(x.subcatid) end) %>
+                          <% contained_subcatid = menu_catalog.items%>
+
+                          
+                          <%= if String.contains? contained_subcatid,current_subcatid_string do %>
                             <%= for d <- data do %>
 
                               <%= if Enum.any?(ids, fn x -> x == d.subcatid end) do %>
@@ -90,15 +92,21 @@
                                   _ ->
                                     style = "danger"
                                   end %>
-                        
+                                
                                 <%= if Decimal.to_float(d.itemprice) != 0.0  do %>
                                 
-                              <span class="badge badge-<%= style %>"" style="display: block; cursor: pointer;" id = "<%= menu_catalog.id %>-<%= d.subcatid %>" aria-label="badge" data-toggle="modal" data-target="#exampleModal" ><%= d.itemprice %></span>
+                                  <span class="badge badge-<%= style %>"" style="display: block; cursor: pointer;" id = "<%= menu_catalog.id %>-<%= d.subcatid %>" aria-label="badge" data-toggle="modal" data-target="#exampleModal" ><%= d.itemprice %></span>
+                                  
+                                 
                                 <% end %>
                               <% end %>
-
                             <% end %>
+                          <% else %>
+                            <a class="add_price" id = "<%= menu_catalog.id %>-<%= itemcode %>" data-toggle="modal" data-target="#exampleModal2"><i class="fa fa-plus-circle" style="cursor: pointer ; color: gray;"> add</i></a>
 
+                          <% end %>
+
+                            
                         </td>
                       <% end %>
                     </tr>
@@ -148,6 +156,25 @@
         </button>
       </div>
       <div class="modal-body" id = "modal_form">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel2">Add Price</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id = "modal_form2">
         
       </div>
       <div class="modal-footer">

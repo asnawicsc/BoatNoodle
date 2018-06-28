@@ -121,6 +121,7 @@
 
 </div>
 
+
 <div class="row" style="margin-top: 15px;">
 	<div class="col-sm-2">
 		<label class="bmd-label-floating"  style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Menu Catalog</label>
@@ -164,6 +165,16 @@
 	  </div>
 	</div>
 </div>
+<div class="row" style="margin-top: 15px;">
+	<div class="col-sm-9">
+	   <div class="form-group bmd-form-group">
+	    <%= label f, :api_key, class: "bmd-label-floating" %>
+	    <%= text_input f, :api_key, class: "form-control" %>
+	    <%= error_tag f, :api_key %>
+	  </div>
+	</div>
+	<div class="btn btn-warning" aria-label="gen_api" style="float: right;">Generate API key</div>
+</div>
 
 <div class="row" style="display: none;">
 	<div class="col-sm-2">
@@ -191,6 +202,7 @@
    <div class="form-group bmd-form-group">
     <%= submit "Update", class: "btn btn-primary" %>
     <div class="btn btn-secondary" aria-label="go_back">Go Back</div>
+    
   </div>
 <% end %>
 
@@ -206,5 +218,25 @@ $(document).ready(function(){
 	$('select[name="branch[org_id]"]').selectpicker('val', '<%= @branch.org_id%>');
 	$('select[name="branch[menu_catalog]"]').selectpicker('val', '<%= @branch.menu_catalog%>');
 	$('select[name="branch[disc_catalog]"]').selectpicker('val', '<%= @branch.disc_catalog%>');
+
+$("div[aria-label='gen_api']").click(function(){
+	
+	  var brand = location.pathname.split("/")[1];
+	    var branch_id = location.pathname.split("/")[3];
+	  $.ajax({
+	    url: "/" + brand + "/branch/"+branch_id+"/get_api",
+	    dataType: "json"
+	  }).done(function(j) {
+	
+	  $("input#branch_api_key").val(j.key)
+	   $("input#branch_api_key").focus()
+	})
 })
+
+
+
+})
+
+
+
 </script>

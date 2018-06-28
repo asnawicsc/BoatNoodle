@@ -10,6 +10,32 @@ defmodule BoatNoodleWeb.MenuCatalog do
     end
   end
 
+  def handle_in("delete_item", payload, socket) do
+    map =
+      payload["map"]
+      |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
+      |> Enum.flat_map(fn x -> x end)
+      |> Enum.into(%{})
+
+    menu_catalog =
+      Repo.all(from(m in MenuCatalog, where: m.id == ^map["current_catalog_id"])) |> hd()
+
+    item_list =
+      menu_catalog.items
+      |> String.split(",")
+      |> List.delete(map["current_subcat_id"])
+      |> Enum.join(",")
+
+    menu_catalog_params = %{
+      items: item_list
+    }
+
+    case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
+      {:ok, menu_catalog} ->
+        broadcast(socket, "deleted_item", %{})
+    end
+  end
+
   def handle_in("open_modal", payload, socket) do
     menu_catalog_id = payload["menu_catalog_id"]
     subcat_id = payload["subcat_id"]
@@ -103,7 +129,6 @@ defmodule BoatNoodleWeb.MenuCatalog do
         items: item_list
       }
 
-
       case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
         {:ok, menu_catalog} ->
           broadcast(socket, "updated_catalog_price", %{
@@ -117,6 +142,50 @@ defmodule BoatNoodleWeb.MenuCatalog do
     end
 
     {:noreply, socket}
+  end
+
+  def handle_in("open_add_modal", payload, socket) do
+    menu_catalog_id = payload["menu_catalog_id"]
+    item_code = payload["item_code"]
+
+    items = Repo.all(from(i in ItemSubcat, where: i.itemcode == ^item_code))
+
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.MenuCatalogView,
+        "add_item_modal.html",
+        menu_catalog_id: menu_catalog_id,
+        items: items,
+        conn: socket
+      )
+
+    broadcast(socket, "show_add_modal", %{
+      html: html
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("update_added_price", payload, socket) do
+    map = payload["map"] |> Enum.map(fn x -> {x["name"], x["value"]} end) |> Enum.into(%{})
+
+    menu_catalog =
+      Repo.all(from(m in MenuCatalog, where: m.id == ^map["menu_catalog_id"])) |> hd()
+
+    items =
+      menu_catalog.items
+      |> String.split(",")
+      |> List.insert_at(0, map["subcatid"])
+      |> Enum.join(",")
+
+    menu_catalog_params = %{
+      items: items
+    }
+
+    case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
+      {:ok, menu_catalog} ->
+        broadcast(socket, "updated_added_price", %{})
+    end
   end
 
   defp authorized?(_payload) do
