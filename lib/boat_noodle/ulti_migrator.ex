@@ -44,6 +44,26 @@ defmodule BoatNoodle.UltiMigrator do
           "updated_at" => "2018-06-14 17:45:38",
           "voidreason" => "",
           "void_by" => "0"
+        },%{
+          "afterdisc" => "1112",
+          "brand_id" => "1",
+          "combo_id" => "1",
+          "created_at" => "2018-06-14 17:45:38",
+          "discountid" => "11",
+          "is_void" => "0",
+          "itemcustomid" => "3",
+          "itemcode" => "4",
+          "itemid" => "12",
+          "itemname" => "1",
+          "order_price" => "222",
+          "orderid" => "1",
+          "qty" => "27",
+          "remaks" => "1111",
+          "remark" => "",
+          "unit_price" => "111",
+          "updated_at" => "2018-06-14 17:45:38",
+          "voidreason" => "",
+          "void_by" => "0"
         }
       ],
       "payment" => %{
@@ -93,8 +113,8 @@ defmodule BoatNoodle.UltiMigrator do
     }
 
     json_map = Poison.encode!(sales_map)
-
-uri = "localhost:4000/boatnoodle/api/sales"
+uri = "https://gummypos.resertech.com/boatnoodle/api/sales"
+# uri = "localhost:4000/boatnoodle/api/sales"
     HTTPoison.post!(
       uri,
       json_map,

@@ -106,7 +106,7 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def webhook_post(conn, params) do
-    a = params["details"] |> hd()
+    a_list = params["details"] 
 
     sales_required_keys = [
       "invoiceno",
@@ -184,10 +184,15 @@ defmodule BoatNoodleWeb.PageController do
      
     if auth != [] and user != nil do
       if Enum.all?(sales_required_keys, &Map.has_key?(params["sales"], &1)) &&
-           Enum.all?(salesdetail_required_keys, &Map.has_key?(a, &1)) &&
+       
            Enum.all?(salespayment_required_keys, &Map.has_key?(params["payment"], &1)) == true do
         sales_params = for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
+
+        sales_master_params_list = 
+        for a <- a_list do
+          
         sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
+        end
 
         sales_payment_params =
           for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
@@ -239,33 +244,37 @@ defmodule BoatNoodleWeb.PageController do
           sales_exist == nil ->
             case BN.create_sales(sales_params) do
               {:ok, sales} ->
+                sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
             
                 Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), username])
+
+
+                for sales_master_params <- sales_master_params_list do
                 sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+                  
+                  case BN.create_sales_master(sales_master_params) do
+                    {:ok, sales_master} ->
+                           Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), username])
 
-                case BN.create_sales_master(sales_master_params) do
-                  {:ok, sales_master} ->
-                         Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), username])
-                    sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
 
-                    case BN.create_sales_payment(sales_payment_params) do
-                      {:ok, sales_payment} ->
-                        Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), username])
+                    {:error, %Ecto.Changeset{} = changeset} ->
+                      send_resp(conn, 505, "Sales master failed to create.")
+                  end
+                end
+                case BN.create_sales_payment(sales_payment_params) do
+                  {:ok, sales_payment} ->
+                    Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), username])
 
-                        Task.start_link(__MODULE__, :inform_sales_update, [
-                          sales.brand_id,
-                          sales.branchid,
-                          sales.created_at
-                        ])
+                    Task.start_link(__MODULE__, :inform_sales_update, [
+                      sales.brand_id,
+                      sales.branchid,
+                      sales.created_at
+                    ])
 
-                        send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
-
-                      {:error, %Ecto.Changeset{} = changeset} ->
-                        send_resp(conn, 504, "Sales payment failed to create.")
-                    end
+                    send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
 
                   {:error, %Ecto.Changeset{} = changeset} ->
-                    send_resp(conn, 505, "Sales master failed to create.")
+                    send_resp(conn, 504, "Sales payment failed to create.")
                 end
 
               {:error, %Ecto.Changeset{} = changeset} ->
