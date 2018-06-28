@@ -69,7 +69,6 @@ defmodule BoatNoodleWeb.PageController do
         send_resp(conn, 400, "please include sales id in field.")
 
       params["branch_id"] != nil and params["branch_id"] != nil and auth != [] ->
-
         branch_id = params["branch_id"]
         brand = params["brand"]
         fields = params["sales_id"]
@@ -106,7 +105,9 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def webhook_post(conn, params) do
-    a_list = params["details"] 
+    a_list = params["details"]
+    brand = params["brand"]
+    bb = Repo.get_by(Brand, domain_name: brand)
 
     sales_required_keys = [
       "invoiceno",
@@ -175,33 +176,38 @@ defmodule BoatNoodleWeb.PageController do
       "created_at",
       "brand_id"
     ]
+
     auth = conn.req_headers |> Enum.filter(fn x -> elem(x, 0) == "authorization" end)
-    credentials = auth |> hd() |> elem(1) |> String.split(" ") |> List.last |> Base.decode64! |> String.split(":") 
-    username = credentials |> List.first 
-    password = credentials |> List.last
+
+    credentials =
+      auth |> hd() |> elem(1) |> String.split(" ") |> List.last() |> Base.decode64!()
+      |> String.split(":")
+
+    username = credentials |> List.first()
+    password = credentials |> List.last()
 
     user = Repo.get_by(User, username: username, password: password)
 
     if auth != [] and user != nil do
+      sales_checker = sales_required_keys -- Map.keys(params["sales"])
 
-sales_checker = sales_required_keys -- Map.keys(params["sales"])
-sales_details_checker = 
-for details_map <- params["details"] do
-  
-  a = salesdetail_required_keys -- Map.keys(details_map)
-end |> List.flatten
+      sales_details_checker =
+        for details_map <- params["details"] do
+          a = salesdetail_required_keys -- Map.keys(details_map)
+        end
+        |> List.flatten()
 
-sales_payment_checker = salespayment_required_keys -- Map.keys(params["payment"])
-checker = sales_checker ++ sales_details_checker ++ sales_payment_checker
+      sales_payment_checker = salespayment_required_keys -- Map.keys(params["payment"])
+      checker = sales_checker ++ sales_details_checker ++ sales_payment_checker
 
       if checker != [] do
+        sales_params =
+          for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
 
-        sales_params = for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
-        sales_master_params_list = 
-        for a <- a_list do
-          
-        sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
-        end
+        sales_master_params_list =
+          for a <- a_list do
+            sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
+          end
 
         sales_payment_params =
           for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
@@ -249,144 +255,173 @@ checker = sales_checker ++ sales_details_checker ++ sales_payment_checker
         cond do
           sales_exist != nil ->
             message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
-            log_error_api(message, "API POST") 
+            log_error_api(message, "API POST")
             send_resp(conn, 501, "Sales id exist.")
 
           sales_exist == nil ->
             case BN.create_sales(sales_params) do
               {:ok, sales} ->
                 sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
-            
+
                 Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), username])
 
-                sd = 
-                for sales_master_params <- sales_master_params_list do
-                sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
-                  
-                  case BN.create_sales_master(sales_master_params) do
-                    {:ok, sales_master} ->
-                           Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), username])
-                           :ok
+                sd =
+                  for sales_master_params <- sales_master_params_list do
+                    sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+
+                    case BN.create_sales_master(sales_master_params) do
+                      {:ok, sales_master} ->
+                        Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), username])
+
+                        :ok
+
+                      {:error, %Ecto.Changeset{} = changeset} ->
+                        model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
+                        type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                        message = List.insert_at(conn.req_headers, 0, {model, type})
+                        log_error_api(message, "API POST")
+                        :error
+                        # send_resp(conn, 500, "Sales master failed to create.")
+                    end
+                  end
+
+                if sd |> Enum.any?(fn x -> x == :error end) do
+                  Repo.delete_all(
+                    from(
+                      s in SalesMaster,
+                      where: s.salesid == sales.salesid and s.brand_id == ^bb.id
+                    )
+                  )
+
+                  Repo.delete(sales)
+                else
+                  case BN.create_sales_payment(sales_payment_params) do
+                    {:ok, sales_payment} ->
+                      Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), username])
+
+                      Task.start_link(__MODULE__, :inform_sales_update, [
+                        sales.brand_id,
+                        sales.branchid,
+                        sales.created_at
+                      ])
+
+                      send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
 
                     {:error, %Ecto.Changeset{} = changeset} ->
-                 
-                      model = changeset.errors |> hd() |> elem(0) |> Atom.to_string
+                      model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                       type = changeset.errors |> hd() |> elem(1) |> elem(0)
                       message = List.insert_at(conn.req_headers, 0, {model, type})
-                      log_error_api(message, "API POST") 
-                      :error
-                      # send_resp(conn, 500, "Sales master failed to create.")
-                  end
-                end
-if  (sd |> Enum.any?(fn x -> x == :error end )) do
-  else
-end
-          
-
-                case BN.create_sales_payment(sales_payment_params) do
-                  {:ok, sales_payment} ->
-                    Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), username])
-
-                    Task.start_link(__MODULE__, :inform_sales_update, [
-                      sales.brand_id,
-                      sales.branchid,
-                      sales.created_at
-                    ])
-
-                    send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
-
-                  {:error, %Ecto.Changeset{} = changeset} ->
-                    model = changeset.errors |> hd() |> elem(0) |> Atom.to_string
-                      type = changeset.errors |> hd() |> elem(1) |> elem(0)
-                      message = List.insert_at(conn.req_headers, 0, {model, type})
-                      log_error_api(message, "API POST") 
+                      log_error_api(message, "API POST")
                       send_resp(conn, 500, "Sales master failed to create.")
-                    send_resp(conn, 500, "Sales payment failed to create.")
+                      send_resp(conn, 500, "Sales payment failed to create.")
+                  end
                 end
 
               {:error, %Ecto.Changeset{} = changeset} ->
-                model = changeset.errors |> hd() |> elem(0) |> Atom.to_string
-                      type = changeset.errors |> hd() |> elem(1) |> elem(0)
-                      message = List.insert_at(conn.req_headers, 0, {model, type})
-                      log_error_api(message, "API POST") 
-                      send_resp(conn, 500, "Sales master failed to create.")
+                model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
+                type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                message = List.insert_at(conn.req_headers, 0, {model, type})
+                log_error_api(message, "API POST")
+                send_resp(conn, 500, "Sales master failed to create.")
                 send_resp(conn, 500, "Sales failed to create. Please use the latest sales ID")
             end
         end
       else
+        cond do
+          sales_checker != [] ->
+            dat = Enum.join(sales_checker, ",")
+            message = List.insert_at(conn.req_headers, 0, {"sales keys is missing", dat})
+            log_error_api(message, "API POST")
 
-cond do
-  sales_checker != [] ->
-    dat = Enum.join(sales_checker, ",")
-    message = List.insert_at(conn.req_headers, 0, {"sales keys is missing", dat})
-            log_error_api(message, "API POST") 
+          sales_details_checker != [] ->
+            dat = Enum.join(sales_details_checker, ",")
+            message = List.insert_at(conn.req_headers, 0, {"sales details keys is missing", dat})
+            log_error_api(message, "API POST")
 
-    sales_details_checker != [] ->
-          dat = Enum.join(sales_details_checker, ",")
-    message = List.insert_at(conn.req_headers, 0, {"sales details keys is missing", dat})
-            log_error_api(message, "API POST")  
-      sales_payment_checker != [] ->
+          sales_payment_checker != [] ->
             dat = Enum.join(sales_payment_checker, ",")
-    message = List.insert_at(conn.req_headers, 0, {"sales payment keys is missing", dat})
-            log_error_api(message, "API POST") 
-        true ->
-          message = List.insert_at(conn.req_headers, 0, {"sales", "unknown"})
-            log_error_api(message, "API POST") 
-end
+            message = List.insert_at(conn.req_headers, 0, {"sales payment keys is missing", dat})
+            log_error_api(message, "API POST")
+
+          true ->
+            message = List.insert_at(conn.req_headers, 0, {"sales", "unknown"})
+            log_error_api(message, "API POST")
+        end
+
         send_resp(conn, 500, "API failed to transaction. Check your data and try again.")
- 
- 
-
-
       end
-    else 
+    else
       cond do
         auth == [] ->
           message = List.insert_at(conn.req_headers, 0, {"user", "no basic auth"})
-            log_error_api(message, "API POST")
-           send_resp(conn, 400, "Please include authentication.")
-           user == nil ->
-            message = List.insert_at(conn.req_headers, 0, {"user", "cant find the user"})
-            log_error_api(message, "API POST")
-               send_resp(conn, 400, "User not found.")
+          log_error_api(message, "API POST")
+          send_resp(conn, 400, "Please include authentication.")
+
+        user == nil ->
+          message = List.insert_at(conn.req_headers, 0, {"user", "cant find the user"})
+          log_error_api(message, "API POST")
+          send_resp(conn, 400, "User not found.")
+
         true ->
           message = List.insert_at(conn.req_headers, 0, {"user", "unknown"})
-            log_error_api(message, "API POST")
-       send_resp(conn, 400, "user credentials are incorrect.")
+          log_error_api(message, "API POST")
+          send_resp(conn, 400, "user credentials are incorrect.")
       end
-
     end
-
   end
 
   def log_error_api(message, username) do
     # a list of single maps
-    message = message  |> Enum.reject(fn x -> elem(x, 1) == nil end)   |> Enum.map(fn {k,v} -> %{k => v} end)  |> Poison.encode!
-    a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username}) 
+    message =
+      message
+      |> Enum.reject(fn x -> elem(x, 1) == nil end)
+      |> Enum.map(fn {k, v} -> %{k => v} end)
+      |> Poison.encode!()
+
+    a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username})
     Repo.insert(a)
 
-    messages = Repo.all(from a in ApiLog, order_by: [desc: a.id], select: %{id: a.id, message: a.message, username: a.username, time: a.inserted_at}, limit: 20)
-      topic = "user:1"
-      event = "append_api_log"
-      BoatNoodleWeb.Endpoint.broadcast(topic, event, %{messages: messages})
+    messages =
+      Repo.all(
+        from(
+          a in ApiLog,
+          order_by: [desc: a.id],
+          select: %{id: a.id, message: a.message, username: a.username, time: a.inserted_at},
+          limit: 20
+        )
+      )
+
+    topic = "user:1"
+    event = "append_api_log"
+    BoatNoodleWeb.Endpoint.broadcast(topic, event, %{messages: messages})
   end
 
-
   def log_api(message, username) do
-    message = message 
-    |> Map.to_list 
-    |> Enum.reject(fn x -> elem(x, 1) == nil end)  
-    |> List.delete_at(0) 
-    |> List.delete_at(0) 
-    |> Enum.map(fn {k,v} -> %{Atom.to_string(k) => v} end) 
-    |> Poison.encode!
-    a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username}) 
+    message =
+      message
+      |> Map.to_list()
+      |> Enum.reject(fn x -> elem(x, 1) == nil end)
+      |> List.delete_at(0)
+      |> List.delete_at(0)
+      |> Enum.map(fn {k, v} -> %{Atom.to_string(k) => v} end)
+      |> Poison.encode!()
+
+    a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username})
     Repo.insert(a)
 
-    messages = Repo.all(from a in ApiLog, order_by: [desc: a.id], select: %{id: a.id, message: a.message, username: a.username, time: a.inserted_at}, limit: 20)
-      topic = "user:1"
-      event = "append_api_log"
-      BoatNoodleWeb.Endpoint.broadcast(topic, event, %{messages: messages})
+    messages =
+      Repo.all(
+        from(
+          a in ApiLog,
+          order_by: [desc: a.id],
+          select: %{id: a.id, message: a.message, username: a.username, time: a.inserted_at},
+          limit: 20
+        )
+      )
+
+    topic = "user:1"
+    event = "append_api_log"
+    BoatNoodleWeb.Endpoint.broadcast(topic, event, %{messages: messages})
   end
 
   def inform_sales_update(brand_id, branchid, created_at) do
