@@ -32,20 +32,17 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       details =
         Repo.all(from(c in ComboDetails, where: c.combo_id == ^subcat_id, select: c.id))
         |> Enum.map(fn x -> Integer.to_string(x) end)
-        
-       
-          item_details = Repo.all(from i in ItemSubcat, where: i.itemcatid == ^subcat_id )
-        IEx.pry()
-       
 
+      item_details = Repo.all(from(i in ItemSubcat, where: i.itemcatid == ^subcat_id))
+      IEx.pry()
     else
       unless Enum.any?(items, fn x -> x == subcat_id end) do
         items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
         MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
       end
-
     end
-      send_resp(conn, 200, "ok")
+
+    send_resp(conn, 200, "ok")
 
     # figure out if this is a combo.. normally wth 6 digits..
     # if its a combo, then check in the combo details if there's any combo id matches the current subcat id

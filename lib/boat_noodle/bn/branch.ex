@@ -18,7 +18,7 @@ defmodule BoatNoodle.BN.Branch do
     field(:qb_custref, :string)
     field(:qb_dep2acc, :string)
     field(:currency, :string)
-
+    field(:api_key, :string)
     field(:sync_status, :integer)
     field(:remain_sync, :integer)
     field(:menu_catalog, :integer)
@@ -60,7 +60,8 @@ defmodule BoatNoodle.BN.Branch do
       :service_charge,
       :manager,
       :num_staff,
-      :report_class
+      :report_class,
+      :api_key
     ])
   end
 end

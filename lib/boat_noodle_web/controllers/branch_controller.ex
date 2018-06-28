@@ -80,6 +80,22 @@ defmodule BoatNoodleWeb.BranchController do
     )
   end
 
+  def get_api(conn, %{"brand" => brand, "id" => branch_id}) do
+    branch = Repo.get_by(Branch, branchid: branch_id, brand_id: BN.get_brand_id(conn))
+
+    api_key = Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
+    cg = Branch.changeset(branch, %{api_key: api_key})
+    map = %{key: api_key} |> Poison.encode!()
+
+    case Repo.update(cg) do
+      {:ok, bb} ->
+        send_resp(conn, 200, map)
+
+      {:error, cg} ->
+        send_resp(conn, 500, " not ok")
+    end
+  end
+
   def index(conn, params) do
     branch =
       Repo.all(
@@ -149,7 +165,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def show(conn, %{"id" => id}) do
-    branch = BN.get_branch!(id)
+    branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
     render(conn, "show.html", branch: branch)
   end
 
@@ -191,7 +207,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def update(conn, %{"id" => id, "branch" => branch_params}) do
-    branch = BN.get_branch!(id)
+    branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
 
     case BN.update_branch(branch, branch_params) do
       {:ok, branch} ->
@@ -205,7 +221,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def delete(conn, %{"id" => id}) do
-    branch = BN.get_branch!(id)
+    branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
     {:ok, _branch} = BN.delete_branch(branch)
 
     conn
