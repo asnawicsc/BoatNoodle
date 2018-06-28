@@ -165,8 +165,8 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
       end
 
-      send_resp(conn, 200, "ok")
     end
+      send_resp(conn, 200, "ok")
 
     # figure out if this is a combo.. normally wth 6 digits..
     # if its a combo, then check in the combo details if there's any combo id matches the current subcat id

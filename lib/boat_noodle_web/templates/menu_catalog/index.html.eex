@@ -35,7 +35,7 @@
 
                     <tr >
 
-                      <th class="headcol" style="line-height: 21px; ">
+                      <th class="headcol" style="line-height: 25px; ">
                         <%= menu_catalog.name %>
                       </th>
  
