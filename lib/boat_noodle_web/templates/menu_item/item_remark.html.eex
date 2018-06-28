@@ -85,7 +85,7 @@
                                 <td><%= remark.itemremark %></td>
                                 <td>
 
-                                  <a href="/remark/<%= remark.remarkid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Remark">
+                                  <a href="/<%= @conn.params["brand"]%>/remark/<%= remark.remarkid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Remark">
                                     <i class="material-icons">edit</i>
                                 </td>
                               </tr>

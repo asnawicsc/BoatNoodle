@@ -36,6 +36,8 @@
         <td>
           
           <a href="/<%= @conn.params["brand"]%>/discount_catalog_details/<%= discount.id %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+       
+          <a href="/<%= @conn.params["brand"]%>/discount_catalog_copy/<%= discount.id %>" class="btn btn-info btn-sm">Copy<div class="ripple-container"></div></a>
         </td>
       </tr>
       <% end %>

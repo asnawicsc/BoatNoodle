@@ -6,6 +6,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   require IEx
 
   def combo_create(conn, params) do
+
+
     ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
     itemname = params["itemcode"] <> " " <> params["itemdesc"]
     params = Map.put(params, "itemname", itemname)
@@ -56,6 +58,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_create_price(conn, params) do
+      IEx.pry
     pa = params["a"]
 
     count =

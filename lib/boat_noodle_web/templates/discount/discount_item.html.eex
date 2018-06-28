@@ -25,7 +25,7 @@
           <th>Discount Name</th>
           <th>Description</th>
           <th>Discount Amount</th>
-        
+         <th>Active</th>
           <th>Actions</th>
           
         </tr>
@@ -38,7 +38,12 @@
         <td><%= discount.discitemsname %></td>
         <td><%= discount.description %></td>
         <td><%= discount.discamtpercentage %></td>
-       
+       <td><%= if discount.activate == 1 do %>
+           <a style="color: green;">True</a>
+          <% else %>
+          <a style="color: red;">False</a>
+       <% end %>
+       </td>
         <td>
           
            <a href="/<%= @conn.params["brand"]%>/discount_item_details/<%= discount.discountitemsid %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>

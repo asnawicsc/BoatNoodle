@@ -15,7 +15,7 @@ defmodule BoatNoodleWeb.DiscountController do
     discount_details =
       Repo.all(
         from(
-          s in Discount,
+          s in Discount,where: s.brand_id == ^brand,
           select: %{
             discountid: s.discountid,
             discount_name: s.discname,
@@ -28,13 +28,13 @@ defmodule BoatNoodleWeb.DiscountController do
     discount_items =
       Repo.all(
         from(
-          s in DiscountItem,
+          s in DiscountItem,where: s.brand_id == ^brand,
           select: %{
             discountitemsid: s.discountitemsid,
             discitemsname: s.discitemsname,
             description: s.descriptions,
             discamtpercentage: s.discamtpercentage,
-            where: s.brand_id == ^brand
+            activate: s.is_visable
           }
         )
       )
@@ -43,7 +43,7 @@ defmodule BoatNoodleWeb.DiscountController do
     discount_catalog =
       Repo.all(
         from(
-          s in DiscountCatalog,
+          s in DiscountCatalog,where: s.brand_id == ^brand,
           select: %{
             id: s.id,
             name: s.name
@@ -205,7 +205,7 @@ defmodule BoatNoodleWeb.DiscountController do
     item_subcat =
       Repo.all(
         from(
-          b in BoatNoodle.BN.ItemSubcat,
+          b in BoatNoodle.BN.ItemSubcat,where: b.brand_id==^brand,
           select: %{
             subcatid: b.subcatid,
             itemname: b.itemname,
@@ -255,10 +255,33 @@ defmodule BoatNoodleWeb.DiscountController do
       target_cat = item["target_category"] |> String.to_integer()
     end
 
-    if item["discount_amount"] == "" do
-      discamtpercentage = 0
-    else
+    if type == 1 do
       discamtpercentage = item["discount_amount"]
+ 
+    end
+
+     if type == 2 do
+      discamtpercentage = item["discount_percentage"]
+ 
+    end
+
+     if type == 3 do
+      discamtpercentage = item["voucher_amount"]
+ 
+    end
+
+     if type == 4 do
+      discamtpercentage = 0
+ 
+    end
+
+     if type == 5 do
+      discamtpercentage = 0
+    end
+
+     if type == 6 do
+      discamtpercentage = item["discount_percentage"]
+ 
     end
 
     if item["target_item"] == "" do
@@ -273,6 +296,7 @@ defmodule BoatNoodleWeb.DiscountController do
       is_used = 0
     end
 
+IEx.pry
     min_spend = item["minimum_spend"]
 
     cat =
@@ -552,6 +576,33 @@ defmodule BoatNoodleWeb.DiscountController do
         )
     end
   end
+
+  def discount_catalog_copy(conn, %{"id" => id}) do
+       brand = BN.get_brand_id(conn)
+
+       id=id|>String.to_integer
+     discount_catalog = Repo.get_by(BoatNoodle.BN.DiscountCatalog, id: id, brand_id: brand)
+
+        render(conn, "discount_catalog_copy.html", discount_catalog: discount_catalog)
+
+  end
+
+  def create_discount_catalog_copy(conn, params) do
+
+    categories=params["categories"]
+    discounts=params["discounts"]
+    name=params["name"]
+
+    case BN.create_discount_catalog(%{categories: categories,discounts: discounts,name: name}) do
+          {:ok, discount_catalg} ->
+            conn
+            |> put_flash(:info, "Discount Catalog Successfully Copy")
+            |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
+
+         
+        end
+  end
+
 
   def new(conn, _params) do
     changeset = BN.change_discount(%Discount{})

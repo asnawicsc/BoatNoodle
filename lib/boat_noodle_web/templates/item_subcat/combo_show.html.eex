@@ -208,6 +208,7 @@
 </div>
 
 <div aria-label="item_detail" class="row hidding">
+<<<<<<< HEAD
 
 
   <div class="col-lg-12">
@@ -232,7 +233,9 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3">
+
+  <div class="col-lg-6">
+
     <div class="card">
       <div class="card-header card-header-text card-header-primary">
         <div class="card-text">
@@ -255,12 +258,18 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3">
+  <div class="col-lg-6">
     <div class="card">
       <div class="card-header card-header-text card-header-success">
         <div class="card-text">
           <h4 class="card-title">Menu Catalogs</h4>
           <p class="card-category">Selected for <span class="selected_id">none</span></p>
+        </div>
+         <div class="dropdown pull-right" style="padding: 10px;">
+          <button aria-label="item_summary" class="btn btn-info btn-round">
+                <i class="material-icons">ballot</i> COMBO Summary
+              <div class="ripple-container"></div>
+            <div class="ripple-container"></div></button>
         </div>
       </div>
       <div class="card-body">
@@ -354,7 +363,6 @@ $(document).ready(function() {
       $("ol.not_selected_catalog").append(li);
     });
   });
-
 
 
   $('button[data-original-title="Edit Menu"]').click(function() {
@@ -536,7 +544,7 @@ $("input.combo_item_tag").click(function(){
     var tag_id = $(this).attr("id");
     var brand = location.pathname.split("/")[1];
     $.ajax({
-      url: "/" + brand + "/insert_into_catalog",
+      url: "/" + brand + "/insert_into_catalog_combo",
       dataType: "json",
       data: {
         subcat_id: subcat_id,
@@ -557,7 +565,7 @@ $("input.combo_item_tag").click(function(){
     var tag_id = $(this).attr("id");
     var brand = location.pathname.split("/")[1];
     $.ajax({
-      url: "/" + brand + "/remove_from_catalog",
+      url: "/" + brand + "/remove_from_catalog_combo",
       dataType: "json",
       data: {
         subcat_id: subcat_id,

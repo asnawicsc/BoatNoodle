@@ -154,12 +154,6 @@
                     <span class="sidebar-normal"> Discount </span>
                   </a>
                 </li>
-                <li class="nav-item ">
-                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/discount_catalog">
-                    <span class="sidebar-mini"> D </span>
-                    <span class="sidebar-normal"> Discount Catalog</span>
-                  </a>
-                </li>
                
                 <li class="nav-item ">
                   <a class="nav-link" href="/<%= @conn.params["brand"]%>/tag">

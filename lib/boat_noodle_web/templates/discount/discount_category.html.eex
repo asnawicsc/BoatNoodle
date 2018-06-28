@@ -17,7 +17,22 @@
 
             </li>
 
+
           </ul>
+
+        </div>
+        
+                    </button>
+
+        <div class="dropdown pull-right" style="padding: 10px;">
+            <button class="btn btn-danger btn-round" >
+                <i class="material-icons">book</i> Discount Report
+              <div class="ripple-container"></div>
+            </button>
+            <button class="btn btn-warning btn-round" id="upload_voucher" name="" data-toggle="modal" aria-label="upload_voucher" data-target="#model3" data-original-title="Edit Item">
+                <i class="material-icons">info</i> Upload Voucher Code
+              <div class="ripple-container"></div>
+            </button>
         </div>
     </div>
  
@@ -39,9 +54,9 @@
         <td><%= discount.discount_name %></td>
         <td><%= discount.discount_description %></td>
         <td><%= if discount.activate == 1 do %>
-           True
+           <a style="color: green;">True</a>
           <% else %>
-          False
+          <a style="color: red;">False</a>
        <% end %>
        </td>
         <td>
@@ -57,4 +72,21 @@
   </div>
 </div>
 
+<div class="modal fade" id="model3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" >
+    <div class="modal-content" >
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Upload Voucher</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal_form1">
 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -64,7 +64,7 @@
                               <h3 class="card-title">Categories</h3>
                             </div>
                       <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
-                       <ol class="item"   id="list1">
+                       <ol class="item1"   id="list1">
                                 <%= for carte <- @ala_carte do %>
                                 <li style="font-size: 15px; height: 40px;" id="<%= carte.itemcatid %>"><%= carte.itemcatname %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"><%= carte.itemcatcode %></span></li>
                                 <% end %>
@@ -72,7 +72,7 @@
                         
                       </div>
                 <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="Select All">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo new">
 
                     <i class="material-icons">fast_forward</i> Select All
                   <div class="ripple-container"></div>
@@ -91,11 +91,11 @@
                               <h3 class="card-title">Categories</h3>
                             </div>
                     <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
-                      <ol class="item" style="height: 300px; min-width: 300px;" id="list2">
+                      <ol class="item2" style="height: 300px; min-width: 300px;" id="list2">
                       </ol>
                     </div>
                      <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="Unselect All">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo new">
 
                     <i class="material-icons">fast_rewind</i> Unselect All
                   <div class="ripple-container"></div>
@@ -122,3 +122,5 @@
     </div>
  </form>
 </div>
+
+  
