@@ -281,7 +281,6 @@ defmodule BoatNoodleWeb.PageController do
                         message = List.insert_at(conn.req_headers, 0, {model, type})
                         log_error_api(message, "API POST")
                         :error
-                        # send_resp(conn, 500, "Sales master failed to create.")
                     end
                   end
 
@@ -289,11 +288,15 @@ defmodule BoatNoodleWeb.PageController do
                   Repo.delete_all(
                     from(
                       s in SalesMaster,
-                      where: s.salesid == sales.salesid and s.brand_id == ^bb.id
+                      where: s.salesid == ^sales.salesid and s.brand_id == ^bb.id
                     )
                   )
 
                   Repo.delete(sales)
+
+                  message = List.insert_at(conn.req_headers, 0, {"sales details", "one of it has issues, the created sales and other sales details will be deleted."})
+                  log_error_api(message, "API POST")
+                  send_resp(conn, 500, "Sales master failed to create.")
                 else
                   case BN.create_sales_payment(sales_payment_params) do
                     {:ok, sales_payment} ->
