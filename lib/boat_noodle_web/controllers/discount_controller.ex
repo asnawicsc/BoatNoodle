@@ -646,6 +646,29 @@ IEx.pry
     end
   end
 
+
+  def upload_voucher(conn, params) do
+  
+  discountid=params["disc_cat"]|>String.to_integer
+  file=params["item_subcat"]["file"]
+
+  {:ok, binary}=File.read(params["item_subcat"]["file"].path)
+
+    voucher_codes = binary |> String.split("\r\n")
+
+    disc_cat = Repo.get_by(Discount, discountid: params["disc_cat"], brand_id: BN.get_brand_id(conn))
+        
+    name = disc_cat.discname
+
+    for voucher_code <- voucher_codes do
+      Voucher.changeset(%Voucher{}, %{code_number: voucher_code, discount_name: name}) |> Repo.insert()
+    end
+     conn
+    |> put_flash(:info, "Discount updated successfully.")
+    |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
+
+  end
+
   def delete(conn, %{"id" => id}) do
     discount = BN.get_discount!(id)
     {:ok, _discount} = BN.delete_discount(discount)
@@ -655,3 +678,4 @@ IEx.pry
     |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
   end
 end
+

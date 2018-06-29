@@ -1,4 +1,4 @@
- <%= form_for @changeset, item_subcat_path(@conn, :upload_voucher,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
+ <%= form_for @changeset, discount_path(@conn, :upload_voucher,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
                     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
       <div class="content">
         <div class="container-fluid">

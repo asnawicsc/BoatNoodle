@@ -1,0 +1,5 @@
+<h2>New Voucher</h2>
+
+<%= render "form.html", Map.put(assigns, :action, voucher_path(@conn, :create, BN.get_domain(@conn))) %>
+
+<span><%= link "Back", to: voucher_path(@conn, :index, BN.get_domain(@conn)) %></span>

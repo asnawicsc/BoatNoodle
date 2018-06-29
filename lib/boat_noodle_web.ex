@@ -63,7 +63,8 @@ defmodule BoatNoodleWeb do
         Branch,
         Tag,
         Brand,
-        ApiLog
+        ApiLog,
+        Voucher
       }
     end
   end
@@ -121,7 +122,8 @@ defmodule BoatNoodleWeb do
         Branch,
         Tag,
         Brand,
-        ApiLog
+        ApiLog,
+        Voucher
       }
     end
   end
@@ -175,7 +177,8 @@ defmodule BoatNoodleWeb do
         Branch,
         Tag,
         Brand,
-        ApiLog
+        ApiLog,
+        Voucher
       }
 
       import Ecto.Query

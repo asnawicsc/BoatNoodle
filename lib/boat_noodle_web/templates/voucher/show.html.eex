@@ -1,0 +1,28 @@
+<h2>Show Voucher</h2>
+
+<ul>
+
+  <li>
+    <strong>Code number:</strong>
+    <%= @voucher.code_number %>
+  </li>
+
+  <li>
+    <strong>Discount name:</strong>
+    <%= @voucher.discount_name %>
+  </li>
+
+  <li>
+    <strong>Is used:</strong>
+    <%= @voucher.is_used %>
+  </li>
+
+  <li>
+    <strong>Branchid:</strong>
+    <%= @voucher.branchid %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: voucher_path(@conn, :edit, BN.get_domain(@conn), @voucher) %></span>
+<span><%= link "Back", to: voucher_path(@conn, :index, BN.get_domain(@conn)) %></span>

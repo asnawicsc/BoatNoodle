@@ -3592,4 +3592,70 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_api_log(api_log)
     end
   end
+
+  describe "vouchers" do
+    alias BoatNoodle.BN.Voucher
+
+    @valid_attrs %{branchid: 42, code_number: "some code_number", discount_name: "some discount_name", is_used: true}
+    @update_attrs %{branchid: 43, code_number: "some updated code_number", discount_name: "some updated discount_name", is_used: false}
+    @invalid_attrs %{branchid: nil, code_number: nil, discount_name: nil, is_used: nil}
+
+    def voucher_fixture(attrs \\ %{}) do
+      {:ok, voucher} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_voucher()
+
+      voucher
+    end
+
+    test "list_vouchers/0 returns all vouchers" do
+      voucher = voucher_fixture()
+      assert BN.list_vouchers() == [voucher]
+    end
+
+    test "get_voucher!/1 returns the voucher with given id" do
+      voucher = voucher_fixture()
+      assert BN.get_voucher!(voucher.id) == voucher
+    end
+
+    test "create_voucher/1 with valid data creates a voucher" do
+      assert {:ok, %Voucher{} = voucher} = BN.create_voucher(@valid_attrs)
+      assert voucher.branchid == 42
+      assert voucher.code_number == "some code_number"
+      assert voucher.discount_name == "some discount_name"
+      assert voucher.is_used == true
+    end
+
+    test "create_voucher/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_voucher(@invalid_attrs)
+    end
+
+    test "update_voucher/2 with valid data updates the voucher" do
+      voucher = voucher_fixture()
+      assert {:ok, voucher} = BN.update_voucher(voucher, @update_attrs)
+      assert %Voucher{} = voucher
+      assert voucher.branchid == 43
+      assert voucher.code_number == "some updated code_number"
+      assert voucher.discount_name == "some updated discount_name"
+      assert voucher.is_used == false
+    end
+
+    test "update_voucher/2 with invalid data returns error changeset" do
+      voucher = voucher_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_voucher(voucher, @invalid_attrs)
+      assert voucher == BN.get_voucher!(voucher.id)
+    end
+
+    test "delete_voucher/1 deletes the voucher" do
+      voucher = voucher_fixture()
+      assert {:ok, %Voucher{}} = BN.delete_voucher(voucher)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_voucher!(voucher.id) end
+    end
+
+    test "change_voucher/1 returns a voucher changeset" do
+      voucher = voucher_fixture()
+      assert %Ecto.Changeset{} = BN.change_voucher(voucher)
+    end
+  end
 end

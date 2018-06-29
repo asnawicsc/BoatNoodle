@@ -706,14 +706,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   render(conn, "show_voucher.html", discount: discount,changeset: changeset)
   end
 
-   def upload_voucher(conn, params) do
-  
-  discountid=params["disc_cat"]|>String.to_integer
-  file=params["item_subcat"]["file"]
 
-  {:ok, binary}=File.read(params["item_subcat"]["file"].path)
-
-  end
 
   def index(conn, _params) do
     item_subcat = BN.list_item_subcat()

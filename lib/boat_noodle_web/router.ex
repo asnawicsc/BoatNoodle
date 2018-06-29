@@ -95,7 +95,7 @@ defmodule BoatNoodleWeb.Router do
     get("/list_discount_catalog2", DiscountCatalogController, :list_discount_catalog2)
     get("/list_discount_catalog3", DiscountCatalogController, :list_discount_catalog3)
     get("/show_voucher",ItemSubcatController, :show_voucher)
-    post("/upload_voucher",ItemSubcatController, :upload_voucher)
+    post("/upload_voucher",DiscountController, :upload_voucher)
 
     get(
       "/discount_insert_into_catalog3",
@@ -254,6 +254,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/voiditems", VoidItemsController)
     resources("/salespayment", SalesPaymentController)
     resources "/api_log", ApiLogController
+    resources "/vouchers", VoucherController
     get("/*path", PageController, :no_page_found)
   end
 end

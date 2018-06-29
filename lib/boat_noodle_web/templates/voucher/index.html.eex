@@ -1,0 +1,32 @@
+<h2>Listing Vouchers</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Code number</th>
+      <th>Discount name</th>
+      <th>Is used</th>
+      <th>Branchid</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for voucher <- @vouchers do %>
+    <tr>
+      <td><%= voucher.code_number %></td>
+      <td><%= voucher.discount_name %></td>
+      <td><%= voucher.is_used %></td>
+      <td><%= voucher.branchid %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: voucher_path(@conn, :show, voucher), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: voucher_path(@conn, :edit, voucher), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: voucher_path(@conn, :delete, voucher), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Voucher", to: voucher_path(@conn, :new, BN.get_domain(@conn)) %></span>
