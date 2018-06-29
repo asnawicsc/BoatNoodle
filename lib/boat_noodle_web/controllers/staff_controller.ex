@@ -122,7 +122,7 @@ defmodule BoatNoodleWeb.StaffController do
   end
 
   def update(conn, %{"id" => id, "staff" => staff_params}) do
-    staff = BN.get_staff!(id)
+    staff = Repo.get_by(Staff, staff_id: id, brand_id: BN.get_brand_id(conn))
 
     if conn.params["branch_ids"] == nil do
       branch_access = ""
