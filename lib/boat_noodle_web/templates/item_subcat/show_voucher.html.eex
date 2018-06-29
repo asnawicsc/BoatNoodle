@@ -1,30 +1,47 @@
-
-
-<form action="" aria-label = "edit_combo_price_form">
-
-<div class="table-responsive">
-  <table class="table" border="1">
-     <thead class=" text-primary">
-    <th>Discount Category</th>
-    <th>Upload Voucher Code(.csv)</th>
-    </thead>
-    <tbody>
-    <tr>
-      <td></td>
-     
-                       
-      <td><input type="file" name="sad"></td>
-    </tr>
-    </tbody>
-  </table>
-</div>
- <select class="selectpicker" data-style="btn select-with-transition"  data-size="7">
+ <%= form_for @changeset, item_subcat_path(@conn, :upload_voucher,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
+                    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card ">
+                <div class="card-header card-header-rose card-header-icon">
+                  <div class="card-icon">
+                    <i class="material-icons">mail_outline</i>
+                  </div>
+                  <h4 class="card-title">Upload Voucher</h4>
+                </div>
+                <div class="card-body ">
+ <div class="row">
+                 <div class="col-lg-5 col-md-6 col-sm-3">
+                    <label class="bmd-label-floating">Discount Category</label>
+                          <select class="selectpicker" data-style="btn select-with-transition" name="disc_cat"   data-size="7">
                            <%= for a <- @discount do %>
-                          
                                             <option value="<%= a.discountid %>" ><%= a.discname %>
                                             </option>
                                           <% end %>
                                         </select>
-    <button type="submit" class="btn btn-primary" id="submit_edit_form_combo" >Update</button>
-</form>
-
+                        </div>
+                      </div>
+                <div class="row">
+                  <div class="col-lg-5 col-md-6 col-sm-3">
+                   <label class="bmd-label-floating">Upload Voucher(.csv only)</label>
+                      <div class="fileinput fileinput-new text-left" data-provides="fileinput" >
+                           
+                          
+                            <div >
+                              <%= file_input f, :file, accept: ".csv"%>
+                            </div>
+                            
+                      </div>
+                    </div>
+                    </div>
+                <div class="card-footer ">
+                  <button type="submit" class="btn btn-fill btn-rose">Submit</button>
+                </div>
+              </div>
+            </div>   
+          </div>
+        </div>
+      </div>
+    <% end %>

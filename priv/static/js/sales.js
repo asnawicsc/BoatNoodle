@@ -2287,14 +2287,19 @@ $("select#select_target_category").select(function(){
   })
 
    channel.on("show_voucher", payload => {
-    $("#modal_form1").html(payload.html);
-    $("button#submit_edit_form_combo").click(function(event){
+    $("#modal_form5").html(payload.html);
+    $("button#submit_upload_voucher").click(function(event){
       event.preventDefault();
-      var fr= []
-      var fr = $("form[aria-label='edit_combo_price_form']").serializeArray();
-
-      channel.push("update_combo_price",{map: fr, brand_id: window.currentBrand})
+  
     })
+  })
+
+     channel.on("upload_all_code", payload => {
+    $('#model1').modal('toggle');
+    $("#backdrop").fadeIn()
+     location.reload();
+     $("#backdrop").delay(500).fadeOut()
+   
   })
 
 

@@ -2,7 +2,7 @@
   <div class="card">
       <div class="card-header card-header-text card-header-warning">
       <div class="card-text">
-        <h4 class="card-title">Discount Catalogs</h4>
+        <h4 class="card-title">New Discount Catalogs</h4>
       </div>
       <div class="dropdown pull-right" style="padding: 10px;">
           <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">

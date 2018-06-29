@@ -2601,17 +2601,35 @@ defmodule BoatNoodleWeb.UserChannel do
 
   def handle_in("upload_voucher", payload, socket) do
 
+    brand=BN.get_brand!(String.to_integer(payload["brand_id"]))
+
+    brand_name=brand.domain_name
+
     discount= Repo.all(from s in Discount, select: %{discountid: s.discountid,discname: s.discname})
      html =
       Phoenix.View.render_to_string(
         BoatNoodleWeb.ItemSubcatView,
         "show_voucher.html",
-        discount: discount
+        discount: discount,
+        brand_name: brand_name
       )
 
     broadcast(socket, "show_voucher", %{
       html: html
     })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("update_voucher_code", payload, socket) do
+    map =
+      payload["map"]
+      |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
+      |> Enum.flat_map(fn x -> x end)
+      |> Enum.into(%{})
+      |> Enum.sort()
+
+    broadcast(socket, "upload_all_code", %{})
 
     {:noreply, socket}
   end
