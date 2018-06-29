@@ -10,11 +10,11 @@
               <div class="row">
                 <div class="col-md-12" style="width: 100%;">
                   <table style="float: left;">
-                    <tr><th>Branches</th></tr>
+                    <tr><th><div style="line-height: 26px;">Branches</div></th></tr>
                    <%= for branch <- @branches do %>
                       <tr>
                         <td>
-                          <div style="margin-top: 3px; margin-bottom: 3px;">
+                          <div style="line-height: 26px;">
                             
                           <%= String.replace(branch.name, "BN", "") %>
                           </div>
@@ -29,7 +29,7 @@
 
                       <tr>
                         <%= for manager_access_user <- @manager_access_users do %>
-                          <th style="width: 200px; text-align: center; font-size: 12px;">
+                          <th style="width: 200px; text-align: center; font-size: 12px; line-height: 25px;">
                             <%= manager_access_user.username %>
                           </th>
                         <% end %>
@@ -52,16 +52,15 @@
                                 end
                               end
                               %>
-                            
-                                
+                             <div >
                              
                               <%= if checkbox do %>
-                                <input style="position: relative; margin-top: 8.5px; margin-bottom: 8.5px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" checked="">
+                                <input style="position: relative;  margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" checked="">
                               <% else %>
-                                <input style="position: relative; margin-top: 8.5px; margin-bottom: 8.5px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="">
+                                <input style="position: relative;  margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="">
                               <% end %>
                            
-                 
+                 </div>
                             </td>
                           <% end %>
             
