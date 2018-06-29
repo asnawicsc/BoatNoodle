@@ -10,11 +10,11 @@
               <div class="row">
                 <div class="col-md-12" style="width: 100%;">
                   <table style="float: left;">
-                    <tr><th><div style="line-height: 26px;">Branches</div></th></tr>
+                    <tr><th><div style="line-height: 24px;">Branches</div></th></tr>
                    <%= for branch <- @branches do %>
                       <tr>
                         <td>
-                          <div style="line-height: 26px;">
+                          <div style="line-height: 24px;">
                             
                           <%= String.replace(branch.name, "BN", "") %>
                           </div>
@@ -55,9 +55,9 @@
                              <div >
                              
                               <%= if checkbox do %>
-                                <input style="position: relative;  margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" checked="">
+                                <input style="position: relative; margin-top:0px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" checked="">
                               <% else %>
-                                <input style="position: relative;  margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="">
+                                <input style="position: relative; margin-top:0px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="">
                               <% end %>
                            
                  </div>
