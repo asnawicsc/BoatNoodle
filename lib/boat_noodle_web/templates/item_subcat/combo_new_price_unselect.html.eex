@@ -18,7 +18,8 @@
 						<label class="col-sm-2 col-form-label">Item Name</label>
 						<div class="col-sm-4">
 							<div class="form-group">
-								<input type="text" class="form-control" name="itemname" value='<%= @item_name %>' disabled>
+								<input type="text" class="form-control" value='<%= @item_name %>' disabled>
+								<input type="hidden" class="form-control" name="itemname" value='<%= @item_name %>' >
 
 
 							</div>
@@ -28,7 +29,8 @@
 						<label class="col-sm-2 col-form-label">Item Code</label>
 						<div class="col-sm-4">
 							<div class="form-group">
-								<input type="text" class="form-control" name="itemcode" value='<%= @item_code %>' disabled>
+								<input type="text" class="form-control"  value='<%= @item_code %>' disabled>
+								<input type="hidden" class="form-control" name="itemcode" value='<%= @item_code %>' >
 
 							</div>
 						</div>
@@ -37,7 +39,8 @@
 						<label class="col-sm-2 col-form-label">Item Description</label>
 						<div class="col-sm-4">
 							<div class="form-group">
-								<input type="text" class="form-control" name="itemdesc" value='<%= @item_desc %>' disabled>
+								<input type="text" class="form-control" value='<%= @item_desc %>' disabled>
+								<input type="hidden" class="form-control" name="itemdesc" value='<%= @item_desc %>' >
 
 							</div>
 						</div>
@@ -46,8 +49,8 @@
 						<label class="col-sm-2 col-form-label">Item Category</label>
 						<div class="col-sm-4">
 							<div class="form-group">
-								<input type="text" class="form-control" name="itemcat" value='<%= @item_cat %>' disabled>
-
+								<input type="text" class="form-control"  value='<%= @item_cat %>' disabled>
+								<input type="hidden" class="form-control" name="itemcat" value='<%= @item_cat %>' >
 							</div>
 						</div>
 					</div>
@@ -56,7 +59,8 @@
 						<label class="col-sm-2 col-form-label">Price Code</label>
 						<div class="col-sm-4">
 							<div class="form-group">
-								<input type="text" class="form-control" name="price_code" value='<%= @price_code %>' disabled>
+								<input type="text" class="form-control" value='<%= @price_code %>' disabled>
+								<input type="hidden" class="form-control" name="price_code" value='<%= @price_code %>' >
 
 							</div>
 						</div>

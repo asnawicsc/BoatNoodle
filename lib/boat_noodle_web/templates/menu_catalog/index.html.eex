@@ -2,8 +2,10 @@
   <div class="card">
     <div class="card-header">
       <h4 class="card-title">Menu Catalogue</h4>
-      <p class="card-category">
-        <div style="">
+
+      <div class="dropdown pull-left" style="padding: 10px;">
+
+       <div style="">
           
           <b>
             
@@ -16,7 +18,14 @@
           <span class="badge badge-rose" >E</span>
           <span class="badge badge-danger" >Others</span>
         </div>
-      </p>
+      </div>
+      <div class="dropdown pull-right" style="padding: 10px;">
+            <a  href="/<%= @conn.private.plug_session["brand"] %>/menu_catalog/new" class="btn btn-info btn-round" >
+                <i class="material-icons">add_box</i> New MenuCatalog
+              <div class="ripple-container"></div>
+            </a>
+          </div>
+
     </div>
     <div class="card-body">
       <% require IEx %>

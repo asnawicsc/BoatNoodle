@@ -1479,3 +1479,12 @@ var Timer = function () {
 }();
 
 })));
+
+
+
+var socket = new Phoenix.Socket("/socket", {
+    params: {
+        token: window.userToken
+    }
+});
+socket.connect()  

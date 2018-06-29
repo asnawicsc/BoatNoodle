@@ -15,7 +15,8 @@
 							<label class="col-sm-2 col-form-label">Item Name</label>
 							<div class="col-sm-4">
 								<div class="form-group">
-									<input type="text" class="form-control" name="item[itemname]" value='<%= @params["itemname"] %>' disabled>
+									<input type="text" class="form-control"  value='<%= @params["itemname"] %>' disabled >
+									<input type="hidden" class="form-control" name="item[itemname]" value='<%= @params["itemname"] %>' >
 									
 
 								</div>
@@ -25,8 +26,8 @@
 							<label class="col-sm-2 col-form-label">Item Code</label>
 							<div class="col-sm-4">
 								<div class="form-group">
-									<input type="text" class="form-control" name="item[itemcode]" value='<%= @params["itemcode"] %>' disabled >
-								  
+									<input type="text" class="form-control" value='<%= @params["itemcode"] %>' disabled >
+								  <input type="hidden" class="form-control" name="item[itemcode]" value='<%= @params["itemcode"] %>'  >
 								</div>
 							</div>
 						</div>
@@ -34,8 +35,8 @@
 							<label class="col-sm-2 col-form-label">Item Description</label>
 							<div class="col-sm-4">
 								<div class="form-group">
-									<input type="text" class="form-control" name="item[itemdesc]" value='<%= @params["itemdesc"] %>' disabled >
-								  
+									<input type="text" class="form-control"  value='<%= @params["itemdesc"] %>' disabled >
+								  	<input type="hidden" class="form-control" name="item[itemdesc]" value='<%= @params["itemdesc"] %>'  >
 								</div>
 							</div>
 						</div>
@@ -43,8 +44,8 @@
 							<label class="col-sm-2 col-form-label">Item Category</label>
 							<div class="col-sm-4">
 								<div class="form-group">
-									<input type="text" class="form-control" name="item[itemcat]" value='<%= @params["itemcat"] %>' disabled >
-								  
+									<input type="text" class="form-control"  value='<%= @params["itemcat"] %>' disabled >
+								  <input type="hidden" class="form-control" name="item[itemcat]" value='<%= @params["itemcat"] %>'  >
 								</div>
 							</div>
 						</div>
@@ -52,8 +53,8 @@
 							<label class="col-sm-2 col-form-label">Price Code</label>
 							<div class="col-sm-4">
 								<div class="form-group">
-									<input type="text" class="form-control" name="item[price_code]" value='<%= @params["price_code"] %>' disabled >
-								  
+									<input type="text" class="form-control"  value='<%= @params["price_code"] %>' disabled >
+								  <input type="hidden" class="form-control" name="item[price_code]" value='<%= @params["price_code"] %>'  >
 								</div>
 							</div>
 						</div>

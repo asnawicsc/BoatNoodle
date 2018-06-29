@@ -207,15 +207,25 @@ defmodule BoatNoodleWeb.MenuCatalogController do
 
   def new(conn, _params) do
     changeset = BN.change_menu_catalog(%MenuCatalog{})
-    render(conn, "new.html", changeset: changeset)
+    cata = Repo.all(from c in MenuCatalog, where: c.brand_id == ^BN.get_brand_id(conn), select: {c.name, c.id})
+    render(conn, "new.html", changeset: changeset, cata: cata)
   end
 
   def create(conn, %{"menu_catalog" => menu_catalog_params}) do
+    menu_catalog_params = Map.put(menu_catalog_params, "brand_id", BN.get_brand_id(conn))
+    if menu_catalog_params["id"] != nil do
+      dup_men = Repo.get_by(MenuCatalog, id: menu_catalog_params["id"], brand_id: BN.get_brand_id(conn))
+      add_params = %{"categories" => dup_men.categories, "items" => dup_men.items, "combo_items" => dup_men.combo_items}
+
+      menu_catalog_params =  Map.merge(menu_catalog_params, add_params)
+
+    end
+     menu_catalog_params =  Map.delete(menu_catalog_params, "id")
     case BN.create_menu_catalog(menu_catalog_params) do
       {:ok, menu_catalog} ->
         conn
         |> put_flash(:info, "Menu catalog created successfully.")
-        |> redirect(to: menu_catalog_path(conn, :show, menu_catalog))
+        |> redirect(to: menu_catalog_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)

@@ -1,5 +1,3 @@
-<%require IEx %>
-
     <form method="post" action="/<%= @conn.params["brand"] %>/combos/finish" class="form-horizontal" aria-label="item_form">
 
         <div class="col-sm-12">
@@ -15,7 +13,8 @@
                         <label class="col-sm-2 col-form-label">Item Name</label>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="item[itemname]" value='<%= @com["item_name"] %>' disabled>
+                                <input type="text" class="form-control" value='<%= @com["item_name"] %>' disabled>
+                                <input type="hidden" class="form-control" name="item[itemname]" value='<%= @com["item_name"] %>' >
 
 
                             </div>
@@ -25,7 +24,8 @@
                         <label class="col-sm-2 col-form-label">Item Code</label>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="item[itemcode]" value='<%= @com["item_code"] %>' disabled>
+                                <input type="text" class="form-control"  value='<%= @com["item_code"] %>' disabled>
+                                <input type="hidden" class="form-control" name="item[itemcode]" value='<%= @com["item_code"] %>' >
 
                             </div>
                         </div>
@@ -34,7 +34,8 @@
                         <label class="col-sm-2 col-form-label">Item Description</label>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="item[itemdesc]" value='<%= @com["item_desc"] %>' disabled>
+                                <input type="text" class="form-control"  value='<%= @com["item_desc"] %>' disabled>
+                                 <input type="hidden" class="form-control" name="item[itemdesc]" value='<%= @com["item_desc"] %>' >
 
                             </div>
                         </div>
@@ -43,7 +44,8 @@
                         <label class="col-sm-2 col-form-label">Item Category</label>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="item[itemcat]" value='<%= @com["item_category"] %>' disabled>
+                                <input type="text" class="form-control" value='<%= @com["item_category"] %>' disabled>
+                                 <input type="hidden" class="form-control" name="item[itemcat]" value='<%= @com["item_category"] %>' >
 
                             </div>
                         </div>
@@ -52,7 +54,8 @@
                         <label class="col-sm-2 col-form-label">Price Code</label>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="item[price_code]" value='<%= @com["product_code"] %>' disabled>
+                                <input type="text" class="form-control"  value='<%= @com["product_code"] %>' disabled>
+                                <input type="hidden" class="form-control" name="item[price_code]" value='<%= @com["product_code"] %>' >
 
                             </div>
                         </div>
@@ -61,7 +64,8 @@
                         <label class="col-sm-2 col-form-label">Total Price</label>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="item[total_price]" value='<%= @com["total_price"] %>' disabled>
+                                <input type="text" class="form-control"  value='<%= @com["total_price"] %>' disabled>
+                                <input type="hidden" class="form-control" name="item[total_price]" value='<%= @com["total_price"] %>' >
 
                             </div>
                         </div>

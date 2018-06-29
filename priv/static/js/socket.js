@@ -1,9 +1,4 @@
-var socket = new Phoenix.Socket("/socket", {
-    params: {
-        token: window.userToken
-    }
-});
-socket.connect()
+
 var topic2 = "menu_item:" + window.currentUser
 // Join the topic
 let channel2 = socket.channel(topic2, {})

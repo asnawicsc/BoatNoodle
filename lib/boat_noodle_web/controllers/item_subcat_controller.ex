@@ -58,7 +58,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_create_price(conn, params) do
-      IEx.pry
+
     pa = params["a"]
 
     count =
@@ -185,7 +185,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         true
 
       {:error, changeset} ->
-        IEx.pry()
+   
         true
     end
 
@@ -227,7 +227,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           true
 
         {:error, changeset} ->
-          IEx.pry()
+  
           true
       end
     end
@@ -288,7 +288,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         true
 
       {:error, changeset} ->
-        IEx.pry()
+
         true
     end
 
@@ -387,14 +387,14 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           true
 
         {:error, changeset} ->
-          IEx.pry()
+      
           true
       end
     end
 
     conn
     |> put_flash(:info, "Combo Created")
-    |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
+    |> redirect(to: menu_item_path(conn, :combos, BN.get_domain(conn)))
   end
 
   def combo_new(conn, _params) do

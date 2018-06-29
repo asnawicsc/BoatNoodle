@@ -1,52 +1,21 @@
-<%= form_for @changeset, @action, fn f -> %>
+<%= form_for @changeset, @action, [class: "form-horizontal"],  fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
     </div>
   <% end %>
 
-  <div class="form-group">
-    <%= label f, :menu_catalog_master_id, class: "control-label" %>
-    <%= number_input f, :menu_catalog_master_id, class: "form-control" %>
-    <%= error_tag f, :menu_catalog_master_id %>
-  </div>
+   <div class="row">
+      <div class="col-sm-3">
 
-  <div class="form-group">
-    <%= label f, :item_code, class: "control-label" %>
-    <%= text_input f, :item_code, class: "form-control" %>
-    <%= error_tag f, :item_code %>
-  </div>
+        <div class="form-group bmd-form-group">
+          <%= label f, :name, class: "bmd-label-floating" %>
+          <%= text_input f, :name, class: "form-control" %>
+          <%= error_tag f, :name %>
+        </div>
 
-  <div class="form-group">
-    <%= label f, :item_name, class: "control-label" %>
-    <%= text_input f, :item_name, class: "form-control" %>
-    <%= error_tag f, :item_name %>
+    </div>
   </div>
-
-  <div class="form-group">
-    <%= label f, :price_code, class: "control-label" %>
-    <%= text_input f, :price_code, class: "form-control" %>
-    <%= error_tag f, :price_code %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :price, class: "control-label" %>
-    <%= number_input f, :price, step: "any", class: "form-control" %>
-    <%= error_tag f, :price %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :active, class: "control-label" %>
-    <%= checkbox f, :active, class: "checkbox" %>
-    <%= error_tag f, :active %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :category_item, class: "control-label" %>
-    <%= text_input f, :category_item, class: "form-control" %>
-    <%= error_tag f, :category_item %>
-  </div>
-
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>

@@ -31,8 +31,8 @@
 
               <div class="col-lg-3 col-md-6 col-sm-3">
 
-                          <select class="selectpicker" data-style="btn select-with-transition" name="price_code"  title="Price Code" data-size="7">
-                           <%= for a <- @price_code do %>
+                          <select class="selectpicker" data-style="btn select-with-transition" name="price_code"  title="Price Code" data-size="7" required="">
+                           <%= for a <- @price_code |> Enum.sort do %>
                                             <option value="<%= a.price_code %>" ><%= a.price_code %>
                                             </option>
                                           <% end %>
@@ -41,7 +41,7 @@
             
                 <div class="col-lg-3 col-md-6 col-sm-3">
 
-                          <select class="selectpicker" data-style="btn select-with-transition" name="itemcat"  title="Category" data-size="7">
+                          <select class="selectpicker" data-style="btn select-with-transition" name="itemcat"  title="Category" data-size="7" required="">
                            <%= for a <- @ala_carte1 do %>
                                             <option value="<%= a.itemcatcode %>" ><%= a.itemcatname %> (<%= a.itemcatcode %>
                                               )
