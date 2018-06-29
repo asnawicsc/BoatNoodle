@@ -304,7 +304,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   def update(conn, %{
         "id" => subcatid,
         "menu_item" => menu_item_params,
-        "tag" => tag_params,
+        
         "brand" => brand
       }) do
     # menu_item = BN.get_menu_item!(id)
@@ -328,7 +328,7 @@ defmodule BoatNoodleWeb.MenuItemController do
         )
       )
 
-    Task.start_link(__MODULE__, :update_printers, [conn, tag_params, subcatid])
+  
 
     cat =
       Repo.all(
