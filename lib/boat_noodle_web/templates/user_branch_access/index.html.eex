@@ -56,9 +56,9 @@
                                 
                              
                               <%= if checkbox do %>
-                                <input style="position: relative; margin-top: 4.5px; margin-bottom: 4.5px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" checked="">
+                                <input style="position: relative; margin-top: 8.5px; margin-bottom: 8.5px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="" checked="">
                               <% else %>
-                                <input style="position: relative; margin-top: 4.5px; margin-bottom: 4.5px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="">
+                                <input style="position: relative; margin-top: 8.5px; margin-bottom: 8.5px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" value="">
                               <% end %>
                            
                  

@@ -233,7 +233,9 @@ defmodule BoatNoodleWeb.MenuItemController do
       )
 
     item_codes_str =
-      same_items |> Enum.map(fn x -> x.subcatid end) |> Enum.map(fn x -> Integer.to_string(x) end)
+      same_items
+      |> Enum.map(fn x -> x.subcatid end)
+      |> Enum.map(fn x -> Integer.to_string(x) end)
       |> Enum.sort()
 
     branch_names = tag_params |> Map.keys()
@@ -295,7 +297,12 @@ defmodule BoatNoodleWeb.MenuItemController do
     end
   end
 
-  def update(conn, %{"id" => subcatid, "menu_item" => menu_item_params, "tag" => tag_params}) do
+  def update(conn, %{
+        "id" => subcatid,
+        "menu_item" => menu_item_params,
+        "tag" => tag_params,
+        "brand" => brand
+      }) do
     # menu_item = BN.get_menu_item!(id)
 
     item_subcat =
