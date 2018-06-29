@@ -224,7 +224,7 @@ defmodule BoatNoodleWeb.Router do
     post("/combos/unselect", ItemSubcatController, :combo_unselect)
     post("/combos/finish", ItemSubcatController, :combo_finish)
     resources("/itemcat", ItemCatController)
-    resources("/organization", OrganizationController)
+
     resources("/branch", BranchController)
     resources("/payment_type", PaymentTypeController)
     resources("/sales_master", SalesMasterController)

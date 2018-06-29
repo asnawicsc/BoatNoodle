@@ -45,7 +45,7 @@
                     <tr >
 
                       <th class="headcol" style="line-height: 25px; ">
-                        <%= menu_catalog.name %>
+                        <%= menu_catalog.name %><%= link raw("<i class='fa fa-times-circle'></i>"), to: menu_catalog_path(@conn, :delete, BN.get_domain(@conn), menu_catalog.id), method: :delete, data: [confirm: "Are you sure?"], style: "margin-left: 5px; color: red;" %>
                       </th>
  
                     </tr>

@@ -37,8 +37,8 @@ $("a[aria-label='organization_name']").click(function(){
 
 
 channel.on("display_organization_details", payload => {
-
-    var firstpart = '/organization/'
+var brand = location.pathname.split("/")[1];
+    var firstpart = '/'+brand+'/organization/'
     var lastpart = '/edit'
     var newhref = firstpart + payload.organizationid + lastpart
     $("a[aria-label='edit_organization']").attr("href", newhref)

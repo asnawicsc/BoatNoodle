@@ -1,4 +1,3 @@
-<h3>Printers</h3>
-
+<h3>Printers<br><span style="font-size: 10px;">Check Printer Status</span></h3>
 
 <span><%= link "New Tag", to: tag_path(@conn, :new, BN.get_domain(@conn)) %></span>

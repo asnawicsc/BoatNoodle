@@ -233,18 +233,18 @@ defmodule BoatNoodleWeb.MenuCatalogController do
   end
 
   def show(conn, %{"id" => id}) do
-    menu_catalog = BN.get_menu_catalog!(id)
+    menu_catalog =  Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
     render(conn, "show.html", menu_catalog: menu_catalog)
   end
 
   def edit(conn, %{"id" => id}) do
-    menu_catalog = BN.get_menu_catalog!(id)
+    menu_catalog =  Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
     changeset = BN.change_menu_catalog(menu_catalog)
     render(conn, "edit.html", menu_catalog: menu_catalog, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "menu_catalog" => menu_catalog_params}) do
-    menu_catalog = BN.get_menu_catalog!(id)
+    menu_catalog =  Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
 
     case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
       {:ok, menu_catalog} ->
@@ -258,7 +258,8 @@ defmodule BoatNoodleWeb.MenuCatalogController do
   end
 
   def delete(conn, %{"id" => id}) do
-    menu_catalog = BN.get_menu_catalog!(id)
+    menu_catalog =  Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+   
     {:ok, _menu_catalog} = BN.delete_menu_catalog(menu_catalog)
 
     conn
