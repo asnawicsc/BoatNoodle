@@ -25,14 +25,14 @@
                     </button>
 
         <div class="dropdown pull-right" style="padding: 10px;">
+
             <button class="btn btn-danger btn-round" >
                 <i class="material-icons">book</i> Discount Report
               <div class="ripple-container"></div>
             </button>
-            <button class="btn btn-warning btn-round" id="upload_voucher" name="" data-toggle="modal" aria-label="upload_voucher" data-target="#model3" data-original-title="Edit Item">
-                <i class="material-icons">info</i> Upload Voucher Code
-              <div class="ripple-container"></div>
-            </button>
+             <a href="/<%= @conn.params["brand"]%>/show_voucher" class="btn btn-warning btn-round"><div class="ripple-container"></div><i class="material-icons">info</i> Upload Voucher Code
+              <div class="ripple-container"></div></a>
+
         </div>
     </div>
  
@@ -81,7 +81,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body" id="modal_form1">
+      <div class="modal-body" id="modal_form5">
 
       </div>
       <div class="modal-footer">

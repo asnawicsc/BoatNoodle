@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem, ItemSubcat, ComboDetails, Branch, ItemCat}
+  alias BoatNoodle.BN.{MenuItem,Discount, ItemSubcat, ComboDetails, Branch, ItemCat}
   require IEx
 
   def combo_create(conn, params) do
@@ -695,6 +695,24 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     conn
     |> put_flash(:info, "Combo Updated")
     |> redirect(to: item_subcat_path(conn, :combo_show, BN.get_brand_id(conn), subcatid))
+  end
+
+   def show_voucher(conn, _params) do
+
+ changeset = BN.change_item_subcat(%ItemSubcat{})
+
+    discount= Repo.all(from s in Discount, select: %{discountid: s.discountid,discname: s.discname})
+
+  render(conn, "show_voucher.html", discount: discount,changeset: changeset)
+  end
+
+   def upload_voucher(conn, params) do
+  
+  discountid=params["disc_cat"]|>String.to_integer
+  file=params["item_subcat"]["file"]
+
+  {:ok, binary}=File.read(params["item_subcat"]["file"].path)
+
   end
 
   def index(conn, _params) do

@@ -94,6 +94,8 @@ defmodule BoatNoodleWeb.Router do
     get("/discount_remove_from_catalog", DiscountCatalogController, :discount_remove_from_catalog)
     get("/list_discount_catalog2", DiscountCatalogController, :list_discount_catalog2)
     get("/list_discount_catalog3", DiscountCatalogController, :list_discount_catalog3)
+    get("/show_voucher",ItemSubcatController, :show_voucher)
+    post("/upload_voucher",ItemSubcatController, :upload_voucher)
 
     get(
       "/discount_insert_into_catalog3",
