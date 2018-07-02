@@ -54,7 +54,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
     item_subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
 
     catalogs_ori =
-      Repo.all(from(m in MenuCatalog, select: %{id: m.id, name: m.name, items: m.items}))
+      Repo.all(from(m in MenuCatalog, where: m.brand_id == ^BN.get_brand_id(conn), select: %{id: m.id, name: m.name, items: m.items}))
       |> Enum.map(fn x -> Map.put(x, :items, String.split(x.items, ",")) end)
 
     catalogs =
@@ -175,7 +175,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
   end
 
   def index(conn, _params) do
-    menu_catalog = Repo.all(from(m in MenuCatalog))
+    menu_catalog = Repo.all(from(m in MenuCatalog, where: m.brand_id == ^BN.get_brand_id(conn)))
 
     arranged_items =
       Repo.all(

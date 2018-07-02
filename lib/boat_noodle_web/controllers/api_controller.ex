@@ -48,9 +48,17 @@ defmodule BoatNoodleWeb.ApiController do
               "branch_details" ->
                 get_scope_branch_details(conn, branch)
 
-               "vouchers" ->
+              "vouchers" ->
                 get_scope_vouchers(conn, branch.branchid, bb.id, params["code"])
 
+              "item_remarks" ->
+                get_scope_item_remarks(conn, branch.branchid, bb.id, params["code"])
+
+              "staffs" ->
+                get_scope_staffs(conn, branch.branchid, bb.id, params["code"])
+
+              "payment_types" ->
+                get_scope_payment_types(conn, branch.branchid, bb.id, params["code"])
               _ ->
                 message =
                   List.insert_at(conn.req_headers, 0, {"fields", "not within defined fields"})
@@ -61,16 +69,76 @@ defmodule BoatNoodleWeb.ApiController do
           else
             message = List.insert_at(conn.req_headers, 0, {"branch", "db cant find branch"})
             log_error_api(message, "API GET")
-            send_resp(conn, 400, "branch doesnt exist.")
+            send_resp(conn, 400, "branch doesnt exist. \n")
           end
         else
           message = List.insert_at(conn.req_headers, 0, {"authentication", "wrong combination"})
           log_error_api(message, "API GET")
 
-          send_resp(conn, 500, "branch doesnt exist.")
+          send_resp(conn, 500, "branch doesnt exist. \n")
         end
     end
   end
+
+
+  def get_scope_payment_types(conn, branch_id, brand_id, branchcode) do
+    payment_types = Repo.all(from x in PaymentType, where: x.brand_id == ^brand_id, select: %{
+      is_visible: x.is_visible,
+      is_default: x.is_default,
+      is_payment_code: x.is_payment_code,
+      is_card_no: x.is_card_no,
+      payment_type_code: x.payment_type_code,
+      payment_type_id: x.payment_type_id,
+      payment_type_name: x.payment_type_name
+
+
+     })
+      |> Poison.encode!()
+
+    message = List.insert_at(conn.req_headers, 0, {"payment_types", "payment_types"})
+    log_error_api(message, "API GET - payment_types")
+    send_resp(conn, 200, payment_types)
+  end
+
+
+  def get_scope_staffs(conn, branch_id, brand_id, branchcode) do
+    staffs = Repo.all(from v in Staff, where: v.brand_id == ^brand_id, select: %{
+        brand_id: v.brand_id,
+      staff_id: v.staff_id,
+      branch_access: v.branch_access,
+      staff_name: v.staff_name,
+      staff_contact: v.staff_contact,
+      staff_email: v.staff_email,
+      staff_pin: v.staff_pin,
+      branchid: v.branchid,
+      staff_type_id: v.staff_type_id,
+      prof_img: v.prof_img
+
+
+     })
+      |> Poison.encode!()
+
+    message = List.insert_at(conn.req_headers, 0, {"staffs", "staffs"})
+    log_error_api(message, "API GET - staffs")
+    send_resp(conn, 200, staffs)
+  end
+
+  def get_scope_item_remarks(conn, branch_id, brand_id, branchcode) do
+    item_remarks = Repo.all(from v in Remark, where: v.brand_id == ^brand_id, select: %{
+      itemsremarkid: v.itemsremarkid, 
+      remark: v.remark,
+      target_cat: v.target_cat,
+      target_item: v.target_item
+
+
+     })
+      |> Poison.encode!()
+
+    message = List.insert_at(conn.req_headers, 0, {"item remarks", "item remarks"})
+    log_error_api(message, "API GET - item remarks")
+    send_resp(conn, 200, item_remarks)
+  end
+
 
   def get_scope_vouchers(conn, branch_id, brand_id, branchcode) do
     vouchers = Repo.all(from v in Voucher, where: v.is_used == ^false, select: %{id: v.id, code_number: v.code_number, discount_name: v.discount_name, is_used: v.is_used })
@@ -208,7 +276,7 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           s in Sales,
-          where: s.branchid == ^branch_id and s.brand_id == ^brand_id,
+          where: s.branchid == ^Integer.to_string(branch_id) and s.brand_id == ^brand_id,
           select: %{
             invoiceno: s.invoiceno
           },

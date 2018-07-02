@@ -44,10 +44,12 @@ defmodule BoatNoodleWeb.Router do
     pipe_through([:management, :report_layout])
 
     get("/", PageController, :report_login)
+      get("/reports/logout", PageController, :logout)
     post("/report_authenticate_login", PageController, :authenticate_login)
     get("/get_brands", PageController, :get_brands)
     get("/reports", PageController, :report_index)
     get("/top_sales", SalesController, :top_sales)
+
   end
 
   scope "/:brand", BoatNoodleWeb do

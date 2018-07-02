@@ -105,6 +105,7 @@ defmodule BoatNoodleWeb.BranchController do
           on: b.org_id == o.organisationid,
           left_join: u in User,
           on: u.id == b.manager,
+          where: b.brand_id == ^BN.get_brand_id(conn),
           select: %{
             branchid: b.branchid,
             branchname: b.branchname,

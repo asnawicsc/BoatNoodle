@@ -11,13 +11,22 @@ defmodule BoatNoodle.BN.CashInOut do
     field :staffid, :integer
     field :description, :string
     field :amount, :decimal
-
+  field :brand_id, :integer
 
   end
 
   @doc false
   def changeset(cash_in_out, attrs) do
     cash_in_out
-    |> cast(attrs, [:amount,:id,:branch_id, :cashtype, :staffid, :description])
+    |> cast(attrs, [
+      :brand_id,
+       :amount,
+       :id,
+       :branch_id, 
+       :cashtype, 
+       :staffid, 
+       :description])
+
+   |> unique_constraint(:id, name: "PRIMARY")
   end
 end

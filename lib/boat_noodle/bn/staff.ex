@@ -5,9 +5,9 @@ defmodule BoatNoodle.BN.Staff do
   @primary_key false
   schema "staffs" do
     field(:staff_id, :integer, primary_key: true)
-    field(:branchid, :string)
+    field(:branchid, :string, default: "0")
     field(:staff_contact, :string)
-    field(:staff_email, :string)
+    field(:staff_email, :string, default: "")
     field(:prof_img, :string)
     field(:staff_pin, :integer)
     field(:staff_name, :string)
@@ -30,6 +30,6 @@ defmodule BoatNoodle.BN.Staff do
       :branchid,
       :staff_type_id,
       :prof_img
-    ])
+    ]) |> unique_constraint(:staff_id, name: "PRIMARY")
   end
 end

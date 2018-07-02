@@ -26,4 +26,10 @@ CHANGE COLUMN `subcat_ids` `subcat_ids` TEXT NULL DEFAULT NULL ;
 
 ALTER TABLE `posgb_boatnoodle`.`tag_tbl` 
 ADD COLUMN `combo_item_ids` LONGTEXT NULL DEFAULT NULL AFTER `printer_IP`;
+
+
+ALTER TABLE `chillchi_db`.`cash_in_out` 
+CHANGE COLUMN `cash_type_id` `CashType` VARCHAR(50) NOT NULL ;
+
+
 "

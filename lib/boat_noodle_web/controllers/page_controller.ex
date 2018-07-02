@@ -4,6 +4,14 @@ defmodule BoatNoodleWeb.PageController do
   import Ecto.Query
   require IEx
 
+  def logout(conn, _params) do
+    conn
+    |> delete_session(:user_id)
+
+    |> put_flash(:info, "Logout successfully")
+    |> redirect(to: page_path(conn, :report_login))
+  end
+
   def authenticate_login(conn, %{"username" => username, "password" => password}) do
     user = Repo.get_by(User, username: username)
 

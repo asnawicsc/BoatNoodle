@@ -24,8 +24,10 @@ if (localStorage.getItem("bn_user") != null) {
   $("div[aria-lable='photo']").html(html)
   $("span[aria-label='username']").append(map.name)
 } else {
-
+if (window.currentUser != "lobby") {
+  
   channel.push("load_user_sidebar", {userid: window.currentUser})
+}
 
 
 }

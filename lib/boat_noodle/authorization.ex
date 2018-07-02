@@ -10,7 +10,7 @@ defmodule BoatNoodle.Authorization do
   end
 
   def call(conn, opts) do
-    if conn.request_path == "/reports/login" do
+    if conn.request_path == "/" do
       conn
     else
       if conn.private.plug_session["brand"] == nil do
@@ -20,17 +20,29 @@ defmodule BoatNoodle.Authorization do
           if brand != nil do
             brands = brand.domain_name
           else
-            brands =
-              BoatNoodle.Repo.all(from(b in BoatNoodle.BN.Brand, select: b.domain_name)) |> hd()
+            brands = ""
           end
         else
-          brands =
-            BoatNoodle.Repo.all(from(b in BoatNoodle.BN.Brand, select: b.domain_name)) |> hd()
+          brands = ""
         end
       else
-        brands = conn.private.plug_session["brand"]
+        if conn.private.plug_session["brand"] != conn.params["brand"] do
+          brands = ""
+          else
+          brands = conn.private.plug_session["brand"]
+        end
       end
 
+      if brands != "" do
+        route_user_brand(conn, brands)
+        else 
+          route_user(conn)
+      end
+
+    end
+  end
+
+  def route_user_brand(conn, brands) do
       if conn.private.plug_session["user_id"] == nil do
         if conn.request_path == "/#{brands}/login" or
              conn.request_path == "/#{brands}/authenticate_login" or
@@ -47,6 +59,37 @@ defmodule BoatNoodle.Authorization do
       else
         conn
       end
-    end
+  end
+
+  def route_user(conn) do
+      if conn.private.plug_session["user_id"] == nil do
+        if conn.request_path == "/" or
+             conn.request_path == "/authenticate_login" or
+             conn.request_path == "/forget_password" or
+             conn.request_path == "/logout" or
+             conn.request_path == "/forget_password_email" or
+             conn.request_path == "/api/sales" do
+          conn
+        else
+          conn
+          |> put_flash(:error, "Please login first!")
+          |> redirect(to: "/")
+          |> halt
+        end
+      else
+        if conn.private.plug_session["brand"] == conn.params["brand"] do
+          conn
+          else
+          conn
+          |> delete_session(:user_id)
+          |> delete_session(:brand_id)
+          |> delete_session(:brand)
+          |> put_flash(:error, "Please login first!")
+          |> redirect(to: "/")
+          |> halt
+        end
+        
+
+      end
   end
 end

@@ -52,13 +52,7 @@ defmodule BoatNoodle.BN.Sales do
       :pax,
       :branchid,
       :staffid,
-      :type,
-      :is_void,
-      :void_by,
-      :voidreason,
-      :remark,
-      :updated_at,
-      :created_at])
+      :type])
     |> unique_constraint(:salesid, name: "PRIMARY")
   end
 

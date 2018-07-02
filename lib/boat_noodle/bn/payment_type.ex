@@ -11,12 +11,22 @@ defmodule BoatNoodle.BN.PaymentType do
     field :is_payment_code, :integer
     field :is_default, :integer
     field :is_visible, :integer
+    field :brand_id, :integer
 
   end
 
   @doc false
   def changeset(payment_type, attrs) do
     payment_type
-    |> cast(attrs, [:is_visible,:is_default,:is_payment_code,:is_card_no,:payment_type_code,:payment_type_id,:payment_type_name])
+    |> cast(attrs, [
+      :is_visible,
+      :is_default,
+      :is_payment_code,
+      :is_card_no,
+      :payment_type_code,
+      :payment_type_id,
+      :payment_type_name,
+      :brand_id
+    ]) |> unique_constraint(:payment_type_id, name: "PRIMARY")
   end
 end

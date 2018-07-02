@@ -5,9 +5,9 @@ defmodule BoatNoodle.BN.Branch do
   @primary_key false
   schema "branch" do
     field(:branchid, :integer, primary_key: true)
-    field(:b_address, :string)
+    field(:b_address, :string, default: "")
     field(:branchcode, :string)
-    field(:b_phoneno, :string)
+    field(:b_phoneno, :string, default: "")
     field(:manager, :integer)
     field(:branchname, :string)
     field(:tax_percent, :decimal)
@@ -24,7 +24,7 @@ defmodule BoatNoodle.BN.Branch do
     field(:menu_catalog, :integer)
     field(:disc_catalog, :integer)
     field(:tag_catalog, :integer)
-    field(:combo_catalog, :integer)
+
     field(:version, :string)
     field(:payment_catalog, :string)
     field(:updated_at, :utc_datetime)
@@ -43,7 +43,7 @@ defmodule BoatNoodle.BN.Branch do
       :updated_at,
       :payment_catalog,
       :version,
-      :combo_catalog,
+
       :tag_catalog,
       :disc_catalog,
       :menu_catalog,
@@ -64,5 +64,6 @@ defmodule BoatNoodle.BN.Branch do
       :num_staff,
       :report_class
     ])
+    |> unique_constraint(:branchid, name: "PRIMARY")
   end
 end
