@@ -7,7 +7,7 @@ defmodule BoatNoodle.BN.Tag do
     field(:tagid, :integer, primary_key: true)
     field(:branch_id, :integer)
     field(:subcat_ids, :string, default: "")
-    field(:combo_item_ids, :string)
+    field(:combo_item_ids, :string, default: "")
     field(:tagdesc, :string)
     field(:printer, :string)
     field(:printer_ip, :string)

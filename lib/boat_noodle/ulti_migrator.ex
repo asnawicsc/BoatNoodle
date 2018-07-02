@@ -118,27 +118,28 @@ defmodule BoatNoodle.UltiMigrator do
       }
     }
 
-    json_map = Poison.encode!(sales_map)
+#     json_map = Poison.encode!(sales_map)
 
-uri = "https://gummypos.resertech.com/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-    HTTPoison.post!(
-      uri,
-      json_map,
-      [{"Content-Type", "application/json"}],
+# uri = "https://gummypos.resertech.com/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+#     HTTPoison.post!(
+#       uri,
+#       json_map,
+#       [{"Content-Type", "application/json"}],
  
-      timeout: 50_000,
-      recv_timeout: 50_000
-    )
+#       timeout: 50_000,
+#       recv_timeout: 50_000
+#     )
 
 # uri = "localhost:4000/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
      #uri = "https://gummypos.resertech.com/boatnoodle/api/sales?fields=sales_id&branch_id=13&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
     # uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=46&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+    uri = "localhost:4000/boatnoodle/api/sales?fields=items&branch_id=37&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
   
-    # HTTPoison.get!(
-    #   uri,
-    #   [{"Content-Type", "application/json"}],
-    #   hackney: [basic_auth: {"admin@test.com", "api_key"}]
-    # )
+    HTTPoison.get!(
+      uri,
+      [{"Content-Type", "application/json"}],
+      hackney: [basic_auth: {"admin@test.com", "api_key"}]
+    )
   end
 
   def run(arg) do

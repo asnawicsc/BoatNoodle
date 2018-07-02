@@ -35,8 +35,8 @@ defmodule BoatNoodleWeb.Router do
 
   scope "/:brand/api", BoatNoodleWeb do
     pipe_through(:api)
-    get("/sales", PageController, :webhook_get)
-    post("/sales", PageController, :webhook_post)
+    get("/sales", ApiController, :webhook_get)
+    post("/sales", ApiController, :webhook_post)
   end
 
   scope "/", BoatNoodleWeb do
