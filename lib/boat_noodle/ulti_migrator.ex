@@ -132,7 +132,7 @@ defmodule BoatNoodle.UltiMigrator do
     # uri = "https://gummypos.resertech.com/boatnoodle/api/sales?fields=sales_id&branch_id=13&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
     # uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=46&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
     uri =
-      "localhost:4000/boatnoodle/api/sales?fields=branch_details&branch_id=37&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+      "localhost:4000/boatnoodle/api/sales?fields=vouchers&branch_id=37&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
 
     HTTPoison.get!(
       uri,

@@ -48,6 +48,9 @@ defmodule BoatNoodleWeb.ApiController do
               "branch_details" ->
                 get_scope_branch_details(conn, branch)
 
+               "vouchers" ->
+                get_scope_vouchers(conn, branch.branchid, bb.id, params["code"])
+
               _ ->
                 message =
                   List.insert_at(conn.req_headers, 0, {"fields", "not within defined fields"})
@@ -67,6 +70,15 @@ defmodule BoatNoodleWeb.ApiController do
           send_resp(conn, 500, "branch doesnt exist.")
         end
     end
+  end
+
+  def get_scope_vouchers(conn, branch_id, brand_id, branchcode) do
+    vouchers = Repo.all(from v in Voucher, where: v.is_used == ^false, select: %{id: v.id, code_number: v.code_number, discount_name: v.discount_name, is_used: v.is_used })
+      |> Poison.encode!()
+
+    message = List.insert_at(conn.req_headers, 0, {"vouchers", "vouchers"})
+    log_error_api(message, "API GET - vouchers")
+    send_resp(conn, 200, vouchers)
   end
 
   def get_scope_branch_details(conn, branch) do
