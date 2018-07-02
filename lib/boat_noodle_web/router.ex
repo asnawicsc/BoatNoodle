@@ -257,6 +257,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/salespayment", SalesPaymentController)
     resources "/api_log", ApiLogController
     resources "/vouchers", VoucherController
+    get("/experiment", PageController, :experiment)
     get("/*path", PageController, :no_page_found)
   end
 end

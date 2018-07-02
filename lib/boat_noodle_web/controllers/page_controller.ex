@@ -4,6 +4,10 @@ defmodule BoatNoodleWeb.PageController do
   import Ecto.Query
   require IEx
 
+  def experiment(conn, params) do
+        render(conn, "experiment.html")
+  end
+
   def logout(conn, _params) do
     conn
     |> delete_session(:user_id)
