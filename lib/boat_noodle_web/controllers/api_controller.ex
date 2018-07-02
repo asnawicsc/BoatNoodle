@@ -4,13 +4,11 @@ defmodule BoatNoodleWeb.ApiController do
   import Ecto.Query
   require IEx
 
-
   def webhook_get(conn, params) do
-   
     cond do
-      params["key"]  == nil ->
+      params["key"] == nil ->
         send_resp(conn, 400, "please include key .")
-  
+
       params["brand"] == nil ->
         send_resp(conn, 400, "please include brand name.")
 
@@ -20,149 +18,205 @@ defmodule BoatNoodleWeb.ApiController do
       params["fields"] == nil ->
         send_resp(conn, 400, "please include sales id in field.")
 
-      params["branch_id"] != nil and params["branch_id"] != nil and params["key"] != nil and params["code"] != nil ->
-        brb = Repo.get_by(Branch, branchcode: params["code"] , api_key: params["key"] )
+      params["branch_id"] != nil and params["branch_id"] != nil and params["key"] != nil and
+          params["code"] != nil ->
+        brb = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
+
         if brb != nil do
-            branch_id = params["branch_id"]
-            brand = params["brand"]
-            bb = Repo.get_by(Brand, domain_name: brand)
-            branch = Repo.get_by(Branch, branchid: branch_id, brand_id: bb.id)
+          branch_id = params["branch_id"]
+          brand = params["brand"]
+          bb = Repo.get_by(Brand, domain_name: brand)
+          branch = Repo.get_by(Branch, branchid: branch_id, brand_id: bb.id)
 
-            if branch != nil do
+          if branch != nil do
+            case params["fields"] do
+              "sales_id" ->
+                get_scope_sales_id(conn, branch.branchid, bb.id, params["code"])
 
-            	case params["fields"] do
-            	  "sales_id" ->
-            	    get_scope_sales_id(conn, "sales_id", branch.branchid, bb.id, params["code"])
-            	  "printers" ->
-            	    get_scope_branch_printer(conn, "printers", branch.branchid, bb.id, params["code"])
-            	  "items" ->
-            	    get_scope_branch_items(conn, "items", branch.branchid, bb.id, params["code"], branch.menu_catalog) 
+              "printers" ->
+                get_scope_branch_printer(conn, branch.branchid, bb.id, params["code"])
 
-            	    _ ->
-            	    	message = List.insert_at(conn.req_headers, 0, {"fields", "not within defined fields"})
-				            log_error_api(message, "API GET")
-            	    	send_resp(conn, 500, "request not available. \n")
-            	end
-            else
+              "items" ->
+                get_scope_branch_items(
+                  conn,
+                  branch.branchid,
+                  bb.id,
+                  params["code"],
+                  branch.menu_catalog
+                )
+
+              "branch_details" ->
+                get_scope_branch_details(conn, branch)
+
+              _ ->
+                message =
+                  List.insert_at(conn.req_headers, 0, {"fields", "not within defined fields"})
+
+                log_error_api(message, "API GET")
+                send_resp(conn, 500, "request not available. \n")
+            end
+          else
             message = List.insert_at(conn.req_headers, 0, {"branch", "db cant find branch"})
             log_error_api(message, "API GET")
-              send_resp(conn, 400, "branch doesnt exist.")
-            end
-          else 
-            message = List.insert_at(conn.req_headers, 0, {"authentication", "wrong combination"})
-            log_error_api(message, "API GET")
-       
-            send_resp(conn, 500, "branch doesnt exist.")
+            send_resp(conn, 400, "branch doesnt exist.")
+          end
+        else
+          message = List.insert_at(conn.req_headers, 0, {"authentication", "wrong combination"})
+          log_error_api(message, "API GET")
+
+          send_resp(conn, 500, "branch doesnt exist.")
         end
     end
   end
 
-  def get_scope_branch_items(conn, field, branch_id, brand_id, branchcode, menu_cat_id) do
+  def get_scope_branch_details(conn, branch) do
+    b = branch
 
-  		menu_catalog = Repo.get_by(MenuCatalog, id: menu_cat_id, brand_id: brand_id )
+    branch_details =
+      %{
+        api_key: b.api_key,
+        brand_id: b.brand_id,
+        payment_catalog: b.payment_catalog,
+        version: b.version,
+        combo_catalog: b.combo_catalog,
+        tag_catalog: b.tag_catalog,
+        disc_catalog: b.disc_catalog,
+        menu_catalog: b.menu_catalog,
+        remain_sync: b.remain_sync,
+        sync_status: b.sync_status,
+        currency: b.currency,
+        qb_dep2acc: b.qb_dep2acc,
+        qb_custref: b.qb_custref,
+        branchid: b.branchid,
+        branchname: b.branchname,
+        branchcode: b.branchcode,
+        b_phoneno: b.b_phoneno,
+        b_address: b.b_address,
+        org_id: b.org_id,
+        tax_percent: b.tax_percent,
+        service_charge: b.service_charge,
+        manager: b.manager,
+        num_staff: b.num_staff,
+        report_class: b.report_class
+      }
+      |> Poison.encode!()
 
-  		subcat_ids = menu_catalog.items |> String.split(",") |> Enum.reject( fn x -> x == "" end )
-  		combo_ids = menu_catalog.combo_items |> String.split(",") |> Enum.reject( fn x -> x == "" end )
-
-  		subcats = Repo.all(from s in ItemSubcat, where: s.subcatid in ^subcat_ids)
-  		|> Enum.map(fn x -> 
-  			%{
-      brand_id: x.brand_id,
-      subcatid: x.subcatid,
-      itemcatid: x.itemcatid,
-      itemname: x.itemname,
-      itemcode: x.itemcode,
-      product_code: x.product_code,
-      price_code: x.price_code,
-      part_code: x.part_code,
-      itemdesc: x.itemdesc,
-      itemprice: x.itemprice,
-      itemimage: x.itemimage,
-      is_categorize: x.is_categorize,
-      is_activate: x.is_activate,
-      is_comboitem: x.is_comboitem,
-      is_default_combo: x.is_default_combo,
-      is_delete: x.is_delete,
-      enable_disc: x.enable_disc,
-      include_spend: x.include_spend,
-      is_print: x.is_print
-  			} end)
-
-
-
-  		combos = Repo.all(from c in ComboDetails, where: c.id in ^ combo_ids, select: %{
-      brand_id: c.brand_id,
-      id: c.id,
-      menu_cat_id: c.menu_cat_id,
-      combo_id: c.combo_id,
-      combo_qty: c.combo_qty,
-      combo_item_id: c.combo_item_id,
-      combo_item_name: c.combo_item_name,
-      combo_item_code: c.combo_item_code,
-      combo_item_qty: c.combo_item_qty,
-      update_qty: c.update_qty,
-      unit_price: c.unit_price,
-      top_up: c.top_up
-
-  			}) 
-
-json_map = %{combos: combos, subcats: subcats} |> Poison.encode!
-
-
-			if menu_catalog != nil do
-			  message = List.insert_at(conn.req_headers, 0, {"menu_catalog", "menu_catalog"})
-			  log_error_api(message, "API GET - menu_catalog items")
-			  send_resp(conn, 200, json_map)
-			  else
-			end
-
+    message = List.insert_at(conn.req_headers, 0, {"branch_details", "branch_details"})
+    log_error_api(message, "API GET - branch_details")
+    send_resp(conn, 200, branch_details)
   end
 
-  def get_scope_branch_printer(conn, field, branch_id, brand_id, branchcode) do
-  		printers = Repo.all(from p in Tag, where: p.branch_id == ^branch_id and p.brand_id == ^brand_id) 
-  		|> Enum.map(fn x -> 
-  			%{
-  				tagid: x.tagid,
-  				printer: x.printer,
-  				tagname: x.tagname,
-  				tagdesc: x.tagdesc,
-  				subcat_ids: x.subcat_ids,
-  				combo_item_ids: x.combo_item_ids,
-  				printer_ip: x.printer_ip
-  				} end) |> Poison.encode!()
+  def get_scope_branch_items(conn, branch_id, brand_id, branchcode, menu_cat_id) do
+    menu_catalog = Repo.get_by(MenuCatalog, id: menu_cat_id, brand_id: brand_id)
 
+    subcat_ids = menu_catalog.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
+    combo_ids = menu_catalog.combo_items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
-      message = List.insert_at(conn.req_headers, 0, {"printer", "printer"})
-      log_error_api(message, "API GET - printer")
-      send_resp(conn, 200, printers)
-  end
+    subcats =
+      Repo.all(from(s in ItemSubcat, where: s.subcatid in ^subcat_ids))
+      |> Enum.map(fn x ->
+        %{
+          brand_id: x.brand_id,
+          subcatid: x.subcatid,
+          itemcatid: x.itemcatid,
+          itemname: x.itemname,
+          itemcode: x.itemcode,
+          product_code: x.product_code,
+          price_code: x.price_code,
+          part_code: x.part_code,
+          itemdesc: x.itemdesc,
+          itemprice: x.itemprice,
+          itemimage: x.itemimage,
+          is_categorize: x.is_categorize,
+          is_activate: x.is_activate,
+          is_comboitem: x.is_comboitem,
+          is_default_combo: x.is_default_combo,
+          is_delete: x.is_delete,
+          enable_disc: x.enable_disc,
+          include_spend: x.include_spend,
+          is_print: x.is_print
+        }
+      end)
 
-  def get_scope_sales_id(conn, field, branch_id, brand_id, branchcode) do
-      invoiceno =
-        Repo.all(
-          from(
-            s in Sales,
-            where: s.branchid == ^branch_id and s.brand_id == ^brand_id,
-            select: %{
-              invoiceno: s.invoiceno
-            },
-            order_by: [s.invoiceno]
-          )
+    combos =
+      Repo.all(
+        from(
+          c in ComboDetails,
+          where: c.id in ^combo_ids,
+          select: %{
+            brand_id: c.brand_id,
+            id: c.id,
+            menu_cat_id: c.menu_cat_id,
+            combo_id: c.combo_id,
+            combo_qty: c.combo_qty,
+            combo_item_id: c.combo_item_id,
+            combo_item_name: c.combo_item_name,
+            combo_item_code: c.combo_item_code,
+            combo_item_qty: c.combo_item_qty,
+            update_qty: c.update_qty,
+            unit_price: c.unit_price,
+            top_up: c.top_up
+          }
         )
-        |> Enum.map(fn x -> x.invoiceno end)
-        |> Enum.map(fn x -> String.to_integer(x) end)
-        |> Enum.max()
+      )
 
-      id =
-        (invoiceno + 1)
-        |> Integer.to_string()
+    json_map = %{combos: combos, subcats: subcats} |> Poison.encode!()
 
-      salesid =  branchcode <> "" <> id
-      json_map = %{salesid: salesid} |> Poison.encode!()
-
-      message = List.insert_at(conn.req_headers, 0, {"sales id", "#{salesid}"})
-      log_error_api(message, "API GET - sales")
+    if menu_catalog != nil do
+      message = List.insert_at(conn.req_headers, 0, {"menu_catalog", "menu_catalog"})
+      log_error_api(message, "API GET - menu_catalog items")
       send_resp(conn, 200, json_map)
+    else
+    end
+  end
+
+  def get_scope_branch_printer(conn, branch_id, brand_id, branchcode) do
+    printers =
+      Repo.all(from(p in Tag, where: p.branch_id == ^branch_id and p.brand_id == ^brand_id))
+      |> Enum.map(fn x ->
+        %{
+          tagid: x.tagid,
+          printer: x.printer,
+          tagname: x.tagname,
+          tagdesc: x.tagdesc,
+          subcat_ids: x.subcat_ids,
+          combo_item_ids: x.combo_item_ids,
+          printer_ip: x.printer_ip
+        }
+      end)
+      |> Poison.encode!()
+
+    message = List.insert_at(conn.req_headers, 0, {"printer", "printer"})
+    log_error_api(message, "API GET - printer")
+    send_resp(conn, 200, printers)
+  end
+
+  def get_scope_sales_id(conn, branch_id, brand_id, branchcode) do
+    invoiceno =
+      Repo.all(
+        from(
+          s in Sales,
+          where: s.branchid == ^branch_id and s.brand_id == ^brand_id,
+          select: %{
+            invoiceno: s.invoiceno
+          },
+          order_by: [s.invoiceno]
+        )
+      )
+      |> Enum.map(fn x -> x.invoiceno end)
+      |> Enum.map(fn x -> String.to_integer(x) end)
+      |> Enum.max()
+
+    id =
+      (invoiceno + 1)
+      |> Integer.to_string()
+
+    salesid = branchcode <> "" <> id
+    json_map = %{salesid: salesid} |> Poison.encode!()
+
+    message = List.insert_at(conn.req_headers, 0, {"sales id", "#{salesid}"})
+    log_error_api(message, "API GET - sales")
+    send_resp(conn, 200, json_map)
   end
 
   def webhook_post(conn, params) do
@@ -175,151 +229,167 @@ json_map = %{combos: combos, subcats: subcats} |> Poison.encode!
         message = List.insert_at(conn.req_headers, 0, {"api key", "key value is empty"})
         log_error_api(message, "API POST")
         send_resp(conn, 400, "please include key .")
-      params["code"] == nil  ->
+
+      params["code"] == nil ->
         message = List.insert_at(conn.req_headers, 0, {"branch code", "code value is empty"})
         log_error_api(message, "API POST")
         send_resp(conn, 400, "please include code .")
+
       true ->
-        user = Repo.get_by(Branch, branchcode: params["code"] , api_key: params["key"] )
+        user = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
 
         if user != nil do
+          sales_params =
+            for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
 
-        
-            sales_params =
-              for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
-
-            sales_master_params_list =
-              for a <- a_list do
-                sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
-              end
-
-            sales_payment_params =
-              for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
-
-            if Map.get(sales_params, :salesid) == nil do
-              invoiceno =
-                Repo.all(
-                  from(
-                    s in Sales,
-                    where: s.branchid == ^sales_params.branchid,
-                    select: %{
-                      invoiceno: s.invoiceno
-                    },
-                    order_by: [s.invoiceno]
-                  )
-                )
-                |> Enum.map(fn x -> x.invoiceno end)
-                |> Enum.map(fn x -> String.to_integer(x) end)
-                |> Enum.max()
-
-              brach_name =
-                Repo.all(
-                  from(
-                    b in Branch,
-                    where: b.branchid == ^sales_params.branchid,
-                    select: %{
-                      branchcode: b.branchcode
-                    }
-                  )
-                )
-                |> hd()
-
-              id =
-                (invoiceno + 1)
-                |> Integer.to_string()
-
-              salesid = brach_name.branchcode <> "" <> id
-
-              sales_params = Map.put(sales_params, :salesid, salesid)
-              sales_params = Map.put(sales_params, :invoiceno, id)
+          sales_master_params_list =
+            for a <- a_list do
+              sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
             end
 
-            sales_exist = Repo.get_by(Sales, salesid: sales_params.salesid)
+          sales_payment_params =
+            for {key, val} <- params["payment"], into: %{}, do: {String.to_atom(key), val}
 
-            cond do
-              sales_exist != nil ->
-                message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
-                log_error_api(message, "API POST - sales")
-                send_resp(conn, 501, "Sales id exist.")
+          if Map.get(sales_params, :salesid) == nil do
+            invoiceno =
+              Repo.all(
+                from(
+                  s in Sales,
+                  where: s.branchid == ^sales_params.branchid,
+                  select: %{
+                    invoiceno: s.invoiceno
+                  },
+                  order_by: [s.invoiceno]
+                )
+              )
+              |> Enum.map(fn x -> x.invoiceno end)
+              |> Enum.map(fn x -> String.to_integer(x) end)
+              |> Enum.max()
 
-              sales_exist == nil ->
-                case BN.create_sales(sales_params) do
-                  {:ok, sales} ->
-                    sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
+            brach_name =
+              Repo.all(
+                from(
+                  b in Branch,
+                  where: b.branchid == ^sales_params.branchid,
+                  select: %{
+                    branchcode: b.branchcode
+                  }
+                )
+              )
+              |> hd()
 
-                    Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
+            id =
+              (invoiceno + 1)
+              |> Integer.to_string()
 
-                    sd =
-                      for sales_master_params <- sales_master_params_list do
-                        sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+            salesid = brach_name.branchcode <> "" <> id
 
-                        case BN.create_sales_master(sales_master_params) do
-                          {:ok, sales_master} ->
-                            Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_master), params["code"]])
+            sales_params = Map.put(sales_params, :salesid, salesid)
+            sales_params = Map.put(sales_params, :invoiceno, id)
+          end
 
-                            :ok
+          sales_exist = Repo.get_by(Sales, salesid: sales_params.salesid)
 
-                          {:error, %Ecto.Changeset{} = changeset} ->
-                            model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
-                            type = changeset.errors |> hd() |> elem(1) |> elem(0)
-                            message = List.insert_at(conn.req_headers, 0, {model, type})
-                            log_error_api(message, "API POST - sales details")
-                            :error
-                        end
-                      end
+          cond do
+            sales_exist != nil ->
+              message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
+              log_error_api(message, "API POST - sales")
+              send_resp(conn, 501, "Sales id exist.")
 
-                    if sd |> Enum.any?(fn x -> x == :error end) do
-                      Repo.delete_all(
-                        from(
-                          s in SalesMaster,
-                          where: s.salesid == ^sales.salesid and s.brand_id == ^bb.id
-                        )
-                      )
+            sales_exist == nil ->
+              case BN.create_sales(sales_params) do
+                {:ok, sales} ->
+                  sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
 
-                      Repo.delete(sales)
+                  Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
 
-                      message = List.insert_at(conn.req_headers, 0, {"sales details", "one of it has issues, the created sales and other sales details will be deleted."})
-                      log_error_api(message, "API POST - sales details")
-                      send_resp(conn, 500, "Sales master failed to create.")
-                    else
-                      case BN.create_sales_payment(sales_payment_params) do
-                        {:ok, sales_payment} ->
-                          Task.start_link(__MODULE__, :log_api, [IO.inspect(sales_payment), params["code"]])
+                  sd =
+                    for sales_master_params <- sales_master_params_list do
+                      sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
 
-                          Task.start_link(__MODULE__, :inform_sales_update, [
-                            sales.brand_id,
-                            sales.branchid,
-                            sales.created_at
+                      case BN.create_sales_master(sales_master_params) do
+                        {:ok, sales_master} ->
+                          Task.start_link(__MODULE__, :log_api, [
+                            IO.inspect(sales_master),
+                            params["code"]
                           ])
 
-                          send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
+                          :ok
 
                         {:error, %Ecto.Changeset{} = changeset} ->
                           model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                           type = changeset.errors |> hd() |> elem(1) |> elem(0)
                           message = List.insert_at(conn.req_headers, 0, {model, type})
-                          log_error_api(message, "API POST - sales payment")
-                          send_resp(conn, 500, "Sales master failed to create.")
-                          send_resp(conn, 500, "Sales payment failed to create.")
+                          log_error_api(message, "API POST - sales details")
+                          :error
                       end
                     end
 
-                  {:error, %Ecto.Changeset{} = changeset} ->
-                    model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
-                    type = changeset.errors |> hd() |> elem(1) |> elem(0)
-                    message = List.insert_at(conn.req_headers, 0, {model, type})
-                    log_error_api(message, "API POST - sales")
-          
-                    send_resp(conn, 500, "Sales to create. Please use the latest sales ID")
-                end
-            end
+                  if sd |> Enum.any?(fn x -> x == :error end) do
+                    Repo.delete_all(
+                      from(
+                        s in SalesMaster,
+                        where: s.salesid == ^sales.salesid and s.brand_id == ^bb.id
+                      )
+                    )
 
+                    Repo.delete(sales)
+
+                    message =
+                      List.insert_at(
+                        conn.req_headers,
+                        0,
+                        {"sales details",
+                         "one of it has issues, the created sales and other sales details will be deleted."}
+                      )
+
+                    log_error_api(message, "API POST - sales details")
+                    send_resp(conn, 500, "Sales master failed to create.")
+                  else
+                    case BN.create_sales_payment(sales_payment_params) do
+                      {:ok, sales_payment} ->
+                        Task.start_link(__MODULE__, :log_api, [
+                          IO.inspect(sales_payment),
+                          params["code"]
+                        ])
+
+                        Task.start_link(__MODULE__, :inform_sales_update, [
+                          sales.brand_id,
+                          sales.branchid,
+                          sales.created_at
+                        ])
+
+                        send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
+
+                      {:error, %Ecto.Changeset{} = changeset} ->
+                        model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
+                        type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                        message = List.insert_at(conn.req_headers, 0, {model, type})
+                        log_error_api(message, "API POST - sales payment")
+                        send_resp(conn, 500, "Sales master failed to create.")
+                        send_resp(conn, 500, "Sales payment failed to create.")
+                    end
+                  end
+
+                {:error, %Ecto.Changeset{} = changeset} ->
+                  model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
+                  type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                  message = List.insert_at(conn.req_headers, 0, {model, type})
+                  log_error_api(message, "API POST - sales")
+
+                  send_resp(conn, 500, "Sales to create. Please use the latest sales ID")
+              end
+          end
         else
           cond do
-     
-
             user == nil ->
-              message = List.insert_at(conn.req_headers, 0, {"authentication", "code and key doesnt match"})
+              message =
+                List.insert_at(
+                  conn.req_headers,
+                  0,
+                  {"authentication", "code and key doesnt match"}
+                )
+
               log_error_api(message, "API POST")
               send_resp(conn, 400, "User not found.")
 
@@ -329,7 +399,6 @@ json_map = %{combos: combos, subcats: subcats} |> Poison.encode!
               send_resp(conn, 400, "user credentials are incorrect.")
           end
         end
-        
     end
   end
 
@@ -425,6 +494,4 @@ json_map = %{combos: combos, subcats: subcats} |> Poison.encode!
 
     BoatNoodleWeb.Endpoint.broadcast(topic, event, hd(outlet_sales))
   end
-
-
 end

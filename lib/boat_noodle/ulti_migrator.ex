@@ -44,8 +44,9 @@ defmodule BoatNoodle.UltiMigrator do
           "updated_at" => "2018-06-14 17:45:38",
           "voidreason" => "2",
           "void_by" => "1",
-             "remark" => "none"
-        },%{
+          "remark" => "none"
+        },
+        %{
           "afterdisc" => "1112",
           "brand_id" => "1",
           "combo_id" => "1",
@@ -65,7 +66,7 @@ defmodule BoatNoodle.UltiMigrator do
           "updated_at" => "2018-06-14 17:45:38",
           "voidreason" => "2",
           "void_by" => "0",
-             "remark" => "none"
+          "remark" => "none"
         }
       ],
       "payment" => %{
@@ -112,29 +113,27 @@ defmodule BoatNoodle.UltiMigrator do
         "void_by" => "1",
         "voidreason" => "none",
         "remark" => "none"
-
-        
-       
       }
     }
 
-#     json_map = Poison.encode!(sales_map)
+    #     json_map = Poison.encode!(sales_map)
 
-# uri = "https://gummypos.resertech.com/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-#     HTTPoison.post!(
-#       uri,
-#       json_map,
-#       [{"Content-Type", "application/json"}],
- 
-#       timeout: 50_000,
-#       recv_timeout: 50_000
-#     )
+    # uri = "https://gummypos.resertech.com/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+    #     HTTPoison.post!(
+    #       uri,
+    #       json_map,
+    #       [{"Content-Type", "application/json"}],
 
-# uri = "localhost:4000/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-     #uri = "https://gummypos.resertech.com/boatnoodle/api/sales?fields=sales_id&branch_id=13&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+    #       timeout: 50_000,
+    #       recv_timeout: 50_000
+    #     )
+
+    # uri = "localhost:4000/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+    # uri = "https://gummypos.resertech.com/boatnoodle/api/sales?fields=sales_id&branch_id=13&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
     # uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=46&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-    uri = "localhost:4000/boatnoodle/api/sales?fields=items&branch_id=37&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-  
+    uri =
+      "localhost:4000/boatnoodle/api/sales?fields=branch_details&branch_id=37&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
+
     HTTPoison.get!(
       uri,
       [{"Content-Type", "application/json"}],
