@@ -158,7 +158,7 @@ defmodule BoatNoodleWeb.ApiController do
         brand_id: b.brand_id,
         payment_catalog: b.payment_catalog,
         version: b.version,
-        combo_catalog: b.combo_catalog,
+
         tag_catalog: b.tag_catalog,
         disc_catalog: b.disc_catalog,
         menu_catalog: b.menu_catalog,
