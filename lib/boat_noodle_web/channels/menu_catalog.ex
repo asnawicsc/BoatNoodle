@@ -18,7 +18,7 @@ defmodule BoatNoodleWeb.MenuCatalog do
       |> Enum.into(%{})
 
     menu_catalog =
-      Repo.all(from(m in MenuCatalog, where: m.id == ^map["current_catalog_id"])) |> hd()
+      Repo.all(from m in MenuCatalog, where: m.id == ^map["current_catalog_id"] and m.brand_id==^payload["brand_id"]) |> hd()
 
     item_list =
       menu_catalog.items
@@ -40,8 +40,8 @@ defmodule BoatNoodleWeb.MenuCatalog do
     menu_catalog_id = payload["menu_catalog_id"]
     subcat_id = payload["subcat_id"]
 
-    menu_catalog = Repo.all(from(m in MenuCatalog, where: m.id == ^menu_catalog_id)) |> hd()
-    subcat = Repo.all(from(s in ItemSubcat, where: s.subcatid == ^subcat_id)) |> hd()
+    menu_catalog = Repo.all(from m in MenuCatalog, where: m.id == ^menu_catalog_id and m.brand_id==^payload["brand_id"]) |> hd()
+    subcat = Repo.all(from s in ItemSubcat, where: s.subcatid == ^subcat_id  and s.brand_id==^payload["brand_id"]) |> hd()
 
     subcat_price_code_list =
       Repo.all(
@@ -120,7 +120,7 @@ defmodule BoatNoodleWeb.MenuCatalog do
       })
     else
       menu_catalog =
-        Repo.all(from(m in MenuCatalog, where: m.id == ^map["current_catalog_id"])) |> hd()
+        Repo.all(from m in MenuCatalog, where: m.id == ^map["current_catalog_id"] and m.brand_id==^payload["brand_id"]) |> hd()
 
       item_list = menu_catalog.items
       item_list = String.replace(item_list, map["current_subcat_id"], map["subcat_id"])
@@ -170,7 +170,7 @@ defmodule BoatNoodleWeb.MenuCatalog do
     map = payload["map"] |> Enum.map(fn x -> {x["name"], x["value"]} end) |> Enum.into(%{})
 
     menu_catalog =
-      Repo.all(from(m in MenuCatalog, where: m.id == ^map["menu_catalog_id"])) |> hd()
+      Repo.all(from m in MenuCatalog, where: m.id == ^map["menu_catalog_id"] and m.brand_id==^payload["brand_id"]) |> hd()
 
     items =
       menu_catalog.items

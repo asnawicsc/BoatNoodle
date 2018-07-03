@@ -6,14 +6,16 @@ defmodule BoatNoodle.BN.ItemSubcat do
   schema "item_subcat" do
     field(:subcatid, :integer, primary_key: true)
     field(:created_at, :utc_datetime)
-    field(:enable_disc, :integer, default: 1)
-    field(:include_spend, :integer, default: 1)
-    field(:is_activate, :integer, default: 1)
+    field(:enable_disc, :integer, default: 0)
+    field(:include_spend, :integer, default: 0)
+    field(:is_activate, :integer, default: 0)
     field(:is_categorize, :integer, default: 0)
     field(:is_comboitem, :integer, default: 0)
     field(:is_default_combo, :integer, default: 0)
     field(:is_delete, :integer, default: 0)
-    field(:is_print, :integer, default: 1)
+    field(:item_start_hour, :integer, default: 0)
+    field(:item_end_hour, :integer, default: 0)
+    field(:is_print, :integer, default: 0)
     field(:itemcatid, :string)
     field(:itemcode, :string)
     field(:itemdesc, :string)
@@ -31,6 +33,8 @@ defmodule BoatNoodle.BN.ItemSubcat do
   def changeset(item_subcat, attrs) do
     item_subcat
     |> cast(attrs, [
+      :item_start_hour,
+      :item_end_hour,
       :brand_id,
       :subcatid,
       :itemcatid,

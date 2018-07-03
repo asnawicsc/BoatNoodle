@@ -18,6 +18,7 @@ defmodule BoatNoodle.BN.DiscountItem do
     field(:is_visable, :integer, default: 0)
     field(:is_delete, :integer, default: 0)
     field(:min_spend, :decimal)
+    field(:multi_item_list, :string)
     field(:brand_id, :integer, primary_key: true)
   end
 
@@ -27,6 +28,7 @@ defmodule BoatNoodle.BN.DiscountItem do
     |> cast(attrs, [
       :brand_id,
       :min_spend,
+      :multi_item_list,
       :is_delete,
       :is_visable,
       :is_targetmenuitems,

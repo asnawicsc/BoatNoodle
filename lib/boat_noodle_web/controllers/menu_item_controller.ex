@@ -36,7 +36,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   end
 
   def index(conn, _params) do
-    menu_catalog = Repo.all(from(m in MenuCatalog))
+    menu_catalog = Repo.all(from(m in MenuCatalog,where: m.brand_id==^BN.get_brand_id(conn)))
 
     subcats =
       Repo.all(
@@ -121,10 +121,45 @@ defmodule BoatNoodleWeb.MenuItemController do
     render(conn, "new.html", changeset: changeset, item_cat: item_cat, itemcodes: itemcodes)
   end
 
-  def create(conn, %{"menu_item" => item_subcat_params}) do
+  def create(conn, %{"menu_item" => item_subcat_params,"a" => a}) do
+   
     cat_id = item_subcat_params["itemcatid"]
     cat = Repo.get_by(BoatNoodle.BN.ItemCat, itemcatid: cat_id, brand_id: BN.get_brand_id(conn))
     itemcode = item_subcat_params["itemcode"]
+
+  
+
+     if a["enable_disc"] == "on" do
+      enable_disc = 1
+    else
+      enable_disc = 0
+    end
+
+
+     if a["is_active"] == "on" do
+      is_activate = 1
+    else
+      is_activate = 0
+    end
+
+
+
+     if a["include_spend"] == "on" do
+      include_spend = 1
+    else
+      include_spend = 0
+    end
+
+ item_subcat_params = Map.put(item_subcat_params, "enable_disc", enable_disc)
+  item_subcat_params = Map.put(item_subcat_params, "is_activate", is_activate)
+   item_subcat_params = Map.put(item_subcat_params, "include_spend", include_spend)
+
+
+
+
+
+
+
     first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
 
     if Float.parse(first_letter) == :error do
@@ -305,9 +340,43 @@ defmodule BoatNoodleWeb.MenuItemController do
         "id" => subcatid,
         "menu_item" => menu_item_params,
         
-        "brand" => brand
+        "brand" => brand,
+        "a" => a
       }) do
     # menu_item = BN.get_menu_item!(id)
+
+    if a["enable_disc"] == "on" do
+      enable_disc = 1
+    else
+      enable_disc = 0
+    end
+
+
+     if a["is_active"] == "on" do
+      is_activate = 1
+    else
+      is_activate = 0
+    end
+
+
+
+     if a["include_spend"] == "on" do
+      include_spend = 1
+    else
+      include_spend = 0
+    end
+
+   menu_item_params = Map.put(menu_item_params, "enable_disc", enable_disc)
+   menu_item_params = Map.put(menu_item_params, "is_activate", is_activate)
+   menu_item_params = Map.put(menu_item_params, "include_spend", include_spend)
+
+   item_start_hour = menu_item_params["item_start_hour"]
+   item_end_hour = menu_item_params["item_end_hour"]
+
+   menu_item_params = Map.put(menu_item_params, "item_start_hour", item_start_hour)
+   menu_item_params = Map.put(menu_item_params, "item_end_hour", item_end_hour)
+
+
 
     item_subcat =
       Repo.all(
@@ -342,6 +411,7 @@ defmodule BoatNoodleWeb.MenuItemController do
 
     # cat = Repo.all(from(i in BoatNoodle.BN.ItemCat, where: ))
     itemcode = menu_item_params["itemcode"]
+
     first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
 
     if Float.parse(first_letter) == :error do

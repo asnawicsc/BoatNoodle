@@ -49,6 +49,9 @@
 
             </div>
         </div>
+        <button class="btn btn-info">
+                      <i class="material-icons">add</i> Add Payment Type
+                    </button>
 
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6">
@@ -85,7 +88,7 @@
             </div>
         </div>
 
-        <div class="col-md-12">
+       
                 <div class="card">
                     <div class="card-header card-header-icon card-header-rose">
                         <div class="card-icon">
@@ -98,10 +101,10 @@
                         <div id="paymentBarChart" class="ct-chart" style="height: 400px;"></div>
                     </div>
                 </div>
-        </div>
+  
 
         <div class="panel-body" id="payment_type">
-            <div class="col-md-12">
+         
                 <div class="card" style="width: 100%; overflow-x: scroll; ">
                     <div class="card-header card-header-icon card-header-rose">
 
@@ -127,7 +130,7 @@
 
                     </div>
                 </div>
-            </div>
+           
 
         </div>
     </div>
