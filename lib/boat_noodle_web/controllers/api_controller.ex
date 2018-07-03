@@ -228,6 +228,7 @@ disc_items = Repo.all(from d in DiscountItem, where: d.discountitemsid in ^item_
       is_delete: d.is_delete,
       is_visable: d.is_visable,
       is_targetmenuitems: d.is_targetmenuitems,
+      multi_item_list: d.multi_item_list,
       is_categorize: d.is_categorize,
       disctype: d.disctype,
       disc_qty: d.disc_qty,
