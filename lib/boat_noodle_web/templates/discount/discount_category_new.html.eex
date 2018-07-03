@@ -14,13 +14,13 @@
           <div class="row justify-content-center">
             <div class="col-sm-5">
               <div class="form-group">
-                <label for="exampleInput1" class="bmd-label-floating">Discount Category</label>
+                <label for="exampleInput1" class="bmd-label-floating">Discount Category Name</label>
                 <input type="text" class="form-control" name="item[discount_name]" required="required">
               </div>
             </div>
             <div class="col-sm-5">
               <div class="form-group">
-                <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                <label for="exampleInput1" class="bmd-label-floating">Discount Category Description</label>
                 <input type="text" class="form-control" name="item[description]" required="required">
               </div>
             </div>
@@ -29,7 +29,7 @@
             <div class="col-sm-5">
               <div class="form-group">
 
-                <select class="selectpicker" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc();" title="Discount Type" data-size="7" required="required">
+                <select class="selectpicker" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc();" title="Discount Type" data-size="7" name="item[select]" required="required">
                            
                                             <option value="0"  >Other Discount
                                             </option>
@@ -52,7 +52,7 @@
             <div class="col-sm-5" id="amt_now">
               <div class="form-group">
                 <label for="exampleInput1" class="bmd-label-floating">Amount Percentage</label>
-                <input type="number" class="form-control" name="item[amount_percentage]" required="required">
+                <input type="number" class="form-control" name="item[amount_percentage]" >
               </div>
             </div>
 

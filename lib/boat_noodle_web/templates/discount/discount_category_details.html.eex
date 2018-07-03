@@ -36,13 +36,13 @@
                         <div class="col-sm-5">
                             <div class="form-group">
 
-                                  <%= if  @discount.is_categorize == 0  do   %>
+                                  <%= if  @discount.is_categorize == 1  do   %>
 
                                 <select class="selectpicker" name="discount_type" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc3();" value="<%= @discount.is_categorize %>" data-size="7" >
                            
-                                            <option  value="0" selected="selected"  >Other Discount
+                                            <option  value="1" selected="selected"   >Other Discount
                                             </option>
-                                             <option value="1"  >Full Amount Discount
+                                             <option value="0"  >Full Amount Discount
                                             </option>
                                         
                                 </select>
@@ -50,9 +50,9 @@
 
                                  <select class="selectpicker" name="discount_type" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc3();" value="<%= @discount.is_categorize %>" data-size="7" >
                            
-                                            <option  value="0"  >Other Discount
+                                            <option  value="1"  >Other Discount
                                             </option>
-                                             <option value="1" selected="selected" >Full Amount Discount
+                                             <option value="0" selected="selected"   >Full Amount Discount
                                             </option>
                                         
                                 </select>
@@ -179,14 +179,14 @@
          var selectBox = document.getElementById("selectBox");
             var selectedValue = selectBox.options[selectBox.selectedIndex].value;
 
-            if (selectedValue == 1) {
+            if (selectedValue == 0) {
                 $("#amt_now").show();
 
 
 
             }
             
-            if (selectedValue == 0) {
+            if (selectedValue == 1) {
                 $("#amt_now").hide();
 
 
@@ -202,14 +202,14 @@ var checkedValue = $('.checkbox:checked').val();
             var selectBox = document.getElementById("selectBox");
             var selectedValue = selectBox.options[selectBox.selectedIndex].value;
 
-            if (selectedValue == 1) {
+            if (selectedValue == 0) {
                 $("#amt_now").show();
 
 
 
             }
 
-            if (selectedValue == 0) {
+            if (selectedValue == 1) {
                 $("#amt_now").hide();
 
 

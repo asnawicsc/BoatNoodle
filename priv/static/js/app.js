@@ -221,9 +221,11 @@ $("div.jumbotron").html("")
 
  
   $("ol#a2").on("click", "li", function(){
-      var cat = $(this).parent().attr("aria-label")
+      var cat2 = $(this).parent().attr("aria-label")
 
-    $("ol#a1[aria-label='"+cat+"']").append(this)
+    $("ol#a1[aria-label='"+cat2+"']").append(this)
+
+
   })
            
 
@@ -328,43 +330,6 @@ $("div.jumbotron").html("")
 
 
         })
-
- // var list ={} 
- //  $('button[data-original-title="combo price"]').click(function() {
- //               var li_list = $('ol#a1').find("li")
- //             var cat = $(this).parent().attr("aria-label")
- //                 var sublist =[]
- //            $("ol#a1[aria-label='"+cat+"'] li").each(function(){
- //              var id = $(this).attr("id")
- //              sublist.push(id)
- //          list[cat]=sublist;
- // var li = $(this);
-
- //                $("ol#a1[aria-label='"+cat+"'] li").append(list[cat]);
-     
-     
- //            })
-
-          
- //    console.log(list[cat])
- //    $("input[name='a["+cat+"][all_item]'").val(list[cat])
-
- //  })
-
-
-
- //  $('button[data-original-title="un combo price"]').click(function() {
- //            var li_list = $('ol#a2').find("li")
- //            $(li_list).each(function() {
-
- //                var li = $(this);
-           
-                
- //                $("ol#a1").append(li);
- //            })
-
-
- //  })
 
 
 

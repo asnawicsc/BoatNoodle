@@ -72,7 +72,7 @@
                   <div class="row justify-content-left">
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label for="exampleInput1" class="bmd-label-floating">Discount Item</label>
+                                <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
                                 <input type="text" class="form-control" required="required" name="item[discount_item]"  >
                             </div>
                         </div>
@@ -150,7 +150,7 @@
 
                     <div class="row justify-content-left" >
                       <div class="col-sm-5" id="target_item">
-                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_item" name="item[target_item]"  title="Target Item" data-size="7">
+                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple"   title="Target Item" data-size="7">
                                            
                                            <%= for item <- @item_subcat do %>
                                              <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
@@ -161,6 +161,7 @@
                                           
                                         </select>
                         </div>
+                         <input type="hidden" class="form-control" name="item[target_items]" >
                       <div class="col-sm-3" id="minimum_spend">
                             <div class="form-group">
                                 <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
@@ -170,8 +171,7 @@
                       
                     </div>
 
-                  
-
+               
 
 
                     <div class="row justify-content-left">
@@ -277,6 +277,11 @@
     </form>
 
 <script type="text/javascript">
+
+
+var multiselect = $('#target_items').val();
+    $("input[name='item[target_items]']").val(multiselect)
+
 $("#discount_category").hide();
 $("#discount_percentage").hide();
 $("#discount_quantity").hide();

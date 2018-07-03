@@ -65,6 +65,52 @@
               <input disabled name="menu_item[price_code][F]" class="form-control" type="text" >
             </div>
           </div>
+          
+          <div class="col-sm-3">
+          
+            <div class="form-group bmd-form-group">
+               <label class="bmd-label-floating">Start Time</label>
+              <input name="menu_item[item_start_hour]" class="form-control" type="number" >
+            </div>
+          </div>
+          <div class="col-sm-3">
+
+            <div class="form-group bmd-form-group">
+
+               <label class="bmd-label-floating">End Time</label>
+              <input name="menu_item[item_end_hour]" class="form-control" type="number" >
+            </div>  
+          </div>
+           <div class="col-sm-3">
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                            <input class="form-check-input" name="a[enable_disc]" type="checkbox" > Enable Discount?
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                            <input class="form-check-input" name="a[is_active]" type="checkbox" > Active?
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                            <input class="form-check-input" name="a[include_spend]" type="checkbox" > Include In Minimum Spend?
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label>
+              </div>
+            </div>
  
         </div>
 

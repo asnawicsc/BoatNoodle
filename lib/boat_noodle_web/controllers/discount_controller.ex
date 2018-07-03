@@ -77,6 +77,7 @@ defmodule BoatNoodleWeb.DiscountController do
   end
 
   def create_discount_category_new(conn, params) do
+
     item = params["item"]
     discname = item["discount_name"]
 
@@ -84,6 +85,14 @@ defmodule BoatNoodleWeb.DiscountController do
       discamtpercentage = 0
     else
       discamtpercentage = item["amount_percentage"]
+    end
+
+    if item["select"] == "1" do
+      disctype = "CASH"
+      is_categorize = 0
+    else
+       disctype = "FREE"
+      is_categorize = 1
     end
 
     descriptions = item["description"]
@@ -103,10 +112,13 @@ defmodule BoatNoodleWeb.DiscountController do
 
     cat =
       BN.create_discount(%{
+        disctype: disctype,
+        is_categorize: is_categorize,
         discname: discname,
         discamtpercentage: discamtpercentage,
         descriptions: descriptions,
-        is_visable: is_visable
+        is_visable: is_visable,
+        target_cat: 0
       })
 
     discount =
@@ -187,6 +199,7 @@ defmodule BoatNoodleWeb.DiscountController do
   end
 
   def discount_item_new(conn, params) do
+
     brand = BN.get_brand_id(conn)
 
     discount_catalog =
@@ -236,6 +249,7 @@ defmodule BoatNoodleWeb.DiscountController do
   end
 
   def create_discount_item_new(conn, params) do
+
     item = params["item"]
 
     discountid = item["discount_category"] |> String.to_integer()
@@ -284,11 +298,14 @@ defmodule BoatNoodleWeb.DiscountController do
  
     end
 
-    if item["target_item"] == "" do
-      is_targetmenuitems = 0
-    else
-      is_targetmenuitems = item["target_item"] |> String.to_integer()
-    end
+      count=item["target_items"]|>String.split(",")|>Enum.count
+
+     if count > 1 do
+       is_targetmenuitems = 0
+       multi_item_list=item["target_items"]
+     else
+      is_targetmenuitems = item["target_items"] |> String.to_integer()
+     end
 
     if item["status"] == "on" do
       is_used = 1
@@ -296,7 +313,7 @@ defmodule BoatNoodleWeb.DiscountController do
       is_used = 0
     end
 
-IEx.pry
+
     min_spend = item["minimum_spend"]
 
     cat =
@@ -308,6 +325,7 @@ IEx.pry
         target_cat: target_cat,
         disc_qty: disc_qty,
         disctype: disc_type,
+        multi_item_list: multi_item_list,
         is_targetmenuitems: is_targetmenuitems,
         is_used: is_used,
         min_spend: min_spend
@@ -346,12 +364,10 @@ IEx.pry
 
     discount = Repo.get_by(Discount, brand_id: BN.get_brand_id(conn), discountid: id)
 
-    disc_type = Repo.all(from(s in DiscountType))
 
     render(
       conn,
       "discount_category_details.html",
-      disc_type: disc_type,
       discount: discount,
       id: id
     )
@@ -402,13 +418,13 @@ IEx.pry
       Repo.all(
         from(
           s in DiscountItem,
-          where: s.discountitemsid == ^discount_items.discountitemsid,
           left_join: b in ItemCat,
           on: s.target_cat == b.itemcatid,
           left_join: c in DiscountType,
           on: s.disctype == c.disctypename,
           left_join: e in Discount,
           on: s.discountid == e.discountid,
+          where: s.discountitemsid == ^discount_items.discountitemsid and  s.brand_id ==^BN.get_brand_id(conn),
           select: %{
             descriptions: s.descriptions,
             disc_qty: s.disc_qty,
@@ -419,16 +435,19 @@ IEx.pry
             disctype: s.disctype,
             is_categorize: s.is_categorize,
             is_targetmenuitems: s.is_targetmenuitems,
+            multi_item_list: s.multi_item_list,
             is_visable: s.is_visable,
             min_spend: s.min_spend,
             target_cat: s.target_cat,
             itemcatname: b.itemcatname,
             disctypeid: c.disctypeid,
-            discname: e.discname
+            discname: e.discname,
+            brand_id: s.brand_id
           }
         )
-      )
-      |> hd
+      )|>hd
+
+
 
     render(
       conn,
@@ -441,6 +460,7 @@ IEx.pry
       discount_items: discount_items,
       discount_items: discount_items,
       discount_a: discount_a
+   
     )
   end
 
@@ -484,13 +504,23 @@ IEx.pry
   end
 
   def edit_discount_category_detail(conn, params) do
+
+
     brand = BN.get_brand_id(conn)
 
     id = params["discountid"] |> String.to_integer()
     discname = params["name"]
     descriptions = params["descriptions"]
     discount_type = params["discount_type"] |> String.to_integer()
-    discamtpercentage = params["discamtpercentage"]
+   
+
+    if discount_type == 1 do
+      disc_type = "FREE"
+       discamtpercentage = 0
+    else
+      disc_type = "CASH"
+       discamtpercentage = params["discamtpercentage"]
+    end
 
     if params["is_visable"] == "on" do
       is_visable = 1
@@ -504,6 +534,7 @@ IEx.pry
 
     case BN.update_discount(discount, %{
            is_categorize: discount_type,
+           disctype: disc_type,
            discname: discname,
            descriptions: descriptions,
            discamtpercentage: discamtpercentage,
@@ -541,6 +572,15 @@ IEx.pry
       is_visable = 0
     end
 
+     count=params["is_targetmenuitems"]|>Enum.count
+
+     if count > 1 do
+       is_targetmenuitems = 0
+       multi_item_list=params["is_targetmenuitems"]|>Enum.join(",")
+     else
+      is_targetmenuitems = params["is_targetmenuitems"] |> String.to_integer()
+     end
+
     discount_type = Repo.get_by(BoatNoodle.BN.DiscountType, disctypeid: disctype)
     disctype = discount_type.disctypename
 
@@ -558,7 +598,9 @@ IEx.pry
            disctype: disctype,
            is_targetmenuitems: is_targetmenuitems,
            target_cat: target_cat,
-           is_visable: is_visable
+           multi_item_list: multi_item_list,
+           is_visable: is_visable,
+           min_spend: min_spend
          }) do
       {:ok, discount_item} ->
         conn

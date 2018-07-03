@@ -73,8 +73,9 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     end
 
     if a == true do
+      brand=BN.get_brand_id(conn)
       menu_catalog =
-        Repo.all(from(m in BoatNoodle.BN.MenuCatalog, select: %{id: m.id, name: m.name}))
+        Repo.all(from(m in BoatNoodle.BN.MenuCatalog, where: m.brand_id==^brand, select: %{id: m.id, name: m.name}))
 
       pr = params["a"] |> Enum.map(fn x -> x end) |> hd |> elem(1)
       item_name = pr["itemname"]
@@ -119,8 +120,9 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     com = params["com"]
     items = params["item"]
 
+brand=BN.get_brand_id(conn)
     menu_catalog =
-      Repo.all(from(m in BoatNoodle.BN.MenuCatalog, select: %{id: m.id, name: m.name}))
+      Repo.all(from(m in BoatNoodle.BN.MenuCatalog, where: m.brand_id==^brand, select: %{id: m.id, name: m.name}))
 
     render(
       conn,
@@ -202,36 +204,96 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     end
 
     for item <- all_item do
-      ab = elem(item, 1)["subcatid"]
 
-      new_subcatid = Integer.to_string(subcatid) <> ab
-      product_name = elem(item, 1)["product_name"]
-      product_name = elem(item, 1)["product_name"]
+       itemname = elem(item, 1)["product_name"]
+      item_coded = itemname |> String.split_at(3) |> elem(0)
+       item_subcat = Repo.get_by(ItemSubcat, subcatid: elem(item, 1)["subcatid"], brand_id: BN.get_brand_id(conn))
+      itemcat = Repo.get_by(ItemCat, itemcatcode: item_category, brand_id: BN.get_brand_id(conn))
+      menu_cat_id = item_subcat.itemcatid
+      combo_id = subcatid
+      combo_qty = elem(item, 1)["cat_limit"]
+      comboid2 = combo_id |> Integer.to_string()
+      subcatid2 = elem(item, 1)["subcatid"]
+      brand_id = itemcat.brand_id
 
-      produc = Repo.get_by(ItemSubcat, subcatid: ab, brand_id: BN.get_brand_id(conn))
-      itemdesc = produc.itemdesc
-      new = subcatid |> Integer.to_string()
+      sub = subcatid2 |> String.to_integer()
 
-      stat =
-        BoatNoodle.BN.create_item_subcat(%{
-          subcatid: new_subcatid,
-          itemcatid: new,
-          itemdesc: itemdesc,
-          itemname: product_name,
-          itemcode: produc.itemcode,
-          brand_id: produc.brand_id
+
+
+      if sub < 100 do
+        sub =
+          (1000 + sub)
+          |> Integer.to_string()
+          |> String.split("")
+          |> Enum.reject(fn x -> x == "" end)
+          |> List.delete_at(0)
+          |> Enum.join()
+      else
+        sub = sub |> Integer.to_string()
+      end
+
+       p = (comboid2 <> sub) |> String.to_integer()
+
+      combo_item_id = p
+
+      combo_item_qty = elem(item, 1)["cat_limit"]
+
+      unit_price = 0
+
+      top_up = 0
+
+      stat2 =
+        BoatNoodle.BN.create_combo_details(%{
+          menu_cat_id: menu_cat_id,
+          combo_id: combo_id,
+          combo_qty: combo_qty,
+          combo_item_id: combo_item_id,
+          combo_item_name: itemname,
+          combo_item_code: item_coded,
+          combo_item_qty: combo_item_qty,
+          unit_price: unit_price,
+          top_up: top_up,
+          brand_id: brand_id
         })
 
-      case stat do
-        {:ok, itemsubcat} ->
+        case stat2 do
+        {:ok, combo_details} ->
+          combo_details =
+            Repo.get_by(
+              ComboDetails,
+              combo_item_id: combo_details.combo_item_id,
+              brand_id: BN.get_brand_id(conn)
+            )
+
+          a = params["branc"]
+          branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
+
+          for branch <- branchs do
+            id = branch |> String.to_integer()
+            catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+
+            combo_items = catalog.combo_items
+            comb = combo_items |> String.split(",")
+
+            combo_id = combo_details.id |> Integer.to_string()
+
+            all_combo_items = List.insert_at(comb, 0, combo_id)
+
+            new = all_combo_items |> Enum.join(",")
+
+            BN.update_menu_catalog(catalog, %{combo_items: new})
+          end
+
           true
 
         {:error, changeset} ->
-  
+      
           true
       end
     end
 
+     
+    
     conn
     |> put_flash(:info, "Combo Created")
     |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
@@ -455,13 +517,11 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_show(conn, %{"subcatid" => id}) do
-    item_subcat =
-      Repo.all(
-        from(i in ItemSubcat, where: i.subcatid == ^id and i.brand_id == ^BN.get_brand_id(conn))
-      )
-      |> hd()
+      id=String.to_integer(id)
+      item_subcat =
+      Repo.get_by(ItemSubcat,subcatid: id,brand_id: BN.get_brand_id(conn))
+      
 
-    # IEx.pry()
 
     same_items =
       Repo.all(
@@ -742,6 +802,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def update(conn, %{"id" => id, "item_subcat" => item_subcat_params}) do
+    IEx.pry
     item_subcat = BN.get_item_subcat!(id)
 
     case BN.update_item_subcat(item_subcat, item_subcat_params) do
