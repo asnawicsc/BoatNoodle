@@ -48,6 +48,38 @@ defmodule BoatNoodleWeb.PageController do
     render(conn, "index.html", brands: brands)
   end
 
+  def webhook_key(conn, params) do
+
+
+    bb = Repo.all(from b in Branch, where: b.branchcode ==^ params["code"])
+
+
+    if bb != [] do
+      branch = hd(bb)
+ 
+
+        api_key = Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y") |> Base.url_encode64()
+        cg = Branch.changeset(branch, %{api_key: api_key})
+        map = %{key: api_key} |> Poison.encode!()
+
+      case Repo.update(cg) do
+        {:ok, bb} ->
+          send_resp(conn, 200, map)
+
+        {:error, cg} ->
+          send_resp(conn, 500, " not ok")
+      end
+    else
+      send_resp(conn, 500, " not ok")
+
+
+    end
+ 
+
+
+
+  end
+
   def get_brands(conn, _params) do
     brands = Repo.all(Brand) |> Enum.map(fn x -> %{name: x.domain_name} end) |> Poison.encode!()
     send_resp(conn, 200, brands)

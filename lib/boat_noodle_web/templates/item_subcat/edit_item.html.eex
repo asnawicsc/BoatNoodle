@@ -93,10 +93,10 @@
 
                       <%= if  @item_subcat.enable_disc == 0  do   %>
                    
-                             <input class="form-check-input" name="a[enable_disc]" type="checkbox" > Enamble Discount?
+                             <input class="form-check-input" name="a[enable_disc]" type="checkbox" > Enable Discount?
                           <% else %>
                         
-                              <input class="form-check-input" name="a[enable_disc]" type="checkbox" checked="" > Enamble Discount?
+                              <input class="form-check-input" name="a[enable_disc]" type="checkbox" checked="" > Enable Discount?
 
                           <% end %> 
 

@@ -115,9 +115,36 @@ defmodule BoatNoodle.UltiMigrator do
   brand_id: 1}
 
 @shift_map %{
-  id: 200,
-  staff_id: 1007,
-  log_in: "2018-07-03 12:00:00"
+
+        branch_id: 0,
+        staff_name: "shanifa",
+        time_start: "2018-07-03 12:05:28", 
+        time_end: "2018-07-03 20:05:28", 
+        open_amt: "300.00", 
+        close_amt: "2105.20", 
+        totalpax: 73,
+        totalsales: "1826.80",
+        voidsales: 0, 
+        voiditem: 0,
+        totaltax: 0.00,
+        totalsvc: "150.24", 
+        total_round: "-0.02", 
+        dinein: "1652.60",
+        takeaway: "174.20", 
+        total_disc: "9.30", 
+        total_pymt: "1826.80",
+        total_cash: "1826.80", 
+        total_changes: "360.65", 
+        floats: "300.00", 
+        deposit: "0.00", 
+        cash_in: "0.00", 
+        paidout: "21.60",
+        cash: "1826.80", 
+        drawamt: "2105.20",
+        exp_drw_amt: "2105.20",
+        total_sr: "0.00", 
+        extra: "0.00",
+        branchcode: "BNPB"
 }
 
 @void_map %{
@@ -152,16 +179,27 @@ defmodule BoatNoodle.UltiMigrator do
     # Task.start_link(__MODULE__, :migrate_new_menu_cat, [arg])
   end
 
-  def test_api do
+  def test_api(request_type) do
     code = "AU2"
     key = "JDJ5JDEyJFNkOWhIL29TRHdXblpQcnZ0RFVwTU8vODQ1QVdmNW9GMHlyQW12dnQvOHI0T0I2V2R0Ly9l"
-    json_map = Poison.encode!(@void_map)
+    json_map = Poison.encode!(@shift_map)
     env = "https://gummypos.resertech.com"
     env = "http://localhost:4000"
     endpoint = "sales"
     endpoint = "operations"
-    scope = "void_receipt"
+    endpoint = "get_deployment_key"
+    scope = "shift_details"
     uri = "#{env}/boatnoodle/api/#{endpoint}?code=#{code}&key=#{key}&scope=#{scope}"
+     uri = "#{env}/api/#{endpoint}?code=#{code}"
+
+     case request_type  do
+       "get" ->
+        HTTPoison.get!(
+          uri,
+          [{"Content-Type", "application/json"}]
+        )
+        "post" ->
+         uri = "#{env}/boatnoodle/api/sales?fields=discount&branch_id=8&code=AU2&key=JDJ5JDEyJFNkOWhIL29TRHdXblpQcnZ0RFVwTU8vODQ1QVdmNW9GMHlyQW12dnQvOHI0T0I2V2R0Ly9l"
         HTTPoison.post!(
           uri,
           json_map,
@@ -170,14 +208,10 @@ defmodule BoatNoodle.UltiMigrator do
           timeout: 50_000,
           recv_timeout: 50_000
         )
+     end
 
-   uri =
-      "#{env}/boatnoodle/api/sales?fields=discount&branch_id=8&code=AU2&key=JDJ5JDEyJFNkOWhIL29TRHdXblpQcnZ0RFVwTU8vODQ1QVdmNW9GMHlyQW12dnQvOHI0T0I2V2R0Ly9l"
 
-    HTTPoison.get!(
-      uri,
-      [{"Content-Type", "application/json"}]
-    )
+
   end
 
   def run(arg) do

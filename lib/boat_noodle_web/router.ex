@@ -29,6 +29,7 @@ defmodule BoatNoodleWeb.Router do
   # Other scopes may use custom stacks.
   scope "/api", BoatNoodleWeb do
     pipe_through(:api)
+    get("/get_deployment_key", PageController, :webhook_key)
     get("/sales", PageController, :webhook_get)
     post("/sales", PageController, :webhook_post)
   end

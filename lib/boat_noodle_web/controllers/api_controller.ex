@@ -85,7 +85,7 @@ defmodule BoatNoodleWeb.ApiController do
          params = Map.put(params, "branch_id", user.branchid)
          params = Map.put(params, "brand_id", user.brand_id)
           # post the cash in cash out shits...
-         cg = BoatNoodle.BN.StaffLogSession.changeset(%BoatNoodle.BN.StaffLogSession{}, params)
+         cg = BoatNoodle.BN.RPTCASHIEREOD.changeset(%BoatNoodle.BN.RPTCASHIEREOD{}, params)
          case Repo.insert(cg) do
             {:ok, ci} ->
               Task.start_link(__MODULE__, :log_api, [IO.inspect(ci), params["code"]<>" API POST -"<>params["scope"]])
@@ -675,9 +675,11 @@ disc_items = Repo.all(from d in DiscountItem, where: d.discountitemsid in ^item_
   end
 
   def log_api(message, username) do
+
     message =
       message
       |> Map.to_list()
+      |> Enum.sort()
       |> Enum.reject(fn x -> elem(x, 1) == nil end)
       |> List.delete_at(0)
       |> List.delete_at(0)
