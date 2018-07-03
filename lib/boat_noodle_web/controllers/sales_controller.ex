@@ -60,7 +60,8 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   defp branches() do
-    Repo.all(from(s in BoatNoodle.BN.Branch, order_by: [asc: s.branchname]))
+
+    Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==1, order_by: [asc: s.branchname]))
     |> Enum.reject(fn x -> x.branchid == 0 end)
   end
 

@@ -8,8 +8,15 @@ $(document).ready(function() {
 
           $("input[name='start_date']").val(start.format('YYYY-MM-DD'))
           $("input[name='end_date']").val(end.format('YYYY-MM-DD'))
-      }
 
+          localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
+          localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
+
+          localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
+          localStorage.setItem('start_date', end.format('YYYY-MM-DD'));
+
+   
+      }
 
     $('#reportrange').daterangepicker({
         startDate: start,
@@ -58,13 +65,16 @@ var brand = location.pathname.split("/")[1];
     $("button#dashboard").click(function() {
 
         var b_id = $("select#branch_list").val()
+    ;
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("dashboard", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -216,7 +226,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -315,7 +326,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -466,7 +478,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -617,7 +630,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -768,7 +782,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -848,7 +863,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -939,7 +955,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1024,7 +1041,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1099,7 +1117,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1183,7 +1202,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1267,7 +1287,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1319,7 +1340,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1405,7 +1427,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1455,7 +1478,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1585,7 +1609,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1702,7 +1727,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1833,7 +1859,8 @@ var brand = location.pathname.split("/")[1];
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -2144,7 +2171,8 @@ var brand = location.pathname.split("/")[1];
         channel.push("generate_sales_charts", {
             user_id: window.currentUser,
             branch_id: b_id,
-            year: year
+            year: year,
+            brand_id: window.currentBrand
         })
     })
 

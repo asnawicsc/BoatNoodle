@@ -34,7 +34,7 @@
 
                               </div>
                               <div class="card-body ">
-                                  <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                                  <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
                                     <%= for branch <- @branches do %>
                                       <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
                                     <% end %>
@@ -47,7 +47,7 @@
                 </div>
 
             </div>
-        </div>
+       
 
 
         <div class="row">
