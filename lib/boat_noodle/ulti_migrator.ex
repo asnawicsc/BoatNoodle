@@ -11,19 +11,7 @@ defmodule BoatNoodle.UltiMigrator do
     {4, AddBrand5}
   ]
 
-  def add_brand(arg) do
-    Task.start_link(__MODULE__, :run, [arg])
-  end
-
-  def migrate(arg) do
-    # Task.start_link(__MODULE__, :migrate_new, [arg])
-    # Task.start_link(__MODULE__, :migrate_new_subcat, [arg])
-    # Task.start_link(__MODULE__, :migrate_new_remark, [arg])
-    # Task.start_link(__MODULE__, :migrate_new_menu_cat, [arg])
-  end
-
-  def test_api do
-    sales_map = %{
+  @sales_map %{
       "details" => [
         %{
           "afterdisc" => "1111",
@@ -117,23 +105,74 @@ defmodule BoatNoodle.UltiMigrator do
       }
     }
 
-    #     json_map = Poison.encode!(sales_map)
 
-    # uri = "https://gummypos.resertech.com/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-    #     HTTPoison.post!(
-    #       uri,
-    #       json_map,
-    #       [{"Content-Type", "application/json"}],
+@cash_map %{
+  date_time: "2018-07-03 12:00:00", 
+  cashtype: "OTHERS", 
+  staffid: 27, 
+  description: "bayar sayur", 
+  amount: 37, 
+  brand_id: 1}
 
-    #       timeout: 50_000,
-    #       recv_timeout: 50_000
-    #     )
+@shift_map %{
+  id: 200,
+  staff_id: 1007,
+  log_in: "2018-07-03 12:00:00"
+}
 
-    # uri = "localhost:4000/boatnoodle/api/sales?code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-    # uri = "https://gummypos.resertech.com/boatnoodle/api/sales?fields=sales_id&branch_id=13&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-    # uri = "localhost:4000/boatnoodle/api/sales?fields=sales_id&branch_id=46&code=BNAU&key=JDJ5JDEyJGM4M3kyYldBNldEdm9VZkNQZFIyUS4uZnROUzYvc2REOTlTMkZSZnova3B5dC5ieURLaFRP"
-    uri =
-      "http://localhost:4000/boatnoodle/api/sales?fields=payment_types&branch_id=8&code=AU2&key=JDJ5JDEyJFNkOWhIL29TRHdXblpQcnZ0RFVwTU8vODQ1QVdmNW9GMHlyQW12dnQvOHI0T0I2V2R0Ly9l"
+@void_map %{
+        itemcode: "N03", 
+      itemname: "N03 P. Chick Thai Rice Noodle", 
+      quantity: 1, 
+      price: 1.90, 
+      tableid: 11, 
+      itemid: 56, 
+      displayprice: "1.90", 
+      is_print: 0, 
+      discount: 0.00, 
+      priceafterdiscount: 1.90, 
+      qtyafterdisc: 0,
+      itempriceperqty: 0.00, 
+
+      discountitemsid: 0,
+   
+      is_void: 1,
+      void_by: 1007,
+      voidreason: "cancel order",
+      orderid: "SOGO20384"
+}
+  def add_brand(arg) do
+    Task.start_link(__MODULE__, :run, [arg])
+  end
+
+  def migrate(arg) do
+    # Task.start_link(__MODULE__, :migrate_new, [arg])
+    # Task.start_link(__MODULE__, :migrate_new_subcat, [arg])
+    # Task.start_link(__MODULE__, :migrate_new_remark, [arg])
+    # Task.start_link(__MODULE__, :migrate_new_menu_cat, [arg])
+  end
+
+  def test_api do
+    code = "AU2"
+    key = "JDJ5JDEyJFNkOWhIL29TRHdXblpQcnZ0RFVwTU8vODQ1QVdmNW9GMHlyQW12dnQvOHI0T0I2V2R0Ly9l"
+    json_map = Poison.encode!(@void_map)
+    env = "https://gummypos.resertech.com"
+    env = "http://localhost:4000"
+    endpoint = "sales"
+    endpoint = "operations"
+    scope = "void_receipt"
+    uri = "#{env}/boatnoodle/api/#{endpoint}?code=#{code}&key=#{key}&scope=#{scope}"
+        HTTPoison.post!(
+          uri,
+          json_map,
+          [{"Content-Type", "application/json"}],
+
+          timeout: 50_000,
+          recv_timeout: 50_000
+        )
+
+   uri =
+      "#{env}/boatnoodle/api/sales?fields=discount&branch_id=8&code=AU2&key=JDJ5JDEyJFNkOWhIL29TRHdXblpQcnZ0RFVwTU8vODQ1QVdmNW9GMHlyQW12dnQvOHI0T0I2V2R0Ly9l"
 
     HTTPoison.get!(
       uri,
@@ -631,6 +670,9 @@ defmodule AddBrand4 do
     # execute("ALTER TABLE `voiditems` DROP PRIMARY KEY, ADD PRIMARY KEY (`branchid`, `brand_id`);")
     execute("ALTER TABLE `staffs` DROP PRIMARY KEY, ADD PRIMARY KEY (`staff_id`, `brand_id`);")
  execute("ALTER TABLE `paymenttype` DROP PRIMARY KEY, ADD PRIMARY KEY (`payment_type_id`, `brand_id`);")
+    
+ execute("ALTER TABLE `staff_log_session` DROP PRIMARY KEY, ADD PRIMARY KEY (`log_id`, `brand_id`);")
+
     # execute(
     #   "ALTER TABLE `salesdetail` DROP PRIMARY KEY, ADD PRIMARY KEY (`branchid`, `brand_id`);"
     # )

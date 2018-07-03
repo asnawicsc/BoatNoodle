@@ -32,4 +32,8 @@ ALTER TABLE `chillchi_db`.`cash_in_out`
 CHANGE COLUMN `cash_type_id` `CashType` VARCHAR(50) NOT NULL ;
 
 
+ALTER TABLE `posgb_boatnoodle`.`staff_log_session` 
+ADD COLUMN `brand_id` INT NULL DEFAULT 1 AFTER `log_out`;
+
+
 "

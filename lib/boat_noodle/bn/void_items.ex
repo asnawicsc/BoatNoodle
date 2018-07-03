@@ -9,7 +9,7 @@ defmodule BoatNoodle.BN.VoidItems do
     field :displayprice, :string
     field :is_print, :integer
     field :is_void, :integer
-    field :itemcode, :string, primary_key: true
+    field :itemcode, :string
     field :itemid, :integer
     field :itemname, :string
     field :itempriceperqty, :decimal
@@ -29,6 +29,47 @@ defmodule BoatNoodle.BN.VoidItems do
   @doc false
   def changeset(void_items, attrs) do
     void_items
-    |> cast(attrs, [:itemcode, :itemname, :quantity, :price, :tableid, :itemid, :displayprice, :is_print, :discount, :priceafterdiscount, :qtyafterdisc, :itempriceperqty, :takeawayid, :discountitemsid, :remark, :is_void, :void_by, :voidreason, :orderid])
+    |> cast(attrs, [
+      :itemcode, 
+      :itemname, 
+      :quantity, 
+      :price, 
+      :tableid, 
+      :itemid, 
+      :displayprice, 
+      :is_print, 
+      :discount, 
+      :priceafterdiscount, 
+      :qtyafterdisc,
+      :itempriceperqty, 
+      :takeawayid,
+      :discountitemsid,
+      :remark,
+      :is_void,
+      :void_by,
+      :voidreason,
+      :orderid
+      ])
+    |> validate_required([      
+      :itemcode, 
+      :itemname, 
+      :quantity, 
+      :price, 
+      :tableid, 
+      :itemid, 
+      :displayprice, 
+      :is_print, 
+      :discount, 
+      :priceafterdiscount, 
+      :qtyafterdisc,
+      :itempriceperqty, 
+
+      :discountitemsid,
+ 
+      :is_void,
+      :void_by,
+      :voidreason,
+      :orderid
+      ])
      end
 end

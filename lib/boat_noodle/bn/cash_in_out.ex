@@ -6,7 +6,7 @@ defmodule BoatNoodle.BN.CashInOut do
   schema "cash_in_out" do
     field :id, :integer, primary_key: true
     field :branch_id, :integer
-    field :date_time, :string
+    field :date_time, :utc_datetime
     field :cashtype, :string
     field :staffid, :integer
     field :description, :string
@@ -20,13 +20,22 @@ defmodule BoatNoodle.BN.CashInOut do
     cash_in_out
     |> cast(attrs, [
       :brand_id,
+      :date_time,
        :amount,
-       :id,
        :branch_id, 
        :cashtype, 
        :staffid, 
-       :description])
-
+       :description
+       ])
+     |> validate_required([      
+      :brand_id,
+      :date_time,
+       :amount,
+       :branch_id, 
+       :cashtype, 
+       :staffid, 
+       :description
+      ])
    |> unique_constraint(:id, name: "PRIMARY")
   end
 end
