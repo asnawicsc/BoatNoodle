@@ -59,7 +59,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
   def handle_in("generate_all_branch_sales_data", payload, socket) do
     branches =
-      Repo.all(from(b in BoatNoodle.BN.Branch, select: %{name: b.branchname, id: b.branchid}))
+      Repo.all(from(b in BoatNoodle.BN.Branch,where: b.brand_id==^payload["brand_id"], select: %{name: b.branchname, id: b.branchid}))
 
     map =
       for branch <- branches do

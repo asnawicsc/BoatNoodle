@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   use BoatNoodleWeb, :controller
   use Task
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, Remark}
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, Remark,Brand}
 
   require IEx
 
@@ -33,6 +33,40 @@ defmodule BoatNoodleWeb.MenuItemController do
       "combo.html",
       combo_menus: combo_menus
     )
+  end
+
+  def export(conn, _params) do
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Menu Item List.csv\"")
+    |> send_resp(200, csv_content(conn,_params))
+  end
+
+  defp csv_content(conn,_params) do
+   brand=Repo.get_by(Brand,domain_name: _params["brand"])
+
+all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.itemcatid and s.brand_id==^brand.id ,
+ select: %{subcatid: s.subcatid,
+ itemcode: s.itemcode,
+ itemname: s.itemname,
+ itemcatname: d.itemcatname,
+ itemdesc: s.itemdesc,
+ itemprice: s.itemprice,
+ is_categorize: s.is_categorize,
+ is_activate: s.is_activate,
+ part_code: s.part_code,
+ price_code: s.price_code
+ })
+  
+ csv_content = ['id', 'Item Code', 'Item Name','Item Category','Item Descriptions','Item Price','is_categorize','is_activated','Part Code','Price Code','Branch'] 
+    data=for item <- all do
+    [item.subcatid,item.itemcode,item.itemname,item.itemcatname,item.itemdesc,item.itemprice,item.is_categorize,item.is_activate,item.part_code,item.price_code,'ALL'] 
+    end
+   
+   csv_content=List.insert_at(data,0,csv_content)
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
   end
 
   def index(conn, _params) do

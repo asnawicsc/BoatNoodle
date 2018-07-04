@@ -96,6 +96,8 @@ defmodule BoatNoodleWeb.Router do
     get("/list_discount_catalog3", DiscountCatalogController, :list_discount_catalog3)
     get("/show_voucher",ItemSubcatController, :show_voucher)
     post("/upload_voucher",DiscountController, :upload_voucher)
+     get "/csv", MenuItemController, :export
+     get "/csv_discount", DiscountController, :export
 
     get(
       "/discount_insert_into_catalog3",

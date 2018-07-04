@@ -61,6 +61,69 @@ defmodule BoatNoodleWeb.DiscountController do
     )
   end
 
+  def export(conn, _params) do
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Discount Item List.csv\"")
+    |> send_resp(200, csv_content(conn,_params))
+  end
+
+  defp csv_content(conn,_params) do
+   brand=Repo.get_by(Brand,domain_name: _params["brand"])
+
+all=Repo.all(from s in DiscountItem,
+  left_join: d in Discount,where: d.discountid== s.discountid and s.brand_id==^brand.id,
+ select: %{discitemsname: s.discitemsname,
+ target_cat: s.target_cat,
+ discname: d.discname,
+ is_targetmenuitems: s.is_targetmenuitems,
+ multi_item_list: s.multi_item_list,
+ discountid: s.discountid,
+ descriptions: s.descriptions,
+ discamtpercentage: s.discamtpercentage,
+ disctype: s.disctype,
+ disc_qty: s.disc_qty,
+ is_visable: s.is_visable
+ })
+  
+ csv_content = ['Discount Name', 'Discount Category','Descriptions', 'Discount Amount/Percentage','Discount Type','Discount Qty','Target Menu Category','Target Menu Item','Activated?'] 
+    data=for item <- all do
+
+
+  if item.target_cat != 0 do
+
+     cat_name=item.target_cat
+   else
+    cat_name=0
+  end
+
+  if item.is_visable != 0 do
+
+     is_visable="YES"
+   else
+     is_visable="NO"
+  end
+
+   is_targetmenuitems=item.is_targetmenuitems
+  if is_targetmenuitems != 0 do
+
+     item_name=is_targetmenuitems
+   else
+   item_name=item.multi_item_list
+  end
+
+
+
+
+    [item.discitemsname,item.discname,item.descriptions,item.discamtpercentage,item.disctype,item.disc_qty,cat_name,item_name,is_visable] 
+    end
+   
+   csv_content=List.insert_at(data,0,csv_content)
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
+  end
+
   def discount_category_new(conn, params) do
     discount_catalog =
       Repo.all(from(m in BoatNoodle.BN.DiscountCatalog, select: %{id: m.id, name: m.name}))

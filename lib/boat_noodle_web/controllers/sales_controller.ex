@@ -139,7 +139,7 @@ defmodule BoatNoodleWeb.SalesController do
 
   def discounts(conn, _params) do
     branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "discounts.html", branches: branches)
+    render(conn, "discounts.html", branches: branches())
   end
 
   def voided(conn, _params) do
