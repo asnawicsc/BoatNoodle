@@ -1,21 +1,40 @@
 $(document).ready(function() {
 
-    var start = moment().subtract(29, 'days');
-    var end = moment();
+
+if (localStorage.getItem('start_date') == null) 
+    {var start = moment().subtract(29, 'days');
+    var end = moment();} 
+    else{ 
+ st= localStorage.getItem('start_date')
+en= localStorage.getItem('end_date')  
+    
+var start = moment(st);
+var end = moment(en);
+
+}
+
+
+
 
       function cb(start, end) {
           $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 
-          $("input[name='start_date']").val(start.format('YYYY-MM-DD'))
-          $("input[name='end_date']").val(end.format('YYYY-MM-DD'))
+          $("input[name='start_date']").val(localStorage.getItem('start_date'))
+          $("input[name='end_date']").val(localStorage.getItem('end_date'))
 
-          localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
-          localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
+        
+           $('#reportrange').on('hide.daterangepicker', function(ev, picker) {
+             localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
+                  localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
+         location.reload();
+          });
 
-         
 
    
       }
+
+          
+ 
 
     $('#reportrange').daterangepicker({
         startDate: start,
@@ -32,6 +51,9 @@ $(document).ready(function() {
     }, cb);
 
     cb(start, end);
+
+
+
 
 $("a[aria-label='organization_name']").click(function(){
 
@@ -66,8 +88,8 @@ var brand = location.pathname.split("/")[1];
         var b_id = $("select#branch_list").val()
     ;
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("dashboard", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -102,9 +124,13 @@ var brand = location.pathname.split("/")[1];
         console.log(payload.outlet_sales)
         var data = payload.outlet_sales
 
+
         $("table#outlet_sales").DataTable({
             destroy: true,
-            
+            processing: true,
+        serverSide: true,
+        ajax: "scripts/server_processing.php",
+        deferLoading: 57,
             data: data,
             columns: [{
                     data: 'branchname'
@@ -141,9 +167,10 @@ var brand = location.pathname.split("/")[1];
     $("table#sales_transaction").show();
 
       var b_id = $("select#branch_list").val()
- 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+
         channel.push("sales_transaction", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -166,8 +193,8 @@ var brand = location.pathname.split("/")[1];
 
       var b_id = $("select#branch_list").val()
        
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("item_sold", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -185,8 +212,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+       var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("discount_receipt", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -203,8 +230,8 @@ var brand = location.pathname.split("/")[1];
 
        var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+      var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("voided_receipt", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -221,8 +248,8 @@ var brand = location.pathname.split("/")[1];
 
        var b_id = $("select#branch_list").val()
  
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -281,8 +308,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
  
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+       var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("sales_transaction", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -299,6 +326,7 @@ var brand = location.pathname.split("/")[1];
 
 
         $("table#sales_transaction").DataTable({
+            
             destroy: true,
             data: data,
             dom: 'Bfrtip',
@@ -382,8 +410,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("hourly_pax_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -535,8 +563,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
   
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("hourly_sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -688,8 +716,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("hourly_transaction_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -841,8 +869,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
        
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("item_sold", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -923,8 +951,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
       
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("item_sales_detail", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1016,8 +1044,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("discount_receipt", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1103,8 +1131,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("discount_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1180,8 +1208,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("voided_receipt", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1266,8 +1294,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
    
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("voided_order", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1352,8 +1380,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("morning_sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1406,8 +1434,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
  
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1494,8 +1522,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("pax_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1540,14 +1568,13 @@ var brand = location.pathname.split("/")[1];
 
 
 
-    $("button#tax").click(function() {
 
-        $("#backdrop").fadeIn()
+      
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("tax", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1555,7 +1582,7 @@ var brand = location.pathname.split("/")[1];
             e_date: e_date,
             brand_id: window.currentBrand
         })
-    })
+
 
     channel.on("populate_tax_data", payload => {
 
@@ -1596,9 +1623,9 @@ var brand = location.pathname.split("/")[1];
 
 
 
-        localStorage.setItem("taxes_data", payload.map);
 
-        var maps = JSON.parse(localStorage.getItem("taxes_data"))
+
+        var maps = JSON.parse(payload.map)
         var salesdate = []
         var tax = []
         var aat = []
@@ -1667,19 +1694,17 @@ var brand = location.pathname.split("/")[1];
         });
 
 
-        $("#backdrop").delay(500).fadeOut()
+  
 
     })
 
 
-    $("button#payment_type").click(function() {
-
-        $("#backdrop").fadeIn()
+   
 
         var b_id = $("select#branch_list").val()
     
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("payment_type", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1687,7 +1712,7 @@ var brand = location.pathname.split("/")[1];
             e_date: e_date,
             brand_id: window.currentBrand
         })
-    })
+   
 
     channel.on("populate_payment", payload => {
 
@@ -1717,9 +1742,9 @@ var brand = location.pathname.split("/")[1];
             ]
         });
 
-        localStorage.setItem("payment_data", payload.map);
+     
 
-        var maps = JSON.parse(localStorage.getItem("payment_data"))
+        var maps = JSON.parse(payload.map)
         var salesdate = []
         var cash = []
         var card = []
@@ -1791,14 +1816,11 @@ var brand = location.pathname.split("/")[1];
     })
 
 
-    $("button#cash_in_out").click(function() {
-
-        $("#backdrop").fadeIn()
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("cash_in_out", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1806,7 +1828,7 @@ var brand = location.pathname.split("/")[1];
             e_date: e_date,
             brand_id: window.currentBrand
         })
-    })
+ 
 
     channel.on("populate_cash_in_out", payload => {
 
@@ -1842,9 +1864,9 @@ var brand = location.pathname.split("/")[1];
             ]
         });
 
-        localStorage.setItem("cashinout", payload.map);
+        
 
-        var maps = JSON.parse(localStorage.getItem("cashinout"))
+        var maps = JSON.parse(payload.map)
         var salesdate = []
         var cash_in = []
         var cash_out = []
@@ -1929,8 +1951,8 @@ var brand = location.pathname.split("/")[1];
 
         var b_id = $("select#branch_list").val()
 
-        var s_date = $("input[name='start_date']").val()
-        var e_date = $("input[name='end_date']").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
         channel.push("chart_btn", {
             user_id: window.currentUser,
             branch_id: b_id,
@@ -1942,9 +1964,9 @@ var brand = location.pathname.split("/")[1];
 
     channel.on("populate_chart", payload => {
 
-        localStorage.setItem("bar_chart_sales_data", payload.map0);
+      
 
-        var maps = JSON.parse(localStorage.getItem("bar_chart_sales_data"))
+        var maps = JSON.parse(payload.map0)
         var bulan = []
         var sales = []
         var tax = []
@@ -1996,9 +2018,8 @@ var brand = location.pathname.split("/")[1];
             }]
         });
 
-        localStorage.setItem("chart_data", payload.map);
-
-        var maps = JSON.parse(localStorage.getItem("chart_data"))
+     
+        var maps = JSON.parse(payload.map)
         var salesdate = []
         var grand_total = []
         var tax = []
@@ -2077,9 +2098,9 @@ var brand = location.pathname.split("/")[1];
         });
 
 
-        localStorage.setItem("hourly_sales_chart_data", payload.map2);
+   
 
-        var maps = JSON.parse(localStorage.getItem("hourly_sales_chart_data"))
+        var maps = JSON.parse(payload.map2)
         var sales = []
         var tax = []
         var service_charge = []
@@ -2161,9 +2182,7 @@ var brand = location.pathname.split("/")[1];
  
    
 
-        localStorage.setItem("hourly_pax_chart_data", payload.map3);
-
-        var maps = JSON.parse(localStorage.getItem("hourly_pax_chart_data"))
+        var maps = JSON.parse(payload.map3)
         var pax = []
         var transaction = []
         var time = []
@@ -2408,6 +2427,7 @@ $("select#select_target_category").select(function(){
      $("#backdrop").delay(500).fadeOut()
    
   })
+
 
 
 });

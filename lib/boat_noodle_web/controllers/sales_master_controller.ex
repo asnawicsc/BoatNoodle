@@ -6,12 +6,13 @@ defmodule BoatNoodleWeb.SalesMasterController do
   require IEx
 
   defp branches() do
-    Repo.all(from(s in BoatNoodle.BN.Branch, order_by: [asc: s.branchname]))
+    Repo.all(from(s in BoatNoodle.BN.Branch,order_by: [asc: s.branchname]))
     |> Enum.reject(fn x -> x.branchid == 0 end)
   end
 
   def index(conn, _params) do
-    render(conn, "index.html", branches: branches())
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch , where: s.brand_id==^BN.get_brand_id(conn)))
+    render(conn, "index.html", branches: branches)
   end
 
   def new(conn, _params) do

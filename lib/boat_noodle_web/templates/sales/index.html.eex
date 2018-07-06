@@ -55,22 +55,22 @@
                 <div class="page-categories">
                     <br />
                     <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
-                        <li class="nav-item" id="">
-                            <a class="nav-link active " data-toggle="tab" id="sales_transaction" href="" role="tablist">
+                        <li class="nav-item" id="1">
+                            <a class="nav-link active " aria-label="1" data-toggle="tab" id="sales_transaction" href="" role="tablist" id="">
                       <i class="material-icons">done_all</i> Transactions
                     </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="2">
                             <a class="nav-link" data-toggle="tab" id="hourly_pax_summary" href="" role="tablist">
                       <i class="material-icons">date_range</i> Hourly Pax Summary
                     </a>
                         </li>
-                        <li class="nav-item" id="">
+                        <li class="nav-item" id="3">
                             <a class="nav-link " data-toggle="tab" id="hourly_sales_summary" href="" role="tablist">
                       <i class="material-icons">date_range</i> Hourly Sales Summary
                     </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="4">
                             <a class="nav-link" data-toggle="tab" id="hourly_transaction_summary" href="" role="tablist">
                       <i class="material-icons">date_range</i> Hourly Transaction Summary
                     </a>
@@ -380,6 +380,5 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
 
 
 
- 
 })
 </script>

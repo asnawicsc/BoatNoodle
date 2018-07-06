@@ -1628,12 +1628,14 @@ defmodule BoatNoodleWeb.UserChannel do
       |> Enum.map(fn x ->
         %{
           tax: Decimal.to_float(x.tax),
-          grand_total:
-            Decimal.to_float(x.afterdisc) + Decimal.to_float(x.service_charge) -
+          grand_total: Decimal.to_float(x.afterdisc) + Decimal.to_float(x.service_charge) -
               Decimal.to_float(x.tax)
         }
       end)
       |> hd
+
+
+   
 
     tax_details =
       Repo.all(
@@ -1772,49 +1774,29 @@ defmodule BoatNoodleWeb.UserChannel do
 
     map = payment_data(branches, s_date, e_date)
 
-    if payment_type_others.card == nil do
+    payment_type_others=payment_type_others.card
+    payment_type_cash=payment_type_cash.cash
+
+    if payment_type_others == nil do
+        payment_type_others= "0.00"  
+    end
+
+    if payment_type_cash == nil do 
+        payment_type_cash= "0.00"
+    end
+
+        payment= payment
+        map= Poison.encode!(map)
+
+
       broadcast(socket, "populate_payment", %{
-        payment_type_cash: payment_type_cash.cash,
-        payment_type_others: "0.00",
+        payment_type_cash: payment_type_cash,
+        payment_type_others: payment_type_others,
         payment: payment,
-        map: Poison.encode!(map)
+        map: map
       })
 
       {:noreply, socket}
-    end
-
-    if payment_type_cash.cash == nil do
-      broadcast(socket, "populate_payment", %{
-        payment_type_cash: "0.00",
-        payment_type_others: payment_type_cash.card,
-        payment: payment,
-        map: Poison.encode!(map)
-      })
-
-      {:noreply, socket}
-    end
-
-    if payment_type_cash.cash == nil && payment_type_others.card == nil do
-      broadcast(socket, "populate_payment", %{
-        payment_type_cash: "0.00",
-        payment_type_others: "0.00",
-        payment: payment,
-        map: Poison.encode!(map)
-      })
-
-      {:noreply, socket}
-    end
-
-    if payment_type_cash.cash != nil && payment_type_others.card != nil do
-      broadcast(socket, "populate_payment", %{
-        payment_type_cash: payment_type_cash.cash,
-        payment_type_others: payment_type_others.card,
-        payment: payment,
-        map: Poison.encode!(map)
-      })
-
-      {:noreply, socket}
-    end
   end
 
   defp payment_data(branches, s_date, e_date) do
@@ -1839,6 +1821,7 @@ defmodule BoatNoodleWeb.UserChannel do
           )
         )
 
+      if total_transaction != [] do
       cash =
         Enum.filter(total_transaction, fn x -> x.payment_type == "CASH" end)
         |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
@@ -1848,6 +1831,10 @@ defmodule BoatNoodleWeb.UserChannel do
         Enum.filter(total_transaction, fn x -> x.payment_type == "CREDITCARD" end)
         |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
         |> Enum.sum()
+      else
+        cash=0
+        card=0
+      end
 
       if cash == 0 do
         cash = 0.00
@@ -1929,59 +1916,36 @@ defmodule BoatNoodleWeb.UserChannel do
         )
       )
 
+
+
     branches = payload["branch_id"]
     s_date = payload["s_date"]
     e_date = payload["e_date"]
 
     map = cashinout(branches, s_date, e_date)
 
-    if cash_in.cash_in == nil do
+    cash_in=cash_in.cash_in 
+    cash_out=cash_out.cash_out 
+
+    if cash_in == nil do
+        cash_in= "0.00"
+    end
+
+    if cash_out == nil do
+        cash_out= "0.00"
+    end
+
+
       broadcast(socket, "populate_cash_in_out", %{
-        cash_in: "0.00",
-        cash_out: cash_out.cash_out,
+        cash_in: cash_in,
+        cash_out: cash_out,
         cash: cash,
         dates: dates,
         map: Poison.encode!(map)
       })
 
       {:noreply, socket}
-    end
-
-    if cash_out.cash_out == nil do
-      broadcast(socket, "populate_cash_in_out", %{
-        cash_in: cash_in.cash_in,
-        cash_out: "0.00",
-        cash: cash,
-        dates: dates,
-        map: Poison.encode!(map)
-      })
-
-      {:noreply, socket}
-    end
-
-    if cash_out.cash_out == nil && cash_in.cash_in == nil do
-      broadcast(socket, "populate_cash_in_out", %{
-        cash_in: "0.00",
-        cash_out: "0.00",
-        cash: cash,
-        dates: dates,
-        map: Poison.encode!(map)
-      })
-
-      {:noreply, socket}
-    end
-
-    if cash_out.cash_out == nil && cash_in.cash_in != nil do
-      broadcast(socket, "populate_cash_in_out", %{
-        cash_in: cash_in.cash_in,
-        cash_out: cash_out.cash_out,
-        cash: cash,
-        dates: dates,
-        map: Poison.encode!(map)
-      })
-
-      {:noreply, socket}
-    end
+  
   end
 
   defp cashinout(branches, s_date, e_date) do
