@@ -66,7 +66,8 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def index(conn, _params) do
-    render(conn, "index.html", branches: branches())
+       branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+    render(conn, "index.html", branches: branches)
   end
 
   def new(conn, _params) do

@@ -17,8 +17,8 @@ defmodule BoatNoodle.BN.Sales do
     field(:void_by, :string)
     field(:voidreason, :string)
     field(:remark, :string)
-    field(:updated_at, :utc_datetime)
-    field(:created_at, :utc_datetime)
+    field(:updated_at, :naive_datetime)
+    field(:created_at, :naive_datetime)
     field(:brand_id, :integer, primary_key: true)
   end
 

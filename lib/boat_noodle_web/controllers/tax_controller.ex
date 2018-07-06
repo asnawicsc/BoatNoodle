@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.TaxController do
   alias BoatNoodle.BN.Tax
 
   def index(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
+    branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
     render(conn, "index.html", branches: branches)
   end
 
