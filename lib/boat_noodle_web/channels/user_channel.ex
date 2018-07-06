@@ -59,7 +59,13 @@ defmodule BoatNoodleWeb.UserChannel do
 
   def handle_in("generate_all_branch_sales_data", payload, socket) do
     branches =
-      Repo.all(from(b in BoatNoodle.BN.Branch,where: b.brand_id==^payload["brand_id"], select: %{name: b.branchname, id: b.branchid}))
+      Repo.all(
+        from(
+          b in BoatNoodle.BN.Branch,
+          where: b.brand_id == ^payload["brand_id"],
+          select: %{name: b.branchname, id: b.branchid}
+        )
+      )
 
     map =
       for branch <- branches do
@@ -251,7 +257,6 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("sales_transaction", payload, socket) do
-
     branchid = payload["branch_id"]
 
     if branchid == "0" do
@@ -261,7 +266,9 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sp.salesid,
-            where: s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
+            where:
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
               invoiceno: s.invoiceno,
@@ -1628,14 +1635,12 @@ defmodule BoatNoodleWeb.UserChannel do
       |> Enum.map(fn x ->
         %{
           tax: Decimal.to_float(x.tax),
-          grand_total: Decimal.to_float(x.afterdisc) + Decimal.to_float(x.service_charge) -
+          grand_total:
+            Decimal.to_float(x.afterdisc) + Decimal.to_float(x.service_charge) -
               Decimal.to_float(x.tax)
         }
       end)
       |> hd
-
-
-   
 
     tax_details =
       Repo.all(
@@ -1774,29 +1779,28 @@ defmodule BoatNoodleWeb.UserChannel do
 
     map = payment_data(branches, s_date, e_date)
 
-    payment_type_others=payment_type_others.card
-    payment_type_cash=payment_type_cash.cash
+    payment_type_others = payment_type_others.card
+    payment_type_cash = payment_type_cash.cash
 
     if payment_type_others == nil do
-        payment_type_others= "0.00"  
+      payment_type_others = "0.00"
     end
 
-    if payment_type_cash == nil do 
-        payment_type_cash= "0.00"
+    if payment_type_cash == nil do
+      payment_type_cash = "0.00"
     end
 
-        payment= payment
-        map= Poison.encode!(map)
+    payment = payment
+    map = Poison.encode!(map)
 
+    broadcast(socket, "populate_payment", %{
+      payment_type_cash: payment_type_cash,
+      payment_type_others: payment_type_others,
+      payment: payment,
+      map: map
+    })
 
-      broadcast(socket, "populate_payment", %{
-        payment_type_cash: payment_type_cash,
-        payment_type_others: payment_type_others,
-        payment: payment,
-        map: map
-      })
-
-      {:noreply, socket}
+    {:noreply, socket}
   end
 
   defp payment_data(branches, s_date, e_date) do
@@ -1822,18 +1826,18 @@ defmodule BoatNoodleWeb.UserChannel do
         )
 
       if total_transaction != [] do
-      cash =
-        Enum.filter(total_transaction, fn x -> x.payment_type == "CASH" end)
-        |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
-        |> Enum.sum()
+        cash =
+          Enum.filter(total_transaction, fn x -> x.payment_type == "CASH" end)
+          |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+          |> Enum.sum()
 
-      card =
-        Enum.filter(total_transaction, fn x -> x.payment_type == "CREDITCARD" end)
-        |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
-        |> Enum.sum()
+        card =
+          Enum.filter(total_transaction, fn x -> x.payment_type == "CREDITCARD" end)
+          |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+          |> Enum.sum()
       else
-        cash=0
-        card=0
+        cash = 0
+        card = 0
       end
 
       if cash == 0 do
@@ -1856,14 +1860,27 @@ defmodule BoatNoodleWeb.UserChannel do
     s_date = payload["s_date"]
     e_date = payload["e_date"]
 
-    new_s_date = Enum.join([s_date, ":00:00:00"], "")
-    new_e_date = Enum.join([e_date, ":00:00:00"], "")
+    new_s_date =
+      Enum.join([s_date, " 00:00:00"], "")
+      |> NaiveDateTime.from_iso8601()
+      |> elem(1)
+      |> DateTime.from_naive("Etc/UTC")
+      |> elem(1)
+
+    new_e_date =
+      Enum.join([e_date, " 00:00:00"], "")
+      |> NaiveDateTime.from_iso8601()
+      |> elem(1)
+      |> DateTime.from_naive("Etc/UTC")
+      |> elem(1)
 
     a = Date.from_iso8601!(s_date)
     b = Date.from_iso8601!(e_date)
 
     dates = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end) |> Poison.encode!()
     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
+
+    new_s_date
 
     cash_in =
       Repo.all(
@@ -1916,36 +1933,32 @@ defmodule BoatNoodleWeb.UserChannel do
         )
       )
 
-
-
     branches = payload["branch_id"]
     s_date = payload["s_date"]
     e_date = payload["e_date"]
 
     map = cashinout(branches, s_date, e_date)
 
-    cash_in=cash_in.cash_in 
-    cash_out=cash_out.cash_out 
+    cash_in = cash_in.cash_in
+    cash_out = cash_out.cash_out
 
     if cash_in == nil do
-        cash_in= "0.00"
+      cash_in = "0.00"
     end
 
     if cash_out == nil do
-        cash_out= "0.00"
+      cash_out = "0.00"
     end
 
+    broadcast(socket, "populate_cash_in_out", %{
+      cash_in: cash_in,
+      cash_out: cash_out,
+      cash: cash,
+      dates: dates,
+      map: Poison.encode!(map)
+    })
 
-      broadcast(socket, "populate_cash_in_out", %{
-        cash_in: cash_in,
-        cash_out: cash_out,
-        cash: cash,
-        dates: dates,
-        map: Poison.encode!(map)
-      })
-
-      {:noreply, socket}
-  
+    {:noreply, socket}
   end
 
   defp cashinout(branches, s_date, e_date) do
@@ -1955,8 +1968,19 @@ defmodule BoatNoodleWeb.UserChannel do
     date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
 
     for item <- date_data do
-      new_s_date = Enum.join([item, ":00:00:00"], "")
-      new_e_date = Enum.join([item, ":24:00:00"], "")
+      new_s_date =
+        Enum.join([item, " 00:00:00"], "")
+        |> NaiveDateTime.from_iso8601()
+        |> elem(1)
+        |> DateTime.from_naive("Etc/UTC")
+        |> elem(1)
+
+      new_e_date =
+        Enum.join([item, " 23:59:59"], "")
+        |> NaiveDateTime.from_iso8601()
+        |> elem(1)
+        |> DateTime.from_naive("Etc/UTC")
+        |> elem(1)
 
       total_transaction =
         Repo.all(
@@ -2484,7 +2508,7 @@ defmodule BoatNoodleWeb.UserChannel do
         name: subcat.itemname,
         price: subcat.itemprice,
         combo: combo,
-        subcat: subcat,
+        subcat: subcat
       )
 
     broadcast(socket, "show_combo_modal", %{
@@ -2495,7 +2519,6 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("update_combo_price", payload, socket) do
-
     map =
       payload["map"]
       |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
@@ -2521,84 +2544,77 @@ defmodule BoatNoodleWeb.UserChannel do
     s = a["price"] |> hd
     price = s.price
 
-    if a["include_s"] != nil  do
-   p = a["include_s"] |> hd
-    included_spend = p.price
+    if a["include_s"] != nil do
+      p = a["include_s"] |> hd
+      included_spend = p.price
     else
-    included_spend =""
+      included_spend = ""
     end
 
-     if a["is_activa"] != nil  do
-   p = a["is_activa"] |> hd
-    is_activate = p.price
+    if a["is_activa"] != nil do
+      p = a["is_activa"] |> hd
+      is_activate = p.price
     else
-    is_activate =""
+      is_activate = ""
     end
 
-   if a["is_defaul"] != nil  do
-   p = a["is_defaul"] |> hd
-    is_default_combo = p.price
+    if a["is_defaul"] != nil do
+      p = a["is_defaul"] |> hd
+      is_default_combo = p.price
     else
-    is_default_combo =""
-    end
-   
-
-
-   if a["enable_di"] != nil  do
-   p = a["enable_di"] |> hd
-    enable_disc = p.price
-    else
-    enable_disc =""
+      is_default_combo = ""
     end
 
-    
-
-
-    if included_spend =="on" do
-
-      included_spend=1
+    if a["enable_di"] != nil do
+      p = a["enable_di"] |> hd
+      enable_disc = p.price
     else
-      included_spend=0
-      
+      enable_disc = ""
     end
 
-    if is_activate =="on" do
-
-      is_activate=1
+    if included_spend == "on" do
+      included_spend = 1
     else
-      is_activate=0
-      
+      included_spend = 0
     end
 
-    if is_default_combo =="on" do
-
-      is_default_combo=1
+    if is_activate == "on" do
+      is_activate = 1
     else
-      is_default_combo=0
-      
+      is_activate = 0
     end
 
-    if enable_disc =="on" do
-
-      enable_disc=1
+    if is_default_combo == "on" do
+      is_default_combo = 1
     else
-      enable_disc=0
+      is_default_combo = 0
     end
 
-
-
-
+    if enable_disc == "on" do
+      enable_disc = 1
+    else
+      enable_disc = 0
+    end
 
     brand_id = payload["brand_id"] |> String.to_integer()
 
     subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: id, brand_id: brand_id)
 
-
-    BN.update_item_subcat(subcat, %{itemname: name, itemprice: price,enable_disc: enable_disc,is_default_combo: is_default_combo,is_activate: is_activate,include_spend: included_spend})
+    BN.update_item_subcat(subcat, %{
+      itemname: name,
+      itemprice: price,
+      enable_disc: enable_disc,
+      is_default_combo: is_default_combo,
+      is_activate: is_activate,
+      include_spend: included_spend
+    })
 
     for insert <- a do
-      if elem(insert, 0) != "name" && elem(insert, 0) != "price"&& elem(insert, 0) != "is_defaul"&& elem(insert, 0) != "is_activa"&& elem(insert, 0) != "include_s" && elem(insert, 0) != "enable_di" && elem(insert, 0) != "id" && elem(insert, 0) != "include_spend" && elem(insert, 0) != "is_activate" && elem(insert, 0) != "is_default_combo" && elem(insert, 0) != "enable_disc" do
-   
+      if elem(insert, 0) != "name" && elem(insert, 0) != "price" && elem(insert, 0) != "is_defaul" &&
+           elem(insert, 0) != "is_activa" && elem(insert, 0) != "include_s" &&
+           elem(insert, 0) != "enable_di" && elem(insert, 0) != "id" &&
+           elem(insert, 0) != "include_spend" && elem(insert, 0) != "is_activate" &&
+           elem(insert, 0) != "is_default_combo" && elem(insert, 0) != "enable_disc" do
         id = elem(insert, 0) |> String.to_integer()
 
         combo =
@@ -2636,13 +2652,14 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("upload_voucher", payload, socket) do
+    brand = BN.get_brand!(String.to_integer(payload["brand_id"]))
 
-    brand=BN.get_brand!(String.to_integer(payload["brand_id"]))
+    brand_name = brand.domain_name
 
-    brand_name=brand.domain_name
+    discount =
+      Repo.all(from(s in Discount, select: %{discountid: s.discountid, discname: s.discname}))
 
-    discount= Repo.all(from s in Discount, select: %{discountid: s.discountid,discname: s.discname})
-     html =
+    html =
       Phoenix.View.render_to_string(
         BoatNoodleWeb.ItemSubcatView,
         "show_voucher.html",
