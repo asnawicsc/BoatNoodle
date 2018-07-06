@@ -196,7 +196,9 @@ defmodule BoatNoodle.UltiMigrator do
        "get" ->
         HTTPoison.get!(
           uri,
-          [{"Content-Type", "application/json"}]
+          [{"Content-Type", "application/json"}],
+          timeout: 50_000,
+          recv_timeout: 50_000
         )
         "post" ->
          uri = "#{env}/boatnoodle/api/sales?fields=discount&branch_id=8&code=AU2&key=JDJ5JDEyJFNkOWhIL29TRHdXblpQcnZ0RFVwTU8vODQ1QVdmNW9GMHlyQW12dnQvOHI0T0I2V2R0Ly9l"
