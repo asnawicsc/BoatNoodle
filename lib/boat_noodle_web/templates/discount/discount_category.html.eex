@@ -26,7 +26,7 @@
 
         <div class="dropdown pull-right" style="padding: 10px;">
 
-            <button class="btn btn-danger btn-round" >
+            <button class="btn btn-danger btn-round" onclick="window.location.href='/<%= @conn.params["brand"] %>/csv_discount'" >
                 <i class="material-icons">book</i> Discount Report
               <div class="ripple-container"></div>
             </button>

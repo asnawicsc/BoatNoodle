@@ -59,7 +59,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
   def handle_in("generate_all_branch_sales_data", payload, socket) do
     branches =
-      Repo.all(from(b in BoatNoodle.BN.Branch, select: %{name: b.branchname, id: b.branchid}))
+      Repo.all(from(b in BoatNoodle.BN.Branch,where: b.brand_id==^payload["brand_id"], select: %{name: b.branchname, id: b.branchid}))
 
     map =
       for branch <- branches do
@@ -261,7 +261,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sp.salesid,
-            where: s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id== sp.brand_id,
+            where: s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
               invoiceno: s.invoiceno,
@@ -2519,7 +2519,8 @@ defmodule BoatNoodleWeb.UserChannel do
         subcatid: subcat.subcatid,
         name: subcat.itemname,
         price: subcat.itemprice,
-        combo: combo
+        combo: combo,
+        subcat: subcat,
       )
 
     broadcast(socket, "show_combo_modal", %{
@@ -2530,6 +2531,7 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("update_combo_price", payload, socket) do
+
     map =
       payload["map"]
       |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
@@ -2555,14 +2557,84 @@ defmodule BoatNoodleWeb.UserChannel do
     s = a["price"] |> hd
     price = s.price
 
+    if a["include_s"] != nil  do
+   p = a["include_s"] |> hd
+    included_spend = p.price
+    else
+    included_spend =""
+    end
+
+     if a["is_activa"] != nil  do
+   p = a["is_activa"] |> hd
+    is_activate = p.price
+    else
+    is_activate =""
+    end
+
+   if a["is_defaul"] != nil  do
+   p = a["is_defaul"] |> hd
+    is_default_combo = p.price
+    else
+    is_default_combo =""
+    end
+   
+
+
+   if a["enable_di"] != nil  do
+   p = a["enable_di"] |> hd
+    enable_disc = p.price
+    else
+    enable_disc =""
+    end
+
+    
+
+
+    if included_spend =="on" do
+
+      included_spend=1
+    else
+      included_spend=0
+      
+    end
+
+    if is_activate =="on" do
+
+      is_activate=1
+    else
+      is_activate=0
+      
+    end
+
+    if is_default_combo =="on" do
+
+      is_default_combo=1
+    else
+      is_default_combo=0
+      
+    end
+
+    if enable_disc =="on" do
+
+      enable_disc=1
+    else
+      enable_disc=0
+    end
+
+
+
+
+
     brand_id = payload["brand_id"] |> String.to_integer()
 
     subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: id, brand_id: brand_id)
 
-    BN.update_item_subcat(subcat, %{itemname: name, itemprice: price})
+
+    BN.update_item_subcat(subcat, %{itemname: name, itemprice: price,enable_disc: enable_disc,is_default_combo: is_default_combo,is_activate: is_activate,include_spend: included_spend})
 
     for insert <- a do
-      if elem(insert, 0) != "name" && elem(insert, 0) != "price" && elem(insert, 0) != "id" do
+      if elem(insert, 0) != "name" && elem(insert, 0) != "price"&& elem(insert, 0) != "is_defaul"&& elem(insert, 0) != "is_activa"&& elem(insert, 0) != "include_s" && elem(insert, 0) != "enable_di" && elem(insert, 0) != "id" && elem(insert, 0) != "include_spend" && elem(insert, 0) != "is_activate" && elem(insert, 0) != "is_default_combo" && elem(insert, 0) != "enable_disc" do
+   
         id = elem(insert, 0) |> String.to_integer()
 
         combo =

@@ -7,11 +7,74 @@
      <thead class=" text-primary">
     <th>Name</th>
     <th>Total Price</th>
+    <th>Is Default Combo</th>
+    <th>Activate</th>
+    <th>Enable Discount</th>
+    <th>Included Min Spend</th>
+
+
+
     </thead>
     <tbody>
     <tr><input type="hidden" class="form-control" name="id" value="<%= @subcatid %>">
       <td><input type="text" class="form-control" name="name" value="<%= @name %>"></td>
       <td><input type="number" class="form-control" name="price" value="<%= @price %>"></td>
+        <td> <div class="form-check form-check-inline" style="margin-left: 40px; margin-right: 40px;">
+                          <label class="form-check-label">
+                             <%= if  @subcat.is_default_combo == 0  do   %>
+                   
+                               <input class="form-check-input"  type="checkbox" name="is_default_combo" > 
+                          <% else %>
+                        
+                             <input class="form-check-input"  type="checkbox" name="is_default_combo" checked="checked" > 
+
+                          <% end %>
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label></div></td>
+          <td> <div class="form-check form-check-inline" style="margin-left: 40px; margin-right: 40px;">
+                          <label class="form-check-label">
+                            <%= if  @subcat.is_activate == 0  do   %>
+                   
+                               <input class="form-check-input"  type="checkbox" name="is_activate" > 
+                          <% else %>
+                        
+                             <input class="form-check-input"  type="checkbox" name="is_activate" checked="checked" > 
+
+                          <% end %>
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label></div></td>
+            <td> <div class="form-check form-check-inline" style="margin-left: 40px; margin-right: 40px;">
+                          <label class="form-check-label">
+                            <%= if  @subcat.enable_disc == 0  do   %>
+                   
+                               <input class="form-check-input"  type="checkbox" name="enable_disc" > 
+                          <% else %>
+                        
+                             <input class="form-check-input"  type="checkbox" name="enable_disc" checked="checked" > 
+
+                          <% end %>
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label></div></td>
+              <td> <div class="form-check form-check-inline" style="margin-left: 40px; margin-right: 40px;">
+                          <label class="form-check-label">
+                            <%= if  @subcat.include_spend == 0  do   %>
+                   
+                               <input class="form-check-input"  type="checkbox" name="include_spend" > 
+                          <% else %>
+                        
+                             <input class="form-check-input"  type="checkbox" name="include_spend" checked="checked" > 
+
+                          <% end %>
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label></div></td>
     </tr>
     </tbody>
   </table>

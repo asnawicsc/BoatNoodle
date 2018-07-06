@@ -470,13 +470,13 @@ $("div.jumbotron").html("")
 
         })
 
-
-
-
-
-
-
-
+$('select[name="branchid"]').on('hidden.bs.select', function (e) {
+ var d = $("select#branch_list").val()
+  var branch_id=  localStorage.setItem("new_brand", d);
+   $("#backdrop").fadeIn()
+     location.reload();
+     $("#backdrop").delay(500).fadeOut()
+});
 
 
 

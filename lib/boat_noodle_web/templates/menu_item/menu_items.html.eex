@@ -11,14 +11,28 @@
             <span class="caret"></span>
           <div class="ripple-container"></div></button>
           <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
+
             <li>
               <a href="/<%= @conn.params["brand"] %>/menu_item/new">New Item</a>
             </li>
 
           </ul>
         </div>
+        <div class="dropdown pull-right" style="padding: 10px;">
+          <button class="btn btn-warning btn-round" onclick="window.location.href='/<%= @conn.params["brand"] %>/csv'" >
+                <i class="material-icons">add_box</i> Download Menu list CSV
+              <div class="ripple-container"></div>
+
+            </button>
+            <button class="btn btn-rose btn-round" data-toggle="modal" data-target="#exampleModal2">
+                <i class="material-icons">add_box</i> Upload Menu
+              <div class="ripple-container"></div>
+            </button>
+           
+        </div>
     </div>
- 
+
+
     <div class="card-body" >
 	  	<table class="table data">
       <thead>
@@ -52,4 +66,26 @@
   </div>
 </div>
 
-
+<form method="" action="">
+   <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel2">Upload Menu </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" >
+        <input type="file" name="">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary"  >Upload Menu</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</form>

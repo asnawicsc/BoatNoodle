@@ -34,7 +34,7 @@
 
                               </div>
                               <div class="card-body ">
-                                  <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                                  <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
                                     <%= for branch <- @branches do %>
                                       <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
                                     <% end %>
@@ -47,7 +47,7 @@
                 </div>
 
             </div>
-        </div>
+       
 
 
         <div class="row">
@@ -56,7 +56,7 @@
                     <br />
                     <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
                         <li class="nav-item" id="">
-                            <a class="nav-link " data-toggle="tab" id="sales_transaction" href="" role="tablist">
+                            <a class="nav-link active " data-toggle="tab" id="sales_transaction" href="" role="tablist">
                       <i class="material-icons">done_all</i> Transactions
                     </a>
                         </li>
@@ -133,9 +133,7 @@
                     </div>
                     <div class="card-body">
 
-                        <center>
-                            <h3> Hourly Pax Summary</h3>
-                        </center>
+                      
                         <table id="hourly_pax_summary" class="table">
                             <thead align="center">
                                 <tr>
@@ -371,3 +369,17 @@
 
     </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+  
+
+
+  
+$('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
+
+
+
+ 
+})
+</script>

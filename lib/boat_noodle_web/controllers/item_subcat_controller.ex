@@ -83,6 +83,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       item_code = pr["itemcode"]
       item_cat = pr["itemcat"]
       price_code = pr["price_code"]
+      is_default_combo = params["item"]["is_default_combo"]
+      is_activate = params["item"]["is_activate"]
+
+      enable_discount = params["item"]["enable_discount"]
+
+      included_spend = params["item"]["included_spend"]
 
       render(
         conn,
@@ -93,7 +99,11 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         item_name: item_name,
         item_desc: item_desc,
         item_code: item_code,
-        item_cat: item_cat
+        item_cat: item_cat,
+        is_default_combo: is_default_combo,
+        is_activate: is_activate,
+        enable_discount: enable_discount,
+        included_spend: included_spend
       )
     else
       pr = params["a"] |> Enum.map(fn x -> x end) |> hd |> elem(1)
@@ -102,6 +112,13 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       item_code = pr["itemcode"]
       item_cat = pr["itemcat"]
       price_code = pr["price_code"]
+    is_default_combo = params["item"]["is_default_combo"]
+      is_activate = params["item"]["is_activate"]
+
+      enable_discount = params["item"]["enable_discount"]
+
+      included_spend = params["item"]["included_spend"]
+
 
       render(
         conn,
@@ -111,14 +128,24 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         item_name: item_name,
         item_desc: item_desc,
         item_code: item_code,
-        item_cat: item_cat
+        item_cat: item_cat,
+        is_default_combo: is_default_combo,
+        is_activate: is_activate,
+        enable_discount: enable_discount,
+        included_spend: included_spend
       )
     end
   end
 
   def combo_branch(conn, params) do
+
     com = params["com"]
     items = params["item"]
+
+    is_default_combo=params["is_default_combo"]
+    is_activate=params["is_activate"]
+    enable_discount=params["enable_discount"]
+    included_spend=params["included_spend"]
 
 brand=BN.get_brand_id(conn)
     menu_catalog =
@@ -129,7 +156,11 @@ brand=BN.get_brand_id(conn)
       "combo_branch.html",
       items: items,
       com: com,
-      menu_catalog: menu_catalog
+      menu_catalog: menu_catalog,
+      is_default_combo: is_default_combo,
+      is_activate: is_activate,
+      enable_discount: enable_discount,
+      included_spend: included_spend
     )
   end
 
@@ -137,6 +168,43 @@ brand=BN.get_brand_id(conn)
     all_item = params["item"]
 
     com = params["com"]
+
+    is_default_combo=params["is_default_combo"]
+    is_activate=params["is_activate"]
+    enable_discount=params["enable_discount"]
+    included_spend=params["included_spend"]
+
+    if is_default_combo == "on" do
+
+      is_default_combo=1
+    else
+      is_default_combo=0
+      
+    end
+
+      if is_activate == "on" do
+
+      is_activate=1
+    else
+      is_activate=0
+      
+    end
+
+      if enable_discount == "on" do
+
+      enable_discount=1
+    else
+      enable_discount=0
+      
+    end
+
+      if included_spend == "on" do
+
+      included_spend=1
+    else
+      included_spend=0
+      
+    end
 
     prev_subcatid =
       Repo.all(from(c in ItemSubcat, select: %{subcatid: c.subcatid}))
@@ -179,7 +247,11 @@ brand=BN.get_brand_id(conn)
         part_code: part_code,
         itemdesc: item_desc,
         itemprice: total_price,
-        brand_id: brand_id
+        brand_id: brand_id,
+        include_spend: included_spend,
+        enable_disc: enable_discount,
+        is_activate: is_activate,
+        is_default_combo: is_default_combo
       })
 
     case stat do
@@ -187,7 +259,7 @@ brand=BN.get_brand_id(conn)
         true
 
       {:error, changeset} ->
-   
+   IEx.pry
         true
     end
 
@@ -300,9 +372,43 @@ brand=BN.get_brand_id(conn)
   end
 
   def combo_finish(conn, params) do
+ 
     combo = params["item"]
     all_item = params["all"]
 
+
+    if params["is_default_combo"] == "on" do
+
+      is_default_combo=1
+    else
+      is_default_combo=0
+      
+    end
+
+      if params["is_activate"] == "on" do
+
+      is_activate=1
+    else
+      is_activate=0
+      
+    end
+
+      if params["included_spend"] == "on" do
+
+      enable_discount=1
+    else
+      enable_discount=0
+      
+    end
+
+      if params["included_spend"] == "on" do
+
+      included_spend=1
+    else
+      included_spend=0
+      
+    end 
+  
     item_category = combo["itemcat"]
     item_code = combo["itemcode"]
 
@@ -342,7 +448,11 @@ brand=BN.get_brand_id(conn)
         part_code: part_code,
         itemdesc: item_desc,
         itemprice: total_price,
-        brand_id: brand_id
+        brand_id: brand_id,
+        is_default_combo: is_default_combo,
+        is_activate: is_activate,
+        enable_disc: enable_discount,
+        include_spend: included_spend
       })
 
     case stat do

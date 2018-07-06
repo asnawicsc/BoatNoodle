@@ -8,8 +8,14 @@ $(document).ready(function() {
 
           $("input[name='start_date']").val(start.format('YYYY-MM-DD'))
           $("input[name='end_date']").val(end.format('YYYY-MM-DD'))
-      }
 
+          localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
+          localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
+
+         
+
+   
+      }
 
     $('#reportrange').daterangepicker({
         startDate: start,
@@ -58,13 +64,16 @@ var brand = location.pathname.split("/")[1];
     $("button#dashboard").click(function() {
 
         var b_id = $("select#branch_list").val()
+    ;
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("dashboard", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -128,8 +137,20 @@ var brand = location.pathname.split("/")[1];
         });
     })
 
-    $(".panel-body#sales_transaction").hide();
-    $("table#sales_transaction").hide();
+    $(".panel-body#sales_transaction").show();
+    $("table#sales_transaction").show();
+
+      var b_id = $("select#branch_list").val()
+ 
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("sales_transaction", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
 
     $(".panel-body#hourly_pax_summary").hide();
     $("table#hourly_pax_summary").hide();
@@ -140,26 +161,75 @@ var brand = location.pathname.split("/")[1];
     $(".panel-body#hourly_transaction_summary").hide();
     $("table#hourly_transaction_summary").hide();
 
-    $(".panel-body#item_sold").hide();
-    $("table#item_sold").hide();
+    $(".panel-body#item_sold").show();
+    $("table#item_sold").show();
+
+      var b_id = $("select#branch_list").val()
+       
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("item_sold", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
 
     $(".panel-body#item_sales_detail").hide();
     $("table#item_sales_detail").hide();
 
-    $(".panel-body#discount_receipt").hide();
-    $("table#discount_receipt").hide();
+    $(".panel-body#discount_receipt").show();
+    $("table#discount_receipt").show();
+
+
+        var b_id = $("select#branch_list").val()
+
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("discount_receipt", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
 
     $(".panel-body#discount_summary").hide();
     $("table#discount_summary").hide();
 
-    $(".panel-body#voided_receipt").hide();
-    $("table#voided_receipt").hide();
+    $(".panel-body#voided_receipt").show();
+    $("table#voided_receipt").show();
+
+       var b_id = $("select#branch_list").val()
+
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("voided_receipt", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
 
     $(".panel-body#voided_order").hide();
     $("table#voided_order").hide();
 
-    $(".panel-body#sales_summary").hide();
-    $("table#sales_summary").hide();
+    $(".panel-body#sales_summary").show();
+    $("table#sales_summary").show();
+
+       var b_id = $("select#branch_list").val()
+ 
+        var s_date = $("input[name='start_date']").val()
+        var e_date = $("input[name='end_date']").val()
+        channel.push("sales_summary", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
 
     $(".panel-body#pax_summary").hide();
     $("table#pax_summary").hide();
@@ -210,13 +280,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+ 
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("sales_transaction", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -309,13 +381,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("hourly_pax_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -460,13 +534,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+  
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("hourly_sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -611,13 +687,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("hourly_transaction_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -762,13 +840,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+       
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("item_sold", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -842,13 +922,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+      
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("item_sales_detail", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -933,13 +1015,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("discount_receipt", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1018,13 +1102,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("discount_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1093,13 +1179,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("voided_receipt", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1177,13 +1265,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+   
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("voided_order", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1261,13 +1351,15 @@ var brand = location.pathname.split("/")[1];
 
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("morning_sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1313,13 +1405,15 @@ var brand = location.pathname.split("/")[1];
         $("table#pax_summary").hide();
 
         var b_id = $("select#branch_list").val()
+ 
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("sales_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1399,13 +1493,15 @@ var brand = location.pathname.split("/")[1];
         $("table#pax_summary").show();
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("pax_summary", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1449,13 +1545,15 @@ var brand = location.pathname.split("/")[1];
         $("#backdrop").fadeIn()
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("tax", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1579,13 +1677,15 @@ var brand = location.pathname.split("/")[1];
         $("#backdrop").fadeIn()
 
         var b_id = $("select#branch_list").val()
+    
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("payment_type", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1696,13 +1796,15 @@ var brand = location.pathname.split("/")[1];
         $("#backdrop").fadeIn()
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("cash_in_out", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
     })
 
@@ -1822,20 +1924,21 @@ var brand = location.pathname.split("/")[1];
         $("#backdrop").delay(500).fadeOut()
     })
 
-    $("button#chart_btn").click(function() {
+  
 
-        $("#backdrop").fadeIn()
 
         var b_id = $("select#branch_list").val()
+
         var s_date = $("input[name='start_date']").val()
         var e_date = $("input[name='end_date']").val()
         channel.push("chart_btn", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
-            e_date: e_date
+            e_date: e_date,
+            brand_id: window.currentBrand
         })
-    })
+ 
 
     channel.on("populate_chart", payload => {
 
@@ -2055,6 +2158,8 @@ var brand = location.pathname.split("/")[1];
 
         });
 
+ 
+   
 
         localStorage.setItem("hourly_pax_chart_data", payload.map3);
 
@@ -2129,7 +2234,7 @@ var brand = location.pathname.split("/")[1];
 
         });
 
-        $("#backdrop").delay(500).fadeOut()
+      
 
 
     })
@@ -2139,12 +2244,14 @@ var brand = location.pathname.split("/")[1];
         $("#backdrop").fadeIn()
 
         var b_id = $("select#branch_list").val()
+
         var year = $("select#year").val()
 
         channel.push("generate_sales_charts", {
             user_id: window.currentUser,
             branch_id: b_id,
-            year: year
+            year: year,
+            brand_id: window.currentBrand
         })
     })
 

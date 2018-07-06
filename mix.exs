@@ -49,8 +49,8 @@ defmodule BoatNoodle.Mixfile do
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 0.12"},
       {:countries, "~> 1.5"},
-      {:httpoison, "~> 1.0"}
-
+      {:httpoison, "~> 1.0"},
+      {:csv, "~> 1.4.0"}
 
     ]
   end

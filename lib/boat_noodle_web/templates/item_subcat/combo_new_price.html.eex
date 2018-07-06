@@ -17,7 +17,12 @@
 								<div class="form-group">
 									<input type="text" class="form-control"  value='<%= @params["itemname"] %>' disabled >
 									<input type="hidden" class="form-control" name="item[itemname]" value='<%= @params["itemname"] %>' >
-									
+
+
+										<input type="hidden" class="form-control" name="item[is_default_combo]" value='<%= @params["is_default_combo"] %>' >
+											<input type="hidden" class="form-control" name="item[is_activate]" value='<%= @params["is_activate"] %>' >
+												<input type="hidden" class="form-control" name="item[enable_discount]" value='<%= @params["enable_discount"] %>' >
+													<input type="hidden" class="form-control" name="item[included_spend]" value='<%= @params["included_spend"] %>' >
 
 								</div>
 							</div>

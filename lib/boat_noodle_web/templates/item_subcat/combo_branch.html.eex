@@ -16,6 +16,11 @@
                                 <input type="text" class="form-control" value='<%= @com["item_name"] %>' disabled>
                                 <input type="hidden" class="form-control" name="item[itemname]" value='<%= @com["item_name"] %>' >
 
+                                 <input type="hidden" class="form-control" name="is_default_combo" value='<%= @is_default_combo %>' >
+          <input type="hidden" class="form-control" name="is_activate" value='<%= @is_activate %>' >
+          <input type="hidden" class="form-control" name="enable_discount" value='<%= @enable_discount %>' >
+          <input type="hidden" class="form-control" name="included_spend" value='<%= @included_spend %>' >
+
 
                             </div>
                         </div>
