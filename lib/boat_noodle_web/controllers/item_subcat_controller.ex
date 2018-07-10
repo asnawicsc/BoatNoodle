@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   use BoatNoodleWeb, :controller
 
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem,Discount, ItemSubcat, ComboDetails, Branch, ItemCat}
+  alias BoatNoodle.BN.{MenuItem,Discount, ItemSubcat, ComboDetails, Branch, ItemCat,Tag}
   require IEx
 
   def combo_create(conn, params) do
@@ -314,6 +314,28 @@ brand=BN.get_brand_id(conn)
 
       top_up = 0
 
+      printers=Repo.all(from s in Tag,where: s.brand_id==^BN.get_brand_id(conn),select: %{tagid: s.tagid,subcat_ids: s.subcat_ids,combo_item_ids: s.combo_item_ids})
+
+      for printer <- printers do
+        subcatids = printer.subcat_ids
+        all = subcatids |> String.split(",")
+
+        if Enum.any?(all, fn x -> x == subcatid2 end) do
+
+          combo_id=combo_item_id|> Integer.to_string()
+          comboitemids = printer.combo_item_ids
+          comb = comboitemids |> String.split(",")
+          all_items = List.insert_at(comb, 0, combo_id)
+          new_items = all_items |> Enum.join(",")
+
+          tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
+
+          BN.update_tag(tag, %{combo_item_ids: new_items})
+             
+         end 
+      end
+        
+
       stat2 =
         BoatNoodle.BN.create_combo_details(%{
           menu_cat_id: menu_cat_id,
@@ -479,7 +501,10 @@ brand=BN.get_brand_id(conn)
       BN.update_menu_catalog(item, %{items: new_items})
     end
 
+
     for item <- all_item do
+    
+
       itemname = elem(item, 1)["product_name"]
       item_coded = itemname |> String.split_at(3) |> elem(0)
       itemcat = Repo.get_by(ItemCat, itemcatcode: item_category, brand_id: BN.get_brand_id(conn))
@@ -513,6 +538,34 @@ brand=BN.get_brand_id(conn)
       unit_price = elem(item, 1)["cost_price"]
 
       top_up = elem(item, 1)["top_up"]
+
+
+      printers=Repo.all(from s in Tag,where: s.brand_id==^BN.get_brand_id(conn),select: %{tagid: s.tagid,subcat_ids: s.subcat_ids,combo_item_ids: s.combo_item_ids})
+
+      for printer <- printers do
+        subcatids = printer.subcat_ids
+         if subcatids != nil do
+            all = subcatids |> String.split(",")
+
+
+            if Enum.any?(all, fn x -> x == subcatid2 end) do
+
+              combo_id=combo_item_id|> Integer.to_string()
+              comboitemids = printer.combo_item_ids
+              comb = comboitemids |> String.split(",")
+              all_items = List.insert_at(comb, 0, combo_id)
+              new_items = all_items |> Enum.join(",")
+
+              tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
+
+              BN.update_tag(tag, %{combo_item_ids: new_items})
+                 
+            end
+             
+          end
+      end
+        
+    
 
       stat2 =
         BoatNoodle.BN.create_combo_details(%{

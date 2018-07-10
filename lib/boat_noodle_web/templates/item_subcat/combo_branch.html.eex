@@ -223,7 +223,7 @@
                     <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
                     </div>
           <div class="ml-auto">
-            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Next" type="submit">
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
            
           </div>
           <div class="clearfix"></div>

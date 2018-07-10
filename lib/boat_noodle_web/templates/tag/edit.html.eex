@@ -1,7 +1,7 @@
 <h2>Edit Printer</h2>
 
 
-<%= form_for @changeset, tag_path(@conn, :update, @tag.tagid), [class: "form-horizontal"], fn f -> %>
+<%= form_for @changeset, tag_path(@conn, :update,BN.get_domain(@conn), @tag.tagid), [class: "form-horizontal"], fn f -> %>
 
 <div class="row">
 	<div class="col-sm-2">
@@ -50,4 +50,4 @@
 
 <% end %>
 
-<button class="btn btn-primary" aria-label="go_back">Go Back</button>
+<button class="btn btn-warning" aria-label="go_back">Go Back</button>

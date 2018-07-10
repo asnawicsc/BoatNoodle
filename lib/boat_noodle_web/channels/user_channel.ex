@@ -1282,7 +1282,8 @@ defmodule BoatNoodleWeb.UserChannel do
               tbl_no: s.tbl_no,
               staff_name: f.staff_name,
               afterdisc: sd.afterdisc,
-              salesdate: s.salesdate
+              salesdate: s.salesdate,
+              branchid: s.branchid
             }
           )
         )

@@ -261,23 +261,29 @@ defmodule BoatNoodleWeb.TagController do
   end
 
   def edit(conn, %{"id" => id}) do
-    tag = BN.get_tag!(id)
+    id=id|>String.to_integer
+
+    tag = Repo.get_by(Tag,tagid: id,brand_id: BN.get_brand_id(conn))
     changeset = BN.change_tag(tag)
     render(conn, "edit.html", tag: tag, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "tag" => tag_params}) do
-    tag = BN.get_tag!(id)
 
-    case BN.update_tag(tag, tag_params) do
-      {:ok, tag} ->
-        conn
-        |> put_flash(:info, "Printer updated successfully.")
-        |> redirect(to: branch_path(conn, :printers, tag.branch_id))
+      id=id|>String.to_integer
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", tag: tag, changeset: changeset)
-    end
+      tag = Repo.get_by(Tag,tagid: id,brand_id: BN.get_brand_id(conn))
+
+      case BN.update_tag(tag, tag_params) do
+        {:ok, tag} ->
+
+          conn
+          |> put_flash(:info, "Printer updated successfully.")
+          |> redirect(to: branch_path(conn, :printers,BN.get_domain(conn), tag.branch_id))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "edit.html", tag: tag, changeset: changeset)
+      end
   end
 
   def delete(conn, %{"id" => id}) do

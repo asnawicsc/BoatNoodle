@@ -65,6 +65,8 @@ defmodule BoatNoodleWeb.Router do
     resources("/brand", BrandController)
     post("/update_brand", BrandController, :update_brand)
     post("/update_brand_logo", BrandController, :update_brand_logo)
+    get("/tbl_syn", BranchController, :tbl_syn)
+     get("/tbl_syn_combo", BranchController, :tbl_syn_combo)
     get("/combos", MenuItemController, :combos)
     resources("/category", CategoryController)
     resources("/remark", RemarkController)

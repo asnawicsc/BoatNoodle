@@ -2,21 +2,29 @@ $(document).ready(function() {
 
 
 if (localStorage.getItem('start_date') == null) 
-    {var start = moment().subtract(29, 'days');
-    var end = moment();} 
-    else{ 
- st= localStorage.getItem('start_date')
-en= localStorage.getItem('end_date')  
-    
-var start = moment(st);
-var end = moment(en);
+{   var start = moment().subtract(6, 'days');
+    var end = moment();
 
+    localStorage.setItem('start_date',start.format('YYYY-MM-DD'));
+    localStorage.setItem('end_date',end.format('YYYY-MM-DD'));
+
+} 
+else
+{ 
+     st= localStorage.getItem('start_date')
+     en= localStorage.getItem('end_date')  
+    
+    var start = moment(st);
+    var end = moment(en);
 }
 
 
+if (localStorage.getItem('new_brand') == null) {
+   localStorage.setItem('new_brand',1);
+}
 
 
-      function cb(start, end) {
+      function cb(start, end){
           $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 
           $("input[name='start_date']").val(localStorage.getItem('start_date'))
@@ -27,10 +35,7 @@ var end = moment(en);
              localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
                   localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
          location.reload();
-          });
-
-
-   
+          });  
       }
 
           
@@ -126,12 +131,12 @@ var brand = location.pathname.split("/")[1];
 
 
         $("table#outlet_sales").DataTable({
-            destroy: true,
-            processing: true,
-        serverSide: true,
-        ajax: "scripts/server_processing.php",
-        deferLoading: 57,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'branchname'
                 },
@@ -163,8 +168,11 @@ var brand = location.pathname.split("/")[1];
         });
     })
 
+
+
     $(".panel-body#sales_transaction").show();
     $("table#sales_transaction").show();
+
 
       var b_id = $("select#branch_list").val()
 
@@ -885,8 +893,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.item_sold_data
 
         $("table#item_sold").DataTable({
-            destroy: true,
+              destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'itemname'
                 },
@@ -967,8 +979,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.item_sales_detail_data
 
         $("table#item_sales_detail").DataTable({
-            destroy: true,
+              destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'itemcatcode'
                 },
@@ -979,7 +995,10 @@ var s_date = localStorage.getItem('start_date')
                     data: 'qty'
                 },
                 {
-                    data: 'invoiceno'
+                    data: 'invoiceno',
+                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+                        $(nTd).html("<a href='/boatnoodle/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+                    }
                 },
                 {
                     data: 'tbl_no'
@@ -1060,8 +1079,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.discount_receipt_data
 
         $("table#discount_receipt").DataTable({
-            destroy: true,
+              destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'salesdate'
                 },
@@ -1147,8 +1170,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.discount_summary_data
 
         $("table#discount_summary").DataTable({
-            destroy: true,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'discname'
                 },
@@ -1224,8 +1251,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.voided_receipt_data
 
         $("table#voided_receipt").DataTable({
-            destroy: true,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'salesdate'
                 },
@@ -1310,8 +1341,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.voided_order_data
 
         $("table#voided_order").DataTable({
-            destroy: true,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'salesdate'
                 },
@@ -1451,8 +1486,12 @@ var s_date = localStorage.getItem('start_date')
 
 
         $("table#sales_summary").DataTable({
-            destroy: true,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'date'
                 },
@@ -1541,6 +1580,10 @@ var s_date = localStorage.getItem('start_date')
         $("table#pax_summary").DataTable({
             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'date'
                 },
@@ -1604,8 +1647,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.tax_details
 
         $("table#tax_details").DataTable({
-            destroy: true,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'salesdatetime'
                 },
@@ -1731,8 +1778,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.payment
 
         $("table#payment_type").DataTable({
-            destroy: true,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'payment_type'
                 },
@@ -1847,8 +1898,12 @@ var s_date = localStorage.getItem('start_date')
         var data = payload.cash
 
         $("table#cash_in_out").DataTable({
-            destroy: true,
+             destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'branchname'
                 },
@@ -2343,8 +2398,12 @@ $('select#disc').on('change', function() {
         var data = payload.discount
 
         $("table#discount_items").DataTable({
-            destroy: true,
+              destroy: true,
             data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
             columns: [{
                     data: 'discitemsname'
                 },
