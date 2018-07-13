@@ -965,7 +965,7 @@ brand=BN.get_brand_id(conn)
   end
 
   def update(conn, %{"id" => id, "item_subcat" => item_subcat_params}) do
-    IEx.pry
+  
     item_subcat = BN.get_item_subcat!(id)
 
     case BN.update_item_subcat(item_subcat, item_subcat_params) do

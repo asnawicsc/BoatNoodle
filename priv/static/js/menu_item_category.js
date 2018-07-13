@@ -95,7 +95,7 @@ $(document).ready(function() {
 
   $("input[name='category_create']").click(function(){
     var fr = $("form[aria-label='category_form']").serializeArray();
-    channel2.push("submit_category_form", {map: fr})
+    channel2.push("submit_category_form", {map: fr,brand_id: window.currentBrand})
   })
 
   channel2.on("inserted_item_cat", payload => {
@@ -129,7 +129,7 @@ $(document).ready(function() {
         var item_cat_id = $(this).attr("id")
         console.log("item category id = " + item_cat_id)
         channel2.push("list_items", {
-            item_cat_id: item_cat_id
+            item_cat_id: item_cat_id, brand_id: window.currentBrand
         })
     })
   })

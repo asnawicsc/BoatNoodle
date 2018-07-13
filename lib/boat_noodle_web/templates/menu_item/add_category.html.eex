@@ -18,6 +18,7 @@
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Code</label>
                   <input name="itemcatcode" class="form-control" type="text">
+                 
                 </div>
               </div>
               <div class="col-sm-3">

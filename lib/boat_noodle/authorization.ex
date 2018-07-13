@@ -38,8 +38,22 @@ defmodule BoatNoodle.Authorization do
         else 
           route_user(conn)
       end
-
     end
+
+    if conn.private.plug_session["user_id"] == nil do 
+        conn
+    else 
+        if authorize?(conn, brands) do
+          conn
+          |> put_flash(:error, "Unauthorized")
+          |> redirect(to: "/#{brands}")
+          |> halt
+        else
+          conn
+        end
+      end 
+
+
   end
 
   def route_user_brand(conn, brands) do
@@ -91,5 +105,38 @@ defmodule BoatNoodle.Authorization do
         
 
       end
+  end
+
+
+  def authorize?(conn,brands) do
+
+   user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    
+     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
+     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
+     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
+      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+
+      path=conn.path_info|>List.delete_at(2)|>List.to_string
+      status=conn.path_info|>List.last
+
+      if status == "edit"  do
+
+        admin_menus = admin_menus |> Enum.map(fn x -> String.replace(x, "/", "") end)
+         if Enum.any?(admin_menus, fn x -> x == path end) do
+          conn
+              |> put_flash(:error, "Unauthorized")
+              |> redirect(to: "/#{brands}")
+              |> halt 
+         end
+      else
+
+         if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
+          conn
+              |> put_flash(:error, "Unauthorized")
+              |> redirect(to: "/#{brands}")
+              |> halt 
+         end
+     end
   end
 end

@@ -1,0 +1,33 @@
+<h2>Listing Unauthorize menu</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Url</th>
+      <th>Branch</th>
+      <th>Brand</th>
+      <th>Role</th>
+      <th>Active?</th>
+      <th>Description</th>
+
+
+   
+    </tr>
+  </thead>
+  <tbody>
+<%= for unauthorize_menu <- @unauthorize_menu do %>
+    <tr>
+      <td><%= unauthorize_menu.url %></td>
+      <td><%= unauthorize_menu.branch_id %></td>
+      <td><%= unauthorize_menu.brand_id %></td>
+      <td><%= unauthorize_menu.role_id %></td>
+      <td><%= unauthorize_menu.active %></td>
+      <td><%= unauthorize_menu.desc %></td>
+
+      
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Unauthorize menu", to: unauthorize_menu_path(@conn, :new, BN.get_domain(@conn)) %></span>

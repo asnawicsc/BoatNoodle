@@ -329,7 +329,10 @@ var s_date = localStorage.getItem('start_date')
 
     channel.on("populate_table_sales_transaction", payload => {
         console.log(payload.sales_data)
+        console.log(payload.brand)
         var data = payload.sales_data
+
+  
 
 
 
@@ -365,7 +368,7 @@ var s_date = localStorage.getItem('start_date')
                 {
                     data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/boatnoodle/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
                     }
                 },
             ]
@@ -978,6 +981,7 @@ var s_date = localStorage.getItem('start_date')
         console.log(payload.item_sales_detail_data)
         var data = payload.item_sales_detail_data
 
+
         $("table#item_sales_detail").DataTable({
               destroy: true,
             data: data,
@@ -997,7 +1001,7 @@ var s_date = localStorage.getItem('start_date')
                 {
                     data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/boatnoodle/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
                     }
                 },
                 {
@@ -2486,7 +2490,6 @@ $("select#select_target_category").select(function(){
      $("#backdrop").delay(500).fadeOut()
    
   })
-
 
 
 });

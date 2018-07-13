@@ -1,0 +1,28 @@
+<h2>Show Unauthorize menu</h2>
+
+<ul>
+
+  <li>
+    <strong>Url:</strong>
+    <%= @unauthorize_menu.url %>
+  </li>
+
+  <li>
+    <strong>Branch:</strong>
+    <%= @unauthorize_menu.branch_id %>
+  </li>
+
+  <li>
+    <strong>Brand:</strong>
+    <%= @unauthorize_menu.brand_id %>
+  </li>
+
+  <li>
+    <strong>Role:</strong>
+    <%= @unauthorize_menu.role_id %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: unauthorize_menu_path(@conn, :edit, BN.get_domain(@conn), @unauthorize_menu) %></span>
+<span><%= link "Back", to: unauthorize_menu_path(@conn, :index, BN.get_domain(@conn)) %></span>

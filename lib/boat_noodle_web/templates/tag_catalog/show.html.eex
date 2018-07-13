@@ -24,5 +24,5 @@
 
 </ul>
 
-<span><%= link "Edit", to: tag_catalog_path(@conn, :edit, @tag_catalog) %></span>
+<span><%= link "Edit", to: tag_catalog_path(@conn, :edit, @tag_catalog ,BN.get_domain(@conn)) %></span>
 <span><%= link "Back", to: tag_catalog_path(@conn, :index, BN.get_domain(@conn)) %></span>

@@ -187,7 +187,7 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
  item_subcat_params = Map.put(item_subcat_params, "enable_disc", enable_disc)
   item_subcat_params = Map.put(item_subcat_params, "is_activate", is_activate)
    item_subcat_params = Map.put(item_subcat_params, "include_spend", include_spend)
-
+ item_subcat_params = Map.put(item_subcat_params, "brand_id", BN.get_brand_id(conn))
 
 
 

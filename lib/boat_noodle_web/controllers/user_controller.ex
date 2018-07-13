@@ -15,6 +15,7 @@ defmodule BoatNoodleWeb.UserController do
           u in User,
           left_join: r in UserRole,
           on: u.roleid == r.roleid,
+          where: u.brand_id==^BN.get_brand_id(conn),
           select: %{
             id: u.id,
             username: u.username,
@@ -177,7 +178,10 @@ defmodule BoatNoodleWeb.UserController do
   end
 
   def update_profile_picture(conn, params) do
-    user = Repo.get(User, params["user_id"])
+
+     brand=Repo.get_by(Brand,domain_name: params["brand"] )
+    user = Repo.get_by(User, id: params["user_id"],brand_id: brand.id)
+
 
     if params["user"]["image"] == nil do
       conn
@@ -255,27 +259,63 @@ defmodule BoatNoodleWeb.UserController do
   end
 
   def authenticate_login(conn, %{"username" => username, "password" => password}) do
+
+    brand=Repo.get_by(Brand,domain_name: conn.params["brand"] )
     user = Repo.get_by(User, username: username)
 
     if user != nil do
-      p2 = String.replace(user.password, "$2y", "$2b")
 
-      if Comeonin.Bcrypt.checkpw(password, p2) do
-        conn
-        |> put_session(:user_id, user.id)
-        |> put_session(:brand, conn.params["brand"])
-        |> put_session(:brand_id, BN.brand_id(conn))
-        |> redirect(to: page_path(conn, :index2, conn.params["brand"]))
-      else
-        conn
-        |> put_flash(:error, "Wrong password!")
-        |> redirect(to: user_path(conn, :login, conn.params["brand"]))
-      end
+        roleid=user.roleid
+
+        if roleid == 7 do
+
+          p2 = String.replace(user.password, "$2y", "$2b")
+
+            if Comeonin.Bcrypt.checkpw(password, p2) do
+              conn
+              |> put_session(:user_id, user.id)
+              |> put_session(:brand, conn.params["brand"])
+              |> put_session(:brand_id, BN.brand_id(conn))
+              |> redirect(to: page_path(conn, :index2, conn.params["brand"]))
+            else
+
+              conn
+              |> put_flash(:error, "Wrong password!")
+              |> redirect(to: user_path(conn, :login, conn.params["brand"]))
+            end
+
+        else
+
+          user2 = Repo.get_by(User, username: username,brand_id: brand.id)
+
+          if user2 != nil do
+            
+            p2 = String.replace(user2.password, "$2y", "$2b")
+
+            if Comeonin.Bcrypt.checkpw(password, p2) do
+              conn
+              |> put_session(:user_id, user2.id)
+              |> put_session(:brand, conn.params["brand"])
+              |> put_session(:brand_id, BN.brand_id(conn))
+              |> redirect(to: page_path(conn, :index2, conn.params["brand"]))
+            else
+
+              conn
+              |> put_flash(:error, "Wrong password!")
+              |> redirect(to: user_path(conn, :login, conn.params["brand"]))
+            end
+          else
+            conn
+            |> put_flash(:error, "User not found")
+            |> redirect(to: user_path(conn, :login, conn.params["brand"]))
+          end
+        end
+
     else
       conn
-      |> put_flash(:error, "User not found")
-      |> redirect(to: user_path(conn, :login, conn.params["brand"]))
-    end
+        |> put_flash(:error, "User not found")
+        |> redirect(to: user_path(conn, :login, conn.params["brand"]))
+    end   
   end
 
   def forget_password(conn, params) do

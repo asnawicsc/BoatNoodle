@@ -4536,4 +4536,100 @@ defmodule BoatNoodle.BN do
   def change_voucher(%Voucher{} = voucher) do
     Voucher.changeset(voucher, %{})
   end
+
+  alias BoatNoodle.BN.UnauthorizeMenu
+
+  @doc """
+  Returns the list of unauthorize_menu.
+
+  ## Examples
+
+      iex> list_unauthorize_menu()
+      [%UnauthorizeMenu{}, ...]
+
+  """
+  def list_unauthorize_menu do
+    Repo.all(UnauthorizeMenu)
+  end
+
+  @doc """
+  Gets a single unauthorize_menu.
+
+  Raises `Ecto.NoResultsError` if the Unauthorize menu does not exist.
+
+  ## Examples
+
+      iex> get_unauthorize_menu!(123)
+      %UnauthorizeMenu{}
+
+      iex> get_unauthorize_menu!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_unauthorize_menu!(id), do: Repo.get!(UnauthorizeMenu, id)
+
+  @doc """
+  Creates a unauthorize_menu.
+
+  ## Examples
+
+      iex> create_unauthorize_menu(%{field: value})
+      {:ok, %UnauthorizeMenu{}}
+
+      iex> create_unauthorize_menu(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_unauthorize_menu(attrs \\ %{}) do
+    %UnauthorizeMenu{}
+    |> UnauthorizeMenu.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a unauthorize_menu.
+
+  ## Examples
+
+      iex> update_unauthorize_menu(unauthorize_menu, %{field: new_value})
+      {:ok, %UnauthorizeMenu{}}
+
+      iex> update_unauthorize_menu(unauthorize_menu, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_unauthorize_menu(%UnauthorizeMenu{} = unauthorize_menu, attrs) do
+    unauthorize_menu
+    |> UnauthorizeMenu.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a UnauthorizeMenu.
+
+  ## Examples
+
+      iex> delete_unauthorize_menu(unauthorize_menu)
+      {:ok, %UnauthorizeMenu{}}
+
+      iex> delete_unauthorize_menu(unauthorize_menu)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_unauthorize_menu(%UnauthorizeMenu{} = unauthorize_menu) do
+    Repo.delete(unauthorize_menu)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking unauthorize_menu changes.
+
+  ## Examples
+
+      iex> change_unauthorize_menu(unauthorize_menu)
+      %Ecto.Changeset{source: %UnauthorizeMenu{}}
+
+  """
+  def change_unauthorize_menu(%UnauthorizeMenu{} = unauthorize_menu) do
+    UnauthorizeMenu.changeset(unauthorize_menu, %{})
+  end
 end

@@ -1,0 +1,5 @@
+<h2>Edit Unauthorize menu</h2>
+
+<%= render "form.html", Map.put(assigns, :action, unauthorize_menu_path(@conn, :update, @unauthorize_menu)) %>
+
+<span><%= link "Back", to: unauthorize_menu_path(@conn, :index, BN.get_domain(@conn)) %></span>

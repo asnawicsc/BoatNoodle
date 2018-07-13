@@ -198,6 +198,12 @@
                     <span class="sidebar-normal"> Manage User </span>
                   </a>
                 </li>
+                 <li class="nav-item ">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/menu">
+                    <span class="sidebar-mini"> MMA </span>
+                    <span class="sidebar-normal"> Manage Menu Access </span>
+                  </a>
+                </li>
                 <li class="nav-item ">
                   <a class="nav-link" href="/<%= @conn.params["brand"]%>/user_branch_access">
                     <span class="sidebar-mini"> UBA </span>
