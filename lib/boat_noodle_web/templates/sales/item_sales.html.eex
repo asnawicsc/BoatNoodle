@@ -19,6 +19,7 @@
                                     <span></span> <i class="fa fa-caret-down"></i>
                                     <input type="hidden" name="start_date">
                                     <input type="hidden" name="end_date">
+                                   
                                 </div>
                             </div>
                         </div>
@@ -153,7 +154,6 @@
 
   
 $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
-
 
 
  

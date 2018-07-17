@@ -174,6 +174,7 @@ $("span#"+this.brand_id+"_"+this.branch_id).animateNumber(
   });
 
   });
+
   $(".single-item").slick({ arrows: false });
   $("div.branch").click(function() {
     var id = $(this).attr("id");

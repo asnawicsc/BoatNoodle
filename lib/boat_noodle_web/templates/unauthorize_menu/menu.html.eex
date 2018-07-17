@@ -1,0 +1,337 @@
+ <form method="post" action="/<%= @conn.params["brand"] %>/update_menu" class="form-horizontal" aria-label="item_form">
+ <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+    <div class="alert alert-info" style="margin-top: 10px;">
+                    <span><b>Noted: all menu that</b> <i class="material-icons" style="color: black;">
+check_circle
+</i><b> are unauthorized acess</b></span>
+                  </div>
+    <div aria-label="item_detail" class="row hidding" class="col-lg-14">
+
+      <div class="col-lg-2">
+
+          <div class="card">
+            <div class="card-header card-header-text card-header-primary">
+              <div class="card-text">
+                <h4 class="card-title">ADMIN</h4>
+          
+              </div>
+
+            </div>
+            <div class="card-body">
+            <table style="float: left;">
+
+                      <tr>
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                      <%= for menu<- @menu_admin do %>
+                       
+
+                          <tr >
+
+                            <th class="headcol" style="line-height: 25px; ">
+                             <td><%= menu.desc %></td><td ><div >
+                                <label class="form-check-label">
+                                   <%= if menu.active == 0  do   %>
+                         
+                                    <input  type="checkbox" name="admin[<%= menu.id %>]" > 
+                                <% else %>
+                              
+                                  <input  type="checkbox" name="admin[<%= menu.id %>]" checked="checked" > 
+
+                                <% end %> 
+                                  <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                </label>
+                              </div></td>
+                            </th>
+       
+                          </tr>
+
+                          <% end %>
+                      <tr >
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                    </table>
+            </div>
+           
+          </div>
+      </div>
+
+      <div class="col-lg-2">
+
+          <div class="card">
+            <div class="card-header card-header-text card-header-info">
+              <div class="card-text">
+                <h4 class="card-title">MANAGER</h4>
+          
+              </div>
+
+            </div>
+            <div class="card-body">
+            <table style="float: left;">
+
+                      <tr>
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                      <%= for menu<- @menu_manager do %>
+                       
+
+                          <tr >
+
+                            
+
+                            <th class="headcol" style="line-height: 25px; ">
+                             <td><%= menu.desc %></td><td ><div >
+                                <label class="form-check-label">
+                                  <%= if menu.active == 0  do   %>
+                         
+                                    <input  type="checkbox" name="manager[<%= menu.id %>]" > 
+                                <% else %>
+                              
+                                  <input  type="checkbox" name="manager[<%= menu.id %>]" checked="checked" > 
+
+                                <% end %> 
+                                  <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                </label>
+                              </div></td>
+                            </th>
+       
+                          </tr>
+
+                          <% end %>
+                      <tr >
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                    </table>
+            </div>
+           
+          </div>
+      </div>
+
+      <div class="col-lg-2">
+
+          <div class="card">
+            <div class="card-header card-header-text card-header-warning">
+              <div class="card-text">
+                <h4 class="card-title">CASHIER</h4>
+          
+              </div>
+
+            </div>
+            <div class="card-body">
+            <table style="float: left;">
+
+                      <tr>
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                      <%= for menu<- @menu_cashier do %>
+                       
+
+                          <tr >
+
+                            <th class="headcol" style="line-height: 25px; ">
+                             <td><%= menu.desc %></td><td ><div >
+                                <label class="form-check-label">
+                                  <%= if menu.active == 0  do   %>
+                         
+                                    <input  type="checkbox" name="cashier[<%= menu.id %>]" > 
+                                <% else %>
+                              
+                                  <input  type="checkbox" name="cashier[<%= menu.id %>]" checked="checked" > 
+
+                                <% end %> 
+                                  <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                </label>
+                              </div></td>
+                            </th>
+       
+                          </tr>
+
+                          <% end %>
+                      <tr >
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                    </table>
+            </div>
+           
+          </div>
+      </div>
+
+      <div class="col-lg-2">
+
+          <div class="card">
+            <div class="card-header card-header-text card-header-success">
+              <div class="card-text">
+                <h4 class="card-title">STAFF</h4>
+          
+              </div>
+
+            </div>
+            <div class="card-body">
+            <table style="float: left;">
+
+                      <tr>
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                      <%= for menu<- @menu_staff do %>
+                       
+
+                          <tr >
+
+                            <th class="headcol" style="line-height: 25px; ">
+                             <td><%= menu.desc %></td><td ><div >
+                                <label class="form-check-label">
+                                   <%= if menu.active == 0  do   %>
+                         
+                                    <input  type="checkbox" name="staff[<%= menu.id %>]" > 
+                                <% else %>
+                              
+                                  <input  type="checkbox" name="staff[<%= menu.id %>]" checked="checked" > 
+
+                                <% end %> 
+                                  <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                </label>
+                              </div></td>
+                            </th>
+       
+                          </tr>
+
+                          <% end %>
+                      <tr >
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                    </table>
+            </div>
+           
+          </div>
+      </div>
+
+      <div class="col-lg-2">
+
+          <div class="card">
+            <div class="card-header card-header-text card-header-danger">
+              <div class="card-text">
+                <h4 class="card-title">GUEST</h4>
+          
+              </div>
+
+            </div>
+            <div class="card-body">
+            <table style="float: left;">
+
+                      <tr>
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                      <%= for menu<- @menu_guest do %>
+                       
+
+                          <tr >
+
+                            <th class="headcol" style="line-height: 25px; ">
+                             <td><%= menu.desc %></td><td ><div >
+                                <label class="form-check-label">
+                                   <%= if menu.active == 0  do   %>
+                         
+                                    <input  type="checkbox" name="guest[<%= menu.id %>]" > 
+                                <% else %>
+                              
+                                  <input  type="checkbox" name="guest[<%= menu.id %>]" checked="checked" > 
+
+                                <% end %>  
+                                  <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                </label>
+                              </div></td>
+                            </th>
+       
+                          </tr>
+
+                          <% end %>
+                      <tr >
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                    </table>
+            </div>
+           
+          </div>
+      </div>
+
+      <div class="col-lg-2">
+
+          <div class="card">
+            <div class="card-header card-header-text card-header-default">
+              <div class="card-text">
+                <h4 class="card-title">SUPERVISOR</h4>
+          
+              </div>
+
+            </div>
+            <div class="card-body">
+            <table style="float: left;">
+
+                      <tr>
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                      <%= for menu<- @menu_supervisor do %>
+                       
+
+                          <tr >
+
+                            <th class="headcol" style="line-height: 25px; ">
+                             <td><%= menu.desc %></td><td ><div >
+                                <label class="form-check-label">
+                                   <%= if menu.active == 0  do   %>
+                         
+                                    <input  type="checkbox" name="supervisor[<%= menu.id %>]" > 
+                                <% else %>
+                              
+                                  <input  type="checkbox" name="supervisor[<%= menu.id %>]" checked="checked" > 
+
+                                <% end %> 
+                                  <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                </label>
+                              </div></td>
+                            </th>
+       
+                          </tr>
+
+                          <% end %>
+                      <tr >
+                        <th  class="headcol"  ></th>
+       
+                      </tr>
+                    </table>
+            </div>
+           
+          </div>
+      </div>
+    </div>
+
+   
+
+          
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" style="float: right;" value="Submit" type="submit" >
+     
+          
+</form>

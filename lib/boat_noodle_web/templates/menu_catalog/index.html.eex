@@ -111,7 +111,7 @@
                               <% end %>
                             <% end %>
                           <% else %>
-                            <a class="add_price" id = "<%= menu_catalog.id %>-<%= itemcode %>" data-toggle="modal" data-target="#exampleModal2"><i class="fa fa-plus-circle" style="cursor: pointer ; color: gray;"> add</i></a>
+                            <a class="add_price" id = "<%= menu_catalog.id %>-<%= itemcode %>" data-toggle="modal" data-target="#exampleModal2"><i class="fa fa-plus-circle" aria-label="badge2" style="cursor: pointer ; color: gray;"> add</i></a>
 
                           <% end %>
 
@@ -154,6 +154,12 @@
     </div>
   </div>
 </div>
+<%=  if Enum.any?(@admin_menus, fn x -> x == @url end) do %>
+
+<div><input type="hidden" name="popup1" value="1"></div>
+
+
+<% else %>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -169,10 +175,20 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <input type="hidden" name="popup" value="0">
       </div>
     </div>
   </div>
 </div>
+
+<% end %>
+
+<%=  if Enum.any?(@admin_menus, fn x -> x == @url end) do %>
+
+<div><input type="hidden" name="popup4" value="1"></div>
+
+
+<% else %>
 
 <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -192,3 +208,26 @@
     </div>
   </div>
 </div>
+
+<% end %>
+
+<script type="text/javascript">
+  
+  $("span[aria-label='badge']").click(function() {
+var a=$("input[name='popup1']").val()
+
+if (a == 1) {
+  swal("Unautorize Access")
+}
+
+})
+
+   $(".add_price").click(function() {
+var a=$("input[name='popup4']").val()
+
+if (a == 1) {
+  swal("Unautorize Access")
+}
+
+})
+</script>

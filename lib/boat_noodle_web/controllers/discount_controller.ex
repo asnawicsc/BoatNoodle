@@ -593,7 +593,7 @@ all=Repo.all(from s in DiscountItem,
 
     discount = Repo.get_by(BoatNoodle.BN.Discount, discountid: id, brand_id: brand)
 
-    # discount_type=BN.get_discount_type!(discount_type)
+
 
     case BN.update_discount(discount, %{
            is_categorize: discount_type,

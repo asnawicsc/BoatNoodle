@@ -147,7 +147,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     enable_discount=params["enable_discount"]
     included_spend=params["included_spend"]
 
-brand=BN.get_brand_id(conn)
+    brand=BN.get_brand_id(conn)
     menu_catalog =
       Repo.all(from(m in BoatNoodle.BN.MenuCatalog, where: m.brand_id==^brand, select: %{id: m.id, name: m.name}))
 
@@ -161,7 +161,7 @@ brand=BN.get_brand_id(conn)
       is_activate: is_activate,
       enable_discount: enable_discount,
       included_spend: included_spend
-    )
+      )
   end
 
   def combo_unselect(conn, params) do
@@ -175,35 +175,27 @@ brand=BN.get_brand_id(conn)
     included_spend=params["included_spend"]
 
     if is_default_combo == "on" do
-
       is_default_combo=1
     else
       is_default_combo=0
-      
     end
 
-      if is_activate == "on" do
-
+    if is_activate == "on" do
       is_activate=1
     else
-      is_activate=0
-      
+      is_activate=0   
     end
 
-      if enable_discount == "on" do
-
+    if enable_discount == "on" do
       enable_discount=1
     else
-      enable_discount=0
-      
+      enable_discount=0  
     end
 
-      if included_spend == "on" do
-
+    if included_spend == "on" do
       included_spend=1
     else
       included_spend=0
-      
     end
 
     prev_subcatid =
@@ -386,8 +378,6 @@ brand=BN.get_brand_id(conn)
       end
     end
 
-     
-    
     conn
     |> put_flash(:info, "Combo Created")
     |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
@@ -400,35 +390,27 @@ brand=BN.get_brand_id(conn)
 
 
     if params["is_default_combo"] == "on" do
-
       is_default_combo=1
     else
       is_default_combo=0
-      
     end
 
-      if params["is_activate"] == "on" do
-
+    if params["is_activate"] == "on" do
       is_activate=1
     else
       is_activate=0
-      
     end
 
-      if params["included_spend"] == "on" do
-
+    if params["included_spend"] == "on" do
       enable_discount=1
     else
       enable_discount=0
-      
     end
 
-      if params["included_spend"] == "on" do
-
+    if params["included_spend"] == "on" do
       included_spend=1
     else
       included_spend=0
-      
     end 
   
     item_category = combo["itemcat"]
@@ -477,14 +459,12 @@ brand=BN.get_brand_id(conn)
         include_spend: included_spend
       })
 
-    case stat do
-      {:ok, itemsubcat} ->
-        true
-
-      {:error, changeset} ->
-
-        true
-    end
+        case stat do
+          {:ok, itemsubcat} ->
+            true
+          {:error, changeset} ->
+            true
+        end
 
     a = params["branc"]
     branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
@@ -565,8 +545,6 @@ brand=BN.get_brand_id(conn)
           end
       end
         
-    
-
       stat2 =
         BoatNoodle.BN.create_combo_details(%{
           menu_cat_id: menu_cat_id,
@@ -684,6 +662,22 @@ brand=BN.get_brand_id(conn)
       item_subcat =
       Repo.get_by(ItemSubcat,subcatid: id,brand_id: BN.get_brand_id(conn))
       
+     user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    
+     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
+     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
+     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
+      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+
+
+
+     a=conn.path_info|>List.delete_at(2)
+     b="edit"
+     c=List.insert_at(a,2,b)
+     d=c|>Enum.join("/")
+     e="/"
+     url=e<>d
+
 
 
     same_items =
@@ -714,7 +708,9 @@ brand=BN.get_brand_id(conn)
       same_items: same_items,
       combo_items: combo_items,
       no_selection_combo_items: no_selection_combo_items,
-      brand_name: BN.get_domain(conn)
+      brand_name: BN.get_domain(conn),
+      admin_menus: admin_menus,
+      url: url
     )
   end
 
@@ -965,7 +961,7 @@ brand=BN.get_brand_id(conn)
   end
 
   def update(conn, %{"id" => id, "item_subcat" => item_subcat_params}) do
-    IEx.pry
+  
     item_subcat = BN.get_item_subcat!(id)
 
     case BN.update_item_subcat(item_subcat, item_subcat_params) do

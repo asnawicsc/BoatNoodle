@@ -3658,4 +3658,70 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_voucher(voucher)
     end
   end
+
+  describe "unauthorize_menu" do
+    alias BoatNoodle.BN.UnauthorizeMenu
+
+    @valid_attrs %{branch_id: 42, brand_id: 42, role_id: 42, url: "some url"}
+    @update_attrs %{branch_id: 43, brand_id: 43, role_id: 43, url: "some updated url"}
+    @invalid_attrs %{branch_id: nil, brand_id: nil, role_id: nil, url: nil}
+
+    def unauthorize_menu_fixture(attrs \\ %{}) do
+      {:ok, unauthorize_menu} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_unauthorize_menu()
+
+      unauthorize_menu
+    end
+
+    test "list_unauthorize_menu/0 returns all unauthorize_menu" do
+      unauthorize_menu = unauthorize_menu_fixture()
+      assert BN.list_unauthorize_menu() == [unauthorize_menu]
+    end
+
+    test "get_unauthorize_menu!/1 returns the unauthorize_menu with given id" do
+      unauthorize_menu = unauthorize_menu_fixture()
+      assert BN.get_unauthorize_menu!(unauthorize_menu.id) == unauthorize_menu
+    end
+
+    test "create_unauthorize_menu/1 with valid data creates a unauthorize_menu" do
+      assert {:ok, %UnauthorizeMenu{} = unauthorize_menu} = BN.create_unauthorize_menu(@valid_attrs)
+      assert unauthorize_menu.branch_id == 42
+      assert unauthorize_menu.brand_id == 42
+      assert unauthorize_menu.role_id == 42
+      assert unauthorize_menu.url == "some url"
+    end
+
+    test "create_unauthorize_menu/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_unauthorize_menu(@invalid_attrs)
+    end
+
+    test "update_unauthorize_menu/2 with valid data updates the unauthorize_menu" do
+      unauthorize_menu = unauthorize_menu_fixture()
+      assert {:ok, unauthorize_menu} = BN.update_unauthorize_menu(unauthorize_menu, @update_attrs)
+      assert %UnauthorizeMenu{} = unauthorize_menu
+      assert unauthorize_menu.branch_id == 43
+      assert unauthorize_menu.brand_id == 43
+      assert unauthorize_menu.role_id == 43
+      assert unauthorize_menu.url == "some updated url"
+    end
+
+    test "update_unauthorize_menu/2 with invalid data returns error changeset" do
+      unauthorize_menu = unauthorize_menu_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_unauthorize_menu(unauthorize_menu, @invalid_attrs)
+      assert unauthorize_menu == BN.get_unauthorize_menu!(unauthorize_menu.id)
+    end
+
+    test "delete_unauthorize_menu/1 deletes the unauthorize_menu" do
+      unauthorize_menu = unauthorize_menu_fixture()
+      assert {:ok, %UnauthorizeMenu{}} = BN.delete_unauthorize_menu(unauthorize_menu)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_unauthorize_menu!(unauthorize_menu.id) end
+    end
+
+    test "change_unauthorize_menu/1 returns a unauthorize_menu changeset" do
+      unauthorize_menu = unauthorize_menu_fixture()
+      assert %Ecto.Changeset{} = BN.change_unauthorize_menu(unauthorize_menu)
+    end
+  end
 end

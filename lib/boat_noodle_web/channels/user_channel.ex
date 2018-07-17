@@ -38,8 +38,9 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  def handle_in("load_user_sidebar", %{"userid" => userid}, socket) do
-    user = Repo.get(User, userid)
+  def handle_in("load_user_sidebar", %{"userid" => userid,"brandid" => brandid}, socket) do
+
+    user = Repo.get_by(User, %{id: String.to_integer(userid)})
 
     map =
       if user.gall_id != 1 do
@@ -257,29 +258,12 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("sales_transaction", payload, socket) do
+ 
     branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
 
-    if branchid == "0" do
-      sales_data =
-        Repo.all(
-          from(
-            sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == sp.salesid,
-            where:
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                s.brand_id == ^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              invoiceno: s.invoiceno,
-              payment_type: sp.payment_type,
-              grand_total: sp.grand_total,
-              tbl_no: s.tbl_no,
-              pax: s.pax
-            }
-          )
-        )
-    else
+    brand=Repo.get_by(Brand,id: brand_id)
+
       sales_data =
         Repo.all(
           from(
@@ -288,9 +272,9 @@ defmodule BoatNoodleWeb.UserChannel do
             on: s.salesid == sp.salesid,
             left_join: st in BoatNoodle.BN.Staff,
             on: s.staffid == st.staff_id,
-            where:
-              s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"],
+            left_join: b in BoatNoodle.BN.Brand,
+            where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
               invoiceno: s.invoiceno,
@@ -299,17 +283,20 @@ defmodule BoatNoodleWeb.UserChannel do
               tbl_no: s.tbl_no,
               pax: s.pax,
               staff_name: st.staff_name,
-              branchid: s.branchid
+              branchid: s.branchid,
+              domainname: b.domain_name
+
             }
           )
         )
-    end
+
 
     broadcast(socket, "populate_table_sales_transaction", %{sales_data: sales_data})
     {:noreply, socket}
   end
 
   def handle_in("hourly_sales_summary", payload, socket) do
+ 
     s_date = payload["s_date"]
     e_date = payload["e_date"]
 
@@ -326,7 +313,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: s.salesid == sp.salesid,
-              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
+              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date and s.brand_id==^payload["brand_id"],
               group_by: [s.salesdatetime, s.salesdate],
               select: %{
                 salesdatetime: s.salesdatetime,
@@ -710,7 +697,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: s.salesid == sp.salesid,
-              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
+              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date and s.brand_id==^payload["brand_id"],
               group_by: [s.salesdatetime, s.salesdate],
               select: %{
                 salesdatetime: s.salesdatetime,
@@ -950,7 +937,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: s.salesid == sp.salesid,
-              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
+              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date and s.brand_id==^payload["brand_id"],
               group_by: [s.salesdatetime, s.salesdate],
               select: %{
                 salesid: s.salesid,
@@ -1177,30 +1164,7 @@ defmodule BoatNoodleWeb.UserChannel do
   def handle_in("item_sold", payload, socket) do
     branchid = payload["branch_id"]
 
-    if branchid == "0" do
-      item_sold_data =
-        Repo.all(
-          from(
-            sd in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == sd.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: sd.itemid == i.subcatid,
-            left_join: ic in BoatNoodle.BN.ItemCat,
-            on: ic.itemcatid == i.itemcatid,
-            group_by: i.itemname,
-            where:
-              sd.afterdisc != 0.00 and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"],
-            select: %{
-              itemname: i.itemname,
-              qty: sum(sd.qty),
-              afterdisc: sum(sd.afterdisc),
-              itemcatname: ic.itemcatname
-            }
-          )
-        )
-    else
+    
       item_sold_data =
         Repo.all(
           from(
@@ -1214,7 +1178,7 @@ defmodule BoatNoodleWeb.UserChannel do
             group_by: i.itemname,
             where:
               sd.afterdisc != 0.00 and s.branchid == ^payload["branch_id"] and
-                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               itemname: i.itemname,
               qty: sum(sd.qty),
@@ -1223,8 +1187,7 @@ defmodule BoatNoodleWeb.UserChannel do
             }
           )
         )
-    end
-
+ 
     broadcast(socket, "populate_table_item_sold", %{item_sold_data: item_sold_data})
     {:noreply, socket}
   end
@@ -1232,7 +1195,6 @@ defmodule BoatNoodleWeb.UserChannel do
   def handle_in("item_sales_detail", payload, socket) do
     branchid = payload["branch_id"]
 
-    if branchid == "0" do
       item_sales_detail_data =
         Repo.all(
           from(
@@ -1245,35 +1207,11 @@ defmodule BoatNoodleWeb.UserChannel do
             on: ic.itemcatid == i.itemcatid,
             left_join: f in BoatNoodle.BN.Staff,
             on: s.staffid == f.staff_id,
-            where: s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
-            select: %{
-              itemcatcode: ic.itemcatcode,
-              itemname: i.itemname,
-              qty: sd.qty,
-              invoiceno: s.invoiceno,
-              tbl_no: s.tbl_no,
-              staff_name: f.staff_name,
-              afterdisc: sd.afterdisc,
-              salesdate: s.salesdate
-            }
-          )
-        )
-    else
-      item_sales_detail_data =
-        Repo.all(
-          from(
-            sd in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == sd.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: sd.itemid == i.subcatid,
-            left_join: ic in BoatNoodle.BN.ItemCat,
-            on: ic.itemcatid == i.itemcatid,
-            left_join: f in BoatNoodle.BN.Staff,
-            on: s.staffid == f.staff_id,
+            left_join: b in BoatNoodle.BN.Brand,
+            on: b.id==s.brand_id,
             where:
               s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"],
+                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               itemcatcode: ic.itemcatcode,
               itemname: i.itemname,
@@ -1283,11 +1221,12 @@ defmodule BoatNoodleWeb.UserChannel do
               staff_name: f.staff_name,
               afterdisc: sd.afterdisc,
               salesdate: s.salesdate,
-              branchid: s.branchid
+              branchid: s.branchid,
+              domainname: b.domain_name
             }
           )
         )
-    end
+  
 
     broadcast(socket, "populate_table_item_sales_detail", %{
       item_sales_detail_data: item_sales_detail_data
@@ -1308,7 +1247,7 @@ defmodule BoatNoodleWeb.UserChannel do
           group_by: [s.invoiceno],
           where:
             sd.discountid == i.discountitemsid and s.branchid == ^payload["branch_id"] and
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             salesdate: s.salesdate,
             invoiceno: s.invoiceno,
@@ -1354,7 +1293,7 @@ defmodule BoatNoodleWeb.UserChannel do
           group_by: [d.discountid],
           where:
             sd.discountid == di.discountitemsid and s.branchid == ^payload["branch_id"] and
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             discname: d.discname,
             after_disc: sum(sd.afterdisc),
@@ -1394,7 +1333,7 @@ defmodule BoatNoodleWeb.UserChannel do
           group_by: [s.invoiceno],
           where:
             s.is_void != 0 and s.branchid == ^payload["branch_id"] and
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             salesdatetime: s.salesdatetime,
             salesdate: s.salesdate,
@@ -1427,7 +1366,7 @@ defmodule BoatNoodleWeb.UserChannel do
           on: s.staffid == f.staff_id,
           where:
             s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"],
+              s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             salesdatetime: s.salesdatetime,
             salesdate: s.salesdate,
@@ -1461,7 +1400,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: s.salesid == sp.salesid,
-              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
+              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date and s.brand_id==^payload["brand_id"],
               group_by: [s.salesdatetime, s.salesdate],
               select: %{
                 salesdatetime: s.salesdatetime,
@@ -1562,7 +1501,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: s.salesid == sp.salesid,
-              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date,
+              where: s.branchid == ^payload["branch_id"] and s.salesdate == ^date and s.brand_id==^payload["brand_id"],
               group_by: [s.salesdatetime, s.salesdate],
               select: %{
                 salesdatetime: s.salesdatetime,
@@ -1625,23 +1564,33 @@ defmodule BoatNoodleWeb.UserChannel do
           on: s.salesid == sp.salesid,
           where:
             s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"],
+              s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             tax: sum(sp.gst_charge),
             afterdisc: sum(sp.grand_total),
             service_charge: sum(sp.service_charge)
           }
         )
-      )
-      |> Enum.map(fn x ->
-        %{
-          tax: Decimal.to_float(x.tax),
-          grand_total:
-            Decimal.to_float(x.afterdisc) + Decimal.to_float(x.service_charge) -
-              Decimal.to_float(x.tax)
-        }
-      end)
-      |> hd
+      )|>hd
+      
+      if tax_data.tax == nil do
+        tax=0.00
+      else
+        tax=Decimal.to_float(tax_data.tax)
+      end
+      if tax_data.afterdisc == nil do
+        afterdisc=0.00
+      else
+        afterdisc=Decimal.to_float(tax_data.tax)
+      end
+      if tax_data.service_charge == nil do
+        service_charge=0.00
+      else
+        service_charge=Decimal.to_float(tax_data.tax)
+      end
+
+          grand_total=afterdisc + service_charge-tax
+
 
     tax_details =
       Repo.all(
@@ -1651,7 +1600,7 @@ defmodule BoatNoodleWeb.UserChannel do
           on: s.salesid == sp.salesid,
           where:
             s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"],
+              s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             salesdatetime: s.salesdatetime,
             invoiceno: s.invoiceno,
@@ -1665,12 +1614,13 @@ defmodule BoatNoodleWeb.UserChannel do
     branches = payload["branch_id"]
     s_date = payload["s_date"]
     e_date = payload["e_date"]
+    brand_id = payload["brand_id"]
 
-    map = taxes_data(branches, s_date, e_date)
+    map = taxes_data(branches, s_date, e_date,brand_id)
 
     broadcast(socket, "populate_tax_data", %{
-      tax_data: :erlang.float_to_binary(tax_data.tax, decimals: 2),
-      tax_total: :erlang.float_to_binary(tax_data.grand_total, decimals: 2),
+      tax_data: :erlang.float_to_binary(tax, decimals: 2),
+      tax_total: :erlang.float_to_binary(grand_total, decimals: 2),
       tax_details: tax_details,
       map: Poison.encode!(map)
     })
@@ -1678,7 +1628,7 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  defp taxes_data(branches, s_date, e_date) do
+  defp taxes_data(branches, s_date, e_date,brand_id) do
     a = Date.from_iso8601!(s_date)
     b = Date.from_iso8601!(e_date)
 
@@ -1691,7 +1641,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: sp.salesid == s.salesid,
-            where: s.branchid == ^branches and s.salesdate == ^item,
+            where: s.branchid == ^branches and s.salesdate == ^item and s.brand_id==^brand_id,
             select: %{
               salesdate: s.salesdate,
               gst_charge: sp.gst_charge,
@@ -1733,7 +1683,7 @@ defmodule BoatNoodleWeb.UserChannel do
           on: s.salesid == sp.salesid,
           where:
             sp.payment_type == "CASH" and s.branchid == ^payload["branch_id"] and
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             cash: sum(sp.grand_total)
           }
@@ -1766,7 +1716,7 @@ defmodule BoatNoodleWeb.UserChannel do
           group_by: sp.payment_type,
           where:
             s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"],
+              s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
             payment_type: sp.payment_type,
             total: sum(sp.grand_total)
@@ -1777,8 +1727,9 @@ defmodule BoatNoodleWeb.UserChannel do
     branches = payload["branch_id"]
     s_date = payload["s_date"]
     e_date = payload["e_date"]
+    brand_id = payload["brand_id"]
 
-    map = payment_data(branches, s_date, e_date)
+    map = payment_data(branches, s_date, e_date,brand_id)
 
     payment_type_others = payment_type_others.card
     payment_type_cash = payment_type_cash.cash
@@ -1804,7 +1755,7 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  defp payment_data(branches, s_date, e_date) do
+  defp payment_data(branches, s_date, e_date,brand_id) do
     a = Date.from_iso8601!(s_date)
     b = Date.from_iso8601!(e_date)
 
@@ -1817,7 +1768,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: sp.salesid == s.salesid,
-            where: s.branchid == ^branches and s.salesdate == ^item,
+            where: s.branchid == ^branches and s.salesdate == ^item and s.brand_id==^brand_id,
             select: %{
               salesdate: s.salesdate,
               grand_total: sp.grand_total,
@@ -1891,7 +1842,7 @@ defmodule BoatNoodleWeb.UserChannel do
           on: b.branchid == c.branch_id,
           where:
             c.cashtype == "CASHIN" and b.branchid == ^payload["branch_id"] and
-              c.date_time >= ^new_s_date and c.date_time <= ^new_e_date,
+              c.date_time >= ^new_s_date and c.date_time <= ^new_e_date  and c.brand_id==^payload["brand_id"],
           select: %{
             cash_in: sum(c.amount)
           }
@@ -1907,7 +1858,7 @@ defmodule BoatNoodleWeb.UserChannel do
           on: b.branchid == c.branch_id,
           where:
             c.cashtype == "CASHOUT" and b.branchid == ^payload["branch_id"] and
-              c.date_time >= ^new_s_date and c.date_time <= ^new_e_date,
+              c.date_time >= ^new_s_date and c.date_time <= ^new_e_date  and c.brand_id==^payload["brand_id"],
           select: %{
             cash_out: sum(c.amount)
           }
@@ -1924,7 +1875,7 @@ defmodule BoatNoodleWeb.UserChannel do
           group_by: c.cashtype,
           where:
             b.branchid == ^payload["branch_id"] and c.date_time >= ^new_s_date and
-              c.date_time <= ^new_e_date,
+              c.date_time <= ^new_e_date  and c.brand_id==^payload["brand_id"],
           select: %{
             branchname: b.branchname,
             amount: sum(c.amount),
@@ -1937,8 +1888,9 @@ defmodule BoatNoodleWeb.UserChannel do
     branches = payload["branch_id"]
     s_date = payload["s_date"]
     e_date = payload["e_date"]
+    brand_id = payload["brand_id"]
 
-    map = cashinout(branches, s_date, e_date)
+    map = cashinout(branches, s_date, e_date,brand_id)
 
     cash_in = cash_in.cash_in
     cash_out = cash_out.cash_out
@@ -1962,7 +1914,7 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  defp cashinout(branches, s_date, e_date) do
+  defp cashinout(branches, s_date, e_date,brand_id) do
     a = Date.from_iso8601!(s_date)
     b = Date.from_iso8601!(e_date)
 
@@ -1991,7 +1943,7 @@ defmodule BoatNoodleWeb.UserChannel do
             on: b.branchid == c.branch_id,
             where:
               b.branchid == ^branches and c.date_time >= ^new_s_date and
-                c.date_time <= ^new_e_date,
+                c.date_time <= ^new_e_date and c.brand_id==^brand_id,
             select: %{
               amount: sum(c.amount),
               cashtype: c.cashtype
@@ -2493,6 +2445,9 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("combo_edit", payload, socket) do
+
+    
+  
     id1 = payload["subcat_id"]
     id = payload["subcat_id"] |> String.to_integer()
     price_code = payload["price_code"]
@@ -2687,6 +2642,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
     {:noreply, socket}
   end
+
 
   defp authorized?(_payload) do
     true

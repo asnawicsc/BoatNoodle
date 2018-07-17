@@ -75,6 +75,11 @@ defmodule BoatNoodleWeb.SalesController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  def tables(conn, params) do
+   branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+    render(conn, "index.html", branches: branches)
+  end
+
   def detail_invoice(conn, %{"branchid" => branchid, "invoiceno" => invoiceno}) do
     detail =
       Repo.all(
@@ -129,27 +134,101 @@ defmodule BoatNoodleWeb.SalesController do
     render(conn, "detail_invoice.html", detail: detail, detail_item: detail_item)
   end
 
+
+   def quickbook(conn,params) do
+
+
+   
+   conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Daily Item Sales.csv\"")
+    |> send_resp(200, csv_content(conn,params))
+
+  end
+
+ 
+
+  defp csv_content(conn,params) do
+
+
+   brand=Repo.get_by(Brand,id: BN.get_brand_id(conn))
+
+    branch=Repo.get_by(Branch,branchid: params["branch"])
+
+id=branch.branchid|>Integer.to_string
+
+all=Repo.all(from s in Sales,
+left_join: p in SalesMaster, on: s.salesid==p.salesid,
+left_join: g in ItemSubcat, on: p.itemid==g.subcatid, 
+  where: s.branchid==^id and s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"],
+  group_by: [s.salesdate,g.itemname,g.itemdesc],
+ select: %{
+ date: s.salesdate,
+ name: g.itemname,
+ desc: g.itemdesc,
+ qty: sum(p.qty),
+ order_price: sum(p.order_price)
+ })
+
+ 
+
+ csv_content = ['CustomerRefFullName ', 'ClassRefFullName', 'TempleteRefFullName','TxnDate','RefNumber','DepositToAccountRefFullName','ItemRefFullName','Desc','Quantity','Rate','Amount','LineClassRefFullName','SalesTaxCodeFullName'] 
+    data=for item <- all do
+
+      date=item.date|>Date.to_string|>String.split_at(2)|>elem(1)|>String.split("-")|>Enum.join|>String.split_at(2)
+ 
+      year=date|>elem(0)
+
+      b=date|>elem(1)
+
+
+      c= b|>String.split_at(2)
+
+      month=c|>elem(0)
+
+      day=c|>elem(1)
+
+      string="BNAM"
+
+      join=day<>month<>year<>string
+
+      name=branch.branchname
+      cashin="CashInDrawer:"
+      full=cashin<>name
+
+
+
+    ['Daily Sales',branch.branchname,'Custom Sales Receipt',item.date,join,full,item.name,item.desc,item.qty,'rate',item.order_price,branch.branchname,'SR'] 
+    end
+   
+   csv_content=List.insert_at(data,0,csv_content)
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
+  end
+
   def summary(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "summary.html", branches: branches())
+    branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+    render(conn, "summary.html", branches: branches)
   end
 
   def item_sales(conn, _params) do
-    render(conn, "item_sales.html", branches: branches())
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+    render(conn, "item_sales.html", branches: branches)
   end
 
   def discounts(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
-    render(conn, "discounts.html", branches: branches())
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+    render(conn, "discounts.html", branches: branches)
   end
 
   def voided(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
     render(conn, "voided.html", branches: branches)
   end
 
   def csv_compare_category_qty(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch))
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
     render(conn, "csv_compare_category_qty.html", branches: branches)
   end
 

@@ -54,6 +54,9 @@ defmodule BoatNoodleWeb.BranchController do
         subcats: subcats
       )
 
+
+ 
+
     # need a list of combos
     # subcatid thats 6 digit are combos
     combos = subcats_data |> Enum.filter(fn x -> String.length(Integer.to_string(x.id)) == 6 end)

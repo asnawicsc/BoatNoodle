@@ -6,63 +6,182 @@ defmodule BoatNoodleWeb.TagController do
   require IEx
 
   def toggle_printer_combo(conn, params) do
-    tuple =
-      params["item_tag"]
-      |> String.replace("[", "")
-      |> String.replace("]", ",")
-      |> String.split(",")
-      |> Enum.reject(fn x -> x == "" end)
-      |> List.to_tuple()
 
-    subcat_id = elem(tuple, 0)
-    subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
-    tag_id = elem(tuple, 1)
-    combo_item_id = elem(tuple,2)|> String.trim
-    tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
-    combo_detail = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
+  user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    
+     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
+     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
+     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
+      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+
+      path=conn.path_info|>List.delete_at(2)|>List.to_string
+      status=conn.path_info|>List.last
 
 
-    if tag.combo_item_ids != nil do
-      items = tag.combo_item_ids
-    else
-      items = ""
-    end
+    if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
+         
 
-    combo_item_ids = String.split(items, ",")
 
-    if Enum.any?(combo_item_ids, fn x -> x == combo_item_id end) do
-      new_subcatids =
-        List.delete(combo_item_ids, combo_item_id) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(",")
+         s="on";
+    
 
-      action = "removed from"
-      alert = "danger"
-    else
-      new_subcatids =
-        List.insert_at(combo_item_ids, 0, combo_item_id)
-        |> Enum.sort()
-        |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(",")
+         
 
-      action = "added to"
-      alert = "success"
-    end
+         end
 
-    Repo.update(Tag.changeset(tag, %{combo_item_ids: new_subcatids}))
+         if s=="on" do
 
-    map =
-      %{
-        printer_name: tag.tagname,
-        item_name: combo_detail.combo_item_name,
-        action: action,
-        alert: alert
-      }
-      |> Poison.encode!()
 
-    send_resp(conn, 200, map)
+          tuple =
+            params["item_tag"]
+            |> String.replace("[", "")
+            |> String.replace("]", ",")
+            |> String.split(",")
+            |> Enum.reject(fn x -> x == "" end)
+            |> List.to_tuple()
+
+          subcat_id = elem(tuple, 0)
+          subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
+          tag_id = elem(tuple, 1)
+
+          tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
+
+
+            action = "fail to Inserted due to Unautorize Access in"
+            alert = "danger"
+
+
+
+          map =
+            %{
+              printer_name: tag.tagname,
+              item_name: subcat.itemname,
+              action: action,
+              alert: alert
+            }
+            |> Poison.encode!()
+              send_resp(conn, 200, map)
+
+       else
+
+          tuple =
+            params["item_tag"]
+            |> String.replace("[", "")
+            |> String.replace("]", ",")
+            |> String.split(",")
+            |> Enum.reject(fn x -> x == "" end)
+            |> List.to_tuple()
+
+          subcat_id = elem(tuple, 0)
+          subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
+          tag_id = elem(tuple, 1)
+          combo_item_id = elem(tuple,2)|> String.trim
+          tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
+          combo_detail = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
+
+
+          if tag.combo_item_ids != nil do
+            items = tag.combo_item_ids
+          else
+            items = ""
+          end
+
+          combo_item_ids = String.split(items, ",")
+
+          if Enum.any?(combo_item_ids, fn x -> x == combo_item_id end) do
+            new_subcatids =
+              List.delete(combo_item_ids, combo_item_id) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+              |> Enum.join(",")
+
+            action = "removed from"
+            alert = "danger"
+          else
+            new_subcatids =
+              List.insert_at(combo_item_ids, 0, combo_item_id)
+              |> Enum.sort()
+              |> Enum.reject(fn x -> x == "" end)
+              |> Enum.join(",")
+
+            action = "added to"
+            alert = "success"
+          end
+
+          Repo.update(Tag.changeset(tag, %{combo_item_ids: new_subcatids}))
+
+          map =
+            %{
+              printer_name: tag.tagname,
+              item_name: combo_detail.combo_item_name,
+              action: action,
+              alert: alert
+            }
+            |> Poison.encode!()
+
+          send_resp(conn, 200, map)
+        end
   end
 
   def toggle_printer(conn, params) do
+
+
+   user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    
+     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
+     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
+     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
+      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+
+      path=conn.path_info|>List.delete_at(2)|>List.to_string
+      status=conn.path_info|>List.last
+
+
+    if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
+         
+
+
+         s="on";
+    
+
+         
+
+         end
+
+         if s=="on" do
+           
+     
+
+          tuple =
+            params["item_tag"]
+            |> String.replace("[", "")
+            |> String.replace("]", ",")
+            |> String.split(",")
+            |> Enum.reject(fn x -> x == "" end)
+            |> List.to_tuple()
+
+          subcat_id = elem(tuple, 0)
+          subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
+          tag_id = elem(tuple, 1)
+
+          tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
+
+
+            action = "fail to Inserted due to Unautorize Access in"
+            alert = "danger"
+
+
+
+          map =
+            %{
+              printer_name: tag.tagname,
+              item_name: subcat.itemname,
+              action: action,
+              alert: alert
+            }
+            |> Poison.encode!()
+              send_resp(conn, 200, map)
+
+   else
+
     tuple =
       params["item_tag"]
       |> String.replace("[", "")
@@ -87,7 +206,9 @@ defmodule BoatNoodleWeb.TagController do
 
     if Enum.any?(subcat_ids, fn x -> x == subcat_id end) do
       new_subcatids =
-        List.delete(subcat_ids, subcat_id) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+        List.delete(subcat_ids, subcat_id) 
+        |> Enum.sort() 
+        |> Enum.reject(fn x -> x == "" end)
         |> Enum.join(",")
 
       action = "removed from"
@@ -115,20 +236,24 @@ defmodule BoatNoodleWeb.TagController do
       |> Poison.encode!()
 
     send_resp(conn, 200, map)
+
+       end
   end
 
   def list_printer(conn, %{"subcat_id" => subcat_id}) do
     # will have subcat id 
     # need to list all available printers
+
     tags_original =
       Repo.all(
         from(
           t in Tag,
           left_join: b in Branch,
           on: t.branch_id == b.branchid,
+          left_join: s in BN.UserBranchAccess, on: s.userid==^conn.private.plug_session["user_id"],
           where:
             t.brand_id == ^BN.get_brand_id(conn) and t.branch_id != 0 and
-              b.brand_id == ^BN.get_brand_id(conn),
+              b.brand_id == ^BN.get_brand_id(conn) and b.branchid==s.branchid,
           select: %{
             tag_id: t.tagid,
             branchname: b.branchname,
@@ -141,6 +266,7 @@ defmodule BoatNoodleWeb.TagController do
       |> Enum.map(fn x -> Map.put(x, :items, String.split(x.items, ",")) end)
       |> Enum.map(fn x -> Map.put(x, :combos, String.split(x.combos, ",")) end)
       |> Enum.group_by(fn x -> x.branchname end)
+
 
     json = tags_original |> Poison.encode!()
 

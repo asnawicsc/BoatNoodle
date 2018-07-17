@@ -11,6 +11,7 @@ defmodule BoatNoodleWeb.ItemHelper do
   end
 
   def handle_in("submit_item_form", %{"map" => map}, socket) do
+  
     {:noreply, socket}
   end
 

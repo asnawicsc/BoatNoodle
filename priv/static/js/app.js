@@ -26,7 +26,7 @@ if (localStorage.getItem("bn_user") != null) {
 } else {
 if (window.currentUser != "lobby") {
   
-  channel.push("load_user_sidebar", {userid: window.currentUser})
+  channel.push("load_user_sidebar", {userid: window.currentUser,brandid: window.currentBrand})
 }
 
 

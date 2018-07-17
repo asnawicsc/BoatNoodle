@@ -5,19 +5,48 @@
       <div class="card-text">
         <h4 class="card-title">    Categories</h4>
       </div>
+
       <div class="dropdown pull-right" style="padding: 10px;">
-            <button class="btn btn-rose btn-round" aria-label="add_new_category">
+        <%=  if Enum.any?(@admin_menus, fn x -> x == @edit_url end) do %>
+
+        <div><input type="hidden" name="pop" value="1"></div>
+
+
+          <% else %>
+           <input type="hidden" name="pop" value="0">
+            
+               <button class="btn btn-rose btn-round" aria-label="add_new_category">
                 <i class="material-icons">add_box</i> New Categories
               <div class="ripple-container"></div>
+
             </button>
+         
+           <% end %>
+           
+ <%=  if Enum.any?(@admin_menus, fn x -> x == @delete_url end) do %>
+
+        <div><input type="hidden" name="pop1" value="1"></div>
+
+
+          <% else %>
+           <input type="hidden" name="pop1" value="0">
             <button class="btn btn-danger btn-round" aria-label="delete_category">
                 <i class="material-icons">close</i> Delete Selected
               <div class="ripple-container"></div>
             </button>
+            <% end %>
+             <%=  if Enum.any?(@admin_menus, fn x -> x == @edit_url end) do %>
+
+        <div><input type="hidden" name="pop2" value="1"></div>
+
+
+          <% else %>
+           <input type="hidden" name="pop2" value="0">
             <button class="btn btn-warning btn-round" aria-label="edit_category">
                 <i class="material-icons">create</i> Edit Selected
               <div class="ripple-container"></div>
             </button>
+            <% end %>
         </div>
     </div>
 
@@ -37,7 +66,6 @@
                     <th>Name</th>
                     <th>Product Code</th>
                     <th>Description</th>
-
                     <th>Type</th>
                     <th>Default</th>
        
@@ -51,7 +79,6 @@
                     <td></td>
                     <td></td>
                     <td></td>
-
                     <td></td>
                     <td></td>
            
@@ -63,3 +90,33 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  
+  $("button[aria-label='add_new_category']").click(function() {
+var a=$("input[name='pop']").val()
+
+if (a == 1) {
+  swal("Unautorize Access")
+}
+
+})
+
+    $("button[aria-label='delete_new_category']").click(function() {
+var a=$("input[name='pop1']").val()
+
+if (a == 1) {
+  swal("Unautorize Access")
+}
+
+})
+
+      $("button[aria-label='edit_new_category']").click(function() {
+var a=$("input[name='pop2']").val()
+
+if (a == 1) {
+  swal("Unautorize Access")
+}
+
+})
+</script>

@@ -78,12 +78,16 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-  def handle_in("submit_category_form", %{"map" => map}, socket) do
+  def handle_in("submit_category_form", %{"map" => map,"brand_id" => brand_id}, socket) do
+
     item_cat_params =
       map
       |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
+
+
+    item_cat_params = Map.put(item_cat_params, "brand_id", brand_id)
 
     cg = BoatNoodle.BN.ItemCat.changeset(%BoatNoodle.BN.ItemCat{}, item_cat_params)
 

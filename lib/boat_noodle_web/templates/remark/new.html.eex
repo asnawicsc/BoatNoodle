@@ -21,7 +21,7 @@
               <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Item Name</label>
               <select name="remark[target_cat]" class="selectpicker" data-style="btn select-with-transition"  data-size="10">
                 <%= for item <- @item do %>
-                  <option value="<%= elem(item,1) %>"><%= elem(item,0) %> </option>
+                  <option value="<%= item.itemcatid %>"><%= item.itemcatname %> </option>
                 <% end %>
           </select>
       </div>

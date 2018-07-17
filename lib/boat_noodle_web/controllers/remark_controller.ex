@@ -12,11 +12,14 @@ defmodule BoatNoodleWeb.RemarkController do
 
   def new(conn, _params) do
     changeset = BN.change_remark(%Remark{})
-    item = BN.list_itemcat() |> Enum.map(fn x -> {x.itemcatname, x.itemcatid} end)
+    item=Repo.all(from s in BoatNoodle.BN.ItemCat, where: s.brand_id==^BN.get_brand_id(conn),
+      select: %{itemcatname: s.itemcatname,itemcatid: s.itemcatid})
+  
     render(conn, "new.html", changeset: changeset, item: item)
   end
 
   def create(conn, %{"remark" => remark_params}) do
+     remark_params = Map.put(remark_params, "brand_id", BN.get_brand_id(conn))
     case BN.create_remark(remark_params) do
       {:ok, remark} ->
         conn

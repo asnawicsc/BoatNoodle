@@ -16,12 +16,14 @@ defmodule BoatNoodle.BN.User do
     field(:last_login, :utc_datetime)
     field(:last_logout, :utc_datetime)
     field(:gall_id, :integer)
+    field(:brand_id, :integer)
   end
 
   @doc false
   def changeset(user, attrs) do
     user
     |> cast(attrs, [
+      :brand_id,
       :last_logout,
       :last_login,
       :created_at,
