@@ -89,7 +89,7 @@
                   <div class="ripple-container"></div>
                 </button>
 
-                    <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>" data-toggle="modal" aria-label="price" data-target="#model1" data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>Edit                   <div class="ripple-container"></div>                 </button>
+                    <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>"  data-toggle="modal" aria-label="price" data-target="#model1" data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>Edit                   <div class="ripple-container"></div>                 </button>
                     </button>
 
                   </td>
@@ -290,6 +290,15 @@
 
 </div>
 
+<%=  if Enum.any?(@admin_menus, fn x -> x == @url end) do %>
+
+<div><input type="hidden" name="popup" value="1"></div>
+
+
+<% else %>
+
+
+         
 <div class="modal fade" id="model1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document" style="width: 1000px; margin-left: 550px;">
     <div class="modal-content" style="width: 1000px;">
@@ -304,14 +313,36 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input type="hidden" name="popup" value="0">
       </div>
     </div>
   </div>
 </div>
 
 
+  
+<%end %>
+
+
+
+
 <script type="text/javascript">
 $(document).ready(function() {
+
+$("button[aria-label='price']").click(function() {
+var a=$("input[name='popup']").val()
+
+if (a == 1) {
+  swal("Unautorize Access")
+}
+
+})
+
+
+ 
+
+
+
   $("button[aria-label='item_summary']").click(function() {
     $("div[aria-label='item_detail']").toggleClass("hidding");
   });
@@ -486,7 +517,7 @@ $("input.combo_item_tag").click(function(){
       var val = $(this).val();
       if (ck[0].checked) {
         $.ajax({
-          url: "/" + brand + "/toggle_printer_combo",
+          url: "/" + brand + "/toggle_printer_combo/edit",
           dataType: "json",
           data: { item_tag: val }
         }).done(function(j) {
@@ -507,7 +538,7 @@ $("input.combo_item_tag").click(function(){
         });
       } else {
         $.ajax({
-          url: "/" + brand + "/toggle_printer_combo",
+          url: "/" + brand + "/toggle_printer_combo/edit",
           dataType: "json",
           data: { item_tag: val }
         }).done(function(j) {

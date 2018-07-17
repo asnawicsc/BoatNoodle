@@ -109,12 +109,57 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
       )
       |> Enum.filter(fn x -> x.brand_id == BN.get_brand_id(conn) end)
 
+
+        user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    
+     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
+     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
+     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
+      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+
+
+
+     a=conn.path_info|>List.delete_at(1)
+     b="categories"
+     c=List.insert_at(a,2,b)
+     d="edit"
+     e=List.insert_at(c,2,d)
+     f=e|>Enum.join("/")
+     e="/"
+     edit_url=e<>f
+
+
+     g=conn.path_info|>List.delete_at(1)
+     h="categories"
+     i=List.insert_at(g,2,h)
+     j="new"
+     k=List.insert_at(i,2,j)
+     l=k|>Enum.join("/")
+     m="/"
+     new_url=m<>l
+
+     n=conn.path_info|>List.delete_at(1)
+     o="categories"
+     p=List.insert_at(n,2,o)
+     q="delete"
+     r=List.insert_at(p,2,q)
+     s=r|>Enum.join("/")
+     t="/"
+     delete_url=t<>s
+
+
+
+
     render(
       conn,
       "index.html",
       menu_catalog: menu_catalog,
       subcats: subcats,
-      remark: remark
+      remark: remark,
+      admin_menus: admin_menus,
+      edit_url: edit_url,
+      new_url: new_url,
+      delete_url: delete_url
     )
   end
 

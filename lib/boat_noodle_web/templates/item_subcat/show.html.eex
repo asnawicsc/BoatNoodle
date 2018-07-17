@@ -276,7 +276,7 @@ $(document).ready(function() {
       var val = $(this).val();
       if (ck[0].checked) {
         $.ajax({
-          url: "/" + brand + "/toggle_printer",
+          url: "/" + brand + "/toggle_printer/edit",
           dataType: "json",
           data: { item_tag: val }
         }).done(function(j) {
@@ -297,7 +297,7 @@ $(document).ready(function() {
         });
       } else {
         $.ajax({
-          url: "/" + brand + "/toggle_printer",
+          url: "/" + brand + "/toggle_printer/edit",
           dataType: "json",
           data: { item_tag: val }
         }).done(function(j) {

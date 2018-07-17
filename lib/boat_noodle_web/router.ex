@@ -128,8 +128,8 @@ defmodule BoatNoodleWeb.Router do
 
     resources("/tag", TagController)
     get("/check_printer", TagController, :check_printer)
-    get("/toggle_printer", TagController, :toggle_printer)
-     get("/toggle_printer_combo", TagController, :toggle_printer_combo)
+    get("/toggle_printer/edit", TagController, :toggle_printer)
+     get("/toggle_printer_combo/edit", TagController, :toggle_printer_combo)
     resources("/tag_catalog", TagCatalogController)
     resources("/tag_items", TagItemsController)
     resources("/staff", StaffController)

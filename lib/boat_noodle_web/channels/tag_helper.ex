@@ -102,6 +102,7 @@ defmodule BoatNoodleWeb.TagHelper do
   end
 
   def handle_in("toggle_printer", %{"info" => info, "brand_id" => brand_id}, socket) do
+   
     tuple_data =
       info
       |> String.replace("][", ",")
@@ -160,6 +161,7 @@ defmodule BoatNoodleWeb.TagHelper do
 
     {:noreply, socket}
   end
+
 
   def handle_in("toggle_user_branch", %{"info" => info}, socket) do
     tuple_data =

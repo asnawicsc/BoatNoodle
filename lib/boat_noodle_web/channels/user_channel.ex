@@ -2445,6 +2445,9 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("combo_edit", payload, socket) do
+
+    
+  
     id1 = payload["subcat_id"]
     id = payload["subcat_id"] |> String.to_integer()
     price_code = payload["price_code"]

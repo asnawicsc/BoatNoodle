@@ -294,7 +294,6 @@ var s_date = localStorage.getItem('start_date')
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
 
-
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
 
@@ -331,9 +330,6 @@ var s_date = localStorage.getItem('start_date')
         console.log(payload.sales_data)
         console.log(payload.brand)
         var data = payload.sales_data
-
-  
-
 
 
         $("table#sales_transaction").DataTable({
@@ -399,7 +395,6 @@ var s_date = localStorage.getItem('start_date')
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
 
-
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
 
@@ -420,7 +415,6 @@ var s_date = localStorage.getItem('start_date')
 
 
         var b_id = $("select#branch_list").val()
-
         var s_date = localStorage.getItem('start_date')
         var e_date = localStorage.getItem('end_date')
         channel.push("hourly_pax_summary", {
@@ -435,7 +429,6 @@ var s_date = localStorage.getItem('start_date')
     channel.on("populate_table_hourly_pax_summary", payload => {
         console.log(payload.luck)
         var data = payload.luck
-
         $("table#hourly_pax_summary").DataTable({
             destroy: true,
             data: data,
@@ -533,7 +526,6 @@ var s_date = localStorage.getItem('start_date')
     $(".nav-link#hourly_sales_summary").click(function() {
 
         $("#backdrop").fadeIn()
-
         $(".panel-body#sales_transaction").hide();
         $("table#sales_transaction").hide();
 
@@ -551,7 +543,6 @@ var s_date = localStorage.getItem('start_date')
 
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
-
 
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
@@ -704,7 +695,6 @@ var s_date = localStorage.getItem('start_date')
 
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
-
 
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
@@ -876,8 +866,6 @@ var s_date = localStorage.getItem('start_date')
         $(".panel-body#pax_summary").hide();
         $("table#pax_summary").hide();
 
-
-
         var b_id = $("select#branch_list").val()
        
         var s_date = localStorage.getItem('start_date')
@@ -924,7 +912,6 @@ var s_date = localStorage.getItem('start_date')
 
         $("#backdrop").fadeIn()
 
-
         $(".panel-body#sales_transaction").hide();
         $("table#sales_transaction").hide();
 
@@ -960,9 +947,6 @@ var s_date = localStorage.getItem('start_date')
 
         $(".panel-body#pax_summary").hide();
         $("table#pax_summary").hide();
-
-
-
 
         var b_id = $("select#branch_list").val()
       
@@ -1026,7 +1010,6 @@ var s_date = localStorage.getItem('start_date')
 
         $("#backdrop").fadeIn()
 
-
         $(".panel-body#sales_transaction").hide();
         $("table#sales_transaction").hide();
 
@@ -1062,7 +1045,6 @@ var s_date = localStorage.getItem('start_date')
 
         $(".panel-body#pax_summary").hide();
         $("table#pax_summary").hide();
-
 
 
         var b_id = $("select#branch_list").val()
@@ -1154,8 +1136,6 @@ var s_date = localStorage.getItem('start_date')
         $("table#pax_summary").hide();
 
 
-
-
         var b_id = $("select#branch_list").val()
 
         var s_date = localStorage.getItem('start_date')
@@ -1216,7 +1196,6 @@ var s_date = localStorage.getItem('start_date')
 
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
-
 
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
@@ -1307,7 +1286,6 @@ var s_date = localStorage.getItem('start_date')
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
 
-
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
 
@@ -1397,7 +1375,6 @@ var s_date = localStorage.getItem('start_date')
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
 
-
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
 
@@ -1451,7 +1428,6 @@ var s_date = localStorage.getItem('start_date')
 
         $(".panel-body#item_sales_detail").hide();
         $("table#item_sales_detail").hide();
-
 
         $(".panel-body#discount_receipt").hide();
         $("table#discount_receipt").hide();
@@ -2435,10 +2411,11 @@ $('select#disc').on('change', function() {
     var subcat_id = id
     
 
-    channel.push("combo_edit", {price_code: price_code, subcat_id: subcat_id, brand_id: window.currentBrand})
+    channel.push("combo_edit", {price_code: price_code, subcat_id: subcat_id,user_id: window.currentUser, brand_id: window.currentBrand})
   })
 
   channel.on("show_combo_modal", payload => {
+
     $("#modal_form1").html(payload.html);
     $("button#submit_edit_form_combo").click(function(event){
       event.preventDefault();

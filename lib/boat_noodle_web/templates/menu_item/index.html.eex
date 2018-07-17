@@ -40,7 +40,7 @@
                 <div class="tab-content tab-space tab-subcategories" >
 									<%= render("menu_items.html", conn: @conn, subcats: @subcats)%>
 							    <%= render("item_remark.html", conn: @conn,remark: @remark)%>
-									<%= render("categories.html", conn: @conn)%>
+									<%= render("categories.html", conn: @conn, admin_menus: @admin_menus, edit_url: @edit_url,new_url: @new_url,delete_url: @delete_url)%>
                 </div>
               </div>
             </div>

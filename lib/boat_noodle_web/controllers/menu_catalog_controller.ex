@@ -196,12 +196,31 @@ defmodule BoatNoodleWeb.MenuCatalogController do
 
     itemcodes = arranged_items |> Map.keys() |> Enum.sort()
 
+
+      user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    
+     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
+     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
+     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
+      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+
+
+
+     a=conn.path_info|>List.delete_at(2)
+     b="edit"
+     c=List.insert_at(a,2,b)
+     d=c|>Enum.join("/")
+     e="/"
+     url=e<>d
+
     render(
       conn,
       "index.html",
       menu_catalogs: menu_catalog,
       itemcodes: itemcodes,
-      arranged_items: arranged_items
+      arranged_items: arranged_items,
+      url: url,
+      admin_menus: admin_menus
     )
   end
 
@@ -258,12 +277,32 @@ defmodule BoatNoodleWeb.MenuCatalogController do
   end
 
   def delete(conn, %{"id" => id}) do
-    menu_catalog =  Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
-   
-    {:ok, _menu_catalog} = BN.delete_menu_catalog(menu_catalog)
 
-    conn
-    |> put_flash(:info, "Menu catalog deleted successfully.")
-    |> redirect(to: menu_catalog_path(conn, :index, BN.get_domain(conn)))
+     user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    
+     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
+     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
+     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
+      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+
+      path=conn.path_info|>List.delete_at(2)
+      a="delete"
+      b=List.insert_at(path,2,a)|>Enum.join("/")
+      url="/"<>b
+   
+     if Enum.any?(admin_menus, fn x -> x == url end) do
+         conn
+          |> put_flash(:info, "Unauthorize Access.")
+          |> redirect(to: menu_catalog_path(conn, :index, BN.get_domain(conn)))
+        else
+
+          menu_catalog =  Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+         
+          {:ok, _menu_catalog} = BN.delete_menu_catalog(menu_catalog)
+
+          conn
+          |> put_flash(:info, "Menu catalog deleted successfully.")
+          |> redirect(to: menu_catalog_path(conn, :index, BN.get_domain(conn)))
+     end
   end
 end

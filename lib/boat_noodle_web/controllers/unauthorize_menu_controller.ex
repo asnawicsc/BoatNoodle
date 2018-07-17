@@ -64,36 +64,33 @@ defmodule BoatNoodleWeb.UnauthorizeMenuController do
      menu_admin = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
     where: b.role_id==1 and b.brand_id==^BN.get_brand_id(conn),
      select: %{desc: b.desc,id: b.id,
-     active: b.active})
+     active: b.active},order_by: b.desc)
 
      menu_manager = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
      where:  b.role_id==2 and b.brand_id==^BN.get_brand_id(conn),
      select: %{desc: b.desc,id: b.id,
-     active: b.active})
+     active: b.active},order_by: b.desc)
 
      menu_cashier = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
      where:  b.role_id==3 and b.brand_id==^BN.get_brand_id(conn),
      select: %{desc: b.desc,id: b.id,
-     active: b.active})
+     active: b.active},order_by: b.desc)
 
      menu_staff = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
      where: b.role_id==4 and b.brand_id==^BN.get_brand_id(conn),
      select: %{desc: b.desc,id: b.id,
-     active: b.active})
+     active: b.active},order_by: b.desc)
 
 
      menu_guest = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
      where:  b.role_id==5 and b.brand_id==^BN.get_brand_id(conn),
      select: %{desc: b.desc,id: b.id,
-     active: b.active})
+     active: b.active},order_by: b.desc)
 
      menu_supervisor = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
      where: b.role_id==6 and b.brand_id==^BN.get_brand_id(conn),
      select: %{desc: b.desc,id: b.id,
-     active: b.active})
-
- 
-   
+     active: b.active},order_by: b.desc)
 
 
     render(conn, "menu.html",menu_supervisor: menu_supervisor,menu_guest: menu_guest,menu_staff: menu_staff,menu_cashier: menu_cashier,menu_manager: menu_manager, menu_admin: menu_admin)
