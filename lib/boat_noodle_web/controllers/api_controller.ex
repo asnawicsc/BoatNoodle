@@ -5,6 +5,7 @@ defmodule BoatNoodleWeb.ApiController do
   require IEx
 
   def webhook_post_operations(conn, params) do
+    IO.inspect(params)
     brand = params["brand"]
     bb = Repo.get_by(Brand, domain_name: brand)
 
@@ -526,6 +527,9 @@ defmodule BoatNoodleWeb.ApiController do
   end
 
   def webhook_post(conn, params) do
+    IO.puts("incoming api post...")
+    IO.inspect(conn)
+    IO.inspect(params)
     a_list = params["details"]
     brand = params["brand"]
     bb = Repo.get_by(Brand, domain_name: brand)
