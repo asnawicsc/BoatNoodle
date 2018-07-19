@@ -117,6 +117,12 @@
                     <span class="sidebar-normal"> Cash In/Out </span>
                   </a>
                 </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/report">
+                    <span class="sidebar-mini"> R </span>
+                    <span class="sidebar-normal"> Report </span>
+                  </a>
+                </li>
 
               </ul>
             </div>

@@ -29,6 +29,20 @@
   <link href="/assets/jquery-ui.min.css" rel="stylesheet" />
 
 <script src="/assets/js/core/jquery.min.js"></script>
+<script src="/js/highcharts.src.js"></script>
+
+<script src="/js/phoenix.js"></script>
+
+<script src="/js/socket.js"></script>
+<script src="/js/app.js"></script>
+
+
+<script src="/js/sales.js"></script>
+
+<script src="/js/menu_item_category.js"></script>
+<script src="/js/item.js"></script>
+<script src="/js/tag.js"></script>
+<script src="/js/menu_catalog.js"></script>
 
 </head>
 
@@ -224,18 +238,5 @@ $(document).ready(function(){
   $("#backdrop").delay(200).fadeOut()
 })
 </script>
-<script src="/js/highcharts.src.js"></script>
 
-<script src="/js/phoenix.js"></script>
-
-<script src="/js/socket.js"></script>
-<script src="/js/app.js"></script>
-
-
-<script src="/js/sales.js"></script>
-
-<script src="/js/menu_item_category.js"></script>
-<script src="/js/item.js"></script>
-<script src="/js/tag.js"></script>
-<script src="/js/menu_catalog.js"></script>
 </html>

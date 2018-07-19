@@ -33,7 +33,7 @@
                                 <h4 class="card-title">Branch</h4>
                             </div>
                             <div class="card-body ">
-                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" title="Branch" name="branchid" id="branch_list">
+                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
                                           <%= for branch <- @branches do %>
                                             <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
                                           <% end %>
@@ -152,13 +152,241 @@
     $(document).ready(function() {
 
   
+ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
+
+   var bra=localStorage.getItem("new_brand");
+ 
+ $("input[name='branch']").val(bra)
+ 
 
 
+    $(".panel-body#sales_transaction").hide();
+    $("table#sales_transaction").hide();
+
+    $(".panel-body#hourly_pax_summary").hide();
+    $("table#hourly_pax_summary").hide();
+
+    $(".panel-body#hourly_sales_summary").hide();
+    $("table#hourly_sales_summary").hide();
+
+    $(".panel-body#hourly_transaction_summary").hide();
+    $("table#hourly_transaction_summary").hide();
+
+    $(".panel-body#item_sold").hide();
+    $("table#item_sold").hide();
+
+    $(".panel-body#item_sales_detail").hide();
+    $("table#item_sales_detail").hide();
+
+    $(".panel-body#discount_receipt").hide();
+    $("table#discount_receipt").hide();
+
+    $(".panel-body#discount_summary").hide();
+    $("table#discount_summary").hide();
+
+    $(".panel-body#voided_receipt").show();
+    $("table#voided_receipt").show();
+
+       var b_id = $("select#branch_list").val()
+
+      var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("voided_receipt", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+
+    $(".panel-body#voided_order").hide();
+    $("table#voided_order").hide();
+
+    $(".panel-body#sales_summary").hide();
+    $("table#sales_summary").hide();
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
   
-$('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
 
 
+    $(".nav-link#voided_receipt").click(function() {
 
+        $("#backdrop").fadeIn()
+
+        $(".panel-body#sales_transaction").hide();
+        $("table#sales_transaction").hide();
+
+        $(".panel-body#hourly_pax_summary").hide();
+        $("table#hourly_pax_summary").hide();
+
+        $(".panel-body#hourly_sales_summary").hide();
+        $("table#hourly_sales_summary").hide();
+
+        $(".panel-body#hourly_transaction_summary").hide();
+        $("table#hourly_transaction_summary").hide();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").show();
+        $("table#voided_receipt").show();
+
+        $(".panel-body#voided_order").hide();
+        $("table#voided_order").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
+        var b_id = $("select#branch_list").val()
+
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("voided_receipt", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+    })
+
+    channel.on("populate_table_voided_receipt_data", payload => {
+        console.log(payload.voided_receipt_data)
+        var data = payload.voided_receipt_data
+
+        $("table#voided_receipt").DataTable({
+             destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'salesdate'
+                },
+                {
+                    data: 'invoiceno'
+                },
+                {
+                    data: 'total'
+                },
+                {
+                    data: 'table'
+                },
+                {
+                    data: 'pax'
+                },
+                {
+                    data: 'staff'
+                }
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+    $(".nav-link#voided_order").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        $(".panel-body#sales_transaction").hide();
+        $("table#sales_transaction").hide();
+
+        $(".panel-body#hourly_pax_summary").hide();
+        $("table#hourly_pax_summary").hide();
+
+        $(".panel-body#hourly_sales_summary").hide();
+        $("table#hourly_sales_summary").hide();
+
+        $(".panel-body#hourly_transaction_summary").hide();
+        $("table#hourly_transaction_summary").hide();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").hide();
+        $("table#voided_receipt").hide();
+
+        $(".panel-body#voided_order").show();
+        $("table#voided_order").show();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
+        var b_id = $("select#branch_list").val()
+   
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("voided_order", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+    })
+
+    channel.on("populate_table_voided_order_data", payload => {
+        console.log(payload.voided_order_data)
+        var data = payload.voided_order_data
+
+        $("table#voided_order").DataTable({
+             destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'salesdate'
+                },
+                {
+                    data: 'itemname'
+                },
+                {
+                    data: 'unit_price'
+                },
+                {
+                    data: 'quantity'
+                },
+                {
+                    data: 'totalprice'
+                },
+                {
+                    data: 'staff'
+                }
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
  
 })
 </script>

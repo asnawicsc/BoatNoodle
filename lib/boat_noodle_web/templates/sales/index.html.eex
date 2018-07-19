@@ -398,5 +398,622 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
  $("input[name='branch']").val(bra)
 
 
+
+    $(".panel-body#sales_transaction").show();
+    $("table#sales_transaction").show();
+
+
+      var b_id = $("select#branch_list").val()
+
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+
+        channel.push("sales_transaction", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+
+    $(".panel-body#hourly_pax_summary").hide();
+    $("table#hourly_pax_summary").hide();
+
+    $(".panel-body#hourly_sales_summary").hide();
+    $("table#hourly_sales_summary").hide();
+
+    $(".panel-body#hourly_transaction_summary").hide();
+    $("table#hourly_transaction_summary").hide();
+
+    $(".panel-body#item_sold").hide();
+    $("table#item_sold").hide();
+
+
+
+    $(".panel-body#item_sales_detail").hide();
+    $("table#item_sales_detail").hide();
+
+    $(".panel-body#discount_receipt").hide();
+    $("table#discount_receipt").hide();
+
+
+
+    $(".panel-body#discount_summary").hide();
+    $("table#discount_summary").hide();
+
+    $(".panel-body#voided_receipt").hide();
+    $("table#voided_receipt").hide();
+
+
+
+    $(".panel-body#voided_order").hide();
+    $("table#voided_order").hide();
+
+    $(".panel-body#sales_summary").show();
+    $("table#sales_summary").show();
+
+
+
+    $(".panel-body#pax_summary").hide();
+    $("table#pax_summary").hide();
+
+
+
+
+    $(".nav-link#sales_transaction").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        $(".panel-body#sales_transaction").show();
+        $("table#sales_transaction").show();
+
+        $(".panel-body#hourly_pax_summary").hide();
+        $("table#hourly_pax_summary").hide();
+
+        $(".panel-body#hourly_sales_summary").hide();
+        $("table#hourly_sales_summary").hide();
+
+        $(".panel-body#hourly_transaction_summary").hide();
+        $("table#hourly_transaction_summary").hide();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").hide();
+        $("table#voided_receipt").hide();
+
+        $(".panel-body#voided_order").hide();
+        $("table#voided_order").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
+        var b_id = $("select#branch_list").val()
+ 
+       var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("sales_transaction", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+    })
+
+    channel.on("populate_table_sales_transaction", payload => {
+        console.log(payload.sales_data)
+        console.log(payload.brand)
+        var data = payload.sales_data
+
+
+        $("table#sales_transaction").DataTable({
+            
+            destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'salesdate'
+                },
+                {
+                    data: 'invoiceno'
+                },
+                {
+                    data: 'payment_type'
+                },
+                {
+                    data: 'grand_total'
+                },
+                {
+                    data: 'tbl_no'
+                },
+                {
+                    data: 'pax'
+                },
+                {
+                    data: 'staff_name'
+                },
+                {
+                    data: 'invoiceno',
+                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+                    }
+                },
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+    $(".nav-link#hourly_pax_summary").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        $(".panel-body#sales_transaction").hide();
+        $("table#sales_transaction").hide();
+
+        $(".panel-body#hourly_pax_summary").show();
+        $("table#hourly_pax_summary").show();
+
+        $(".panel-body#hourly_sales_summary").hide();
+        $("table#hourly_sales_summary").hide();
+
+        $(".panel-body#hourly_transaction_summary").hide();
+        $("table#hourly_transaction_summary").hide();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").hide();
+        $("table#voided_receipt").hide();
+
+        $(".panel-body#voided_order").hide();
+        $("table#voided_order").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
+        var b_id = $("select#branch_list").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("hourly_pax_summary", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+    })
+
+    channel.on("populate_table_hourly_pax_summary", payload => {
+        console.log(payload.luck)
+        var data = payload.luck
+        $("table#hourly_pax_summary").DataTable({
+            destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'date'
+                },
+                {
+                    data: 'grand_total'
+                },
+                {
+                    data: 'pax'
+                },
+                {
+                    data: 'h24'
+                },
+                {
+                    data: 'h1'
+                },
+                {
+                    data: 'h2'
+                },
+                {
+                    data: 'h3'
+                },
+                {
+                    data: 'h4'
+                },
+                {
+                    data: 'h5'
+                },
+                {
+                    data: 'h6'
+                },
+                {
+                    data: 'h7'
+                },
+                {
+                    data: 'h8'
+                },
+                {
+                    data: 'h9'
+                },
+                {
+                    data: 'h10'
+                },
+                {
+                    data: 'h11'
+                },
+                {
+                    data: 'h12'
+                },
+                {
+                    data: 'h13'
+                },
+                {
+                    data: 'h14'
+                },
+                {
+                    data: 'h15'
+                },
+                {
+                    data: 'h16'
+                },
+                {
+                    data: 'h17'
+                },
+                {
+                    data: 'h18'
+                },
+                {
+                    data: 'h19'
+                },
+                {
+                    data: 'h20'
+                },
+                {
+                    data: 'h21'
+                },
+                {
+                    data: 'h22'
+                },
+                {
+                    data: 'h23'
+                },
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+    $(".nav-link#hourly_sales_summary").click(function() {
+
+        $("#backdrop").fadeIn()
+        $(".panel-body#sales_transaction").hide();
+        $("table#sales_transaction").hide();
+
+        $(".panel-body#hourly_pax_summary").hide();
+        $("table#hourly_pax_summary").hide();
+
+        $(".panel-body#hourly_sales_summary").show();
+        $("table#hourly_sales_summary").show();
+
+        $(".panel-body#hourly_transaction_summary").hide();
+        $("table#hourly_transaction_summary").hide();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").hide();
+        $("table#voided_receipt").hide();
+
+        $(".panel-body#voided_order").hide();
+        $("table#voided_order").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
+        var b_id = $("select#branch_list").val()
+  
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("hourly_sales_summary", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+    })
+
+    channel.on("populate_table_hourly_sales_summary", payload => {
+        console.log(payload.luck)
+        var data = payload.luck
+
+        $("table#hourly_sales_summary").DataTable({
+            destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'date'
+                },
+                {
+                    data: 'grand_total'
+                },
+                {
+                    data: 'pax'
+                },
+                {
+                    data: 'h24'
+                },
+                {
+                    data: 'h1'
+                },
+                {
+                    data: 'h2'
+                },
+                {
+                    data: 'h3'
+                },
+                {
+                    data: 'h4'
+                },
+                {
+                    data: 'h5'
+                },
+                {
+                    data: 'h6'
+                },
+                {
+                    data: 'h7'
+                },
+                {
+                    data: 'h8'
+                },
+                {
+                    data: 'h9'
+                },
+                {
+                    data: 'h10'
+                },
+                {
+                    data: 'h11'
+                },
+                {
+                    data: 'h12'
+                },
+                {
+                    data: 'h13'
+                },
+                {
+                    data: 'h14'
+                },
+                {
+                    data: 'h15'
+                },
+                {
+                    data: 'h16'
+                },
+                {
+                    data: 'h17'
+                },
+                {
+                    data: 'h18'
+                },
+                {
+                    data: 'h19'
+                },
+                {
+                    data: 'h20'
+                },
+                {
+                    data: 'h21'
+                },
+                {
+                    data: 'h22'
+                },
+                {
+                    data: 'h23'
+                },
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+    $(".nav-link#hourly_transaction_summary").click(function() {
+
+        $("#backdrop").fadeIn()
+
+        $(".panel-body#sales_transaction").hide();
+        $("table#sales_transaction").hide();
+
+        $(".panel-body#hourly_pax_summary").hide();
+        $("table#hourly_pax_summary").hide();
+
+        $(".panel-body#hourly_sales_summary").hide();
+        $("table#hourly_sales_summary").hide();
+
+        $(".panel-body#hourly_transaction_summary").show();
+        $("table#hourly_transaction_summary").show();
+
+        $(".panel-body#item_sold").hide();
+        $("table#item_sold").hide();
+
+        $(".panel-body#item_sales_detail").hide();
+        $("table#item_sales_detail").hide();
+
+        $(".panel-body#discount_receipt").hide();
+        $("table#discount_receipt").hide();
+
+        $(".panel-body#discount_summary").hide();
+        $("table#discount_summary").hide();
+
+        $(".panel-body#voided_receipt").hide();
+        $("table#voided_receipt").hide();
+
+        $(".panel-body#voided_order").hide();
+        $("table#voided_order").hide();
+
+        $(".panel-body#sales_summary").hide();
+        $("table#sales_summary").hide();
+
+        $(".panel-body#pax_summary").hide();
+        $("table#pax_summary").hide();
+
+
+        var b_id = $("select#branch_list").val()
+
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("hourly_transaction_summary", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+    })
+
+    channel.on("populate_table_hourly_transaction_summary", payload => {
+        console.log(payload.luck)
+        var data = payload.luck
+
+        $("table#hourly_transaction_summary").DataTable({
+            destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'date'
+                },
+                {
+                    data: 'grand_total'
+                },
+                {
+                    data: 'pax'
+                },
+                {
+                    data: 'h24'
+                },
+                {
+                    data: 'h1'
+                },
+                {
+                    data: 'h2'
+                },
+                {
+                    data: 'h3'
+                },
+                {
+                    data: 'h4'
+                },
+                {
+                    data: 'h5'
+                },
+                {
+                    data: 'h6'
+                },
+                {
+                    data: 'h7'
+                },
+                {
+                    data: 'h8'
+                },
+                {
+                    data: 'h9'
+                },
+                {
+                    data: 'h10'
+                },
+                {
+                    data: 'h11'
+                },
+                {
+                    data: 'h12'
+                },
+                {
+                    data: 'h13'
+                },
+                {
+                    data: 'h14'
+                },
+                {
+                    data: 'h15'
+                },
+                {
+                    data: 'h16'
+                },
+                {
+                    data: 'h17'
+                },
+                {
+                    data: 'h18'
+                },
+                {
+                    data: 'h19'
+                },
+                {
+                    data: 'h20'
+                },
+                {
+                    data: 'h21'
+                },
+                {
+                    data: 'h22'
+                },
+                {
+                    data: 'h23'
+                },
+            ]
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+
 })
 </script>

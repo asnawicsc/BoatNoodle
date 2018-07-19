@@ -140,10 +140,146 @@
   
 
 
-  
 $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
 
+   var bra=localStorage.getItem("new_brand");
+ 
+ $("input[name='branch']").val(bra)
 
+
+
+      
+
+        var b_id = $("select#branch_list").val()
+
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("tax", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+
+
+    channel.on("populate_tax_data", payload => {
+
+        console.log(payload.tax_data)
+        console.log(payload.tax_total)
+
+        var tax = payload.tax_data
+        var tax_total = payload.tax_total
+
+
+        var all = parseFloat(tax_total) - parseFloat(tax)
+
+
+        $(".tax#tax_data").html(tax);
+
+        $(".tax#total_tax").html(all.toFixed(2));
+
+        console.log(payload.tax_details)
+        var data = payload.tax_details
+
+        $("table#tax_details").DataTable({
+             destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'salesdatetime'
+                },
+                {
+                    data: 'invoiceno'
+                },
+                {
+                    data: 'tax'
+                },
+                {
+                    data: 'after_disc'
+                }
+            ]
+        });
+
+
+
+
+
+        var maps = JSON.parse(payload.map)
+        var salesdate = []
+        var tax = []
+        var aat = []
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            tax.push(this.tax)
+        })
+        $(maps).each(function() {
+            aat.push(this.aat)
+        })
+        Highcharts.chart('taxBarChart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Tax Reports(RM)'
+            },
+
+            xAxis: {
+                categories: salesdate,
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Total Tax",
+                    data: tax
+                },
+                {
+                    name: "Among After Tax",
+                    data: aat
+                }
+            ]
+
+        });
+
+
+  
+
+    })
 
  
 })

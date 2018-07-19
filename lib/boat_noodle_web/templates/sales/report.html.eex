@@ -1,0 +1,1069 @@
+
+<script src="/js/report.js"></script>
+  <div class="col-md-12">
+            <div class="panel panel-default">
+            <div class="panel-heading">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
+                                <div class="card-icon">
+                                    <i class="material-icons">library_books</i>
+                                </div>
+                                <h4 class="card-title">Date</h4>
+                            </div>
+                            <div class="card-body ">
+                                <br>
+                                <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                    <i class="fa fa-calendar"></i>&nbsp;
+                                    <span></span> <i class="fa fa-caret-down"></i>
+                                    <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-rose card-header-text">
+                                <div class="card-icon">
+                                    <i class="material-icons">library_books</i>
+                                </div>
+                                <h4 class="card-title">Branch</h4>
+                            </div>
+                            <div class="card-body ">
+                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round" name="branchid" id="branch_list">
+                                          <%= for branch <- @branches do %>
+                                            <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+                                          <% end %>
+                                        </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+              <div class="card ">
+                <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title">Report</h4>
+      </div>
+
+    </div>
+                <div class="card-body ">
+                  <div class="row">
+                    <div class="col-md-2">
+                     <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" id="sales_trend" href="" role="tablist">
+                Sales trend
+              </a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link " data-toggle="tab" id="average_daily" href="" role="tablist">
+                average daily sales trend
+              </a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link " data-toggle="tab" id="pax_trend" href="" role="tablist">
+                pax trend
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " data-toggle="tab" id="average_daily_pax" href="" role="tablist">
+                average daily pax trend
+              </a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link " data-toggle="tab" id="per_pax_speding_trend" href="" role="tablist">
+                per pax spending trend
+              </a>
+            </li>
+              <li class="nav-item">
+               <a class="nav-link " data-toggle="tab" id="pax_visit_trend" href="" role="tablist">
+                pax visiting trend
+              </a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link " data-toggle="tab" id="category_trend" href="" role="tablist">
+                category trend
+              </a>
+            </li>
+              <li class="nav-item">
+             <a class="nav-link " data-toggle="tab" id="category_contribute_trend" href="" role="tablist">
+               category contribute trend
+              </a>
+            </li>
+              <li class="nav-item">
+               <a class="nav-link " data-toggle="tab" id="top_10_items_qty" href="" role="tablist">
+                top 10 items
+              </a>
+            </li>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#link10" role="tablist">
+                Sales Trend By category (QTY)
+              </a>
+            </li>
+             </li>
+              <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#link11" role="tablist">
+                Sales Trend By category (RM)
+              </a>
+            </li>
+    
+          </ul>
+                    </div>
+                    <div class="col-md-10">
+                      <div class="tab-content">
+                        <div class="tab-pane active" id="link1">
+                         
+                            <table class="table data" id="sales_trend_table">
+                              <thead>
+                                  <tr>
+
+                                    <th>Sales Month</th>
+                                    <th>Sales Year</th>
+                                    <th>Total Sales (RM)</th>
+                                    
+
+                                  </tr>
+                              </thead>
+                              <tbody>
+
+                             
+                                  <tr>
+
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                   
+
+                                     
+
+
+                                  </tr>
+                            
+                              </tbody>
+                          </table>
+                        </div>
+                          <div class="tab-pane" id="link2">
+
+                           <table class="table data" id="average_daily_table">
+                              <thead>
+                                  <tr>
+
+                                    <th>Sales Month</th>
+                                    <th>Sales Year</th>
+                                    <th>Total Sales (RM)</th>
+                                    
+
+                                  </tr>
+                              </thead>
+                              <tbody>
+
+                             
+                                  <tr>
+
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                   
+                                  </tr>
+                            
+                              </tbody>
+                          </table>
+
+                        </div>
+                        <div class="tab-pane" id="link3">
+
+                           <table class="table data" id="pax_trend_table">
+                              <thead>
+                                  <tr>
+
+                                    <th>Sales Month</th>
+                                    <th>Sales Year</th>
+                                    <th>Total Pax (QTY)</th>
+                                    
+
+                                  </tr>
+                              </thead>
+                              <tbody>
+
+                             
+                                  <tr>
+
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                   
+                                  </tr>
+                            
+                              </tbody>
+                          </table>
+                         
+                        </div>
+                         <div class="tab-pane" id="link4">
+
+                          <table class="table data" id="average_daily_pax_table">
+                              <thead>
+                                  <tr>
+
+                                    <th>Sales Month</th>
+                                    <th>Sales Year</th>
+                                    <th>Total Pax (QTY)</th>
+                                    
+
+                                  </tr>
+                              </thead>
+                              <tbody>
+
+                             
+                                  <tr>
+
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                   
+                                  </tr>
+                            
+                              </tbody>
+                          </table>
+
+                        </div>
+                        <div class="tab-pane" id="link5">
+
+                          <table class="table data" id="per_pax_spending_trend_table">
+                              <thead>
+                                  <tr>
+
+                                    <th>Sales Month</th>
+                                    <th>Year</th>
+                                    <th>Total Spend (RM)</th>
+                                    
+
+                                  </tr>
+                              </thead>
+                              <tbody>
+
+                             
+                                  <tr>
+
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                   
+                                  </tr>
+                            
+                              </tbody>
+                          </table>
+                         
+                        </div>
+                         <div class="tab-pane" id="link6">
+
+                          <table class="table data" id="pax_visit_trend_table">
+                             <thead>
+                                  <tr>
+
+                                    <th>Sales Date</th>
+                                    <th>Total Pax</th>
+
+                                    
+
+                                  </tr>
+                              </thead>
+                              <tbody>
+
+                             
+                                  <tr>
+
+                                    <td></td>
+                                    <td></td>
+
+                                   
+                                  </tr>
+                            
+                              </tbody>
+                          </table>
+
+                        </div>
+                        <div class="tab-pane" id="link7">
+
+                        <div class="row">
+                            <div class="col-md-12 ml-auto mr-auto">
+                              <div class="page-categories">
+                           
+                                <br />
+                                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                                  <li class="nav-item">
+                                    <a class="nav-link active " data-toggle="tab" id="category_trend" href="" role="tablist">
+                                      <i class="material-icons">info</i> ALL
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link " data-toggle="tab" id="category_trend_noodle" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Noodle
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                     <a class="nav-link " data-toggle="tab" id="category_trend_rice" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Rice
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                  <a class="nav-link " data-toggle="tab" id="category_trend_others" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link " data-toggle="tab" id="category_trend_dessert" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Dessert
+                                    </a>
+                                  </li>
+                                   <li class="nav-item">
+                                      <a class="nav-link " data-toggle="tab" id="category_trend_beverage" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Beverage
+                                    </a>
+                                  </li>
+                                 
+                                </ul>
+                                <div class="tab-content tab-space tab-subcategories">
+                                  <div class="tab-pane" id="a">
+                          
+                                      <table class="table data" id="category_trend">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>Grand Total</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                  
+                                  </div>
+                                  <div class="tab-pane active" id="b">
+                             
+                                      <table class="table data" id="category_trend_noodle">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>Grand Total</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                  
+                                  </div>
+                                  <div class="tab-pane" id="c">
+                              
+                                      <table class="table data" id="category_trend_rice">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>Grand Total</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="d">
+                              
+                                      <table class="table data" id="category_trend_others">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>Grand Total</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="e">
+                              
+                                     <table class="table data" id="category_trend_dessert">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>Grand Total</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="f">
+                              
+                                       <table class="table data" id="category_trend_beverage">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>Grand Total</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                    
+                                  </div>
+                               
+                                </div>
+                              </div>
+                            </div>
+                        </div> 
+                         
+                        </div>
+                         <div class="tab-pane" id="link8">
+                                          <table class="table data" id="category_contribute_trend">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>PERCENTAGE (%)</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                        </div>
+                        <div class="tab-pane" id="link9">
+                          <table class="table data" id="top_10_items_qty">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category</th>
+                                                    <th>PERCENTAGE (%)</th>
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                        </div>
+                        <div class="tab-pane" id="link10">
+                        <div class="row">
+                            <div class="col-md-12 ml-auto mr-auto">
+                              <div class="page-categories">
+                           
+                                <br />
+                                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+
+                                  <li class="nav-item">
+                                    <a class="nav-link active " data-toggle="tab" href="#9" role="tablist">
+                                      <i class="material-icons">gavel</i> Noodle
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link " data-toggle="tab" href="#8" role="tablist">
+                                      <i class="material-icons">gavel</i> Rice
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#7" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#6" role="tablist">
+                                      <i class="material-icons">gavel</i> Dessert
+                                    </a>
+                                  </li>
+                                   <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#5" role="tablist">
+                                      <i class="material-icons">gavel</i> Beverage
+                                    </a>
+                                  </li>
+                                 
+                                </ul>
+                                <div class="tab-content tab-space tab-subcategories">
+                                  <div class="tab-pane active" id="9">
+                          
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Ndasdaame</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                  
+                                  </div>
+                                  <div class="tab-pane " id="8">
+                             
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                  
+                                  </div>
+                                  <div class="tab-pane" id="7">
+                              
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="6">
+                              
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="5">
+                              
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+
+                               
+                                </div>
+                              </div>
+                            </div>
+                        </div> 
+                        </div>
+                         <div class="tab-pane" id="link11">
+                          <div class="row">
+                            <div class="col-md-12 ml-auto mr-auto">
+                              <div class="page-categories">
+                           
+                                <br />
+                                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                                  <li class="nav-item">
+                                    <a class="nav-link active " data-toggle="tab" href="#1" role="tablist">
+                                      <i class="material-icons">gavel</i> Noodle
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link " data-toggle="tab" href="#2" role="tablist">
+                                      <i class="material-icons">gavel</i> Rice
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#3" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#4" role="tablist">
+                                      <i class="material-icons">gavel</i> Dessert
+                                    </a>
+                                  </li>
+                                   <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#5" role="tablist">
+                                      <i class="material-icons">gavel</i> Beverage
+                                    </a>
+                                  </li>
+                                 
+                                </ul>
+                                <div class="tab-content tab-space tab-subcategories">
+
+                                  <div class="tab-pane active" id="1">
+                             
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                  
+                                  </div>
+                                  <div class="tab-pane" id="2">
+                              
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="3">
+                              
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="4">
+                              
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="5">
+                              
+                                      <table class="table data">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Name</th>
+                                                    <th>Code</th>
+                                                    <th>Manager</th>
+                                                    <th>Sync Status</th>
+                                                    <th>Action</th>
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                               
+                                </div>
+                              </div>
+                            </div>
+                        </div> 
+                        </div>
+
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <script type="text/javascript">
+    $(document).ready(function() {
+
+  
+
+$('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
+
+   var bra=localStorage.getItem("new_brand");
+ 
+ $("input[name='branch']").val(bra)
+
+
+        var b_id = $("select#branch_list").val()
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        report_channel.push("sales_trend", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+
+ 
+})
+</script>

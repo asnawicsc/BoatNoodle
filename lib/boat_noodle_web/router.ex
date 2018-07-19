@@ -159,6 +159,7 @@ defmodule BoatNoodleWeb.Router do
     get("/sales_chart", SalesController, :sales_chart)
 
     get("/detail_invoice/:branchid/:invoiceno", SalesController, :detail_invoice)
+    get("/report", SalesController, :report)
 
     get("/csv_compare_category_qty", SalesController, :csv_compare_category_qty)
     post("/create_cv", SalesController, :create_cv)

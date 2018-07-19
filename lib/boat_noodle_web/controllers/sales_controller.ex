@@ -494,6 +494,12 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
     render(conn, "sales_chart.html", branches: branches())
   end
 
+   def report(conn, params) do
+  branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+    render(conn, "report.html", branches: branches)
+   
+  end
+
   def create(conn, %{"sales" => sales_params}) do
     case BN.create_sales(sales_params) do
       {:ok, sales} ->

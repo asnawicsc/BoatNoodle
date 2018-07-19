@@ -140,9 +140,153 @@
   
 
 
-  
 $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
 
+   var bra=localStorage.getItem("new_brand");
+ 
+ $("input[name='branch']").val(bra)
+
+
+
+
+
+
+
+
+        var b_id = $("select#branch_list").val()
+
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("cash_in_out", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+ 
+
+    channel.on("populate_cash_in_out", payload => {
+
+        console.log(payload.cash_in)
+        console.log(payload.cash_out)
+
+        var cash_in = payload.cash_in
+        var cash_out = payload.cash_out
+
+
+        $(".cash#cash_in").html(cash_in);
+
+        $(".cash#cash_out").html(cash_out);
+
+        console.log(payload.cash)
+        var data = payload.cash
+
+        $("table#cash_in_out").DataTable({
+             destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'branchname'
+                },
+                {
+                    data: 'amount'
+                },
+                {
+                    data: 'cashtype'
+                },
+                {
+                    data: 'open'
+                }
+            ]
+        });
+
+        
+
+        var maps = JSON.parse(payload.map)
+        var salesdate = []
+        var cash_in = []
+        var cash_out = []
+        var open_drawer = []
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            cash_in.push(this.cash_in)
+        })
+        $(maps).each(function() {
+            cash_out.push(this.cash_out)
+        })
+        $(maps).each(function() {
+            open_drawer.push(this.open_drawer)
+        })
+        Highcharts.chart('cashinoutBarChart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Cash In Out Reports'
+            },
+
+            xAxis: {
+                categories: salesdate,
+                title: {
+                    text: null
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Total Cash In",
+                    data: cash_in
+                },
+                {
+                    name: "Total Cash Out",
+                    data: cash_out
+                },
+                {
+                    name: "Open Drawer",
+                    data: open_drawer
+                }
+            ]
+
+        });
+
+
+        $("#backdrop").delay(500).fadeOut()
+    })
+
+  
  
 })
 </script>
