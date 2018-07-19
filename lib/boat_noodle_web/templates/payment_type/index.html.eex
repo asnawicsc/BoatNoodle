@@ -139,8 +139,134 @@
   
 
 
-  
 $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
+
+   var bra=localStorage.getItem("new_brand");
+ 
+ $("input[name='branch']").val(bra)
+
+
+
+
+   
+
+        var b_id = $("select#branch_list").val()
+    
+        var s_date = localStorage.getItem('start_date')
+        var e_date = localStorage.getItem('end_date')
+        channel.push("payment_type", {
+            user_id: window.currentUser,
+            branch_id: b_id,
+            s_date: s_date,
+            e_date: e_date,
+            brand_id: window.currentBrand
+        })
+   
+
+    channel.on("populate_payment", payload => {
+
+        console.log(payload.payment_type_cash)
+        console.log(payload.payment_type_others)
+
+        var cash = payload.payment_type_cash
+        var card = payload.payment_type_others
+
+
+        $(".payment#payment_type1").html(cash);
+
+        $(".payment#payment_type2").html(card);
+
+        console.log(payload.payment)
+        var data = payload.payment
+
+        $("table#payment_type").DataTable({
+             destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'payment_type'
+                },
+                {
+                    data: 'total'
+                }
+            ]
+        });
+
+     
+
+        var maps = JSON.parse(payload.map)
+        var salesdate = []
+        var cash = []
+        var card = []
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            cash.push(this.cash)
+        })
+        $(maps).each(function() {
+            card.push(this.card)
+        })
+        Highcharts.chart('paymentBarChart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Payment Reports(RM)'
+            },
+
+            xAxis: {
+                categories: salesdate,
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Values',
+                    align: 'middle'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                enabled: false
+            },
+            series: [{
+                    name: "Total Sales by Cash",
+                    data: cash
+                },
+                {
+                    name: "Total Sales by Card",
+                    data: card
+                }
+            ]
+
+        });
+
+        $("#backdrop").delay(500).fadeOut()
+    })
 
  
 })
