@@ -17,7 +17,11 @@ channel.join()
 
 
 
-if (localStorage.getItem("bn_user") != null) {
+
+
+$(document).ready(function(){
+
+  if (localStorage.getItem("bn_user") != null) {
 
   var map = JSON.parse(localStorage.getItem("bn_user"))
   var html = "<img style='border-radius: 50%;  width: 34px; height: 34px;' src='data:image/jpg;base64, "+map.bin +"'>" 
@@ -31,8 +35,6 @@ if (window.currentUser != "lobby") {
 
 
 }
-
-$(document).ready(function(){
 
   channel.on("append_api_log", payload => {
     var messages = payload.messages

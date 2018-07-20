@@ -529,7 +529,7 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'salesdate'
+                    data: 'salesdatetime'
                 },
                 {
                     data: 'invoiceno'

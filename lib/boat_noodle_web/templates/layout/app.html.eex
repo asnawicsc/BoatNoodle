@@ -76,8 +76,8 @@ $(document).ready(function(){
 })
 </script>
 <script src="/js/socket.js"></script>
-<script src="/js/app.js"></script>
 
+<script src="/js/app.js"></script>
 
 <script src="/js/sales.js"></script>
 
@@ -238,6 +238,7 @@ $(document).ready(function(){
 <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
 <%# <script src="/assets/js/plugins/fullcalendar.min.js"></script> %>
 <script src="/assets/jquery-ui.min.js"></script>
+
 
 
 </html>

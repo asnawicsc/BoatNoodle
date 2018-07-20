@@ -32,6 +32,7 @@ defmodule BoatNoodleWeb.DiscountItemController do
   end
 
   def edit(conn, %{"id" => id}) do
+   
     discount_item = BN.get_discount_item!(id)
     changeset = BN.change_discount_item(discount_item)
     render(conn, "edit.html", discount_item: discount_item, changeset: changeset)

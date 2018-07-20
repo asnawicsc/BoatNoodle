@@ -641,7 +641,8 @@ all=Repo.all(from s in DiscountItem,
        is_targetmenuitems = 0
        multi_item_list=params["is_targetmenuitems"]|>Enum.join(",")
      else
-      is_targetmenuitems = params["is_targetmenuitems"] |> String.to_integer()
+  
+      is_targetmenuitems = params["is_targetmenuitems"]|>hd|> String.to_integer()
      end
 
     discount_type = Repo.get_by(BoatNoodle.BN.DiscountType, disctypeid: disctype)
