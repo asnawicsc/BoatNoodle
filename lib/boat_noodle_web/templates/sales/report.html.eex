@@ -104,14 +104,24 @@
             </li>
             </li>
               <li class="nav-item">
-              <a class="nav-link" data-toggle="tab" href="#link10" role="tablist">
-                Sales Trend By category (QTY)
+             <a class="nav-link " data-toggle="tab" id="sales_trend_by_qty" href="" role="tablist">
+                Sales Trend By category (RM)
               </a>
             </li>
              </li>
               <li class="nav-item">
-              <a class="nav-link" data-toggle="tab" href="#link11" role="tablist">
-                Sales Trend By category (RM)
+                <a class="nav-link " data-toggle="tab" id="sales_trend_by_rm" href="" role="tablist">
+                Sales Trend By category (QTY)
+              </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " data-toggle="tab" id="compare_sales_trend_rm" href="" role="tablist">
+               Compare Trend (RM)
+              </a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link " data-toggle="tab" id="compare_sales_trend_qty" href="" role="tablist">
+                 Compare Trend (QTY)
               </a>
             </li>
     
@@ -314,21 +324,22 @@
                                     </a>
                                   </li>
                                   <li class="nav-item">
-                                  <a class="nav-link " data-toggle="tab" id="category_trend_others" href="" role="tablist">
-                                      <i class="material-icons">gavel</i> Others
-                                    </a>
-                                  </li>
-                                  <li class="nav-item">
-                                    <a class="nav-link " data-toggle="tab" id="category_trend_dessert" href="" role="tablist">
-                                      <i class="material-icons">gavel</i> Dessert
-                                    </a>
-                                  </li>
-                                   <li class="nav-item">
                                       <a class="nav-link " data-toggle="tab" id="category_trend_beverage" href="" role="tablist">
                                       <i class="material-icons">gavel</i> Beverage
                                     </a>
                                   </li>
                                  
+                                  <li class="nav-item">
+                                    <a class="nav-link " data-toggle="tab" id="category_trend_dessert" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Dessert
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                  <a class="nav-link " data-toggle="tab" id="category_trend_others" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
+                                    </a>
+                                  </li>
+                               
                                 </ul>
                                 <div class="tab-content tab-space tab-subcategories">
                                   <div class="tab-pane" id="a">
@@ -550,6 +561,7 @@
                                                     <th>Month</th>
                                                     <th>Year</th>
                                                     <th>Category</th>
+                                                    <th>Grand Total</th>
                                                     <th>PERCENTAGE (%)</th>
                                               
 
@@ -560,6 +572,7 @@
                                              
                                                   <tr>
 
+                                                    <td></td>
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
@@ -575,14 +588,118 @@
                                           </table>
                         </div>
                         <div class="tab-pane" id="link9">
+                          <div class="row">
+                           <div class="col-md-6">
                           <table class="table data" id="top_10_items_qty">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Item Name</th>
+                                                    <th>Quantity</th>
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                   
+                                            
+
+                                                       
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                        </div>
+                                         <div class="col-md-6">
+                                          <table class="table data" id="top_10_items_value">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Item Name</th>
+                                                    <th>Value</th>
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                   
+                                            
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                        </div>
+                        <div class="tab-pane" id="link10">
+                        <div class="row">
+                            <div class="col-md-12 ml-auto mr-auto">
+                              <div class="page-categories">
+                           
+                                <br />
+                                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+
+                                  <li class="nav-item">
+                                 <a class="nav-link active " data-toggle="tab" id="sales_trend_by_qty" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Noodle
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="sales_trend_by_qty_rice" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Rice
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="sales_trend_by_qty_beverage" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Beverage
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="sales_trend_by_qty_dessert" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Dessert
+                                    </a>
+                                  </li>
+                                   <li class="nav-item">
+                                     <a class="nav-link " data-toggle="tab" id="sales_trend_by_qty_others" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
+                                    </a>
+                                  </li>
+                                 
+                                </ul>
+                                <div class="tab-content tab-space tab-subcategories">
+                                  <div class="tab-pane active" id="9">
+                          
+                                      <table class="table data" id="sales_trend_by_qty">
                                               <thead>
                                                   <tr>
 
                                                     <th>Month</th>
                                                     <th>Year</th>
-                                                    <th>Category</th>
-                                                    <th>PERCENTAGE (%)</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Grand Total</th>
+                                                    
+                                                   
                                               
 
                                                   </tr>
@@ -596,76 +713,10 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
+                                                    <td></td>
+                                                    
+                                                   
                                             
-
-                                                     
-
-
-                                                  </tr>
-                                            
-                                              </tbody>
-                                          </table>
-                        </div>
-                        <div class="tab-pane" id="link10">
-                        <div class="row">
-                            <div class="col-md-12 ml-auto mr-auto">
-                              <div class="page-categories">
-                           
-                                <br />
-                                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
-
-                                  <li class="nav-item">
-                                    <a class="nav-link active " data-toggle="tab" href="#9" role="tablist">
-                                      <i class="material-icons">gavel</i> Noodle
-                                    </a>
-                                  </li>
-                                  <li class="nav-item">
-                                    <a class="nav-link " data-toggle="tab" href="#8" role="tablist">
-                                      <i class="material-icons">gavel</i> Rice
-                                    </a>
-                                  </li>
-                                  <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#7" role="tablist">
-                                      <i class="material-icons">gavel</i> Others
-                                    </a>
-                                  </li>
-                                  <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#6" role="tablist">
-                                      <i class="material-icons">gavel</i> Dessert
-                                    </a>
-                                  </li>
-                                   <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#5" role="tablist">
-                                      <i class="material-icons">gavel</i> Beverage
-                                    </a>
-                                  </li>
-                                 
-                                </ul>
-                                <div class="tab-content tab-space tab-subcategories">
-                                  <div class="tab-pane active" id="9">
-                          
-                                      <table class="table data">
-                                              <thead>
-                                                  <tr>
-
-                                                    <th>Ndasdaame</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
-
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-
-                                             
-                                                  <tr>
-
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
 
                                                      
 
@@ -678,15 +729,18 @@
                                   </div>
                                   <div class="tab-pane " id="8">
                              
-                                      <table class="table data">
+                                      <table class="table data" id="sales_trend_by_qty_rice">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Grand Total</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -700,6 +754,9 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
+                                                    
+                                                   
+                                            
 
                                                      
 
@@ -712,15 +769,18 @@
                                   </div>
                                   <div class="tab-pane" id="7">
                               
-                                      <table class="table data">
+                                       <table class="table data" id="sales_trend_by_qty_beverage">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Grand Total</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -734,6 +794,9 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
+                                                    
+                                                   
+                                            
 
                                                      
 
@@ -741,20 +804,23 @@
                                                   </tr>
                                             
                                               </tbody>
-                                      </table>
+                                          </table>
                                     
                                   </div>
                                   <div class="tab-pane" id="6">
                               
-                                      <table class="table data">
+                                     <table class="table data" id="sales_trend_by_qty_dessert">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Grand Total</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -768,6 +834,9 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
+                                                    
+                                                   
+                                            
 
                                                      
 
@@ -775,20 +844,23 @@
                                                   </tr>
                                             
                                               </tbody>
-                                      </table>
+                                          </table>
                                     
                                   </div>
                                   <div class="tab-pane" id="5">
                               
-                                      <table class="table data">
+                                       <table class="table data" id="sales_trend_by_qty_others">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Grand Total</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -802,6 +874,9 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
+                                                    
+                                                   
+                                            
 
                                                      
 
@@ -809,7 +884,7 @@
                                                   </tr>
                                             
                                               </tbody>
-                                      </table>
+                                          </table>
                                     
                                   </div>
 
@@ -827,45 +902,48 @@
                                 <br />
                                 <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
                                   <li class="nav-item">
-                                    <a class="nav-link active " data-toggle="tab" href="#1" role="tablist">
+                                 <a class="nav-link active " data-toggle="tab" id="sales_trend_by_rm" href="" role="tablist">
                                       <i class="material-icons">gavel</i> Noodle
                                     </a>
                                   </li>
                                   <li class="nav-item">
-                                    <a class="nav-link " data-toggle="tab" href="#2" role="tablist">
+                                   <a class="nav-link " data-toggle="tab" id="sales_trend_by_rm_rice" href="" role="tablist">
                                       <i class="material-icons">gavel</i> Rice
                                     </a>
                                   </li>
                                   <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#3" role="tablist">
-                                      <i class="material-icons">gavel</i> Others
+                                   <a class="nav-link " data-toggle="tab" id="sales_trend_by_rm_beverage" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Beverage
                                     </a>
                                   </li>
                                   <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#4" role="tablist">
+                                   <a class="nav-link " data-toggle="tab" id="sales_trend_by_rm_dessert" href="" role="tablist">
                                       <i class="material-icons">gavel</i> Dessert
                                     </a>
                                   </li>
                                    <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#5" role="tablist">
-                                      <i class="material-icons">gavel</i> Beverage
+                                     <a class="nav-link " data-toggle="tab" id="sales_trend_by_rm_others" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
                                     </a>
                                   </li>
-                                 
+                               
                                 </ul>
                                 <div class="tab-content tab-space tab-subcategories">
 
-                                  <div class="tab-pane active" id="1">
+                                  <div class="tab-pane active" id="a1">
                              
-                                      <table class="table data">
+                                     <table class="table data" id="sales_trend_by_rm">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Quantity</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -886,20 +964,23 @@
                                                   </tr>
                                             
                                               </tbody>
-                                          </table>
+                                      </table>
                                   
                                   </div>
-                                  <div class="tab-pane" id="2">
+                                  <div class="tab-pane" id="a2">
                               
-                                      <table class="table data">
+                                      <table class="table data" id="sales_trend_by_rm_rice">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                   <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Quantity</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -923,17 +1004,19 @@
                                       </table>
                                     
                                   </div>
-                                  <div class="tab-pane" id="3">
+                                  <div class="tab-pane" id="a3">
                               
-                                      <table class="table data">
+                                      <table class="table data" id="sales_trend_by_rm_beverage">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                   <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Quantity</th>
+                                                    
+                                                   
 
                                                   </tr>
                                               </thead>
@@ -957,17 +1040,20 @@
                                       </table>
                                     
                                   </div>
-                                  <div class="tab-pane" id="4">
+                                  <div class="tab-pane" id="a4">
                               
-                                      <table class="table data">
+                                      <table class="table data" id="sales_trend_by_rm_dessert">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Quantity</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -991,17 +1077,20 @@
                                       </table>
                                     
                                   </div>
-                                  <div class="tab-pane" id="5">
+                                  <div class="tab-pane" id="a5">
                               
-                                      <table class="table data">
+                                      <table class="table data" id="sales_trend_by_rm_others">
                                               <thead>
                                                   <tr>
 
-                                                    <th>Name</th>
-                                                    <th>Code</th>
-                                                    <th>Manager</th>
-                                                    <th>Sync Status</th>
-                                                    <th>Action</th>
+                                                  <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Item Name</th>
+                                                    <th>Percentage %</th>
+                                                    <th>Quantity</th>
+                                                    
+                                                   
+                                              
 
                                                   </tr>
                                               </thead>
@@ -1029,7 +1118,459 @@
                                 </div>
                               </div>
                             </div>
-                        </div> 
+                          </div> 
+                        </div>
+                         <div class="tab-pane" id="link12">
+                          <div class="row">
+                            <div class="col-md-12 ml-auto mr-auto">
+                              <div class="page-categories">
+                           
+                                <br />
+                                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                                  <li class="nav-item">
+                                 <a class="nav-link active " data-toggle="tab" id="compare_sales_trend_rm" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Noodle
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="compare_sales_trend_rm_rice" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Rice
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="compare_sales_trend_rm_beverage" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Beverage
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="compare_sales_trend_rm_dessert" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Dessert
+                                    </a>
+                                  </li>
+                                   <li class="nav-item">
+                                     <a class="nav-link " data-toggle="tab" id="compare_sales_trend_rm_others" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
+                                    </a>
+                                  </li>
+                               
+                                </ul>
+                                <div class="tab-content tab-space tab-subcategories">
+
+                                  <div class="tab-pane active" id="b1">
+                             
+                                     <table class="table data" id="compare_sales_trend_rm">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                  
+                                  </div>
+                                  <div class="tab-pane" id="b2">
+                              
+                                      <table class="table data" id="compare_sales_trend_rm_rice">
+                                              <thead>
+                                                  <tr>
+
+                                                   <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="b3">
+                              
+                                      <table class="table data" id="compare_sales_trend_rm_beverage">
+                                              <thead>
+                                                  <tr>
+
+                                                   <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="b4">
+                              
+                                      <table class="table data" id="compare_sales_trend_rm_dessert">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="b5">
+                              
+                                      <table class="table data" id="compare_sales_trend_rm_others">
+                                              <thead>
+                                                  <tr>
+
+                                                  <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                               
+                                </div>
+                              </div>
+                            </div>
+                          </div> 
+                        </div>
+                         <div class="tab-pane" id="link13">
+                          <div class="row">
+                            <div class="col-md-12 ml-auto mr-auto">
+                              <div class="page-categories">
+                           
+                                <br />
+                                <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+                                  <li class="nav-item">
+                                 <a class="nav-link active " data-toggle="tab" id="compare_sales_trend_qty" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Noodle
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="compare_sales_trend_qty_rice" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Rice
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="compare_sales_trend_qty_beverage" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Beverage
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                   <a class="nav-link " data-toggle="tab" id="compare_sales_trend_qty_dessert" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Dessert
+                                    </a>
+                                  </li>
+                                   <li class="nav-item">
+                                     <a class="nav-link " data-toggle="tab" id="compare_sales_trend_qty_others" href="" role="tablist">
+                                      <i class="material-icons">gavel</i> Others
+                                    </a>
+                                  </li>
+                               
+                                </ul>
+                                <div class="tab-content tab-space tab-subcategories">
+
+                                  <div class="tab-pane active" id="c1">
+                             
+                                     <table class="table data" id="compare_sales_trend_qty">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                  
+                                  </div>
+                                  <div class="tab-pane" id="c2">
+                              
+                                      <table class="table data" id="compare_sales_trend_qty_rice">
+                                              <thead>
+                                                  <tr>
+
+                                                   <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="c3">
+                              
+                                      <table class="table data" id="compare_sales_trend_qty_beverage">
+                                              <thead>
+                                                  <tr>
+
+                                                   <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="c4">
+                              
+                                      <table class="table data" id="compare_sales_trend_qty_dessert">
+                                              <thead>
+                                                  <tr>
+
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                                  <div class="tab-pane" id="c5">
+                              
+                                      <table class="table data" id="compare_sales_trend_qty_others">
+                                              <thead>
+                                                  <tr>
+
+                                                  <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Category </th>
+                                                    <th>Percentage %</th>
+                                                    <th>Total (RM)</th>
+                                                    
+                                                   
+                                              
+
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+
+                                             
+                                                  <tr>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                     
+
+
+                                                  </tr>
+                                            
+                                              </tbody>
+                                      </table>
+                                    
+                                  </div>
+                               
+                                </div>
+                              </div>
+                            </div>
+                          </div> 
                         </div>
 
                       </div>

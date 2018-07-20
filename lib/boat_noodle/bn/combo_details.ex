@@ -37,3 +37,4 @@ defmodule BoatNoodle.BN.ComboDetails do
     ])
   end
 end
+ 

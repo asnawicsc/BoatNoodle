@@ -276,7 +276,7 @@ defmodule BoatNoodleWeb.UserChannel do
             where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
-              salesdate: s.salesdate,
+              salesdatetime: s.salesdatetime,
               invoiceno: s.invoiceno,
               payment_type: sp.payment_type,
               grand_total: sp.grand_total,
@@ -289,6 +289,15 @@ defmodule BoatNoodleWeb.UserChannel do
             }
           )
         )
+
+          sales_data=for item <- sales_data do
+
+              date=item.salesdatetime|> NaiveDateTime.to_string()|>String.split_at(19)|>elem(0)
+
+            %{invoiceno: item.invoiceno,salesdatetime: date,payment_type: item.payment_type,grand_total: item.grand_total,tbl_no: item.tbl_no,
+      pax: item.pax,staff_name: item.staff_name,domainname: item.domainname,branchid: item.branchid}
+        
+      end
 
 
     broadcast(socket, "populate_table_sales_transaction", %{sales_data: sales_data})
@@ -1236,6 +1245,13 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("discount_receipt", payload, socket) do
+
+
+    branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand=Repo.get_by(Brand,id: brand_id)
+
     discount_receipt_data =
       Repo.all(
         from(
@@ -1244,23 +1260,26 @@ defmodule BoatNoodleWeb.UserChannel do
           on: s.salesid == sd.salesid,
           left_join: i in BoatNoodle.BN.DiscountItem,
           on: sd.discountid == i.discountitemsid,
+           left_join: g in BoatNoodle.BN.Brand,
+          on: g.id ==^brand.id,
           group_by: [s.invoiceno],
           where:
             sd.discountid == i.discountitemsid and s.branchid == ^payload["branch_id"] and
               s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
           select: %{
-            salesdate: s.salesdate,
+            salesdatetime: s.salesdatetime,
             invoiceno: s.invoiceno,
             after_disc: sum(sd.afterdisc),
             order_price: sum(sd.order_price),
             discitemsname: i.discitemsname,
-            branchid: s.branchid
+            branchid: s.branchid,
+             domainname: g.domain_name
           }
         )
       )
       |> Enum.map(fn x ->
-        %{
-          salesdate: x.salesdate,
+        %{domainname: x.domainname,
+          salesdatetime: x.salesdatetime,
           invoiceno: x.invoiceno,
           branchid: x.branchid,
           after_disc:
@@ -1271,6 +1290,18 @@ defmodule BoatNoodleWeb.UserChannel do
           discitemsname: x.discitemsname
         }
       end)
+
+     
+
+          discount_receipt_data=for item <- discount_receipt_data do
+
+              date=item.salesdatetime|> NaiveDateTime.to_string()|>String.split_at(19)|>elem(0)
+
+            %{invoiceno: item.invoiceno,salesdatetime: date,after_disc: item.after_disc,
+            discitemsname: item.discitemsname,
+            domainname: item.domainname,branchid: item.branchid}
+        
+      end
 
     broadcast(socket, "populate_table_discount_receipt", %{
       discount_receipt_data: discount_receipt_data
@@ -1322,6 +1353,10 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("voided_receipt", payload, socket) do
+        branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand=Repo.get_by(Brand,id: brand_id)
     voided_receipt_data =
       Repo.all(
         from(
@@ -1330,6 +1365,8 @@ defmodule BoatNoodleWeb.UserChannel do
           on: s.salesid == sp.salesid,
           left_join: f in BoatNoodle.BN.Staff,
           on: s.staffid == f.staff_id,
+          left_join: g in BoatNoodle.BN.Brand,
+          on: g.id == ^brand.id,
           group_by: [s.invoiceno],
           where:
             s.is_void != 0 and s.branchid == ^payload["branch_id"] and
@@ -1341,10 +1378,25 @@ defmodule BoatNoodleWeb.UserChannel do
             total: sp.grand_total,
             table: s.tbl_no,
             pax: s.pax,
-            staff: f.staff_name
+            staff: f.staff_name,
+            branchid: s.branchid,
+              domainname: g.domain_name
           }
         )
       )
+
+
+
+ voided_receipt_data=for item <- voided_receipt_data do
+
+              date=item.salesdatetime|> NaiveDateTime.to_string()|>String.split_at(19)|>elem(0)
+
+            %{salesdatetime: date,salesdate: item.salesdate,
+      invoiceno: item.invoiceno,total: item.total,table: item.table,
+      pax: item.pax,staff: item.staff,domainname: item.domainname,branchid: item.branchid}
+        
+      end
+
 
     broadcast(socket, "populate_table_voided_receipt_data", %{
       voided_receipt_data: voided_receipt_data
@@ -1354,6 +1406,10 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("voided_order", payload, socket) do
+     branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand=Repo.get_by(Brand,id: brand_id)
     voided_order_data =
       Repo.all(
         from(
@@ -1364,6 +1420,8 @@ defmodule BoatNoodleWeb.UserChannel do
           on: g.subcatid == v.itemid,
           left_join: f in BoatNoodle.BN.Staff,
           on: s.staffid == f.staff_id,
+          left_join: r in BoatNoodle.BN.Brand,
+          on: r.id == ^brand.id,
           where:
             s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
               s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
@@ -1371,13 +1429,27 @@ defmodule BoatNoodleWeb.UserChannel do
             salesdatetime: s.salesdatetime,
             salesdate: s.salesdate,
             itemname: v.itemname,
+            invoiceno: s.invoiceno,
             unit_price: g.itemprice,
             quantity: v.quantity,
             totalprice: v.price,
-            staff: f.staff_name
+            staff: f.staff_name,
+            branchid: s.branchid,
+              domainname: r.domain_name
           }
         )
       )
+
+
+       voided_order_data=for item <- voided_order_data do
+
+              date=item.salesdatetime|> NaiveDateTime.to_string()|>String.split_at(19)|>elem(0)
+
+            %{invoiceno: item.invoiceno,salesdatetime: date,salesdate: item.salesdate,
+      itemname: item.itemname,unit_price: item.unit_price,quantity: item.quantity,
+      totalprice: item.totalprice,staff: item.staff,domainname: item.domainname,branchid: item.branchid}
+        
+      end
 
     broadcast(socket, "populate_table_voided_order_data", %{voided_order_data: voided_order_data})
     {:noreply, socket}

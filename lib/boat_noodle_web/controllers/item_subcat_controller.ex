@@ -271,8 +271,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
        itemname = elem(item, 1)["product_name"]
       item_coded = itemname |> String.split_at(3) |> elem(0)
-       item_subcat = Repo.get_by(ItemSubcat, subcatid: elem(item, 1)["subcatid"], brand_id: BN.get_brand_id(conn))
-      itemcat = Repo.get_by(ItemCat, itemcatcode: item_category, brand_id: BN.get_brand_id(conn))
+      s=elem(item,1)["subcatid"]|>String.to_integer
+      item_subcat = Repo.get_by(ItemSubcat, subcatid: s, brand_id: BN.get_brand_id(conn))
       menu_cat_id = item_subcat.itemcatid
       combo_id = subcatid
       combo_qty = elem(item, 1)["cat_limit"]
@@ -487,7 +487,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       itemname = elem(item, 1)["product_name"]
       item_coded = itemname |> String.split_at(3) |> elem(0)
-      itemcat = Repo.get_by(ItemCat, itemcatcode: item_category, brand_id: BN.get_brand_id(conn))
+      s=elem(item,1)["subcatid"]|>String.to_integer
+      itemcat = Repo.get_by(ItemSubcat, subcatid: s, brand_id: BN.get_brand_id(conn))
       menu_cat_id = itemcat.itemcatid
       combo_id = subcatid
       combo_qty = elem(item, 1)["cat_limit"]

@@ -150,10 +150,9 @@ defmodule BoatNoodleWeb.SalesController do
 
   defp csv_content(conn,params) do
 
-
    brand=Repo.get_by(Brand,id: BN.get_brand_id(conn))
 
-    branch=Repo.get_by(Branch,branchid: params["branch"])
+    branch=Repo.get_by(Branch,branchid: params["branch"],brand_id: brand.id)
 
 id=branch.branchid|>Integer.to_string
 

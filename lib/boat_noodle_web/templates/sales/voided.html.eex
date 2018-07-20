@@ -80,16 +80,18 @@
                         <table id="voided_receipt" class="table">
                             <thead align="center">
                                 <tr>
-                                    <th>Time</th>
+                                    <th>Date Time</th>
                                     <th>Ref No</th>
                                     <th>Total</th>
                                     <th>Table</th>
                                     <th>Pax</th>
                                     <th>Cashier</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody align="center">
                                 <tr>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -119,16 +121,18 @@
                         <table id="voided_order" class="table">
                             <thead>
                                 <tr>
-                                    <th>Time</th>
+                                    <th>Date Time</th>
                                     <th>Item Name</th>
                                     <th>Unit Price</th>
                                     <th>Quantity</th>
                                     <th>Total Price</th>
                                     <th>Cashier</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -276,7 +280,7 @@
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'salesdate'
+                    data: 'salesdatetime'
                 },
                 {
                     data: 'invoiceno'
@@ -292,6 +296,12 @@
                 },
                 {
                     data: 'staff'
+                },
+                 {
+                    data: 'invoiceno',
+                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+                    }
                 }
             ]
         });
@@ -365,7 +375,7 @@
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'salesdate'
+                    data: 'salesdatetime'
                 },
                 {
                     data: 'itemname'
@@ -381,6 +391,12 @@
                 },
                 {
                     data: 'staff'
+                },
+               {
+                    data: 'invoiceno',
+                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+                    }
                 }
             ]
         });

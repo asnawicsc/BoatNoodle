@@ -7,7 +7,7 @@ defmodule BoatNoodle.BN.Sales do
     field(:salesid, :string, primary_key: true)
     field(:invoiceno, :string)
     field(:salesdate, :date)
-    field(:salesdatetime, :utc_datetime)
+    field(:salesdatetime, :naive_datetime)
     field(:tbl_no, :string)
     field(:pax, :integer)
     field(:branchid, :string)

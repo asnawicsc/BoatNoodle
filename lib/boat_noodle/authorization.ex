@@ -120,7 +120,7 @@ defmodule BoatNoodle.Authorization do
       path=conn.path_info|>List.delete_at(2)|>List.to_string
       status=conn.path_info|>List.last
 
-      if status == "edit"  do
+      if status == "edits" or status =="edit"  do
 
         admin_menus = admin_menus |> Enum.map(fn x -> String.replace(x, "/", "") end)
          if Enum.any?(admin_menus, fn x -> x == path end) do

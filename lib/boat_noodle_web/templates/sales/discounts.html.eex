@@ -272,7 +272,7 @@
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'salesdate'
+                    data: 'salesdatetime'
                 },
                 {
                     data: 'invoiceno'
@@ -284,9 +284,9 @@
                     data: 'discitemsname'
                 },
                 {
-                   data: 'invoiceno',
+                  data: 'invoiceno',
                     'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/boatnoodle/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"'  target='_blank'>View Details</a>");
+                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
                     }
                 }
             ]
