@@ -19,7 +19,7 @@ defmodule BoatNoodle.BN.Branch do
     field(:qb_dep2acc, :string)
     field(:currency, :string)
 
-    field(:sync_status, :integer)
+    field(:sync_status, :integer, default: 0)
     field(:remain_sync, :integer)
     field(:menu_catalog, :integer)
     field(:disc_catalog, :integer)
@@ -43,7 +43,6 @@ defmodule BoatNoodle.BN.Branch do
       :updated_at,
       :payment_catalog,
       :version,
-
       :tag_catalog,
       :disc_catalog,
       :menu_catalog,

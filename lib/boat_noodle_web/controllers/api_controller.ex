@@ -528,7 +528,7 @@ defmodule BoatNoodleWeb.ApiController do
 
   def webhook_post(conn, params) do
     IO.puts("incoming api post...")
-    IO.inspect(conn)
+
     IO.inspect(params)
     a_list = params["details"]
     brand = params["brand"]
@@ -565,7 +565,7 @@ defmodule BoatNoodleWeb.ApiController do
               Repo.all(
                 from(
                   s in Sales,
-                  where: s.branchid == ^sales_params.branchid,
+                  where: s.branchid == ^sales_params.branchid and s.brand_id == ^user.brand_id,
                   select: %{
                     invoiceno: s.invoiceno
                   },
@@ -580,7 +580,7 @@ defmodule BoatNoodleWeb.ApiController do
               Repo.all(
                 from(
                   b in Branch,
-                  where: b.branchid == ^sales_params.branchid,
+                  where: b.branchid == ^sales_params.branchid and b.brand_id == ^user.brand_id,
                   select: %{
                     branchcode: b.branchcode
                   }
@@ -607,6 +607,23 @@ defmodule BoatNoodleWeb.ApiController do
               send_resp(conn, 501, "Sales id exist.")
 
             sales_exist == nil ->
+              IO.inspect(sales_params)
+
+              salesdate =
+                sales_params.salesdatetime |> String.split("") |> Enum.take(10) |> Enum.join()
+
+              sales_params = Map.put(sales_params, :salesdate, salesdate)
+
+              sales_params =
+                Map.put(sales_params, :tbl_no, Integer.to_string(sales_params.tbl_no))
+
+              sales_params =
+                Map.put(sales_params, :staffid, Integer.to_string(sales_params.staffid))
+
+              sales_params = Map.put(sales_params, :brand_id, user.brand_id)
+
+              sales_params = Map.put(sales_params, :branchid, user.branchid)
+
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->
                   sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
@@ -616,6 +633,7 @@ defmodule BoatNoodleWeb.ApiController do
                   sd =
                     for sales_master_params <- sales_master_params_list do
                       sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+                      sales_master_params = Map.put(sales_master_params, :brand_id, user.brand_id)
 
                       case BN.create_sales_master(sales_master_params) do
                         {:ok, sales_master} ->

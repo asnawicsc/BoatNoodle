@@ -3,7 +3,7 @@ defmodule BoatNoodleWeb.BranchController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.{Branch, Organization, User, TagCatalog, Tag, TagItems}
-  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat,ComboDetails}
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, ComboDetails}
   require IEx
 
   def printers(conn, %{"id" => id}) do
@@ -54,9 +54,6 @@ defmodule BoatNoodleWeb.BranchController do
         subcats: subcats
       )
 
-
- 
-
     # need a list of combos
     # subcatid thats 6 digit are combos
     combos = subcats_data |> Enum.filter(fn x -> String.length(Integer.to_string(x.id)) == 6 end)
@@ -82,12 +79,14 @@ defmodule BoatNoodleWeb.BranchController do
       combo_items: combo_items
     )
   end
-  
 
   def get_api(conn, %{"brand" => brand, "id" => branch_id}) do
     branch = Repo.get_by(Branch, branchid: branch_id, brand_id: BN.get_brand_id(conn))
 
-    api_key = Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y") |> Base.url_encode64()
+    api_key =
+      Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
+      |> Base.url_encode64()
+
     cg = Branch.changeset(branch, %{api_key: api_key})
     map = %{key: api_key} |> Poison.encode!()
 
@@ -141,10 +140,24 @@ defmodule BoatNoodleWeb.BranchController do
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     menu_catalog =
-      Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+      Repo.all(
+        from(
+          m in MenuCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: {m.name, m.id},
+          order_by: [asc: m.name]
+        )
+      )
 
     disc_catalog =
-      Repo.all(from(m in DiscountCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+      Repo.all(
+        from(
+          m in DiscountCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: {m.name, m.id},
+          order_by: [asc: m.name]
+        )
+      )
 
     render(
       conn,
@@ -157,88 +170,121 @@ defmodule BoatNoodleWeb.BranchController do
     )
   end
 
-  def tbl_syn(conn,params) do
+  def tbl_syn(conn, params) do
+    branchs = Repo.all(from(m in MenuCatalog, where: m.brand_id == ^BN.get_brand_id(conn)))
 
-      branchs = Repo.all(from m in MenuCatalog,where: m.brand_id==^BN.get_brand_id(conn))
+    for branch <- branchs do
+      tags =
+        Repo.all(
+          from(
+            m in Tag,
+            where: m.tagid >= 1 and m.tagid <= 5 and m.brand_id == ^BN.get_brand_id(conn),
+            select: %{
+              id: m.tagid,
+              tagname: m.tagname,
+              tagdesc: m.tagdesc,
+              printer: m.printer,
+              branch_id: m.branch_id
+            }
+          )
+        )
 
-
-      
-        for branch <- branchs do
-  
-
-
-             tags=Repo.all(from m in Tag,where: m.tagid >=1 and m.tagid <= 5 and m.brand_id==^BN.get_brand_id(conn), 
-              select: %{id: m.tagid,tagname: m.tagname,tagdesc: m.tagdesc,printer: m.printer,branch_id: m.branch_id})
-
-             for tag <- tags do
-                   BN.create_tag(%{tagname: tag.tagname,tagdesc: tag.tagdesc,printer: tag.printer,branch_id: branch.id})        
-              end
-
-              chicken=Repo.get_by(Tag,tagdesc: "CHICKEN",branch_id: branch.id)
-
-              BN.update_tag(chicken,%{subcat_ids: branch.items})
-
-            
-       end
-    conn
-      |> put_flash(:info, "Successfully synronize")
-      |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
-  end
-
-  def tbl_syn_combo(conn,params) do
-
-     
-     combo_details=Repo.all(from s in ComboDetails,where: s.brand_id==^BN.get_brand_id(conn),select: %{combo_item_id: s.combo_item_id})
-
-      for combo_detail <- combo_details do
-        id=combo_detail.combo_item_id
-
-       a=id|>Integer.to_string|>String.split_at(6)|>elem(1)
-
-        printers=Repo.all(from s in Tag,where: s.brand_id==^BN.get_brand_id(conn),select: %{tagid: s.tagid,subcat_ids: s.subcat_ids,combo_item_ids: s.combo_item_ids})
-
-         for printer <- printers do
-        
-           subcatids = printer.subcat_ids
-            if subcatids != nil do
-              all = subcatids |> String.split(",")
-
-              if Enum.any?(all, fn x -> x == a end) do
-
-                combo_id=id|> Integer.to_string()
-                comboitemids = printer.combo_item_ids
-                comb = comboitemids |> String.split(",")
-                all_items = List.insert_at(comb, 0, combo_id)
-                new_items = all_items |> Enum.join(",")
-
-                tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
-
-                BN.update_tag(tag, %{combo_item_ids: new_items})
-                   
-               end 
-            end
-          end
-        
+      for tag <- tags do
+        BN.create_tag(%{
+          tagname: tag.tagname,
+          tagdesc: tag.tagdesc,
+          printer: tag.printer,
+          branch_id: branch.id
+        })
       end
 
+      chicken = Repo.get_by(Tag, tagdesc: "CHICKEN", branch_id: branch.id)
+
+      BN.update_tag(chicken, %{subcat_ids: branch.items})
+    end
 
     conn
-      |> put_flash(:info, "Successfully synronize")
-      |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
+    |> put_flash(:info, "Successfully synronize")
+    |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
+  end
+
+  def tbl_syn_combo(conn, params) do
+    combo_details =
+      Repo.all(
+        from(
+          s in ComboDetails,
+          where: s.brand_id == ^BN.get_brand_id(conn),
+          select: %{combo_item_id: s.combo_item_id}
+        )
+      )
+
+    for combo_detail <- combo_details do
+      id = combo_detail.combo_item_id
+
+      a = id |> Integer.to_string() |> String.split_at(6) |> elem(1)
+
+      printers =
+        Repo.all(
+          from(
+            s in Tag,
+            where: s.brand_id == ^BN.get_brand_id(conn),
+            select: %{tagid: s.tagid, subcat_ids: s.subcat_ids, combo_item_ids: s.combo_item_ids}
+          )
+        )
+
+      for printer <- printers do
+        subcatids = printer.subcat_ids
+
+        if subcatids != nil do
+          all = subcatids |> String.split(",")
+
+          if Enum.any?(all, fn x -> x == a end) do
+            combo_id = id |> Integer.to_string()
+            comboitemids = printer.combo_item_ids
+            comb = comboitemids |> String.split(",")
+            all_items = List.insert_at(comb, 0, combo_id)
+            new_items = all_items |> Enum.join(",")
+
+            tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
+
+            BN.update_tag(tag, %{combo_item_ids: new_items})
+          end
+        end
+      end
+    end
+
+    conn
+    |> put_flash(:info, "Successfully synronize")
+    |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
   end
 
   def create(conn, %{"branch" => branch_params}) do
+    latest_branch_id =
+      Repo.all(
+        from(
+          b in Branch,
+          where: b.brand_id == ^BN.get_brand_id(conn),
+          select: b.branchid,
+          order_by: [desc: b.branchid]
+        )
+      )
+      |> hd()
+
+    branch_params = Map.put(branch_params, "branchid", latest_branch_id + 1)
+    branch_params = Map.put(branch_params, "brand_id", BN.get_brand_id(conn))
+
     case BN.create_branch(branch_params) do
       {:ok, branch} ->
         conn
         |> put_flash(:info, "Branch created successfully.")
-        |> redirect(to: branch_path(conn, :show, branch))
+        |> redirect(to: branch_path(conn, :show, branch.branchid, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        conn
+        |> put_flash(:error, "Branch not created.")
+        |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
     end
   end
-
 
   def show(conn, %{"id" => id}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
