@@ -43,7 +43,8 @@ defmodule BoatNoodle.BN.Sales do
       :updated_at,
       :created_at
     ])
-     |> validate_required([      :brand_id,
+    |> validate_required([
+      :brand_id,
       :salesid,
       :invoiceno,
       :salesdate,
@@ -52,8 +53,8 @@ defmodule BoatNoodle.BN.Sales do
       :pax,
       :branchid,
       :staffid,
-      :type])
+      :type
+    ])
     |> unique_constraint(:salesid, name: "PRIMARY")
   end
-
 end

@@ -595,7 +595,7 @@ defmodule BoatNoodleWeb.ApiController do
             salesid = brach_name.branchcode <> "" <> id
 
             sales_params = Map.put(sales_params, :salesid, salesid)
-            sales_params = Map.put(sales_params, :invoiceno, id)
+            # sales_params = Map.put(sales_params, :invoiceno, id)
           end
 
           sales_exist = Repo.get_by(Sales, salesid: sales_params.salesid)
@@ -620,9 +620,12 @@ defmodule BoatNoodleWeb.ApiController do
               sales_params =
                 Map.put(sales_params, :staffid, Integer.to_string(sales_params.staffid))
 
+              sales_params =
+                Map.put(sales_params, :invoiceno, Integer.to_string(sales_params.invoiceno))
+
               sales_params = Map.put(sales_params, :brand_id, user.brand_id)
 
-              sales_params = Map.put(sales_params, :branchid, user.branchid)
+              sales_params = Map.put(sales_params, :branchid, Integer.to_string(user.branchid))
 
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->
