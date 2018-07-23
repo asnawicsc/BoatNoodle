@@ -49,31 +49,8 @@
 
   window.currentBrand = '<%=  @conn.private.plug_session["brand_id"] %>';
 
-  <%= cond do %>
-
-  <% get_flash(@conn, :info) != nil -> %>
-
-  swal(
-    '<%= get_flash(@conn, :info) %>',
-    '',
-    'success'
-  )
-  <% get_flash(@conn, :error) != nil -> %>
 
 
-  swal(
-    '<%= get_flash(@conn, :error) %>',
-    '',
-    'error'
-  )
-
-  <% true -> %>
-
-  <% end %>
-$(document).ready(function(){
-
-  $("#backdrop").delay(200).fadeOut()
-})
 </script>
 <script src="/js/socket.js"></script>
 
@@ -239,6 +216,34 @@ $(document).ready(function(){
 <%# <script src="/assets/js/plugins/fullcalendar.min.js"></script> %>
 <script src="/assets/jquery-ui.min.js"></script>
 
+<script type="text/javascript">
+  $(document).ready(function(){
 
+  $("#backdrop").delay(200).fadeOut()
+
+  <%= cond do %>
+
+  <% get_flash(@conn, :info) != nil -> %>
+
+  swal(
+    '<%= get_flash(@conn, :info) %>',
+    '',
+    'success'
+  )
+  <% get_flash(@conn, :error) != nil -> %>
+
+
+  swal(
+    '<%= get_flash(@conn, :error) %>',
+    '',
+    'error'
+  )
+
+  <% true -> %>
+
+  <% end %>
+  
+})
+</script>
 
 </html>

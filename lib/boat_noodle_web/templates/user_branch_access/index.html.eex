@@ -43,7 +43,7 @@
                        
                         <tr>
                           <%= for manager_access_user <- @manager_access_users do %>
-                            <td style="width: 200px; text-align: center;">
+                            <td style="width: 200px; text-align: center; line-height: 0px;">
                               <% 
                               uba = @uba[manager_access_user.id]
                               if uba != nil do
@@ -56,15 +56,17 @@
                                 end
                               end
                               %>
-                             <div >
-                             
+                      
+                             <div style="height: 25px;">
+                               
                               <%= if checkbox do %>
-                                <input style="position: relative; margin-top:0px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" checked="checked">
+                                <input style="position: relative; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" checked="checked">
                               <% else %>
-                                <input style="position: relative; margin-top:0px; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox">
+                                <input style="position: relative; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox">
                               <% end %>
                            
-                 </div>
+                             </div>
+      
                             </td>
                           <% end %>
             
