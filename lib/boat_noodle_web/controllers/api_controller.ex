@@ -80,7 +80,8 @@ defmodule BoatNoodleWeb.ApiController do
           params["code"] <> " API POST -" <> params["scope"]
         ])
 
-        send_resp(conn, 200, "ok")
+        map = %{status: "ok"} |> Poison.encode!()
+        send_resp(conn, 200, map)
 
       {:error, changeset} ->
         model_insert_error(conn, changeset, params)
@@ -690,7 +691,11 @@ defmodule BoatNoodleWeb.ApiController do
                           sales.created_at
                         ])
 
-                        send_resp(conn, 200, "Sales #{sales.salesid} create successfully.")
+                        map =
+                          %{message: "Sales #{sales.salesid} create successfully.", status: "ok"}
+                          |> Poison.encode!()
+
+                        send_resp(conn, 200, map)
 
                       {:error, %Ecto.Changeset{} = changeset} ->
                         model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
