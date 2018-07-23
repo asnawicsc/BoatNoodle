@@ -160,7 +160,7 @@ defmodule BoatNoodleWeb.ApiController do
           branch_id = params["branch_id"]
           brand = params["brand"]
           bb = Repo.get_by(Brand, domain_name: brand)
-          branch = Repo.get_by(Branch, branchid: branch_id, brand_id: bb.id)
+          branch = Repo.get_by(Branch, branchcode: params["code"], brand_id: bb.id)
 
           if branch != nil do
             case params["fields"] do
@@ -516,7 +516,7 @@ defmodule BoatNoodleWeb.ApiController do
       |> Enum.max()
 
     id =
-      (invoiceno + 1)
+      invoiceno
       |> Integer.to_string()
 
     salesid = branchcode <> "" <> id
