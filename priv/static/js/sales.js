@@ -135,7 +135,7 @@ var brand = location.pathname.split("/")[1];
             data: data,
             dom: 'Bfrtip',
             buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+                'copy', 'csv', 'print'
             ],
             columns: [{
                     data: 'branchname'
