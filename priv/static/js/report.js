@@ -186,16 +186,62 @@ if (localStorage.getItem('new_brand') == null) {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                 {
-                    data: 'year'
+                    data: 'month'
                 },
                  {
                     data: 'grand_total'
                 }
             ]
         });
+
+
+
+
+        var maps = JSON.parse(payload.st_graph)
+        var month = []
+        var grand_total = []
+        
+
+        $(maps).each(function() {
+            month.push(this.month)
+        })
+        $(maps).each(function() {
+            grand_total.push(this.grand_total)
+        })
+
+        Highcharts.chart('st_barchart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Sales Trend Chart in (RM)'
+            },
+            xAxis: {
+                categories: month,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Sales',
+                data: grand_total
+            }]
+        });
+
+
+
+
 
          $("#backdrop").delay(500).fadeOut()
     })
@@ -307,16 +353,56 @@ if (localStorage.getItem('new_brand') == null) {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                 {
-                    data: 'year'
+                    data: 'month'
                 },
                  {
                     data: 'grand_total'
                 }
             ]
         });
+
+        var maps = JSON.parse(payload.ad_graph)
+        var month = []
+        var grand_total = []
+        
+
+        $(maps).each(function() {
+            month.push(this.month)
+        })
+        $(maps).each(function() {
+            grand_total.push(this.grand_total)
+        })
+
+        Highcharts.chart('ad_barchart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Average Daily Sales Trend Chart in (RM)'
+            },
+            xAxis: {
+                categories: month,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Sales',
+                data: grand_total
+            }]
+        });
+
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -423,16 +509,58 @@ if (localStorage.getItem('new_brand') == null) {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                 {
-                    data: 'year'
+                    data: 'month'
                 },
                  {
                     data: 'pax'
                 }
             ]
         });
+
+
+
+        var maps = JSON.parse(payload.pt_graph)
+        var month = []
+        var pax = []
+        
+
+        $(maps).each(function() {
+            month.push(this.month)
+        })
+        $(maps).each(function() {
+            pax.push(this.pax)
+        })
+
+        Highcharts.chart('pt_barchart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Pax Trend Chart in (QTY)'
+            },
+            xAxis: {
+                categories: month,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Pax',
+                data: pax
+            }]
+        });
+
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -542,16 +670,56 @@ if (localStorage.getItem('new_brand') == null) {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                 {
-                    data: 'year'
+                    data: 'month'
                 },
                  {
                     data: 'pax'
                 }
             ]
         });
+
+        var maps = JSON.parse(payload.adp_graph)
+        var month = []
+        var pax = []
+        
+
+        $(maps).each(function() {
+            month.push(this.month)
+        })
+        $(maps).each(function() {
+            pax.push(this.pax)
+        })
+
+        Highcharts.chart('adp_barchart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Average Daily Pax Trend Chart in (QTY)'
+            },
+            xAxis: {
+                categories: month,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Pax',
+                data: pax
+            }]
+        });
+
         $("#backdrop").delay(500).fadeOut()
     })  
 
@@ -660,15 +828,54 @@ if (localStorage.getItem('new_brand') == null) {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                 {
-                    data: 'year'
+                    data: 'month'
                 },
                  {
                     data: 'grand_total'
                 }
             ]
+        });
+
+        var maps = JSON.parse(payload.pps_graph)
+        var month = []
+        var grand_total = []
+        
+
+        $(maps).each(function() {
+            month.push(this.month)
+        })
+        $(maps).each(function() {
+            grand_total.push(this.grand_total)
+        })
+
+        Highcharts.chart('pps_barchart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Per Pax Spending Trend Chart in (QTY)'
+            },
+            xAxis: {
+                categories: month,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Sales',
+                data: grand_total
+            }]
         });
         $("#backdrop").delay(500).fadeOut()
     }) 
@@ -787,6 +994,46 @@ if (localStorage.getItem('new_brand') == null) {
                 }
             ]
         });
+
+       var maps = JSON.parse(payload.pvt_graph)
+        var day = []
+        var pax = []
+        
+
+        $(maps).each(function() {
+            day.push(this.day)
+        })
+        $(maps).each(function() {
+            pax.push(this.pax)
+        })
+
+        Highcharts.chart('pvt_barchart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Pax Visiting Trend Chart in (QTY)'
+            },
+            xAxis: {
+                categories: day,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Sales',
+                data: pax
+            }]
+        });
+
         $("#backdrop").delay(500).fadeOut()
     }) 
 
@@ -896,10 +1143,10 @@ if (localStorage.getItem('new_brand') == null) {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -909,6 +1156,89 @@ if (localStorage.getItem('new_brand') == null) {
                 }
             ]
         });
+
+       var maps = JSON.parse(payload.ct_graph)
+        var month = []
+        var noodle = []
+        var rice = []
+        var sidedish = []
+        var beverages = []
+        var add_on = []
+        var toppings = []
+
+
+        $(maps).each(function() {
+            noodle.push(this.noodle)
+        })
+        $(maps).each(function() {
+            rice.push(this.rice)
+        })
+         $(maps).each(function() {
+            sidedish.push(this.sidedish)
+        })
+        $(maps).each(function() {
+            beverages.push(this.beverages)
+        })
+         $(maps).each(function() {
+            add_on.push(this.add_on)
+        })
+             $(maps).each(function() {
+            toppings.push(this.toppings)
+        })
+      
+         $(maps).each(function() {
+            month.push(this.month)
+        })
+
+        Highcharts.chart('ct_barchart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Categories Trend Chart in (RM)'
+            },
+            xAxis: {
+                categories: month,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Noodle',
+                data: noodle
+            },
+            {
+                name: 'Rice',
+                data: rice
+            },
+            {
+                name: 'SideDish',
+                data: sidedish
+            },
+            {
+                name: 'Beverages',
+                data: beverages
+            },
+            {
+                name: 'Add On',
+                data: add_on
+            },
+             {
+                name: 'Toppings',
+                data: toppings
+            }]
+        });
+
+
+
         $("#backdrop").delay(500).fadeOut()
     }) 
 
@@ -1020,10 +1350,10 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year '
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -1033,6 +1363,9 @@ $(".nav-link#category_trend_noodle").click(function() {
                 }
             ]
         });
+
+             
+
         $("#backdrop").delay(500).fadeOut()
     }) 
 
@@ -1654,6 +1987,115 @@ $(".nav-link#category_trend_noodle").click(function() {
                 }
             ]
         });
+
+        var maps = JSON.parse(payload.cct_graph)
+        var month = []
+        var noodle = []
+        var rice = []
+        var sidedish = []
+        var beverages = []
+        var add_on = []
+        var toppings = []
+
+
+        $(maps).each(function() {
+            noodle.push(this.noodle)
+        })
+        $(maps).each(function() {
+            rice.push(this.rice)
+        })
+         $(maps).each(function() {
+            sidedish.push(this.sidedish)
+        })
+        $(maps).each(function() {
+            beverages.push(this.beverages)
+        })
+         $(maps).each(function() {
+            add_on.push(this.add_on)
+        })
+             $(maps).each(function() {
+            toppings.push(this.toppings)
+        })
+      
+         $(maps).each(function() {
+            month.push(this.month)
+        })
+
+ 
+
+
+Highcharts.chart('cct_barchart', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Categories Contribute Trend Chart in (RM)'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'Noodle',
+                data: noodle
+            },
+            {
+                name: 'Rice',
+                data: rice
+            },
+            {
+                name: 'SideDish',
+                data: sidedish
+            },
+            {
+                name: 'Beverages',
+                data: beverages
+            },
+            {
+                name: 'Add On',
+                data: add_on
+            },
+             {
+                name: 'Toppings',
+                data: toppings
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
   
@@ -1789,6 +2231,7 @@ $(".nav-link#category_trend_noodle").click(function() {
                 }
             ]
         });
+
         $("#backdrop").delay(500).fadeOut()
     }) 
 
@@ -1899,10 +2342,10 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'itemname'
@@ -1915,7 +2358,162 @@ $(".nav-link#category_trend_noodle").click(function() {
                 }
             ]
         });
-        $("#backdrop").delay(500).fadeOut()
+  $("#backdrop").delay(500).fadeOut()
+
+       var maps = JSON.parse(payload.stbrn_graph)
+        var month = []
+        var n01 = []
+        var n02 = []
+        var n03 = []
+        var n04 = []
+        var n05 = []
+        var n06 = []
+        var n07 = []
+        var n08 = []
+        var n09 = []
+        var n10 = []
+        var n11 = []
+        var n12 = []
+
+    $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            n01.push(this.n01)
+        })
+        $(maps).each(function() {
+            n02.push(this.n02)
+        })
+         $(maps).each(function() {
+            n03.push(this.n03)
+        })
+        $(maps).each(function() {
+            n04.push(this.n04)
+        })
+        $(maps).each(function() {
+            n05.push(this.n05)
+        })
+        $(maps).each(function() {
+            n06.push(this.n06)
+        })
+        $(maps).each(function() {
+            n07.push(this.n07)
+        })
+        $(maps).each(function() {
+            n08.push(this.n08)
+        })
+        $(maps).each(function() {
+            n09.push(this.n09)
+        })
+        $(maps).each(function() {
+            n10.push(this.n10)
+        })
+        $(maps).each(function() {
+            n11.push(this.n11)
+        })
+        $(maps).each(function() {
+            n12.push(this.n12)
+        })
+
+
+
+Highcharts.chart('stbrn_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Sales Trend By Category Chart in (RM)'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'N01 P. Beef Thai Rice Noodle',
+                data: n01
+            },
+            {
+                name: 'N02 A. Beef Thai Rice Noodle',
+                data: n02
+            },
+            {
+                name: 'N03 P. Chick Thai Rice Noodle',
+                data: n03
+            },
+            {
+                name: 'N04 A. Chick Thai Rice Noodle',
+                data: n04
+            },
+            {
+                name: 'N05 P. Beef Thai Egg Noodle',
+                data: n05
+            },
+             {
+                name: 'N06 A. Beef Thai Egg Noodle',
+                data: n06
+            },
+            {
+                name: 'N07 P. Chick Thai Egg Noodle',
+                data: n07
+            },
+            {
+                name: 'N08 A. Chick Thai Egg Noodle',
+                data: n08
+            },
+            {
+                name: 'N09 P. Beef Springy Noodle',
+                data: n09
+            },
+            {
+                name: 'N10 A. Beef Springy Noodle',
+                data: n10
+            },
+            {
+                name: 'N11 P. Chick Springy  Noodle',
+                data: n11
+            },
+            {
+                name: 'N12 A. Chick Springy Noodle',
+                data: n12
+            }]
+});
+      
     }) 
 
     $(".nav-link#sales_trend_by_qty_rice").click(function() {
@@ -2531,10 +3129,10 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'itemname'
@@ -2547,6 +3145,162 @@ $(".nav-link#category_trend_noodle").click(function() {
                 }
             ]
         });
+
+        var maps = JSON.parse(payload.stbqn_graph)
+        var month = []
+        var n01 = []
+        var n02 = []
+        var n03 = []
+        var n04 = []
+        var n05 = []
+        var n06 = []
+        var n07 = []
+        var n08 = []
+        var n09 = []
+        var n10 = []
+        var n11 = []
+        var n12 = []
+
+    $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            n01.push(this.n01)
+        })
+        $(maps).each(function() {
+            n02.push(this.n02)
+        })
+         $(maps).each(function() {
+            n03.push(this.n03)
+        })
+        $(maps).each(function() {
+            n04.push(this.n04)
+        })
+        $(maps).each(function() {
+            n05.push(this.n05)
+        })
+        $(maps).each(function() {
+            n06.push(this.n06)
+        })
+        $(maps).each(function() {
+            n07.push(this.n07)
+        })
+        $(maps).each(function() {
+            n08.push(this.n08)
+        })
+        $(maps).each(function() {
+            n09.push(this.n09)
+        })
+        $(maps).each(function() {
+            n10.push(this.n10)
+        })
+        $(maps).each(function() {
+            n11.push(this.n11)
+        })
+        $(maps).each(function() {
+            n12.push(this.n12)
+        })
+
+
+
+Highcharts.chart('stbqn_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Sales Trend By Category Chart in (RM)'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'N01 P. Beef Thai Rice Noodle',
+                data: n01
+            },
+            {
+                name: 'N02 A. Beef Thai Rice Noodle',
+                data: n02
+            },
+            {
+                name: 'N03 P. Chick Thai Rice Noodle',
+                data: n03
+            },
+            {
+                name: 'N04 A. Chick Thai Rice Noodle',
+                data: n04
+            },
+            {
+                name: 'N05 P. Beef Thai Egg Noodle',
+                data: n05
+            },
+             {
+                name: 'N06 A. Beef Thai Egg Noodle',
+                data: n06
+            },
+            {
+                name: 'N07 P. Chick Thai Egg Noodle',
+                data: n07
+            },
+            {
+                name: 'N08 A. Chick Thai Egg Noodle',
+                data: n08
+            },
+            {
+                name: 'N09 P. Beef Springy Noodle',
+                data: n09
+            },
+            {
+                name: 'N10 A. Beef Springy Noodle',
+                data: n10
+            },
+            {
+                name: 'N11 P. Chick Springy  Noodle',
+                data: n11
+            },
+            {
+                name: 'N12 A. Chick Springy Noodle',
+                data: n12
+            }]
+});
+      
+  
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -3181,6 +3935,81 @@ $(".nav-link#category_trend_noodle").click(function() {
                 }
             ]
         });
+
+               var maps = JSON.parse(payload.compare_trend_rm_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_rm_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Noodle Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -3809,6 +4638,83 @@ $(".nav-link#category_trend_noodle").click(function() {
                 }
             ]
         });
+
+
+                      var maps = JSON.parse(payload.compare_trend_qty_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_qty_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Noodle Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
+
         $("#backdrop").delay(500).fadeOut()
     })
 

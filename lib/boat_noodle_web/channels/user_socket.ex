@@ -10,6 +10,7 @@ defmodule BoatNoodleWeb.UserSocket do
   channel("menu_catalog:*", BoatNoodleWeb.MenuCatalog)
   channel("sales:*", BoatNoodleWeb.SalesChannel)
   channel("report_channel:*", BoatNoodleWeb.ReportChannel)
+   channel("dashboard_channel:*", BoatNoodleWeb.DashboardChannel)
 
   ## Transports
   transport(:websocket, Phoenix.Transports.WebSocket)

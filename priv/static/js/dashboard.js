@@ -1,0 +1,415 @@
+
+// Now that you are connected, you can join channels with a topic:
+var topic = "dashboard_channel:" + window.currentUser
+// Join the topic
+let dashboard_channel = socket.channel(topic, {})
+dashboard_channel.join()
+
+
+    .receive("ok", data => {
+        console.log("Joined topic", topic)
+    })
+
+
+    .receive("error", resp => {
+        console.log("Unable to join topic", topic)
+    })
+
+$(document).ready(function() {
+
+
+if (localStorage.getItem('start_date') == null) 
+{   var start = moment().subtract(6, 'days');
+    var end = moment();
+
+    localStorage.setItem('start_date',start.format('YYYY-MM-DD'));
+    localStorage.setItem('end_date',end.format('YYYY-MM-DD'));
+
+} 
+else
+{ 
+     st= localStorage.getItem('start_date')
+     en= localStorage.getItem('end_date')  
+    
+    var start = moment(st);
+    var end = moment(en);
+}
+
+
+if (localStorage.getItem('new_brand') == null) {
+   localStorage.setItem('new_brand',1);
+}
+
+
+      function cb(start, end){
+          $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+          $("input[name='start_date']").val(localStorage.getItem('start_date'))
+          $("input[name='end_date']").val(localStorage.getItem('end_date'))
+
+        
+           $('#reportrange').on('hide.daterangepicker', function(ev, picker) {
+             localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
+                  localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
+         location.reload();
+          });  
+      }
+
+          
+ 
+
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+
+        }
+    }, cb);
+
+    cb(start, end);
+
+
+
+
+
+      dashboard_channel.on("dashboard", payload => {
+
+        console.log(payload.nett_sales)
+        console.log(payload.taxes)
+        console.log(payload.order)
+        console.log(payload.pax)
+        console.log(payload.transaction)
+
+
+        console.log(payload.table)
+
+        var nett_sales = payload.nett_sales
+        var taxes = payload.taxes
+        var order = payload.order
+        var pax = payload.pax
+        var transaction = payload.transaction
+
+
+        $("div#nett_sales").html(nett_sales);
+        $("div#tax").html(taxes);
+        $("div#order").html(order);
+        $("div#pax").html(pax);
+        $("div#transaction").html(transaction);
+
+        var data = payload.table
+
+
+       $("table#outlet_sales_information").DataTable({
+             destroy: true,
+            data: data,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [{
+                    data: 'branchname'
+                },
+                {
+                    data: 'gross_sales'
+                },
+                 {
+                    data: 'service_charge'
+                },
+                 {
+                    data: 'taxes'
+                },
+                {
+                    data: 'discount'
+                },
+                 {
+                   data: 'nett_sales'
+                },
+                 {
+                    data: 'roundings'
+                },
+                 {
+                    data: 'total_sales'
+                },
+                 {
+                    data: 'pax'
+                }
+            ]
+        });
+
+
+
+
+        var maps = JSON.parse(payload.branch_daily_sales_sumary)
+        var salesdate = []
+        var total_sales = []
+        var gst = []
+        var discount = []
+        var service_charge = []
+        var transaction = []
+        
+
+        $(maps).each(function() {
+            salesdate.push(this.salesdate)
+        })
+        $(maps).each(function() {
+            total_sales.push(this.total_sales)
+        })
+          $(maps).each(function() {
+            gst.push(this.gst)
+        })
+        $(maps).each(function() {
+            discount.push(this.discount)
+        })
+          $(maps).each(function() {
+            service_charge.push(this.service_charge)
+        })
+        $(maps).each(function() {
+            transaction.push(this.transaction)
+        })
+
+        Highcharts.chart('branch_daily_sales_barchart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Branch Daily Summary'
+            },
+            xAxis: {
+                categories: salesdate,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Sales',
+                data: total_sales
+            },
+            {
+                name: 'Taxes',
+                data: gst
+            },
+            {
+                name: 'Discount',
+                data: discount
+            },
+            {
+                name: 'Service Charge',
+                data: service_charge
+            },
+            {
+                name: 'Transaction',
+                data: transaction
+            }]
+        });
+
+
+
+        var maps2 = JSON.parse(payload.top_10_selling)
+    
+         console.log(maps2)
+
+
+
+
+					Highcharts.chart('top_10_selling', {
+					  chart: {
+					    plotBackgroundColor: null,
+					    plotBorderWidth: null,
+					    plotShadow: false,
+					    type: 'pie'
+					  },
+					  title: {
+					    text: ''
+					  },
+					  tooltip: {
+					    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					  },
+					  plotOptions: {
+					    pie: {
+					      allowPointSelect: true,
+					      cursor: 'pointer',
+					      dataLabels: {
+					        enabled: true,
+					        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+					        style: {
+					          color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+					        }
+					      }
+					    }
+					  },
+					  series: [{
+					    name: 'Brands',
+					    colorByPoint: true,
+					    data: maps2
+					  }]
+					});
+
+
+					        var maps3 = JSON.parse(payload.top_10_selling_revenue)
+    
+         console.log(maps3)
+
+
+
+
+					Highcharts.chart('top_10_selling_revenue', {
+					  chart: {
+					    plotBackgroundColor: null,
+					    plotBorderWidth: null,
+					    plotShadow: false,
+					    type: 'pie'
+					  },
+					  title: {
+					    text: ''
+					  },
+					  tooltip: {
+					    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					  },
+					  plotOptions: {
+					    pie: {
+					      allowPointSelect: true,
+					      cursor: 'pointer',
+					      dataLabels: {
+					        enabled: true,
+					        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+					        style: {
+					          color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+					        }
+					      }
+					    }
+					  },
+					  series: [{
+					    name: 'Brands',
+					    colorByPoint: true,
+					    data: maps3
+					  }]
+					});
+
+					  var maps4 = JSON.parse(payload.top_10_selling_category)
+    
+         console.log(maps4)
+
+
+
+
+					Highcharts.chart('top_10_selling_category', {
+					  chart: {
+					    plotBackgroundColor: null,
+					    plotBorderWidth: null,
+					    plotShadow: false,
+					    type: 'pie'
+					  },
+					  title: {
+					    text: ''
+					  },
+					  tooltip: {
+					    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					  },
+					  plotOptions: {
+					    pie: {
+					      allowPointSelect: true,
+					      cursor: 'pointer',
+					      dataLabels: {
+					        enabled: true,
+					        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+					        style: {
+					          color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+					        }
+					      }
+					    }
+					  },
+					  series: [{
+					    name: 'Brands',
+					    colorByPoint: true,
+					    data: maps4
+					  }]
+					});
+
+
+
+
+
+         $("#backdrop").delay(500).fadeOut()
+    })
+
+
+
+      dashboard_channel.on("yearly", payload => {
+
+
+
+        var maps = JSON.parse(payload.yearly)
+        var grand_total = []
+        var gst = []
+        var month = []
+        var pax = []
+       
+        
+
+        $(maps).each(function() {
+            grand_total.push(this.grand_total)
+        })
+        $(maps).each(function() {
+            gst.push(this.gst)
+        })
+          $(maps).each(function() {
+            pax.push(this.pax)
+        })
+        $(maps).each(function() {
+            month.push(this.month)
+        })
+          
+        Highcharts.chart('yearly', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Month to Month Comparison Summary'
+            },
+            xAxis: {
+                categories: month,
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Total Sales',
+                data: grand_total
+            },
+            {
+                name: 'Total Taxes',
+                data: gst
+            },
+            {
+                name: 'Total Pax',
+                data: pax
+            }]
+        });
+
+    })
+
+
+
+})

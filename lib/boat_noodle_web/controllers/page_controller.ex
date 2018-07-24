@@ -93,7 +93,10 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def index2(conn, _params) do
-    render(conn, "dashboard.html")
+
+  branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+ 
+    render(conn, "dashboard.html",branches: branches)
   end
 
 
