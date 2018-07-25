@@ -481,6 +481,18 @@ $('select[name="branchid"]').on('hidden.bs.select', function (e) {
     window.location.reload();
      
 });
+
+
+$('select[name="year"]').on('hidden.bs.select', function (e) {
+ var d = $("select#year").val()
+
+  var year=  localStorage.setItem("year", d);
+
+
+    window.location.reload();
+     
+});
+
  
 
 });

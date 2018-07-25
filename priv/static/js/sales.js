@@ -19,6 +19,19 @@ else
 }
 
 
+if (localStorage.getItem('year') == null) 
+{  
+    localStorage.setItem('year',2018);
+
+
+} 
+else
+{ 
+     localStorage.getItem('year')}
+    
+
+
+
 if (localStorage.getItem('new_brand') == null) {
    localStorage.setItem('new_brand',1);
 }

@@ -45,7 +45,7 @@
                 </div>
 
             </div>
-        </div>
+            </div>
               <div class="card ">
                 <div class="card-header card-header-text card-header-warning">
       <div class="card-text">
@@ -134,9 +134,9 @@
                             <table class="table data" id="sales_trend_table">
                               <thead>
                                   <tr>
-
+                                   <th>Sales Year</th>
                                     <th>Sales Month</th>
-                                    <th>Sales Year</th>
+                                   
                                     <th>Total Sales (RM)</th>
                                     
 
@@ -159,6 +159,22 @@
                             
                               </tbody>
                           </table>
+
+
+                          <div class="col-md-12">
+                              <div class="card">
+                                  <div class="card-header card-header-icon card-header-rose">
+                                      <div class="card-icon">
+                                          <i class="material-icons">insert_chart</i>
+                                      </div>
+                                      <h4 class="card-title">Sales Trend 
+                                      </h4>
+                                  </div>
+                                  <div class="card-body">
+                                      <div id="st_barchart" class="ct-chart" style="height: 400px;"></div>
+                                  </div>
+                              </div>
+                          </div>
                         </div>
                           <div class="tab-pane" id="link2">
 
@@ -166,8 +182,8 @@
                               <thead>
                                   <tr>
 
-                                    <th>Sales Month</th>
                                     <th>Sales Year</th>
+                                    <th>Sales Month</th>
                                     <th>Total Sales (RM)</th>
                                     
 
@@ -186,7 +202,20 @@
                             
                               </tbody>
                           </table>
-
+                          <div class="col-md-12">
+                              <div class="card">
+                                  <div class="card-header card-header-icon card-header-rose">
+                                      <div class="card-icon">
+                                          <i class="material-icons">insert_chart</i>
+                                      </div>
+                                      <h4 class="card-title">Average Daily Sales Trend
+                                      </h4>
+                                  </div>
+                                  <div class="card-body">
+                                      <div id="ad_barchart" class="ct-chart" style="height: 400px;"></div>
+                                  </div>
+                              </div>
+                          </div>
                         </div>
                         <div class="tab-pane" id="link3">
 
@@ -194,8 +223,8 @@
                               <thead>
                                   <tr>
 
-                                    <th>Sales Month</th>
                                     <th>Sales Year</th>
+                                    <th>Sales Month</th>
                                     <th>Total Pax (QTY)</th>
                                     
 
@@ -214,14 +243,26 @@
                             
                               </tbody>
                           </table>
-                         
+                            <div class="col-md-12">
+                              <div class="card">
+                                  <div class="card-header card-header-icon card-header-rose">
+                                      <div class="card-icon">
+                                          <i class="material-icons">insert_chart</i>
+                                      </div>
+                                      <h4 class="card-title">Average Daily Sales Trend
+                                      </h4>
+                                  </div>
+                                  <div class="card-body">
+                                      <div id="pt_barchart" class="ct-chart" style="height: 400px;"></div>
+                                  </div>
+                              </div>
+                          </div>
                         </div>
                          <div class="tab-pane" id="link4">
 
                           <table class="table data" id="average_daily_pax_table">
                               <thead>
                                   <tr>
-
                                     <th>Sales Month</th>
                                     <th>Sales Year</th>
                                     <th>Total Pax (QTY)</th>
@@ -242,7 +283,21 @@
                             
                               </tbody>
                           </table>
-
+                      
+                          <div class="col-md-12">
+                              <div class="card">
+                                  <div class="card-header card-header-icon card-header-rose">
+                                      <div class="card-icon">
+                                          <i class="material-icons">insert_chart</i>
+                                      </div>
+                                      <h4 class="card-title">Average Daily Sales Trend
+                                      </h4>
+                                  </div>
+                                  <div class="card-body">
+                                      <div id="adp_barchart" class="ct-chart" style="height: 400px;"></div>
+                                  </div>
+                              </div>
+                          </div>
                         </div>
                         <div class="tab-pane" id="link5">
 
@@ -250,8 +305,8 @@
                               <thead>
                                   <tr>
 
+                                    <th>Sales Year</th>
                                     <th>Sales Month</th>
-                                    <th>Year</th>
                                     <th>Total Spend (RM)</th>
                                     
 
@@ -270,6 +325,20 @@
                             
                               </tbody>
                           </table>
+                          <div class="col-md-12">
+                              <div class="card">
+                                  <div class="card-header card-header-icon card-header-rose">
+                                      <div class="card-icon">
+                                          <i class="material-icons">insert_chart</i>
+                                      </div>
+                                      <h4 class="card-title">Per Pax Spending Trend
+                                      </h4>
+                                  </div>
+                                  <div class="card-body">
+                                      <div id="pps_barchart" class="ct-chart" style="height: 400px;"></div>
+                                  </div>
+                              </div>
+                          </div>
                          
                         </div>
                          <div class="tab-pane" id="link6">
@@ -298,6 +367,21 @@
                             
                               </tbody>
                           </table>
+
+                          <div class="col-md-12">
+                              <div class="card">
+                                  <div class="card-header card-header-icon card-header-rose">
+                                      <div class="card-icon">
+                                          <i class="material-icons">insert_chart</i>
+                                      </div>
+                                      <h4 class="card-title">Pax Visiting Trend
+                                      </h4>
+                                  </div>
+                                  <div class="card-body">
+                                      <div id="pvt_barchart" class="ct-chart" style="height: 400px;"></div>
+                                  </div>
+                              </div>
+                          </div>
 
                         </div>
                         <div class="tab-pane" id="link7">
@@ -348,8 +432,8 @@
                                               <thead>
                                                   <tr>
 
-                                                    <th>Month</th>
                                                     <th>Year</th>
+                                                    <th>Month</th>
                                                     <th>Category</th>
                                                     <th>Grand Total</th>
                                               
@@ -374,6 +458,20 @@
                                             
                                               </tbody>
                                           </table>
+                                  <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title">Category Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="ct_barchart"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                                   
                                   </div>
                                   <div class="tab-pane active" id="b">
@@ -382,8 +480,8 @@
                                               <thead>
                                                   <tr>
 
-                                                    <th>Month</th>
                                                     <th>Year</th>
+                                                    <th>Month</th>
                                                     <th>Category</th>
                                                     <th>Grand Total</th>
                                               
@@ -408,6 +506,9 @@
                                             
                                               </tbody>
                                           </table>
+                                          <div class="col-md-12">
+                                   
+                                  </div>
                                   
                                   </div>
                                   <div class="tab-pane" id="c">
@@ -558,8 +659,8 @@
                                               <thead>
                                                   <tr>
 
-                                                    <th>Month</th>
                                                     <th>Year</th>
+                                                    <th>Nonth</th>
                                                     <th>Category</th>
                                                     <th>Grand Total</th>
                                                     <th>PERCENTAGE (%)</th>
@@ -586,6 +687,18 @@
                                             
                                               </tbody>
                                           </table>
+                                           <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title">Category Contribute Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="cct_barchart"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
                         </div>
                         <div class="tab-pane" id="link9">
                           <div class="row">
@@ -618,7 +731,11 @@
                                             
                                               </tbody>
                                           </table>
-                                        </div>
+
+                                 
+
+                                       
+                                      </div>
                                          <div class="col-md-6">
                                           <table class="table data" id="top_10_items_value">
                                               <thead>
@@ -648,6 +765,7 @@
                                             
                                               </tbody>
                                           </table>
+                                     
                                         </div>
                                       </div>
                         </div>
@@ -693,8 +811,8 @@
                                               <thead>
                                                   <tr>
 
-                                                    <th>Month</th>
                                                     <th>Year</th>
+                                                    <th>Month</th>
                                                     <th>Item Name</th>
                                                     <th>Percentage %</th>
                                                     <th>Grand Total</th>
@@ -725,6 +843,20 @@
                                             
                                               </tbody>
                                           </table>
+                                          <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title">Noodle Sales Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="stbrn_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                                   
                                   </div>
                                   <div class="tab-pane " id="8">
@@ -936,8 +1068,8 @@
                                               <thead>
                                                   <tr>
 
+                                                    <th>Year </th>
                                                     <th>Month</th>
-                                                    <th>Year</th>
                                                     <th>Item Name</th>
                                                     <th>Percentage %</th>
                                                     <th>Quantity</th>
@@ -965,6 +1097,20 @@
                                             
                                               </tbody>
                                       </table>
+                                          <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title">Noodle Sales Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="stbqn_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                                   
                                   </div>
                                   <div class="tab-pane" id="a2">
@@ -973,8 +1119,8 @@
                                               <thead>
                                                   <tr>
 
-                                                   <th>Month</th>
-                                                    <th>Year</th>
+                                                   <th>Year </th>
+                                                    <th>Month</th>
                                                     <th>Item Name</th>
                                                     <th>Percentage %</th>
                                                     <th>Quantity</th>
@@ -1010,8 +1156,8 @@
                                               <thead>
                                                   <tr>
 
-                                                   <th>Month</th>
-                                                    <th>Year</th>
+                                                   <th>Year </th>
+                                                    <th>Month</th>
                                                     <th>Item Name</th>
                                                     <th>Percentage %</th>
                                                     <th>Quantity</th>
@@ -1046,8 +1192,8 @@
                                               <thead>
                                                   <tr>
 
+                                                    <th>Year </th>
                                                     <th>Month</th>
-                                                    <th>Year</th>
                                                     <th>Item Name</th>
                                                     <th>Percentage %</th>
                                                     <th>Quantity</th>
@@ -1083,8 +1229,8 @@
                                               <thead>
                                                   <tr>
 
-                                                  <th>Month</th>
-                                                    <th>Year</th>
+                                                  <th>Year </th>
+                                                    <th>Month</th>
                                                     <th>Item Name</th>
                                                     <th>Percentage %</th>
                                                     <th>Quantity</th>
@@ -1162,8 +1308,8 @@
                                               <thead>
                                                   <tr>
 
-                                                    <th>Month</th>
                                                     <th>Year</th>
+                                                    <th>Month</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1191,6 +1337,21 @@
                                             
                                               </tbody>
                                       </table>
+                                       <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Noodle Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_rm_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                  
                                   
                                   </div>
                                   <div class="tab-pane" id="b2">
@@ -1199,8 +1360,8 @@
                                               <thead>
                                                   <tr>
 
-                                                   <th>Month</th>
-                                                    <th>Year</th>
+                                                   <th>Year</th>
+                                                    <th>Month</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1236,8 +1397,8 @@
                                               <thead>
                                                   <tr>
 
-                                                   <th>Month</th>
-                                                    <th>Year</th>
+                                                   <th>Year</th>
+                                                    <th>Month</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1272,8 +1433,8 @@
                                               <thead>
                                                   <tr>
 
+                                                    <th>Year </th>
                                                     <th>Month</th>
-                                                    <th>Year</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1309,8 +1470,8 @@
                                               <thead>
                                                   <tr>
 
-                                                  <th>Month</th>
-                                                    <th>Year</th>
+                                                  <th>Year </th>
+                                                    <th>Month</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1388,8 +1549,8 @@
                                               <thead>
                                                   <tr>
 
+                                                    <th>Year </th>
                                                     <th>Month</th>
-                                                    <th>Year</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1417,6 +1578,20 @@
                                             
                                               </tbody>
                                       </table>
+                                        <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Noodle Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_qty_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                                   
                                   </div>
                                   <div class="tab-pane" id="c2">
@@ -1425,8 +1600,8 @@
                                               <thead>
                                                   <tr>
 
-                                                   <th>Month</th>
-                                                    <th>Year</th>
+                                                   <th>Year </th>
+                                                    <th>Month</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1462,8 +1637,8 @@
                                               <thead>
                                                   <tr>
 
-                                                   <th>Month</th>
-                                                    <th>Year</th>
+                                                   <th>Year </th>
+                                                    <th>Month</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1498,8 +1673,8 @@
                                               <thead>
                                                   <tr>
 
+                                                    <th>Year </th>
                                                     <th>Month</th>
-                                                    <th>Year</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
@@ -1535,8 +1710,8 @@
                                               <thead>
                                                   <tr>
 
-                                                  <th>Month</th>
-                                                    <th>Year</th>
+                                                  <th>Year </th>
+                                                    <th>Month</th>
                                                     <th>Category </th>
                                                     <th>Percentage %</th>
                                                     <th>Total (RM)</th>
