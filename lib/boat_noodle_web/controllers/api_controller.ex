@@ -113,6 +113,11 @@ defmodule BoatNoodleWeb.ApiController do
   def push_scope_cash_in_out(conn, params, user) do
     params = Map.put(params, "branch_id", user.branchid)
     params = Map.put(params, "brand_id", user.brand_id)
+
+    if params["description"] == "" do
+      params = Map.put(params, "description", "empty descriptions")
+    end
+
     # post the cash in cash out shits...
     cg = BoatNoodle.BN.CashInOut.changeset(%BoatNoodle.BN.CashInOut{}, params)
 
@@ -123,7 +128,8 @@ defmodule BoatNoodleWeb.ApiController do
           params["code"] <> " API POST -" <> params["scope"]
         ])
 
-        send_resp(conn, 200, "ok")
+        map = %{status: "ok"} |> Poison.encode!()
+        send_resp(conn, 200, map)
 
       {:error, changeset} ->
         model_insert_error(conn, changeset, params)
@@ -141,19 +147,15 @@ defmodule BoatNoodleWeb.ApiController do
   def webhook_get(conn, params) do
     cond do
       params["key"] == nil ->
-        send_resp(conn, 400, "please include key .")
+        send_resp(conn, 200, "please include key .")
 
       params["brand"] == nil ->
-        send_resp(conn, 400, "please include brand name.")
-
-      params["branch_id"] == nil ->
-        send_resp(conn, 400, "please include branch id.")
+        send_resp(conn, 200, "please include brand name.")
 
       params["fields"] == nil ->
-        send_resp(conn, 400, "please include sales id in field.")
+        send_resp(conn, 200, "please include sales id in field.")
 
-      params["branch_id"] != nil and params["branch_id"] != nil and params["key"] != nil and
-          params["code"] != nil ->
+      params["fields"] != nil and params["key"] != nil and params["code"] != nil ->
         brb = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
 
         if brb != nil do
@@ -208,18 +210,18 @@ defmodule BoatNoodleWeb.ApiController do
                   List.insert_at(conn.req_headers, 0, {"fields", "not within defined fields"})
 
                 log_error_api(message, "API GET")
-                send_resp(conn, 500, "request not available. \n")
+                send_resp(conn, 200, "request not available. \n")
             end
           else
             message = List.insert_at(conn.req_headers, 0, {"branch", "db cant find branch"})
             log_error_api(message, "API GET")
-            send_resp(conn, 400, "branch doesnt exist. \n")
+            send_resp(conn, 200, "branch doesnt exist. \n")
           end
         else
           message = List.insert_at(conn.req_headers, 0, {"authentication", "wrong combination"})
           log_error_api(message, "API GET")
 
-          send_resp(conn, 500, "branch doesnt exist. \n")
+          send_resp(conn, 200, "branch doesnt exist. \n")
         end
     end
   end
@@ -524,7 +526,7 @@ defmodule BoatNoodleWeb.ApiController do
 
     message = List.insert_at(conn.req_headers, 0, {"sales id", "#{salesid}"})
     log_error_api(message, "#{branchcode} - API GET - sales")
-    send_resp(conn, 200, json_map)
+    send_resp(conn, 200, id)
   end
 
   def webhook_post(conn, params) do
@@ -605,7 +607,12 @@ defmodule BoatNoodleWeb.ApiController do
             sales_exist != nil ->
               message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
               log_error_api(message, "API POST - sales")
-              send_resp(conn, 501, "Sales id exist.")
+
+              map =
+                %{message: "Sales #{sales_exist.salesid} already exist.", status: "existed"}
+                |> Poison.encode!()
+
+              send_resp(conn, 200, map)
 
             sales_exist == nil ->
               IO.inspect(sales_params)

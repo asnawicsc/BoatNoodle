@@ -1438,8 +1438,6 @@ defmodule BoatNoodleWeb.UserChannel do
           on: s.orderid == v.orderid,
           left_join: a in BoatNoodle.BN.Sales,
           on: a.salesid == s.salesid,
-          left_join: g in BoatNoodle.BN.ItemSubcat,
-          on: g.subcatid == v.itemid,
           left_join: f in BoatNoodle.BN.Staff,
           on: a.staffid == f.staff_id,
           left_join: r in BoatNoodle.BN.Brand,
@@ -1452,7 +1450,7 @@ defmodule BoatNoodleWeb.UserChannel do
             salesdate: a.salesdate,
             itemname: v.itemname,
             invoiceno: a.invoiceno,
-            unit_price: g.itemprice,
+            unit_price: v.itempriceperqty,
             quantity: v.quantity,
             totalprice: v.price,
             staff: f.staff_name,
@@ -1461,6 +1459,7 @@ defmodule BoatNoodleWeb.UserChannel do
           }
         )
       )
+      |> Enum.uniq()
 
     voided_order_data =
       for item <- voided_order_data do
