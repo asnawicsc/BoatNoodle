@@ -24,7 +24,7 @@ defmodule BoatNoodle.BN.Branch do
     field(:menu_catalog, :integer)
     field(:disc_catalog, :integer)
     field(:tag_catalog, :integer)
-
+    field(:def_open_amt, :decimal, default: 300.00)
     field(:version, :string)
     field(:payment_catalog, :string)
     field(:updated_at, :utc_datetime)
@@ -37,6 +37,7 @@ defmodule BoatNoodle.BN.Branch do
   def changeset(branch, attrs) do
     branch
     |> cast(attrs, [
+      :def_open_amt,
       :api_key,
       :brand_id,
       :created_at,

@@ -382,6 +382,7 @@ defmodule BoatNoodleWeb.ApiController do
 
   def get_scope_branch_details(conn, branch) do
     b = branch
+    org = Repo.get(Organization: b.org_id)
 
     branch_details =
       %{
@@ -407,7 +408,11 @@ defmodule BoatNoodleWeb.ApiController do
         service_charge: b.service_charge,
         manager: b.manager,
         num_staff: b.num_staff,
-        report_class: b.report_class
+        report_class: b.report_class,
+        reg_id: org.orgregid,
+        gst_id: org.gst_reg_id,
+        comp_address: org.address
+        def_open_amt: b.def_open_amt
       }
       |> Poison.encode!()
 
