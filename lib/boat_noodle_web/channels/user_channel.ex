@@ -2715,6 +2715,9 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
+    
+  
+
 
   defp authorized?(_payload) do
     true

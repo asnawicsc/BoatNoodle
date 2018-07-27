@@ -192,7 +192,7 @@ if (localStorage.getItem('new_brand') == null) {
                     data: 'month'
                 },
                  {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -359,7 +359,7 @@ if (localStorage.getItem('new_brand') == null) {
                     data: 'month'
                 },
                  {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -834,7 +834,7 @@ if (localStorage.getItem('new_brand') == null) {
                     data: 'month'
                 },
                  {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -1152,7 +1152,7 @@ if (localStorage.getItem('new_brand') == null) {
                     data: 'category'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -1350,7 +1350,7 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'year '
+                    data: 'year'
                 },
                  {
                     data: 'month'
@@ -1359,7 +1359,7 @@ $(".nav-link#category_trend_noodle").click(function() {
                     data: 'category'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -1477,16 +1477,16 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -1602,16 +1602,16 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -1724,16 +1724,16 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -1848,16 +1848,16 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -1971,16 +1971,16 @@ $(".nav-link#category_trend_noodle").click(function() {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 },
                 {
                     data: 'percentage'
@@ -2354,7 +2354,7 @@ Highcharts.chart('cct_barchart', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -2636,7 +2636,7 @@ Highcharts.chart('stbrn_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -2763,7 +2763,7 @@ Highcharts.chart('stbrn_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -2889,7 +2889,7 @@ Highcharts.chart('stbrn_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -3015,7 +3015,7 @@ Highcharts.chart('stbrn_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -3411,10 +3411,10 @@ Highcharts.chart('stbqn_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                   data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'itemname'
@@ -3538,10 +3538,10 @@ Highcharts.chart('stbqn_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                   data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'itemname'
@@ -3664,10 +3664,10 @@ Highcharts.chart('stbqn_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                     data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'itemname'
@@ -3791,10 +3791,10 @@ Highcharts.chart('stbqn_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                   data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'itemname'
@@ -3919,10 +3919,10 @@ Highcharts.chart('stbqn_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                 data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4120,10 +4120,10 @@ Highcharts.chart('compare_trend_rm_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                  data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4245,10 +4245,10 @@ Highcharts.chart('compare_trend_rm_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                  data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4371,10 +4371,10 @@ Highcharts.chart('compare_trend_rm_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                  data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4496,10 +4496,10 @@ Highcharts.chart('compare_trend_rm_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                   data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4622,10 +4622,10 @@ Highcharts.chart('compare_trend_rm_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                  data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4634,7 +4634,7 @@ Highcharts.chart('compare_trend_rm_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -4825,10 +4825,10 @@ Highcharts.chart('compare_trend_qty_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                   data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4837,7 +4837,7 @@ Highcharts.chart('compare_trend_qty_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -4951,10 +4951,10 @@ Highcharts.chart('compare_trend_qty_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -4963,7 +4963,7 @@ Highcharts.chart('compare_trend_qty_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -5077,10 +5077,10 @@ Highcharts.chart('compare_trend_qty_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                  data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -5089,7 +5089,7 @@ Highcharts.chart('compare_trend_qty_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });
@@ -5204,10 +5204,10 @@ Highcharts.chart('compare_trend_qty_graph', {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'month'
+                    data: 'year'
                 },
                  {
-                    data: 'year'
+                    data: 'month'
                 },
                 {
                     data: 'category'
@@ -5216,7 +5216,7 @@ Highcharts.chart('compare_trend_qty_graph', {
                     data: 'percentage'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'grand_total1'
                 }
             ]
         });

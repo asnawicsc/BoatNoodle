@@ -489,6 +489,531 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
     )
   end
 
+   def quickbook(conn,params) do
+
+
+   
+  
+
+  end
+
+ 
+
+ 
+  def item_sales_report_csv(conn, params) do
+
+     conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Item Sales Report.csv\"")
+    |> send_resp(200, item_sales_report_csv_content(conn,params))
+
+
+  end
+
+  defp item_sales_report_csv_content(conn,params) do
+
+    branch_id=params["branch"]
+   brand=params["brand"]
+   brand=Repo.get_by(Brand, domain_name: brand)
+   start_date=params["start_date"]
+   end_date=params["end_date"]
+
+
+     item_sold_data =
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.itemid == i.subcatid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == i.itemcatid,
+            group_by: i.itemname,
+            where:
+              sd.afterdisc != 0.00 and s.branchid == ^branch_id and
+                s.salesdate >= ^start_date and s.salesdate <= ^end_date and sd.brand_id==^brand.id,
+            select: %{
+              itemcode: i.itemcode,
+              itemname: i.itemname,
+              itemcatname: ic.itemcatname,
+              qty: sum(sd.qty),
+              nett_price: sum(sd.afterdisc),
+              gross_price: sum(sd.order_price)
+              
+            }
+          )
+        )
+ 
+
+ csv_content = ['Item Code ', 'Item Name', 'Category','Quantity','Net Sales','Gross Sales'] 
+    data=for item <- item_sold_data do
+
+     
+    [item.itemcode,item.itemname,item.itemcatname,Decimal.to_string(item.qty),Decimal.to_string(item.nett_price),Decimal.to_string(item.gross_price)] 
+    end
+
+
+
+          qty=Enum.map(item_sold_data,fn x -> Decimal.to_float(x.qty) end)|>Enum.sum|>Float.round(2)|>Float.to_string
+          nett_price=Enum.map(item_sold_data,fn x -> Decimal.to_float(x.nett_price) end)|>Enum.sum|>Float.round(2)|>Float.to_string
+          gross_price=Enum.map(item_sold_data,fn x -> Decimal.to_float(x.gross_price) end)|>Enum.sum|>Float.round(2)|>Float.to_string
+   a="Total"
+   b=""
+   c=""
+   bottem = ['Total','-','-',qty,nett_price,gross_price] 
+   csv_content2=List.insert_at(data,0,csv_content)
+
+   
+   final=List.insert_at(csv_content2,-1,bottem )
+
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
+  end
+
+  def item_sales_outlet_csv(conn, params) do
+
+     conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Item Sales Report.csv\"")
+    |> send_resp(200, item_sales_outlet_csv_content(conn,params))
+
+
+  end
+
+  defp item_sales_outlet_csv_content(conn,params) do
+
+    branch_id=params["branch"]
+   brand=params["brand"]
+   brand=Repo.get_by(Brand, domain_name: brand)
+   start_date=params["start_date"]
+   end_date=params["end_date"]
+
+
+     item_sales_outlet=
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.itemid == i.subcatid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+             left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == i.itemcatid,
+            left_join: di in BoatNoodle.BN.DiscountItem,
+            on: di.discountitemsid== sd.discountid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: st.staff_id== s.staffid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid== s.branchid,
+            group_by: [s.salesdate,i.itemname],
+            where:
+                s.branchid == ^branch_id and
+                s.salesdate >= ^start_date and 
+                s.salesdate <= ^end_date,
+            select: %{
+              salesdate: s.salesdate,
+              branchname: b.branchname,
+              hierachy: ic.category_type,
+              category: ic.itemcatname,
+              itemcode: i.itemcode,
+              itemname: i.itemname,
+              gross_qty:  sum(sd.qty),
+              foc_qty: sum(di.disc_qty),
+              gross_sales: sum(sd.order_price),
+              nett_sales: sum(sd.afterdisc),
+              unit_price: sd.unit_price,
+              store_owner: st.staff_name
+              
+              
+            }
+          )
+        )
+
+ csv_content = ['Date ',
+              'Outlet',
+               'Hieracachy',
+               'Category',
+               'Item Code',
+               'Item Name',
+               'Gross Quantity',
+               'Nett Quantity',
+               'FOC Quantity',
+               'Gross Sales',
+               'Nett Sales',
+               'Unit Price',
+               'Discount Value',
+               'Service Charge',
+               'Store Owner'
+                ] 
+    data=for item <- item_sales_outlet do
+
+            if item.foc_qty == nil do
+
+              foc_qty= 0
+            else
+              foc_qty=Decimal.to_float(item.foc_qty)
+
+            end
+           
+
+                nett_qty=Decimal.to_float(item.gross_qty)-foc_qty
+          discount_value=Decimal.to_float(item.gross_sales)-Decimal.to_float(item.nett_sales)
+          service_charge=(Decimal.to_float(item.nett_sales)/20)|>Float.round(2)
+ 
+    [item.salesdate,
+    item.branchname,
+    item.hierachy,
+    item.category,
+    item.itemcode,
+    item.itemname,
+    item.gross_qty,
+    nett_qty,
+    foc_qty,
+    item.gross_sales,
+    item.nett_sales,
+    item.unit_price,
+    discount_value,
+    service_charge,
+    item.store_owner
+    ] 
+    end
+
+
+
+        
+   csv_content2=List.insert_at(data,0,csv_content)
+
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
+  end
+
+  def combo_item_sales_csv(conn, params) do
+
+     conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Combo Item Sales Report.csv\"")
+    |> send_resp(200, combo_item_sales_csv_content(conn,params))
+
+
+  end
+
+    defp combo_item_sales_csv_content(conn,params) do
+
+    branch_id=params["branch"]
+   brand=params["brand"]
+   brand=Repo.get_by(Brand, domain_name: brand)
+   start_date=params["start_date"]
+   end_date=params["end_date"]
+
+
+     item_sales_outlet=
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.combo_id == i.subcatid,
+            left_join: cd in BoatNoodle.BN.ComboDetails,
+            on: cd.combo_item_id == sd.itemid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+             left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == cd.menu_cat_id,
+            left_join: di in BoatNoodle.BN.DiscountItem,
+            on: di.discountitemsid== sd.discountid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: st.staff_id== s.staffid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid== s.branchid,
+            group_by: [s.salesdate,cd.combo_item_name],
+            where:
+                sd.combo_id != 0 and
+                s.branchid == ^branch_id and
+                s.salesdate >= ^start_date and 
+                s.salesdate <= ^end_date,
+            select: %{
+              salesdate: s.salesdate,
+              branchname: b.branchname,
+              hierachy: ic.category_type,
+              category: ic.itemcatname,
+              itemcode: i.itemcode,
+              comboname: i.itemname,
+              itemname: cd.combo_item_name,
+              gross_qty:  sum(sd.qty),
+              foc_qty: sum(di.disc_qty),
+              unit_price: cd.unit_price,
+              store_owner: st.staff_name
+              
+              
+            }
+          )
+        )
+
+ csv_content = ['Date ',
+              'Outlet',
+               'Hieracachy',
+               'Category',
+               'Item Code',
+               'Combo Name',
+               'Item Name',
+               'Gross Quantity',
+               'Nett Quantity',
+               'FOC Quantity',
+               'Gross Sales',
+               'Nett Sales',
+               'Unit Price',
+               'Discount Value',
+               'Service Charge',
+               'Store Owner'
+                ] 
+    data=for item <- item_sales_outlet do
+
+            if item.foc_qty == nil do
+
+              foc_qty=0
+            else
+              foc_qty=Decimal.to_float(item.foc_qty)
+
+       end
+           
+
+                nett_qty=Decimal.to_float(item.gross_qty)-foc_qty
+         
+          gross_sales=Decimal.to_float(item.unit_price)*nett_qty
+          nett_sales=Decimal.to_float(item.unit_price)*nett_qty
+          service_charge=(nett_sales/20)|>Float.round(2)
+           discount_value=gross_sales-nett_sales
+ 
+    [item.salesdate,
+    item.branchname,
+    item.hierachy,
+    item.category,
+    item.itemcode,
+    item.comboname,
+    item.itemname,
+    item.gross_qty,
+    nett_qty,
+    foc_qty,
+    gross_sales,
+    nett_sales,
+    item.unit_price,
+    discount_value,
+    service_charge,
+    item.store_owner
+    ] 
+    end
+
+
+
+        
+   csv_content2=List.insert_at(data,0,csv_content)
+
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
+  end
+
+
+
+  def discount_item_report_csv(conn, params) do
+
+     conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Discount Item Report.csv\"")
+    |> send_resp(200, discount_item_report_csv_content(conn,params))
+
+
+  end
+
+  defp discount_item_report_csv_content(conn,params) do
+
+    branch_id=params["branch"]
+   brand=params["brand"]
+   brand=Repo.get_by(Brand, domain_name: brand)
+   start_date=params["start_date"]
+   end_date=params["end_date"]
+
+     discount_item_report_csv_content=
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: di in BoatNoodle.BN.DiscountItem,
+            on: sd.discountid == di.discountitemsid,
+            left_join: d in BoatNoodle.BN.Discount,
+            on: d.discountid== di.discountid,
+             left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid== sd.salesid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid== s.branchid,
+            left_join: br in BoatNoodle.BN.Brand,
+            on: br.id== sd.brand_id,
+            group_by: [s.salesdate,di.discitemsname],   
+            where:
+                sd.discountid != "0" and
+                sd.brand_id==^brand.id and
+                 b.brand_id==^brand.id and
+                s.branchid == ^branch_id and
+                s.salesdate >= ^start_date and 
+                s.salesdate <= ^end_date,
+            select: %{
+              salesdate: s.salesdate,
+              discname:  d.discname,
+              discitemsname: di.discitemsname,
+              qty:  sum(di.discountitemsid),
+              order_price: sum(sd.order_price),
+              after_disc: sum(sd.afterdisc)          
+            }
+          )
+        )
+        
+
+    csv_content = ['Date ',
+              'Discount Item',
+               'Discount Category',
+               'Discount Number',
+               'Discount Amount'
+                ] 
+    data=for item <- discount_item_report_csv_content do
+
+          
+              discount_amount=Decimal.to_float(item.order_price)-Decimal.to_float(item.after_disc)
+
+         
+                   [item.salesdate,item.discname,item.discitemsname,item.qty,discount_amount] 
+    end
+
+
+
+        
+   csv_content2=List.insert_at(data,0,csv_content)
+
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
+
+  end
+
+   def discount_item_detail_report_csv(conn, params) do
+
+     conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Discount Item Detail Report.csv\"")
+    |> send_resp(200, discount_item_detail_report_csv_content(conn,params))
+
+
+  end
+
+  defp discount_item_detail_report_csv_content(conn,params) do
+
+    branch_id=params["branch"]
+   brand=params["brand"]
+   brand=Repo.get_by(Brand, domain_name: brand)
+   start_date=params["start_date"]
+   end_date=params["end_date"]
+
+
+     discount_item_detail_report_csv=
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.itemid == i.subcatid,
+             left_join: di in BoatNoodle.BN.DiscountItem,
+            on: di.discountitemsid== sd.discountid,
+            left_join: d in BoatNoodle.BN.Discount,
+            on: d.discountid== di.discountid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: st.staff_id== s.staffid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid== s.branchid,
+            left_join: br in BoatNoodle.BN.Brand,
+            on: br.id== sd.brand_id,
+             left_join: sp in BoatNoodle.BN.SalesPayment,
+            on: sp.salesid == s.salesid,     
+            where:
+                sd.discountid != "0" and
+                sd.brand_id==^brand.id and
+                 b.brand_id==^brand.id and
+                s.branchid == ^branch_id and
+                s.salesdate >= ^start_date and 
+                s.salesdate <= ^end_date,
+            select: %{
+              salesdate: s.salesdate,
+              invoiceno: s.invoiceno,
+              itemcode: i.itemcode,
+              itemname: i.itemname,
+              qty: sd.qty,
+              itemprice: i.itemprice,
+              discname:  d.discname,
+              discitemsname: di.discitemsname,
+              tbl_no: s.tbl_no,
+              staff_name: st.staff_name,
+              branchname: b.branchname,
+              voucher_code: sp.voucher_code
+              
+              
+            }
+          )
+        )
+
+ csv_content = ['Date ',
+               'Invoice No',
+               'Item Code',
+               'Item Name',
+               'Quantity',
+               'Item Price',
+               'Price Before Discount',
+               'Discount Amount',
+               'Discount Name',
+               'Discount Item Name',
+               'Table No',
+               'Staff Name',
+               'Branch Name ',
+               'Voucher Code'
+               
+                ] 
+    data=for item <- discount_item_detail_report_csv do
+
+           
+
+                price_before_discount=Decimal.to_float(item.itemprice)*item.qty
+         
+          discount_amount=price_before_discount*item.qty
+  
+   
+ 
+    [item.salesdate,
+    item.invoiceno,
+    item.itemcode,
+    item.itemname,
+    item.qty,
+    item.itemprice,
+    price_before_discount,
+    discount_amount,
+    item.discname,
+    item.discitemsname,
+    item.tbl_no,
+    item.staff_name,
+    item.branchname,
+    item.voucher_code
+    ] 
+    end
+
+
+
+        
+   csv_content2=List.insert_at(data,0,csv_content)
+
+    |> CSV.encode
+    |> Enum.to_list
+    |> to_string
+  end
+
+
   def sales_chart(conn, params) do
     render(conn, "sales_chart.html", branches: branches())
   end

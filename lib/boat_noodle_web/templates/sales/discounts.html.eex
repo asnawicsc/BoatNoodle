@@ -78,7 +78,33 @@
                         </h4>
                     </div>
                     <div class="card-body">
-
+    <div class="dropdown pull-right" style="padding: 10px;">
+            <div class="row">
+                  <form method="post" action='/<%= @conn.params["brand"] %>/discount_item_report_csv'>
+             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+              <input type="hidden" name="start_date">
+                <input type="hidden" name="end_date">
+            <input type="hidden" name="branch">
+             <button class="btn btn-rose btn-round" id="discount_item_report_csv" >
+                <i class="material-icons">add_box</i>Discount Item Report
+              <div class="ripple-container"></div>
+            </button>
+           </form>
+           <form method="post" action='/<%= @conn.params["brand"] %>/discount_item_detail_report_csv'>
+             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+              <input type="hidden" name="start_date">
+                <input type="hidden" name="end_date">
+            <input type="hidden" name="branch">
+            <button class="btn btn-rose btn-round" id="discount_item_detail_report_csv" >
+                <i class="material-icons">add_box</i> Discount Item Detail Report
+              <div class="ripple-container"></div>
+            </button>
+        </form>
+      
+            
+             
+           </div>
+        </div>
 
                         <table id="discount_receipt" class="table">
                             <thead align="center">

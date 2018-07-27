@@ -1,5 +1,6 @@
 defmodule BoatNoodleWeb.DashboardChannel do
   use BoatNoodleWeb, :channel
+  import Number.Currency
   require IEx
 
   def join("dashboard_channel:" <> user_id, payload, socket) do
@@ -11,46 +12,46 @@ defmodule BoatNoodleWeb.DashboardChannel do
   end
 
   def handle_in("dashboard", payload, socket) do
+   
 
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
     brand=Repo.get_by(Brand,id: brand_id)
 
+
     all=Repo.all(from sp in BoatNoodle.BN.SalesPayment,
-                                        left_join: s in BoatNoodle.BN.Sales,on: sp.salesid==s.salesid,
-                                        left_join: b in BoatNoodle.BN.Branch, on: b.branchid== s.branchid,
-                                        left_join: sm in BoatNoodle.BN.SalesMaster, on: sm.salesid== s.salesid,
-                                        where:  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                                        s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                                        group_by: [s.salesdate],
-                                        select: %{salesdate: s.salesdate,
-                                                  order: count(sm.sales_details),
-                                                  pax: sum(s.pax),
-                                                  branchname: b.branchname,
-                                                  grand_total: sum(sp.grand_total),
-                                                  service_charge: sum(sp.service_charge),
-                                                  gst: sum(sp.gst_charge),
-                                                  after_disc: sum(sp.after_disc),
-                                                  transaction: count(sp.salesid),
-                                                  sub_total: sum(sp.sub_total),
-                                                  rounding: sum(sp.rounding)})
+    left_join: s in BoatNoodle.BN.Sales,on: sp.salesid==s.salesid,
+    left_join: b in BoatNoodle.BN.Branch, on: b.branchid== s.branchid,
+    left_join: sm in BoatNoodle.BN.SalesMaster, on: sm.salesid== s.salesid,
+    where:  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+    s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
+    group_by: [s.salesdate],
+    select: %{salesdate: s.salesdate,
+              order: count(sm.sales_details),
+              pax: sum(s.pax),
+              branchname: b.branchname,
+              grand_total: sum(sp.grand_total),
+              service_charge: sum(sp.service_charge),
+              gst: sum(sp.gst_charge),
+              after_disc: sum(sp.after_disc),
+              transaction: count(s.salesid),
+              sub_total: sum(sp.sub_total),
+              rounding: sum(sp.rounding)})
 
      branch_daily_sales_sumary=
      for item <- all do
       order=item.order
+      transaction=item.transaction
       after_disc=Decimal.to_float(item.after_disc)
       sub_total=Decimal.to_float(item.sub_total)
       service_charge= Decimal.to_float(item.service_charge)
       gst= Decimal.to_float(item.gst)
       roundings= Decimal.to_float(item.rounding)
       pax= Decimal.to_float(item.pax)
-    
       discount=after_disc-sub_total|>Float.round(2)
-
       nett_sales=sub_total+service_charge+gst-discount|>Float.round(2)
       total_sales= nett_sales+roundings|>Float.round(2)
-
       %{salesdate: item.salesdate,
         branchname: item.branchname,
         sub_total: sub_total,
@@ -62,18 +63,21 @@ defmodule BoatNoodleWeb.DashboardChannel do
         total_sales: total_sales,
         pax: pax,
         order: order,
-        transaction: item.transaction
+        transaction: transaction
         }
        
    end
 
+   IEx.pry
+
+
      branchname=Enum.map(branch_daily_sales_sumary,fn x -> x.branchname end)|>Enum.uniq|>hd
-     gross_sales=Enum.map(branch_daily_sales_sumary,fn x -> x.sub_total end)|>Enum.sum|>Float.round(2)
-     service_charge=Enum.map(branch_daily_sales_sumary,fn x -> x.service_charge end)|>Enum.sum|>Float.round(2)
-     taxes=Enum.map(branch_daily_sales_sumary,fn x -> x.gst end)|>Enum.sum|>Float.round(2)
-     discount=Enum.map(branch_daily_sales_sumary,fn x -> x.discount end)|>Enum.sum|>Float.round(2)
-     nett_sales=Enum.map(branch_daily_sales_sumary,fn x -> x.nett_sales end)|>Enum.sum|>Float.round(2)
-     roundings=Enum.map(branch_daily_sales_sumary,fn x -> x.roundings end)|>Enum.sum|>Float.round(2)
+     gross_sales=Enum.map(branch_daily_sales_sumary,fn x -> x.sub_total end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+     service_charge=Enum.map(branch_daily_sales_sumary,fn x -> x.service_charge end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+     taxes=Enum.map(branch_daily_sales_sumary,fn x -> x.gst end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+     discount=Enum.map(branch_daily_sales_sumary,fn x -> x.discount end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+     nett_sales=Enum.map(branch_daily_sales_sumary,fn x -> x.nett_sales end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+     roundings=Enum.map(branch_daily_sales_sumary,fn x -> x.roundings end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
      total_sales=Enum.map(branch_daily_sales_sumary,fn x -> x.total_sales end)|>Enum.sum|>Float.round(2)
      order=Enum.map(branch_daily_sales_sumary,fn x -> x.order end)|>Enum.sum
 
@@ -81,7 +85,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
      transaction=Enum.map(branch_daily_sales_sumary,fn x -> x.transaction end)|>Enum.sum
 
-     table=[%{branchname: branchname,gross_sales: gross_sales,service_charge: service_charge,
+     table=[%{branchname: branchname,gross_sales: gross_sales ,service_charge: service_charge,
      taxes: taxes,discount: discount,nett_sales: nett_sales,roundings: roundings,total_sales: total_sales,pax: pax}]
 
 
