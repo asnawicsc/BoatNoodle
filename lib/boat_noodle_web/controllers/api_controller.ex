@@ -331,11 +331,35 @@ defmodule BoatNoodleWeb.ApiController do
           }
         )
       )
-      |> Poison.encode!()
+      |> Enum.reject(fn x -> x.branch_access == nil end)
+
+    IO.inspect(staffs)
+
+    staffs =
+      staffs
+      |> Enum.map(fn x ->
+        %{
+          brand_id: x.brand_id,
+          staff_id: x.staff_id,
+          branch_access: String.split(x.branch_access, ","),
+          staff_name: x.staff_name,
+          staff_contact: x.staff_contact,
+          staff_email: x.staff_email,
+          staff_pin: x.staff_pin,
+          branchid: x.branchid,
+          staff_type_id: x.staff_type_id,
+          prof_img: x.prof_img
+        }
+      end)
+      |> Enum.filter(fn x ->
+        Enum.any?(x.branch_access, fn y -> y == Integer.to_string(branch_id) end)
+      end)
+
+    staff_list = %{staffs: staffs} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"staffs", "staffs"})
     log_error_api(message, "#{branchcode} - API GET - staffs")
-    send_resp(conn, 200, staffs)
+    send_resp(conn, 200, staff_list)
   end
 
   def get_scope_item_remarks(conn, branch_id, brand_id, branchcode) do
@@ -382,7 +406,7 @@ defmodule BoatNoodleWeb.ApiController do
 
   def get_scope_branch_details(conn, branch) do
     b = branch
-    org = Repo.get(Organization: b.org_id)
+    org = Repo.get(Organization, b.org_id)
 
     branch_details =
       %{
@@ -411,7 +435,7 @@ defmodule BoatNoodleWeb.ApiController do
         report_class: b.report_class,
         reg_id: org.orgregid,
         gst_id: org.gst_reg_id,
-        comp_address: org.address
+        comp_address: org.address,
         def_open_amt: b.def_open_amt
       }
       |> Poison.encode!()
@@ -423,33 +447,57 @@ defmodule BoatNoodleWeb.ApiController do
 
   def get_scope_branch_items(conn, branch_id, brand_id, branchcode, menu_cat_id) do
     menu_catalog = Repo.get_by(MenuCatalog, id: menu_cat_id, brand_id: brand_id)
-
+    cat_ids = menu_catalog.categories |> String.split(",") |> Enum.reject(fn x -> x == "" end)
     subcat_ids = menu_catalog.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
     combo_ids = menu_catalog.combo_items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
-    subcats =
-      Repo.all(from(s in ItemSubcat, where: s.subcatid in ^subcat_ids))
+    item_cats =
+      Repo.all(from(i in ItemCat, where: i.itemcatid in ^cat_ids and i.brand_id == ^brand_id))
       |> Enum.map(fn x ->
         %{
-          brand_id: x.brand_id,
+          # brand_id: x.brand_id,
+          itemcatid: x.itemcatid,
+          itemcatcode: x.itemcatcode,
+          itemcatname: x.itemcatname,
+          itemcatdesc: x.itemcatdesc,
+          is_default: x.is_default,
+          visable: x.visable,
+          category_img: x.category_img
+          # category_type: x.category_type,
+          # created_at: x.created_at,
+          # updated_at: x.updated_at
+        }
+      end)
+
+    subcats =
+      Repo.all(
+        from(s in ItemSubcat, where: s.subcatid in ^subcat_ids and s.brand_id == ^brand_id)
+      )
+      |> Enum.map(fn x ->
+        %{
+          # brand_id: x.brand_id,
           subcatid: x.subcatid,
           itemcatid: x.itemcatid,
           itemname: x.itemname,
           itemcode: x.itemcode,
-          product_code: x.product_code,
-          price_code: x.price_code,
-          part_code: x.part_code,
-          itemdesc: x.itemdesc,
-          itemprice: x.itemprice,
-          itemimage: x.itemimage,
+          price: x.itemprice,
           is_categorize: x.is_categorize,
           is_activate: x.is_activate,
-          is_comboitem: x.is_comboitem,
           is_default_combo: x.is_default_combo,
-          is_delete: x.is_delete,
           enable_disc: x.enable_disc,
           include_spend: x.include_spend,
-          is_print: x.is_print
+          is_print: x.is_print,
+          disc_reminder: x.disc_reminder,
+          item_start_hour: x.item_start_hour,
+          item_end_hour: x.item_end_hour
+
+          # product_code: x.product_code,
+          # price_code: x.price_code,
+          # part_code: x.part_code,
+          # itemdesc: x.itemdesc,
+          # itemimage: x.itemimage,
+          # is_comboitem: x.is_comboitem,
+          # is_delete: x.is_delete,
         }
       end)
 
@@ -457,9 +505,9 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           c in ComboDetails,
-          where: c.id in ^combo_ids,
+          where: c.id in ^combo_ids and c.brand_id == ^brand_id,
           select: %{
-            brand_id: c.brand_id,
+            # brand_id: c.brand_id,
             id: c.id,
             menu_cat_id: c.menu_cat_id,
             combo_id: c.combo_id,
@@ -467,15 +515,17 @@ defmodule BoatNoodleWeb.ApiController do
             combo_item_id: c.combo_item_id,
             combo_item_name: c.combo_item_name,
             combo_item_code: c.combo_item_code,
-            combo_item_qty: c.combo_item_qty,
-            update_qty: c.update_qty,
+            # combo_item_qty: c.combo_item_qty,
+            # update_qty: c.update_qty,
+            top_up: c.top_up,
             unit_price: c.unit_price,
-            top_up: c.top_up
+            is_default: c.is_default
           }
         )
       )
 
-    json_map = %{combos: combos, subcats: subcats} |> Poison.encode!()
+    json_map =
+      %{combo_details: combos, menuitems: subcats, menucategories: item_cats} |> Poison.encode!()
 
     if menu_catalog != nil do
       message = List.insert_at(conn.req_headers, 0, {"menu_catalog", "menu_catalog"})

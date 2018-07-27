@@ -27,12 +27,14 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:product_code, :string)
     field(:updated_at, :utc_datetime)
     field(:brand_id, :integer, primary_key: true)
+    field(:disc_reminder, :integer, default: 0)
   end
 
   @doc false
   def changeset(item_subcat, attrs) do
     item_subcat
     |> cast(attrs, [
+      :disc_reminder,
       :item_start_hour,
       :item_end_hour,
       :brand_id,

@@ -8,6 +8,8 @@ defmodule BoatNoodle.BN.ItemCat do
     field(:created_at, :utc_datetime)
     field(:is_default, :integer)
     field(:is_delete, :integer)
+    field(:visable, :integer)
+    field(:category_img, :binary)
     field(:itemcatcode, :string)
     field(:itemcatdesc, :string)
     field(:itemcatid, :integer, primary_key: true)
@@ -20,6 +22,8 @@ defmodule BoatNoodle.BN.ItemCat do
   def changeset(item_cat, attrs) do
     item_cat
     |> cast(attrs, [
+      :category_img,
+      :visable,
       :brand_id,
       :itemcatid,
       :itemcatcode,

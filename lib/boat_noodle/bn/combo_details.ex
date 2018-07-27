@@ -5,6 +5,7 @@ defmodule BoatNoodle.BN.ComboDetails do
   @primary_key false
   schema "combo_details" do
     field(:combo_id, :integer)
+    field(:is_default, :integer, default: 0)
     field(:combo_item_code, :string)
     field(:combo_item_id, :integer)
     field(:combo_item_name, :string)
@@ -23,6 +24,7 @@ defmodule BoatNoodle.BN.ComboDetails do
     combo_details
     |> cast(attrs, [
       :brand_id,
+      :is_default,
       :id,
       :menu_cat_id,
       :combo_id,
@@ -37,4 +39,3 @@ defmodule BoatNoodle.BN.ComboDetails do
     ])
   end
 end
- 

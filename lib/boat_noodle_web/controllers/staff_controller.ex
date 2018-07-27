@@ -12,7 +12,7 @@ defmodule BoatNoodleWeb.StaffController do
           s in Staff,
           left_join: r in BoatNoodle.BN.StaffType,
           on: s.staff_type_id == r.id,
-           where: s.brand_id==^BN.get_brand_id(conn),
+          where: s.brand_id == ^BN.get_brand_id(conn),
           select: %{
             id: s.staff_id,
             staff_name: s.staff_name,
