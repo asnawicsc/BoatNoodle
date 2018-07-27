@@ -53,12 +53,12 @@
             </div>
 
                <div class="row">
-                        <div class="col-lg-6 col-md-3 col-sm-3">
-                          <div class="card card-stats">
+                        <div class="col-lg-6 col-md-3 col-sm-3" >
+                          <div class="card card-stats bg-success"  >
                             <div class="card-header card-header-warning card-header-icon">
                           
-                              <p class="card-category">Nett Sales</p>
-                              <h3 class="card-title"><div  id="nett_sales"></div></h3>
+                              <p class="card-category text-light"><b>Nett Sales</b></p>
+                              <h3 class="card-title text-light" ><b><div  id="nett_sales" ></div></b></h3>
                             </div>
                             <div class="card-footer">
                              
@@ -66,11 +66,11 @@
                           </div>
                         </div>
                         <div class="col-lg-6 col-md-3 col-sm-3">
-                          <div class="card card-stats">
+                          <div class="card card-stats bg-info ">
                             <div class="card-header card-header-rose card-header-icon">
                              
-                              <p class="card-category">Taxes</p>
-                              <h3 class="card-title"><div id="tax"></div></h3>
+                              <p class="card-category text-light"><b>Taxes</b></p>
+                              <h3 class="card-title text-light"><b><div id="tax"></div></b></h3>
                             </div>
                             <div class="card-footer">
                               <div class="stats">
@@ -80,11 +80,11 @@
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-3 col-sm-3">
-                          <div class="card card-stats">
+                          <div class="card card-stats bg-secondary">
                             <div class="card-header card-header-success card-header-icon">
                             
-                              <p class="card-category">Orders</p>
-                              <h3 class="card-title"><div id="order"></div></h3>
+                              <p class="card-category text-light"><b>Orders</b></p>
+                              <h3 class="card-title text-light"><b><div id="order"></div></b></h3>
                             </div>
                             <div class="card-footer">
                               <div class="stats">
@@ -94,11 +94,11 @@
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-3 col-sm-3">
-                          <div class="card card-stats">
+                          <div class="card card-stats bg-danger">
                             <div class="card-header card-header-info card-header-icon">
                               
-                              <p class="card-category">Pax</p>
-                              <h3 class="card-title"><div id="pax"></div></h3>
+                              <p class="card-category text-light"><b>Pax</b></p>
+                              <h3 class="card-title text-light"><b><div id="pax"></div></b></h3>
                             </div>
                             <div class="card-footer">
                               <div class="stats">
@@ -108,11 +108,11 @@
                           </div>
                         </div>
                          <div class="col-lg-4 col-md-3 col-sm-3">
-                          <div class="card card-stats">
+                          <div class="card card-stats bg-primary">
                             <div class="card-header card-header-info card-header-icon">
                             
-                              <p class="card-category">Transaction</p>
-                              <h3 class="card-title"><div id="transaction"></div></h3>
+                              <p class="card-category text-light"><b>Transaction</b></p>
+                              <h3 class="card-title text-light"><b><div id="transaction"></div></b></h3>
                             </div>
                             <div class="card-footer">
                               <div class="stats">

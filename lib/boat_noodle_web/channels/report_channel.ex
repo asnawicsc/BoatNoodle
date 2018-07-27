@@ -48,8 +48,9 @@ sales_trend=for item <- year do
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
+             grand_total1=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
              grand_total=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)
-              a=%{month: month_number<>month,m: month, grand_total: grand_total}
+              a=%{month: month,m: month, grand_total: grand_total, grand_total1: grand_total1}
 
                Map.merge(year,a)
           end
@@ -119,9 +120,10 @@ average_daily=for item <- year do
 
              grand_total=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)
 
+             average1=grand_total/count|>Float.round(2)|>Number.Delimit.number_to_delimited()
              average=grand_total/count|>Float.round(2)
 
-              a=%{month: month_number<>month,m: month, grand_total: average}
+              a=%{month: month_number<>month,m: month, grand_total: average, grand_total1: average1}
 
                Map.merge(year,a)
           end
@@ -182,7 +184,7 @@ pax_trend=for item <- year do
            
              pax=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.pax) end)|>Enum.sum
 
-              a=%{month: month_number<>month,m: month, pax: pax}
+              a=%{month: month,m: month, pax: pax}
           
 
                Map.merge(year,a)
@@ -245,7 +247,7 @@ average_daily_pax=for item <- year do
              pax=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.pax) end)|>Enum.sum
                  average=pax/count|>Float.round(0)
              
-              a=%{month: month_number<>month,m: month, pax: average}
+              a=%{month: month,m: month, pax: average}
           
 
                Map.merge(year,a)
@@ -307,8 +309,9 @@ per_pax_spending_trend=for item <- year do
              month_number=month_number<>"."
               pax=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.pax) end)|>Enum.sum
               grand_total=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)
+              average1=grand_total/pax|>Float.round(2)|>Number.Delimit.number_to_delimited()
               average=grand_total/pax|>Float.round(2)
-              a=%{month: month_number<>month,m: month, grand_total: average}
+              a=%{month: month,m: month, grand_total: average, grand_total1: average1}
 
                Map.merge(year,a)
           end
@@ -438,7 +441,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month,m: month}
+              month=%{month: month,m: month}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -446,9 +449,9 @@ end
 
                                   category=cat|>elem(0)
                               
-                     grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-
-                                     a=%{category: category,grand_total: grand_total}
+                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                      grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -612,7 +615,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -622,9 +625,9 @@ end
                             category=cat|>elem(0)
                               if category=="F_Noodle"  do
                                                         
+                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
                      grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-
-                                     a=%{category: category,grand_total: grand_total}
+                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -711,7 +714,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -721,9 +724,9 @@ end
                             category=cat|>elem(0)
                               if category=="F_Rice"  do
                                                         
+                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
                      grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-
-                                     a=%{category: category,grand_total: grand_total}
+                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -812,7 +815,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -822,9 +825,9 @@ end
                             category=cat|>elem(0)
                               if category=="F_AddOn" or category=="Toppings"  do
                                                         
+                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
                      grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-
-                                     a=%{category: category,grand_total: grand_total}
+                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -915,7 +918,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -925,9 +928,9 @@ end
                             category=cat|>elem(0)
                               if category=="F_SideDish"  do
                                                         
+                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
                      grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-
-                                     a=%{category: category,grand_total: grand_total}
+                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -1015,7 +1018,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -1025,9 +1028,9 @@ end
                             category=cat|>elem(0)
                               if category=="F_Beverages"  do
                                                         
+                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
                      grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-
-                                     a=%{category: category,grand_total: grand_total}
+                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -1115,7 +1118,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month,m: month}
+              month=%{month: month,m: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1125,12 +1128,15 @@ end
 
                                   category=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                   grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                  
+
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total}
+                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -1350,7 +1356,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month,m: month}
+              month=%{month: month,m: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1360,12 +1366,13 @@ end
 
                                   itemname=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total}
+                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -1604,7 +1611,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1614,12 +1621,13 @@ end
 
                                   itemname=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total}
+                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -1710,7 +1718,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1720,12 +1728,13 @@ end
 
                                   itemname=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                 grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total}
+                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -1818,7 +1827,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1828,12 +1837,13 @@ end
 
                                   itemname=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total}
+                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -1965,7 +1975,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1975,12 +1985,13 @@ end
 
                                   itemname=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total}
+                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -2068,7 +2079,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month,m: month}
+              month=%{month: month,m: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2320,7 +2331,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2421,7 +2432,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2522,7 +2533,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2661,7 +2672,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2763,7 +2774,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month,m: month}
+              month=%{month: month,m: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2908,7 +2919,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3013,7 +3024,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3115,7 +3126,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3216,7 +3227,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month}
+              month=%{month: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3319,7 +3330,7 @@ end
              month_number=item|>elem(0)|>Integer.to_string
              month_number=month_number<>"."
 
-              month=%{month: month_number<>month,m: month}
+              month=%{month: month,m: month}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3328,13 +3339,15 @@ end
                     ass=for cat <- all_data do
 
                                   category=cat|>elem(0)
-  
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float(x.afterdisc) end)|>Enum.sum|>Float.round(2)
+
+                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                    
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total}
+                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -3475,12 +3488,14 @@ end
 
                                   category=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float(x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                               grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                    
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total}
+                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -3577,12 +3592,14 @@ end
 
                                   category=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float(x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                    
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total}
+                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -3678,12 +3695,14 @@ end
 
                                   category=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float(x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                   grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                    
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total}
+                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
@@ -3780,12 +3799,14 @@ end
 
                                   category=cat|>elem(0)
   
-                                  grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float(x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                    grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
+                                    
                                         count=cat|>elem(1)|>Enum.count() 
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total}
+                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
                                b= Map.merge(year,a)
 
                                c=Map.merge(month,b)
