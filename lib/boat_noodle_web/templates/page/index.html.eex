@@ -48,6 +48,16 @@
         </div>
 
       </div>
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">API Status</div>
+          <div class="card-body">
+            <div class="jumbotron">
+              
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
     <div class="double-item" style="position: fixed; bottom: -5px; width: 100%;">

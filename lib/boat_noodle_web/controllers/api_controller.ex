@@ -30,6 +30,9 @@ defmodule BoatNoodleWeb.ApiController do
 
         if user != nil do
           case params["scope"] do
+            "voucher_codes" ->
+              push_scope_voucher_codes(conn, params, user)
+
             "cash_in_out" ->
               push_scope_cash_in_out(conn, params, user)
 
@@ -67,6 +70,28 @@ defmodule BoatNoodleWeb.ApiController do
     end
   end
 
+  def push_scope_voucher_codes(conn, params, user) do
+    params = Map.put(params, "branch_id", user.branchid)
+    params = Map.put(params, "brand_id", user.brand_id)
+    # post the cash in cash out shits...
+    cg = BoatNoodle.BN.VoucherCode.changeset(%BoatNoodle.BN.VoucherCode{}, params)
+
+    case Repo.insert(cg) do
+      {:ok, ci} ->
+        Task.start_link(__MODULE__, :log_api, [
+          IO.inspect(ci),
+          params["code"] <> " API POST -" <> params["scope"]
+        ])
+
+        map = %{status: "ok"} |> Poison.encode!()
+        send_resp(conn, 200, map)
+
+      {:error, changeset} ->
+        model_insert_error(conn, changeset, params)
+        send_resp(conn, 500, "not ok")
+    end
+  end
+
   def push_scope_void_receipt(conn, params, user) do
     params = Map.put(params, "branch_id", user.branchid)
     params = Map.put(params, "brand_id", user.brand_id)
@@ -92,8 +117,12 @@ defmodule BoatNoodleWeb.ApiController do
   def push_scope_shift_detail(conn, params, user) do
     params = Map.put(params, "branch_id", user.branchid)
     params = Map.put(params, "brand_id", user.brand_id)
-    # post the cash in cash out shits...
+    params = Map.put(params, "totalpax", :erlang.trunc(params["totalpax"]))
+    params = Map.put(params, "branchcode", params["code"])
+
     cg = BoatNoodle.BN.RPTCASHIEREOD.changeset(%BoatNoodle.BN.RPTCASHIEREOD{}, params)
+    IO.inspect(cg)
+    IO.inspect(params)
 
     case Repo.insert(cg) do
       {:ok, ci} ->
@@ -102,9 +131,11 @@ defmodule BoatNoodleWeb.ApiController do
           params["code"] <> " API POST -" <> params["scope"]
         ])
 
-        send_resp(conn, 200, "ok")
+        map = %{status: "ok"} |> Poison.encode!()
+        send_resp(conn, 200, map)
 
       {:error, changeset} ->
+        IO.inspect(changeset)
         model_insert_error(conn, changeset, params)
         send_resp(conn, 500, "not ok")
     end
@@ -238,18 +269,18 @@ defmodule BoatNoodleWeb.ApiController do
           d in Discount,
           where: d.discountid in ^ids,
           select: %{
-            brand_id: d.brand_id,
-            discname: d.discname,
-            descriptions: d.descriptions,
-            discamtpercentage: d.discamtpercentage,
+            # brand_id: d.brand_id,
+            DiscountID: d.discountid,
+            DiscName: d.discname,
+            Descriptions: d.descriptions,
+            DiscAmtPercentage: d.discamtpercentage,
             target_cat: d.target_cat,
             is_used: d.is_used,
             disc_qty: d.disc_qty,
             target_itemcode: d.target_itemcode,
-            disctype: d.disctype,
+            DiscType: d.disctype,
             is_categorize: d.is_categorize,
-            is_visable: d.is_visable,
-            is_delete: d.is_delete
+            is_visable: d.is_visable
           }
         )
       )
@@ -260,10 +291,13 @@ defmodule BoatNoodleWeb.ApiController do
           d in DiscountItem,
           where: d.discountitemsid in ^item_ids,
           select: %{
-            brand_id: d.brand_id,
+            # brand_id: d.brand_id,
+            discountitemsid: d.discountitemsid,
             min_spend: d.min_spend,
+            pre_req_item: d.pre_req_item,
             is_delete: d.is_delete,
             is_visable: d.is_visable,
+            min_order: d.min_order,
             is_targetmenuitems: d.is_targetmenuitems,
             multi_item_list: d.multi_item_list,
             is_categorize: d.is_categorize,
@@ -275,16 +309,47 @@ defmodule BoatNoodleWeb.ApiController do
             descriptions: d.descriptions,
             discitemsname: d.discitemsname,
             discountid: d.discountid,
-            discountitemsid: d.discountitemsid
+            is_force_apply: d.is_force_apply
           }
         )
       )
+      |> Enum.map(fn x ->
+        %{
+          # brand_id: d.brand_id,
+          DiscountItemsID: x.discountitemsid,
+          min_spend: x.min_spend,
+          pre_req_item: x.pre_req_item,
+          is_delete: x.is_delete,
+          is_visable: x.is_visable,
+          min_order: x.min_order,
+          is_targetMenuItems: x.is_targetmenuitems,
+          multi_item_list: x.multi_item_list,
+          is_categorize: x.is_categorize,
+          DiscType: x.disctype,
+          disc_qty: x.disc_qty,
+          is_used: x.is_used,
+          target_cat: x.target_cat,
+          DiscAmtPercentage: x.discamtpercentage,
+          Descriptions: x.descriptions,
+          DiscItemsName: x.discitemsname,
+          DiscountID: x.discountid,
+          is_force_apply: bol(x.is_force_apply)
+        }
+      end)
 
     # arrange the discount item
     json_map = %{disc_categories: disc_categories, disc_items: disc_items} |> Poison.encode!()
     message = List.insert_at(conn.req_headers, 0, {"discount", "discount"})
     log_error_api(message, "#{branchcode} - API GET - discount")
     send_resp(conn, 200, json_map)
+  end
+
+  def bol(boolean) do
+    if boolean do
+      1
+    else
+      0
+    end
   end
 
   def get_scope_payment_types(conn, branch_id, brand_id, branchcode) do
@@ -296,19 +361,21 @@ defmodule BoatNoodleWeb.ApiController do
           select: %{
             is_visible: x.is_visible,
             is_default: x.is_default,
-            is_payment_code: x.is_payment_code,
-            is_card_no: x.is_card_no,
-            payment_type_code: x.payment_type_code,
-            payment_type_id: x.payment_type_id,
-            payment_type_name: x.payment_type_name
+            is_code: x.is_payment_code,
+            is_cardno: x.is_card_no,
+            paymenttypeid: x.payment_type_id,
+            otherpaymentcode: x.payment_type_code,
+            otherpaymentname: x.payment_type_name,
+            is_delivery: x.is_delivery
           }
         )
       )
-      |> Poison.encode!()
+
+    map_json = %{payment_types: payment_types} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"payment_types", "payment_types"})
     log_error_api(message, "API GET - payment_types")
-    send_resp(conn, 200, payment_types)
+    send_resp(conn, 200, map_json)
   end
 
   def get_scope_staffs(conn, branch_id, brand_id, branchcode) do
@@ -376,11 +443,12 @@ defmodule BoatNoodleWeb.ApiController do
           }
         )
       )
-      |> Poison.encode!()
+
+    map_json = %{item_remarks: item_remarks} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"item remarks", "item remarks"})
     log_error_api(message, "#{branchcode} - API GET - item remarks")
-    send_resp(conn, 200, item_remarks)
+    send_resp(conn, 200, map_json)
   end
 
   def get_scope_vouchers(conn, branch_id, brand_id, branchcode) do
@@ -388,20 +456,31 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           v in Voucher,
-          where: v.is_used == ^false,
+          where: v.is_used == ^false and v.branchid in ^[0, branch_id],
           select: %{
             id: v.id,
             code_number: v.code_number,
             discount_name: v.discount_name,
-            is_used: v.is_used
+            is_used: v.is_used,
+            branchid: v.branchid
           }
         )
       )
-      |> Poison.encode!()
+      |> Enum.map(fn x ->
+        %{
+          id: x.id,
+          code_number: x.code_number,
+          discount_name: x.discount_name,
+          is_used: bol(x.is_used),
+          branchid: x.branchid
+        }
+      end)
+
+    json_map = %{vouchers: vouchers} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"vouchers", "vouchers"})
     log_error_api(message, "#{branchcode} - API GET - vouchers")
-    send_resp(conn, 200, vouchers)
+    send_resp(conn, 200, json_map)
   end
 
   def get_scope_branch_details(conn, branch) do
@@ -549,11 +628,14 @@ defmodule BoatNoodleWeb.ApiController do
           printer_ip: x.printer_ip
         }
       end)
+
+    map_json =
+      %{printers: printers}
       |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"printer", "printer"})
     log_error_api(message, "#{branchcode} - API GET - printer")
-    send_resp(conn, 200, printers)
+    send_resp(conn, 200, map_json)
   end
 
   def get_scope_sales_id(conn, branch_id, brand_id, branchcode) do

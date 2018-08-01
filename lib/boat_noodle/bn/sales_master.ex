@@ -55,7 +55,6 @@ defmodule BoatNoodle.BN.SalesMaster do
     ])
     |> validate_required([
       :brand_id,
-      :itemcode,
       :itemname,
       :unit_price,
       :afterdisc,
