@@ -438,10 +438,9 @@ end
 
               month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -462,14 +461,22 @@ end
 
         end|>List.flatten
 
+ year=category_trend|> Enum.group_by(fn x -> x.year end)|>Map.keys
+
+        ct_graph=for item <- year do
 
 
-  month_keys=Enum.group_by(category_trend,fn x -> x.m end)|>Map.keys
+                  sales=Enum.filter(category_trend,fn x -> x.year==item end)
 
-ct_graph=for month <- month_keys do
+                  month_keys=sales|>Enum.group_by(fn x -> x.m end)|>Map.keys
+
+
+  for month <- month_keys do
+
+
 
         item=Enum.filter(category_trend,fn x -> x.m==month end)
-
+month=month|> Timex.month_name()
   add_on=item|>Enum.filter(fn x -> x.category=="F_AddOn" end)
   beverages=item|>Enum.filter(fn x -> x.category=="F_Beverages" end)
   noodle=item|>Enum.filter(fn x -> x.category=="F_Noodle" end)
@@ -536,6 +543,7 @@ rice: rice,sidedish: sidedish}
 
 
 end
+end|>List.flatten
 
 
 
@@ -1115,10 +1123,9 @@ end
 
                 month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1147,13 +1154,21 @@ end
 
         end|>List.flatten
 
+        year=category_contribute_trend|> Enum.group_by(fn x -> x.year end)|>Map.keys
+
+       cct_graph=for item <- year do
 
 
-  month_keys=Enum.group_by(category_contribute_trend,fn x -> x.m end)|>Map.keys
+                  sales=Enum.filter(category_contribute_trend,fn x -> x.year==item end)
 
-cct_graph=for month <- month_keys do
+                  month_keys=sales|>Enum.group_by(fn x -> x.m end)|>Map.keys
+
+
+for month <- month_keys do
 
         item=Enum.filter(category_contribute_trend,fn x -> x.m==month end)
+
+        month=month|>Timex.month_name
 
   add_on=item|>Enum.filter(fn x -> x.category=="F_AddOn" end)
   beverages=item|>Enum.filter(fn x -> x.category=="F_Beverages" end)
@@ -1221,7 +1236,7 @@ rice: rice,sidedish: sidedish}
 
 
 end
-
+end|>List.flatten
 
 
             broadcast(socket, "category_contribute_trend", %{cct_graph: Poison.encode!(cct_graph),category_contribute_trend: category_contribute_trend})
@@ -1353,10 +1368,9 @@ end
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1383,14 +1397,25 @@ end
 
         end|>List.flatten
 
+        year=sales_trend_by_qty|> Enum.group_by(fn x -> x.year end)|>Map.keys
+
+        
 
 
+        stbrn_graph=for item <- year do
 
-  month_keys=Enum.group_by(sales_trend_by_qty,fn x -> x.m end)|>Map.keys
+        
 
-stbrn_graph=for month <- month_keys do
+                  sales=Enum.filter(sales_trend_by_qty,fn x -> x.year==item end)
+
+
+  month_keys=Enum.group_by(sales,fn x -> x.m end)|>Map.keys
+
+for month <- month_keys do
 
         item=Enum.filter(sales_trend_by_qty,fn x -> x.m==month end)
+
+        month=month|>Timex.month_name
 
 
           n01=item|>Enum.filter(fn x -> x.itemname=="N01 P. Beef Thai Rice Noodle" end)
@@ -1532,6 +1557,7 @@ stbrn_graph=for month <- month_keys do
 
 
 end
+end|>List.flatten
 
 
 
@@ -2011,7 +2037,7 @@ end
   end
 
 
-      def handle_in("sales_trend_by_rm", payload, socket) do
+  def handle_in("sales_trend_by_rm", payload, socket) do
 
      branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
@@ -2076,10 +2102,9 @@ end
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2106,13 +2131,26 @@ end
         end|>List.flatten
 
 
+                year=sales_trend_by_rm|> Enum.group_by(fn x -> x.year end)|>Map.keys
 
-  month_keys=Enum.group_by(sales_trend_by_rm,fn x -> x.m end)|>Map.keys
+        
 
-stbqn_graph=for month <- month_keys do
+
+       stbqn_graph=for item <- year do
+
+        
+
+                  sales=Enum.filter(sales_trend_by_rm,fn x -> x.year==item end)
+
+
+  month_keys=Enum.group_by(sales,fn x -> x.m end)|>Map.keys
+
+
+for month <- month_keys do
 
         item=Enum.filter(sales_trend_by_rm,fn x -> x.m==month end)
 
+month=month|>Timex.month_name
 
           n01=item|>Enum.filter(fn x -> x.itemname=="N01 P. Beef Thai Rice Noodle" end)
           n02=item|>Enum.filter(fn x -> x.itemname=="N02 A. Beef Thai Rice Noodle" end)
@@ -2253,6 +2291,7 @@ stbqn_graph=for month <- month_keys do
 
 
 end
+end|>List.flatten
 
 
 
