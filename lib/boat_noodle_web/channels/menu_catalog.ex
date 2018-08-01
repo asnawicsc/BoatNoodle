@@ -30,7 +30,8 @@ defmodule BoatNoodleWeb.MenuCatalog do
       items: item_list
     }
 
-    case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
+     changeset=BoatNoodle.BN.MenuCatalog.changeset(menu_catalog,menu_catalog_params, payload["user_id"],"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, menu_catalog} ->
         broadcast(socket, "deleted_item", %{})
     end
@@ -129,7 +130,8 @@ defmodule BoatNoodleWeb.MenuCatalog do
         items: item_list
       }
 
-      case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
+      changeset=BoatNoodle.BN.MenuCatalog.changeset(menu_catalog,menu_catalog_params, payload["user_id"],"Update")
+    case BoatNoodle.Repo.update(changeset) do
         {:ok, menu_catalog} ->
           broadcast(socket, "updated_catalog_price", %{
             style: style,
@@ -182,7 +184,8 @@ defmodule BoatNoodleWeb.MenuCatalog do
       items: items
     }
 
-    case BN.update_menu_catalog(menu_catalog, menu_catalog_params) do
+    changeset=BoatNoodle.BN.MenuCatalog.changeset(menu_catalog,menu_catalog_params, payload["user_id"],"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, menu_catalog} ->
         broadcast(socket, "updated_added_price", %{})
     end

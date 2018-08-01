@@ -41,7 +41,7 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
-  def handle_in("toggle_printer_combo", %{"info" => info, "brand_id" => brand_id}, socket) do
+  def handle_in("toggle_printer_combo", %{"info" => info, "brand_id" => brand_id,"user_id" => user_id}, socket) do
     tuple_data =
       info
       |> String.replace("][", ",")
@@ -82,7 +82,7 @@ defmodule BoatNoodleWeb.TagHelper do
       alert = "success"
     end
 
-    cg = Tag.changeset(tag, %{combo_item_ids: new_combo_ids})
+    cg = Tag.changeset(tag, %{combo_item_ids: new_combo_ids}, user_id,"Update")
 
     case Repo.update(cg) do
       {:ok, tag} ->
@@ -101,7 +101,7 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
-  def handle_in("toggle_printer", %{"info" => info, "brand_id" => brand_id}, socket) do
+  def handle_in("toggle_printer", %{"info" => info, "brand_id" => brand_id,"user_id" => user_id}, socket) do
    
     tuple_data =
       info
@@ -143,7 +143,7 @@ defmodule BoatNoodleWeb.TagHelper do
       alert = "success"
     end
 
-    cg = Tag.changeset(tag, %{subcat_ids: new_subcatids})
+    cg = Tag.changeset(tag, %{subcat_ids: new_subcatids}, user_id,"Update")
 
     case Repo.update(cg) do
       {:ok, tag} ->

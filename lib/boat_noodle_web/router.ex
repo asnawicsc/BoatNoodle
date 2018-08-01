@@ -63,6 +63,7 @@ defmodule BoatNoodleWeb.Router do
 
     resources("/menu_item", MenuItemController)
     resources("/brand", BrandController)
+    post("/create", BrandController, :create)
     post("/update_brand", BrandController, :update_brand)
     post("/update_brand_logo", BrandController, :update_brand_logo)
     get("/tbl_syn", BranchController, :tbl_syn)
@@ -241,6 +242,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/salespayment", SalesPaymentController)
     resources "/api_log", ApiLogController
     resources "/vouchers", VoucherController
+    resources "/modal_logs", ModalLogController
     get("/experiment", PageController, :experiment)
     get("/*path", PageController, :no_page_found)
   end

@@ -111,7 +111,9 @@ defmodule BoatNoodleWeb.UnauthorizeMenuController do
 
       menu=Repo.get_by(UnauthorizeMenu,id: menu.id, brand_id: BoatNoodle.BN.get_brand_id(conn))
 
-      BN.update_unauthorize_menu(menu, %{active: 0})
+      changeset=BoatNoodle.BN.UnauthorizeMenu.changeset(menu, %{active: 0}, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset)
+
       
     end
 
@@ -121,7 +123,8 @@ defmodule BoatNoodleWeb.UnauthorizeMenuController do
 
       menu=Repo.get_by(UnauthorizeMenu,id: id, brand_id: BoatNoodle.BN.get_brand_id(conn))
     
-      BN.update_unauthorize_menu(menu, %{active: 1})
+      changeset=BoatNoodle.BN.UnauthorizeMenu.changeset(menu, %{active: 1}, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset)
     end
   end
   if params["manager"] != nil do
@@ -130,35 +133,40 @@ defmodule BoatNoodleWeb.UnauthorizeMenuController do
        menu=Repo.get_by(UnauthorizeMenu,id: id, brand_id: BoatNoodle.BN.get_brand_id(conn))
 
 
-      BN.update_unauthorize_menu(menu, %{active: 1})
+      changeset=BoatNoodle.BN.UnauthorizeMenu.changeset(menu, %{active: 1}, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset)
     end
   end
   if params["cashier"] != nil do
     for item <-  params["cashier"] do
        id=item|>elem(0)|>String.to_integer
        menu=Repo.get_by(UnauthorizeMenu,id: id, brand_id: BoatNoodle.BN.get_brand_id(conn))
-      BN.update_unauthorize_menu(menu, %{active: 1})
+      changeset=BoatNoodle.BN.UnauthorizeMenu.changeset(menu, %{active: 1}, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset)
     end
   end
   if params["staff"] != nil do
     for item <-  params["staff"] do
       id=item|>elem(0)|>String.to_integer
       menu=Repo.get_by(UnauthorizeMenu,id: id, brand_id: BoatNoodle.BN.get_brand_id(conn))
-     BN.update_unauthorize_menu(menu, %{active: 1})
+     changeset=BoatNoodle.BN.UnauthorizeMenu.changeset(menu, %{active: 1}, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset)
     end
   end
   if params["guest"] != nil do
     for item <-  params["guest"] do
        id=item|>elem(0)|>String.to_integer
        menu=Repo.get_by(UnauthorizeMenu,id: id, brand_id: BoatNoodle.BN.get_brand_id(conn))
-      BN.update_unauthorize_menu(menu, %{active: 1})
+      changeset=BoatNoodle.BN.UnauthorizeMenu.changeset(menu, %{active: 1}, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset)
     end
   end
   if params["supervisor"] != nil do
     for item <-  params["supervisor"] do
        id=item|>elem(0)|>String.to_integer
        menu=Repo.get_by(UnauthorizeMenu,id: id, brand_id: BoatNoodle.BN.get_brand_id(conn))
-      BN.update_unauthorize_menu(menu, %{active: 1})
+      changeset=BoatNoodle.BN.UnauthorizeMenu.changeset(menu, %{active: 1}, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset)
     end
   end
 

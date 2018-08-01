@@ -20,8 +20,8 @@ defmodule BoatNoodle.BN.User do
   end
 
   @doc false
-  def changeset(user, attrs) do
-    user
+  def changeset(user, attrs,user_id,action) do
+    user=user
     |> cast(attrs, [
       :brand_id,
       :last_logout,
@@ -37,5 +37,14 @@ defmodule BoatNoodle.BN.User do
       :manager_access,
       :gall_id
     ])
+
+     if action == "new" or action =="edit" do
+    
+       else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "user", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+
+    user
   end
 end

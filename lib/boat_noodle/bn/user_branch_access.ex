@@ -10,8 +10,18 @@ defmodule BoatNoodle.BN.UserBranchAccess do
   end
 
   @doc false
-  def changeset(user_brnch_access, attrs) do
-    user_brnch_access
+  def changeset(user_brnch_access, attrs,user_id,action) do
+    user_brnch_access=user_brnch_access
     |> cast(attrs, [:userbranchid, :userid, :branchid])
+
+         if action == "new" or action =="edit" do
+    
+       else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "user_brnch_access", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+
+    user_brnch_access
+
   end
 end

@@ -411,7 +411,7 @@ defmodule BoatNoodleWeb.ApiController do
         report_class: b.report_class,
         reg_id: org.orgregid,
         gst_id: org.gst_reg_id,
-        comp_address: org.address
+        comp_address: org.address,
         def_open_amt: b.def_open_amt
       }
       |> Poison.encode!()

@@ -66,7 +66,7 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def index(conn, _params) do
-       branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+       branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "index.html", branches: branches)
   end
 
@@ -76,7 +76,7 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def tables(conn, params) do
-   branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+   branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "index.html", branches: branches)
   end
 
@@ -207,27 +207,27 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
   end
 
   def summary(conn, _params) do
-    branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+    branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "summary.html", branches: branches)
   end
 
   def item_sales(conn, _params) do
-     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "item_sales.html", branches: branches)
   end
 
   def discounts(conn, _params) do
-     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "discounts.html", branches: branches)
   end
 
   def voided(conn, _params) do
-     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "voided.html", branches: branches)
   end
 
   def csv_compare_category_qty(conn, _params) do
-     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+     branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "csv_compare_category_qty.html", branches: branches)
   end
 
@@ -1003,9 +1003,7 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
     ] 
     end
 
-
-
-        
+  
    csv_content2=List.insert_at(data,0,csv_content)
 
     |> CSV.encode
@@ -1019,7 +1017,7 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
   end
 
    def report(conn, params) do
-  branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+  branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
     render(conn, "report.html", branches: branches)
    
   end
@@ -1063,10 +1061,12 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
 
   def delete(conn, %{"id" => id}) do
     sales = BN.get_sales!(id)
+
     {:ok, _sales} = BN.delete_sales(sales)
 
     conn
     |> put_flash(:info, "Sales deleted successfully.")
     |> redirect(to: sales_path(conn, :index, BN.get_domain(conn)))
   end
+
 end

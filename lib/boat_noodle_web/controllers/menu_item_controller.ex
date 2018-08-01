@@ -251,7 +251,7 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
         itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
         extension_params = %{"itemname" => itemname, "part_code" => part_code}
         item_param = Map.merge(item_subcat_params, extension_params)
-        cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param)
+        cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param, BN.current_user(conn),"Create")
         # subcat id needs to be generated manually.
 
         price_codes = item_subcat_params["price_code"] |> Map.keys()
@@ -282,14 +282,14 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
               |> List.last()
 
             item_param = Map.put(item_param, "subcatid", a + 1)
-            cg2 = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param)
+            cg2 = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param, BN.current_user(conn),"Create")
 
             case Repo.insert(cg2) do
               {:ok, item_cat} ->
                 item_cat
 
               {:error, cg2} ->
-                IEx.pry()
+             
                 false
             end
           end
@@ -518,7 +518,7 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
 
             isc = same_items |> Enum.filter(fn x -> x.price_code == price_code end) |> hd()
 
-            cg2 = BoatNoodle.BN.ItemSubcat.changeset(isc, item_param)
+            cg2 = BoatNoodle.BN.ItemSubcat.changeset(isc, item_param, BN.current_user(conn),"Update")
 
             case Repo.update(cg2) do
               {:ok, item_cat} ->

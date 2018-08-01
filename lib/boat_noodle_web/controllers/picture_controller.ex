@@ -10,12 +10,15 @@ defmodule BoatNoodleWeb.PictureController do
   end
 
   def new(conn, _params) do
-    changeset = Images.change_picture(%Picture{})
+    changeset = BoatNoodle.Images.Picture.changeset(%BoatNoodle.Images.Picture{},%{},BN.current_user(conn),"new")
     render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"picture" => picture_params}) do
-    case Images.create_picture(picture_params) do
+
+    changeset=BoatNoodle.Images.Picture.changeset(%BoatNoodle.Images.Picture{},picture_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
       {:ok, picture} ->
         conn
         |> put_flash(:info, "Picture created successfully.")
@@ -33,14 +36,16 @@ defmodule BoatNoodleWeb.PictureController do
 
   def edit(conn, %{"id" => id}) do
     picture = Images.get_picture!(id)
-    changeset = Images.change_picture(picture)
+       changeset=BoatNoodle.Images.Picture.changeset(picture,%{}, BN.current_user(conn),"edit")
     render(conn, "edit.html", picture: picture, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "picture" => picture_params}) do
     picture = Images.get_picture!(id)
 
-    case Images.update_picture(picture, picture_params) do
+    changeset=BoatNoodle.Images.Picture.changeset(picture,picture_params, BN.current_user(conn),"Update")
+
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, picture} ->
         conn
         |> put_flash(:info, "Picture updated successfully.")

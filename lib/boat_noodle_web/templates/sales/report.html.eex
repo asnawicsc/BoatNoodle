@@ -1354,6 +1354,21 @@
                                   
                                   </div>
                                   <div class="tab-pane" id="b2">
+
+                                           <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Rice Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_rm_rice_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_rm_rice">
                                               <thead>
@@ -1391,6 +1406,21 @@
                                     
                                   </div>
                                   <div class="tab-pane" id="b3">
+
+                                           <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Others Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_rm_beverage_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_rm_beverage">
                                               <thead>
@@ -1427,6 +1457,21 @@
                                     
                                   </div>
                                   <div class="tab-pane" id="b4">
+
+                                           <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Dessert Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_rm_dessert_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_rm_dessert">
                                               <thead>
@@ -1464,6 +1509,21 @@
                                     
                                   </div>
                                   <div class="tab-pane" id="b5">
+
+                                           <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Others Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_rm_others_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_rm_others">
                                               <thead>
@@ -1595,6 +1655,20 @@
                                   
                                   </div>
                                   <div class="tab-pane" id="c2">
+                                    <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Rice Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_qty_rice_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_qty_rice">
                                               <thead>
@@ -1632,6 +1706,21 @@
                                     
                                   </div>
                                   <div class="tab-pane" id="c3">
+
+                                    <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Beverage Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_qty_beverage_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_qty_beverage">
                                               <thead>
@@ -1668,6 +1757,21 @@
                                     
                                   </div>
                                   <div class="tab-pane" id="c4">
+
+                                     <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Dessert Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_qty_dessert_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_qty_dessert">
                                               <thead>
@@ -1705,6 +1809,21 @@
                                     
                                   </div>
                                   <div class="tab-pane" id="c5">
+
+                                    <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-icon card-header-rose">
+                                            <div class="card-icon">
+                                                <i class="material-icons">insert_chart</i>
+                                            </div>
+                                            <h4 class="card-title"> Others Compare Trend
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="compare_trend_qty_others_graph"  style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                  </div>
                               
                                       <table class="table data" id="compare_sales_trend_qty_others">
                                               <thead>

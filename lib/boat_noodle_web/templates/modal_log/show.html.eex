@@ -1,0 +1,28 @@
+<h2>Show Modal log</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @modal_log.name %>
+  </li>
+
+  <li>
+    <strong>User:</strong>
+    <%= @modal_log.user_id %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @modal_log.description %>
+  </li>
+
+  <li>
+    <strong>Action:</strong>
+    <%= @modal_log.action %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: modal_log_path(@conn, :edit,BN.get_domain(@conn), @modal_log) %></span>
+<span><%= link "Back", to: modal_log_path(@conn, :index,BN.get_domain(@conn)) %></span>

@@ -1,7 +1,7 @@
 defmodule BoatNoodle.BN.ItemSubcat do
   use Ecto.Schema
   import Ecto.Changeset
-
+require IEx
   @primary_key false
   schema "item_subcat" do
     field(:subcatid, :integer, primary_key: true)
@@ -30,8 +30,8 @@ defmodule BoatNoodle.BN.ItemSubcat do
   end
 
   @doc false
-  def changeset(item_subcat, attrs) do
-    item_subcat
+  def changeset(item_subcat, attrs,user_id,action) do
+    item_subcat=item_subcat
     |> cast(attrs, [
       :item_start_hour,
       :item_end_hour,
@@ -58,5 +58,15 @@ defmodule BoatNoodle.BN.ItemSubcat do
       :created_at
     ])
     |> unique_constraint(:subcatid, name: "PRIMARY")
+
+
+       if action == "new" or action =="edit" do
+
+            
+        else
+          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "item_subcat", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+
+  item_subcat
   end
 end

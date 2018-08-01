@@ -18,8 +18,8 @@ defmodule BoatNoodle.BN.Tag do
   end
 
   @doc false
-  def changeset(tag, attrs) do
-    tag
+  def changeset(tag, attrs,user_id,action) do
+    tag=tag
     |> cast(attrs, [
       :brand_id,
       :combo_item_ids,
@@ -33,5 +33,15 @@ defmodule BoatNoodle.BN.Tag do
       :tagdesc,
       :printer
     ])
+
+         if action == "new" or action =="edit" do
+
+      
+     else
+
+    BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "tag", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+  tag
   end
 end

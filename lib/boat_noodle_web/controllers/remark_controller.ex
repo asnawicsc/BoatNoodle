@@ -11,7 +11,7 @@ defmodule BoatNoodleWeb.RemarkController do
   end
 
   def new(conn, _params) do
-    changeset = BN.change_remark(%Remark{})
+    changeset = Remark.changeset(%BoatNoodle.BN.Remark{},%{},BN.current_user(conn),"new")
     item=Repo.all(from s in BoatNoodle.BN.ItemCat, where: s.brand_id==^BN.get_brand_id(conn),
       select: %{itemcatname: s.itemcatname,itemcatid: s.itemcatid})
   
@@ -20,7 +20,10 @@ defmodule BoatNoodleWeb.RemarkController do
 
   def create(conn, %{"remark" => remark_params}) do
      remark_params = Map.put(remark_params, "brand_id", BN.get_brand_id(conn))
-    case BN.create_remark(remark_params) do
+
+changeset=BoatNoodle.BN.Remark.changeset(%BoatNoodle.BN.Remark{},remark_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
       {:ok, remark} ->
         conn
         |> put_flash(:info, "Remark created successfully.")
@@ -38,15 +41,15 @@ defmodule BoatNoodleWeb.RemarkController do
 
   def edit(conn, %{"id" => id}) do
     remark = Repo.get_by(BoatNoodle.BN.Remark,itemsremarkid: id, brand_id: BN.get_brand_id(conn) )
-    changeset = BN.change_remark(remark)
+   changeset=BoatNoodle.BN.Remark.changeset(remark,%{}, BN.current_user(conn),"edit")
     item = BN.list_itemcat() |> Enum.map(fn x -> {x.itemcatname, x.itemcatid} end)
     render(conn, "edit.html", remark: remark, changeset: changeset, item: item)
   end
 
   def update(conn, %{"id" => id, "remark" => remark_params}) do
     remark = Repo.get_by(BoatNoodle.BN.Remark,itemsremarkid: id, brand_id: BN.get_brand_id(conn) )
-
-    case BN.update_remark(remark, remark_params) do
+changeset=BoatNoodle.BN.Remark.changeset(remark,remark_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, remark} ->
         conn
         |> put_flash(:info, "Remark updated successfully.")

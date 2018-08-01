@@ -16,9 +16,19 @@ defmodule BoatNoodle.BN.UnauthorizeMenu do
   end
 
   @doc false
-  def changeset(unauthorize_menu, attrs) do
-    unauthorize_menu
+  def changeset(unauthorize_menu, attrs,user_id,action) do
+    unauthorize_menu=unauthorize_menu
     |> cast(attrs, [:desc,:active, :id, :url, :branch_id, :brand_id, :role_id])
     |> unique_constraint(:id, name: "PRIMARY")
+
+     if action == "new" or action =="edit" do
+    
+       else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "unauthorize_menu", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+
+    unauthorize_menu
+
   end
 end

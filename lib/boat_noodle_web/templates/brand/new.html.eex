@@ -1,5 +1,27 @@
 <h2>New Brand</h2>
 
-<%= render "form.html", Map.put(assigns, :action, brand_path(@conn, :create,@conn.private.plug_session["brand"])) %>
 
-<span><%= link "Back", to: brand_path(@conn, :index,@conn.private.plug_session["brand"]) %></span>
+  <form method="post" action="/<%= @conn.params["brand"] %>/create" class="form-horizontal" aria-label="item_form">
+	
+ <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+	  	   <div class="col-sm-3">
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">Name</label>
+              <input  name="name" class="form-control" type="text" >
+            </div>
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">Domain Name</label>
+              <input  name="domain_name" class="form-control" type="text" >
+            </div>
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">Bin</label>
+              <input  name="bin" class="form-control" type="text" >
+            </div>
+          </div>
+   
+
+	<div class="form-group">
+	   <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+	 </div>
+
+</form>

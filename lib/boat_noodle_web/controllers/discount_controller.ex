@@ -173,16 +173,21 @@ all=Repo.all(from s in DiscountItem,
 
     new_discount_id = String.to_integer(discountid) + 1
 
-    cat =
-      BN.create_discount(%{
-        disctype: disctype,
+    cat_params=%{disctype: disctype,
         is_categorize: is_categorize,
         discname: discname,
         discamtpercentage: discamtpercentage,
         descriptions: descriptions,
         is_visable: is_visable,
-        target_cat: 0
-      })
+        target_cat: 0}
+
+
+    discount=BoatNoodle.BN.Discount.changeset(%BoatNoodle.BN.Discount{},cat_params,BN.current_user(conn),"Create")
+
+
+
+    BoatNoodle.Repo.insert(discount) 
+    
 
     discount =
       Repo.get_by(
@@ -204,7 +209,12 @@ all=Repo.all(from s in DiscountItem,
       all_discount_categories = List.insert_at(disc_cat, 0, disc_id)
       new_categories = all_discount_categories |> Enum.join(",")
 
-      BN.update_discount_catalog(branch, %{categories: new_categories})
+
+       discount_catalog_params= %{categories: new_categories}
+
+   discount_catalog=BoatNoodle.BN.DiscountCatalog.changeset(branch,discount_catalog_params, BN.current_user(conn),"Update")
+
+    BoatNoodle.Repo.insert(discount_catalog) 
     end
 
     conn
@@ -249,12 +259,22 @@ all=Repo.all(from s in DiscountItem,
     categories = params["cat"]
     discounts = params["items"]
 
-    BN.create_discount_catalog(%{
+
+    discount_catalog_params=%{
       name: name,
       categories: categories,
       discounts: discounts,
       brand_id: brand
-    })
+    }
+
+
+    discount_catalog=BoatNoodle.BN.DiscountCatalog.changeset(%BoatNoodle.BN.DiscountCatalog{},discount_catalog_params,BN.current_user(conn),"Create")
+
+
+
+    BoatNoodle.Repo.insert(discount_catalog) 
+
+
 
     conn
     |> put_flash(:info, "Discount Catalog created successfully.")
@@ -315,7 +335,13 @@ all=Repo.all(from s in DiscountItem,
 
     item = params["item"]
 
-    discountid = item["discount_category"] |> String.to_integer()
+    if item["discount_category"] == "" do
+      discountid= 0
+
+    else
+       discountid = item["discount_category"] |> String.to_integer()
+    end
+
     descriptions = item["description"]
     discamtpercentage = item["discount_amount"]
     discitemsname = item["discount_item"]
@@ -361,6 +387,10 @@ all=Repo.all(from s in DiscountItem,
  
     end
 
+    if item["target_items"] == ""  do
+       is_targetmenuitems = 0
+     else
+   
       count=item["target_items"]|>String.split(",")|>Enum.count
 
      if count > 1 do
@@ -369,6 +399,8 @@ all=Repo.all(from s in DiscountItem,
      else
       is_targetmenuitems = item["target_items"] |> String.to_integer()
      end
+
+      end
 
     if item["status"] == "on" do
       is_used = 1
@@ -379,8 +411,8 @@ all=Repo.all(from s in DiscountItem,
 
     min_spend = item["minimum_spend"]
 
-    cat =
-      BN.create_discount_item(%{
+
+     discount_items_params=%{
         discountid: discountid,
         discitemsname: discitemsname,
         descriptions: descriptions,
@@ -392,7 +424,15 @@ all=Repo.all(from s in DiscountItem,
         is_targetmenuitems: is_targetmenuitems,
         is_used: is_used,
         min_spend: min_spend
-      })
+      }
+
+
+    discount_item=BoatNoodle.BN.DiscountItem.changeset(%BoatNoodle.BN.DiscountItem{},discount_items_params,BN.current_user(conn),"Create")
+
+
+
+    BoatNoodle.Repo.insert(discount_item) 
+
 
     discountitem =
       Repo.get_by(
@@ -414,7 +454,10 @@ all=Repo.all(from s in DiscountItem,
       all_discount_discounts = List.insert_at(disc_discount, 0, disc_id)
       new_discounts = all_discount_discounts |> Enum.join(",")
 
-      BN.update_discount_catalog(branch, %{discounts: new_discounts})
+      params=%{discounts: new_discounts}
+      changeset=BoatNoodle.BN.DiscountCatalog.changeset(branch,params, BN.current_user(conn),"Update")
+      BoatNoodle.Repo.update(changeset) 
+  
     end
 
     conn
@@ -550,7 +593,8 @@ all=Repo.all(from s in DiscountItem,
     name = params["name"]
     discount_catalog = Repo.get_by(BoatNoodle.BN.DiscountCatalog, id: id, brand_id: brand)
 
-    case BN.update_discount_catalog(discount_catalog, %{name: name}) do
+    changeset=BoatNoodle.BN.DiscountCatalog.changeset(discount_catalog,%{name: name}, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, discount_catalog} ->
         conn
         |> put_flash(:info, "Discount Catalog updated successfully.")
@@ -593,17 +637,18 @@ all=Repo.all(from s in DiscountItem,
 
     discount = Repo.get_by(BoatNoodle.BN.Discount, discountid: id, brand_id: brand)
 
-
-
-    case BN.update_discount(discount, %{
+    discount_category_params=%{
            is_categorize: discount_type,
            disctype: disc_type,
            discname: discname,
            descriptions: descriptions,
            discamtpercentage: discamtpercentage,
            is_visable: is_visable
-         }) do
-      {:ok, discount} ->
+         }
+
+    changeset=BoatNoodle.BN.Discount.changeset(discount,discount_category_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
+        {:ok, discount} ->
         conn
         |> put_flash(:info, "Discount Category updated successfully.")
         |> redirect(to: discount_path(conn, :discount_category_details, BN.get_domain(conn), id))
@@ -611,6 +656,7 @@ all=Repo.all(from s in DiscountItem,
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "discount_category_details.html", discount: discount, changeset: changeset)
     end
+
   end
 
   def edit_discount_item_details(conn, params) do
@@ -635,7 +681,11 @@ all=Repo.all(from s in DiscountItem,
       is_visable = 0
     end
 
-     count=params["is_targetmenuitems"]|>Enum.count
+    if params["is_targetmenuitems"] == nil do
+       is_targetmenuitems = 0
+     else
+
+      count=params["is_targetmenuitems"]|>Enum.count
 
      if count > 1 do
        is_targetmenuitems = 0
@@ -644,6 +694,10 @@ all=Repo.all(from s in DiscountItem,
   
       is_targetmenuitems = params["is_targetmenuitems"]|>hd|> String.to_integer()
      end
+      
+    end
+
+     
 
     discount_type = Repo.get_by(BoatNoodle.BN.DiscountType, disctypeid: disctype)
     disctype = discount_type.disctypename
@@ -651,7 +705,7 @@ all=Repo.all(from s in DiscountItem,
     discount_item =
       Repo.get_by(BoatNoodle.BN.DiscountItem, discountitemsid: discountitemsid, brand_id: brand)
 
-    case BN.update_discount_item(discount_item, %{
+     discount_item_params= %{
            descriptions: descriptions,
            disc_qty: disc_qty,
            descriptions: descriptions,
@@ -665,7 +719,11 @@ all=Repo.all(from s in DiscountItem,
            multi_item_list: multi_item_list,
            is_visable: is_visable,
            min_spend: min_spend
-         }) do
+         }
+
+
+      changeset=BoatNoodle.BN.DiscountItem.changeset(discount_item,discount_item_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, discount_item} ->
         conn
         |> put_flash(:info, "Discount Item updated successfully.")
@@ -680,7 +738,8 @@ all=Repo.all(from s in DiscountItem,
           discount_item: discount_item,
           changeset: changeset
         )
-    end
+      end
+
   end
 
   def discount_catalog_copy(conn, %{"id" => id}) do
@@ -699,7 +758,11 @@ all=Repo.all(from s in DiscountItem,
     discounts=params["discounts"]
     name=params["name"]
 
-    case BN.create_discount_catalog(%{categories: categories,discounts: discounts,name: name}) do
+    copy_params=%{categories: categories,discounts: discounts,name: name}
+    discount=BoatNoodle.BN.DiscountCatalog.changeset(%BoatNoodle.BN.DiscountCatalog{},copy_params,BN.current_user(conn),"Copy Discount Catalog")
+    BoatNoodle.Repo.insert(discount) 
+
+        case BoatNoodle.Repo.insert(discount) do
           {:ok, discount_catalg} ->
             conn
             |> put_flash(:info, "Discount Catalog Successfully Copy")

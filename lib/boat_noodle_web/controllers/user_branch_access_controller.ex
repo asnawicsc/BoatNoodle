@@ -77,7 +77,12 @@ defmodule BoatNoodleWeb.UserBranchAccessController do
        
         for branch<- branch_acess do
           branchid=branch|>elem(0)|>String.to_integer
-          BN.create_user_branch_access(%{userid: user_id,branchid: branchid})
+
+          changeset=BoatNoodle.BN.UserBranchAccess.changeset(%BoatNoodle.BN.UserBranchAccess{},%{userid: user_id,branchid: branchid},BN.current_user(conn),"Update")
+
+            BoatNoodle.Repo.insert(changeset)
+
+         
         end
     
     end

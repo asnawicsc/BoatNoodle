@@ -17,8 +17,20 @@ defmodule BoatNoodle.BN.Organization do
   end
 
   @doc false
-  def changeset(organization, attrs) do
-    organization
+  def changeset(organization, attrs,user_id, action) do
+    organization=organization
     |> cast(attrs, [:created_at,:updated_at,:organisationid, :address, :orgregid, :gst_reg_id, :phone, :country,:organisationname])
+
+        if action == "new" or action =="edit" do
+
+      
+     else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "organization", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+    
+
+    organization
     end
 end

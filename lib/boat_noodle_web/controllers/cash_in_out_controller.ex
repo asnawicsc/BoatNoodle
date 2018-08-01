@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.CashInOutController do
   alias BoatNoodle.BN.CashInOut
 
   def index(conn, _params) do
-    branches = Repo.all(from s in BoatNoodle.BN.Branch,where: s.brand_id==^BN.get_brand_id(conn))
+    branches = Repo.all(from s in BoatNoodle.BN.Branch,where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname)
     render(conn, "index.html", branches: branches)
   end
 

@@ -35,7 +35,7 @@ $(document).ready(function() {
   $("input[name='category_update']").click(function(){
     var fr = $("form[aria-label='edit_category_form']").serializeArray();
     var cat_id = $("input[name='category_update']").attr("id")
-    channel2.push("update_category_form", {map: fr, cat_id: cat_id, brand_id: window.currentBrand })
+    channel2.push("update_category_form", {map: fr,user_id: window.currentUser, cat_id: cat_id, brand_id: window.currentBrand })
   })
 
   channel2.on("updated_item_cat", payload => {
@@ -95,7 +95,7 @@ $(document).ready(function() {
 
   $("input[name='category_create']").click(function(){
     var fr = $("form[aria-label='category_form']").serializeArray();
-    channel2.push("submit_category_form", {map: fr,brand_id: window.currentBrand})
+    channel2.push("submit_category_form", {map: fr,user_id: window.currentUser,brand_id: window.currentBrand})
   })
 
   channel2.on("inserted_item_cat", payload => {
@@ -168,6 +168,7 @@ $(document).ready(function() {
           table.$("tr.selected").removeClass("selected");
           $(this).addClass("selected");
           console.log($(this).find("td:first").html())
+
       }
   });
 
@@ -175,10 +176,13 @@ $(document).ready(function() {
   $('button[aria-label="delete_category"]').click( function () {
     var table = $("table[aria-label='categories_body']").DataTable()
       
-      if ($("table[aria-label='categories_body']").find("tr.selected").length == 1) {
+      if ($("table[aria-label='categories_body']").find("tr.selected").length == 1)
+       {
+
         var rw = $("table[aria-label='categories_body']").find("tr.selected")
+        var map = rw.html()
         var cat_id = rw.find("td:first").html()
-        channel2.push("delete_item_category", {cat_id: cat_id})
+        channel2.push("delete_item_category", {user_id: window.currentUser,map: map,cat_id: cat_id})
 
         table.row('.selected').remove().draw( false );
       }

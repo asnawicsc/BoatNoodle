@@ -7,21 +7,31 @@ defmodule BoatNoodleWeb.BrandController do
 
   def index(conn, _params) do
     brand = Repo.all(from(b in Brand, where: b.id == ^BN.get_brand_id(conn))) |> hd()
-    changeset = BN.change_brand(brand)
+    changeset = Brand.changeset(%BoatNoodle.BN.Brand{},%{},BN.current_user(conn),"new")
     render(conn, "index.html", brand: brand, changeset: changeset)
   end
 
   def new(conn, _params) do
-    changeset = BN.change_brand(%Brand{})
+    changeset = Brand.changeset(%BoatNoodle.BN.Brand{},%{},BN.current_user(conn),"new")
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"brand" => brand_params}) do
-    case BN.create_brand(brand_params) do
+  def create(conn, params) do
+   
+  brand_params=%{}
+
+     brand_params = Map.put(brand_params, "name", params["name"])
+     brand_params = Map.put(brand_params, "domain_name", params["domain_name"])
+     brand_params = Map.put(brand_params, "bin", params["bin"])
+    
+
+    changeset=BoatNoodle.BN.Brand.changeset(%BoatNoodle.BN.Brand{},brand_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
       {:ok, brand} ->
         conn
         |> put_flash(:info, "Brand created successfully.")
-        |> redirect(to: brand_path(conn, :show, brand))
+        |> redirect(to: brand_path(conn, :index, BN.get_domain(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
@@ -35,14 +45,15 @@ defmodule BoatNoodleWeb.BrandController do
 
   def edit(conn, %{"id" => id}) do
     brand = BN.get_brand!(id)
-    changeset = BN.change_brand(brand)
+       changeset=BoatNoodle.BN.Brand.changeset(brand,%{}, BN.current_user(conn),"edit")
     render(conn, "edit.html", brand: brand, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "brand" => brand_params}) do
     brand = BN.get_brand!(id)
 
-    case BN.update_brand(brand, brand_params) do
+    changeset=BoatNoodle.BN.Brand.changeset(brand,brand_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, brand} ->
         conn
         |> put_flash(:info, "Brand updated successfully.")
@@ -57,7 +68,8 @@ defmodule BoatNoodleWeb.BrandController do
     brand = Repo.get(Brand, BN.get_brand_id(conn))
     brand_params = %{domain_name: params["domain_name"], name: params["name"]}
 
-    case BN.update_brand(brand, brand_params) do
+    changeset=BoatNoodle.BN.Brand.changeset(brand,brand_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, brand} ->
         conn
         |> put_flash(:info, "Brand updated successfully.")

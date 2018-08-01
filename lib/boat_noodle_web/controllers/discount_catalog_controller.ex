@@ -62,7 +62,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
     if Enum.any?(items, fn x -> x == catalog_id end) do
       items = List.delete(items, catalog_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{categories: items}) |> Repo.update()
+      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Insert") |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
@@ -81,7 +81,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
     unless Enum.any?(items, fn x -> x == catalog_id end) do
       items = List.insert_at(items, 0, catalog_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{categories: items}) |> Repo.update()
+      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Insert") |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
@@ -141,7 +141,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
           if Enum.any?(items, fn x -> x == subcat_id end) do
             items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
-            DiscountCatalog.changeset(cata, %{categories: items}) |> Repo.update()
+            DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Remove") |> Repo.update()
           end
 
     send_resp(conn, 200, "ok")
@@ -158,7 +158,9 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     unless Enum.any?(items, fn x -> x == subcat_id end) do
 
       items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{categories: items}) |> Repo.update()
+
+
+      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Insert") |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
@@ -197,7 +199,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
           if Enum.any?(items, fn x -> x == subcat_id end) do
          
             items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
-            DiscountCatalog.changeset(cata, %{discounts: items}) |> Repo.update()
+            DiscountCatalog.changeset(cata, %{discounts: items},BN.current_user(conn),"Insert") |> Repo.update()
           end
 
     send_resp(conn, 200, "ok")
@@ -214,7 +216,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     unless Enum.any?(items, fn x -> x == subcat_id end) do
 
       items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{discounts: items}) |> Repo.update()
+      DiscountCatalog.changeset(cata, %{discounts: items},BN.current_user(conn),"Insert") |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
@@ -228,7 +230,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
           if Enum.any?(items, fn x -> x == catalog_id end) do
             # insert...
             items = List.delete(items, catalog_id) |> Enum.sort() |> Enum.join(",")
-            DiscountCatalog.changeset(cata, %{discounts: items}) |> Repo.update()
+            DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn),"Remove") |> Repo.update()
           end
 
     send_resp(conn, 200, "ok")
@@ -245,7 +247,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     unless Enum.any?(items, fn x -> x == catalog_id end) do
 
       items = List.insert_at(items, 0, catalog_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{discounts: items}) |> Repo.update()
+      DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn),"Insert") |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")

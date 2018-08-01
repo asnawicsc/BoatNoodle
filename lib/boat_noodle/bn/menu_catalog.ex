@@ -13,8 +13,19 @@ defmodule BoatNoodle.BN.MenuCatalog do
   end
 
   @doc false
-  def changeset(menu_catalog, attrs) do
-    menu_catalog
+  def changeset(menu_catalog, attrs,user_id,action) do
+    menu_catalog=menu_catalog
     |> cast(attrs, [:brand_id, :id, :name, :categories, :items, :combo_items])
+
+
+     if action == "new" or action =="edit" do
+
+      
+     else
+
+    BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "menu_catalog", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+  menu_catalog
   end
 end
