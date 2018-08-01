@@ -12,8 +12,20 @@ defmodule BoatNoodle.BN.Remark do
   end
 
   @doc false
-  def changeset(remark, attrs) do
-    remark
+  def changeset(remark,attrs,user_id,action) do
+    remark=remark
     |> cast(attrs, [:brand_id, :itemsremarkid, :remark, :target_cat, :target_item])
+
+    if action == "new" or action =="edit" do
+
+      
+     else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "itemsremak", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+    
+
+    remark
   end
 end

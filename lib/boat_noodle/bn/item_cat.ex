@@ -19,8 +19,8 @@ defmodule BoatNoodle.BN.ItemCat do
   end
 
   @doc false
-  def changeset(item_cat, attrs) do
-    item_cat
+  def changeset(item_cat, attrs,user_id,action) do
+    item_cat=item_cat
     |> cast(attrs, [
       :category_img,
       :visable,
@@ -35,5 +35,10 @@ defmodule BoatNoodle.BN.ItemCat do
       :created_at,
       :updated_at
     ])
+
+      BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "item_cat", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+
+
+  item_cat
   end
 end

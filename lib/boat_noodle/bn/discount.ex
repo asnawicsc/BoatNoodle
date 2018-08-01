@@ -20,9 +20,10 @@ defmodule BoatNoodle.BN.Discount do
   end
 
   @doc false
-  def changeset(discount, attrs) do
-    discount
+  def changeset(discount, attrs,user_id,action) do
+    discount=discount
     |> cast(attrs, [
+      :discountid,
       :brand_id,
       :discname,
       :descriptions,
@@ -35,6 +36,17 @@ defmodule BoatNoodle.BN.Discount do
       :is_categorize,
       :is_visable,
       :is_delete
-    ])
+    ])    |> unique_constraint(:discountid, name: "PRIMARY")
+
+
+
+      if action == "new" or action =="edit" do
+
+            
+        else
+          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+
+  discount
   end
 end

@@ -11,8 +11,8 @@ defmodule BoatNoodleWeb.OrganizationController do
   end
 
   def new(conn, _params) do
-    changeset = BN.change_organization(%Organization{})
 
+changeset = Organization.changeset(%BoatNoodle.BN.Organization{},%{},BN.current_user(conn),"new")
     countries = Countries.all() |> Enum.map(fn x -> {x.name, x.name} end)
 
     render(conn, "new.html", changeset: changeset, countries: countries)
@@ -29,15 +29,18 @@ defmodule BoatNoodleWeb.OrganizationController do
 
     organization_params = Map.put(organization_params, "organisationid", latest_organization_id)
 
-    case BN.create_organization(organization_params) do
-      {:ok, organization} ->
+    changeset=BoatNoodle.BN.Organization.changeset(%BoatNoodle.BN.Organization{},organization_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
+     {:ok, organization} ->
         conn
         |> put_flash(:info, "Organization created successfully.")
         |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
-
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
+
+   
   end
 
   def show(conn, %{"id" => id}) do
@@ -47,7 +50,7 @@ defmodule BoatNoodleWeb.OrganizationController do
 
   def edit(conn, %{"brand" => brand, "id" => id}) do
     organization = BN.get_organization!(id)
-    changeset = BN.change_organization(organization)
+     changeset=BoatNoodle.BN.Organization.changeset(organization,%{}, BN.current_user(conn),"edit")
     countries = Countries.all()  |> Enum.map(fn x -> {x.name, x.name} end) |> Enum.sort_by(fn x -> elem(x,0) end )
 
     render(
@@ -62,7 +65,8 @@ defmodule BoatNoodleWeb.OrganizationController do
   def update(conn, %{"brand" => brand, "id" => id, "organization" => organization_params}) do
     organization = BN.get_organization!(id)
 
-    case BN.update_organization(organization, organization_params) do
+    changeset=BoatNoodle.BN.Organization.changeset(organization,organization_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, organization} ->
         conn
         |> put_flash(:info, "Organization updated successfully.")
@@ -71,6 +75,7 @@ defmodule BoatNoodleWeb.OrganizationController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", organization: organization, changeset: changeset)
     end
+   
   end
 
   def delete(conn, %{"id" => id}) do

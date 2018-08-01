@@ -20,8 +20,8 @@ defmodule BoatNoodle.BN.ComboDetails do
   end
 
   @doc false
-  def changeset(combo_details, attrs) do
-    combo_details
+  def changeset(combo_details, attrs,user_id,action) do
+    combo_details=combo_details
     |> cast(attrs, [
       :brand_id,
       :is_default,
@@ -37,5 +37,15 @@ defmodule BoatNoodle.BN.ComboDetails do
       :unit_price,
       :top_up
     ])
+
+             if action == "new" or action =="edit" do
+
+      
+     else
+
+    BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "combo_details", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+  combo_details
   end
 end

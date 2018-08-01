@@ -67,7 +67,7 @@ defmodule BoatNoodleWeb.UserController do
   end
 
   def new(conn, _params) do
-    changeset = BN.change_user(%User{})
+     changeset = User.changeset(%BoatNoodle.BN.User{},%{},BN.current_user(conn),"new")
     roles = BN.list_user_role() |> Enum.map(fn x -> {x.role_name, x.roleid} end)
     render(conn, "new.html", changeset: changeset, roles: roles)
   end
@@ -76,7 +76,9 @@ defmodule BoatNoodleWeb.UserController do
     crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["password"])
     user_params = Map.put(user_params, "password", crypted_password)
 
-    case BN.create_user(user_params) do
+    changeset=BoatNoodle.BN.User.changeset(%BoatNoodle.BN.User{},user_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User created successfully.")
@@ -98,7 +100,7 @@ defmodule BoatNoodleWeb.UserController do
 
   def edit(conn, %{"id" => id}) do
     user = BN.get_user!(id)
-    changeset = BN.change_user(user)
+     changeset=BoatNoodle.BN.User.changeset(user,%{}, BN.current_user(conn),"edit")
 
     if user.gall_id == 1 do
       path = File.cwd!() <> "/media/demo.png"
@@ -141,7 +143,8 @@ defmodule BoatNoodleWeb.UserController do
         crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["new_pass"])
         user_params = Map.put(user_params, :password, crypted_password)
 
-        case BN.update_user(user, user_params) do
+        changeset=BoatNoodle.BN.User.changeset(user,user_params, BN.current_user(conn),"Update")
+        case BoatNoodle.Repo.update(changeset) do
           {:ok, user} ->
             conn
             |> put_flash(:info, "User updated successfully.")
@@ -163,7 +166,8 @@ defmodule BoatNoodleWeb.UserController do
         email: params["email"]
       }
 
-      case BN.update_user(user, user_params) do
+      changeset=BoatNoodle.BN.User.changeset(user,user_params, BN.current_user(conn),"Update")
+        case BoatNoodle.Repo.update(changeset) do
         {:ok, user} ->
           conn
           |> put_flash(:info, "User updated successfully.")
@@ -194,10 +198,11 @@ defmodule BoatNoodleWeb.UserController do
 
         case Images.upload(params["user"]["image"]) do
           {:ok, picture} ->
-            Images.update_picture(picture, %{
-              gallery_id: gallery.id,
-              file_type: "profile_picture"
-            })
+
+            picture_params=%{gallery_id: gallery.id, file_type: "profile_picture"}
+            changeset=BoatNoodle.BN.User.changeset(user,picture_params, BN.current_user(conn),"Update")
+
+          BoatNoodle.Repo.update(changeset) 
         end
 
         conn
@@ -214,10 +219,11 @@ defmodule BoatNoodleWeb.UserController do
 
         case Images.upload(params["user"]["image"]) do
           {:ok, picture} ->
-            Images.update_picture(picture, %{
-              gallery_id: gallery.id,
-              file_type: "profile_picture"
-            })
+
+            picture_params=%{gallery_id: gallery.id, file_type: "profile_picture"}
+            changeset=BoatNoodle.BN.User.changeset(user,picture_params, BN.current_user(conn),"Update")
+
+          BoatNoodle.Repo.update(changeset) 
         end
 
         conn
@@ -350,7 +356,9 @@ defmodule BoatNoodleWeb.UserController do
         bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
         crypted_password = Plug.Crypto.MessageEncryptor.encrypt(preset_password, bin, bin)
         user_params = %{password_v2: crypted_password}
-        BN.update_user(user, user_params)
+
+        changeset=BoatNoodle.BN.User.changeset(user,user_params, BN.current_user(conn),"Update")
+          BoatNoodle.Repo.update(changeset) 
         password_not_set = true
 
         BoatNoodle.Email.forget_password(

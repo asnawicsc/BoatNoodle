@@ -79,7 +79,7 @@ if (localStorage.getItem('new_brand') == null) {
 
 
       dashboard_channel.on("dashboard", payload => {
-
+   $("#backdrop").fadeIn()
         console.log(payload.nett_sales)
         console.log(payload.taxes)
         console.log(payload.order)
@@ -102,7 +102,7 @@ if (localStorage.getItem('new_brand') == null) {
         $("div#pax").html(pax);
         $("div#transaction").html(transaction);
 
-        var data = payload.table
+        var data = payload.table_branch_daily_sales_sumary
 
 
        $("table#outlet_sales_information").DataTable({
@@ -122,7 +122,7 @@ if (localStorage.getItem('new_brand') == null) {
                     data: 'service_charge'
                 },
                  {
-                    data: 'taxes'
+                    data: 'gst'
                 },
                 {
                     data: 'discount'
@@ -145,32 +145,34 @@ if (localStorage.getItem('new_brand') == null) {
 
 
 
+
+
         var maps = JSON.parse(payload.branch_daily_sales_sumary)
-        var salesdate = []
+        var date = []
+        var total_discount = []
         var total_sales = []
-        var gst = []
-        var discount = []
-        var service_charge = []
-        var transaction = []
+        var total_service_charge = []
+        var total_taxes = []
+        var total_transaction = []
         
 
         $(maps).each(function() {
-            salesdate.push(this.salesdate)
+            date.push(this.date)
         })
         $(maps).each(function() {
+            total_discount.push(this.total_discount)
+        })
+          $(maps).each(function() {
+            total_service_charge.push(this.total_service_charge)
+        })
+        $(maps).each(function() {
+            total_taxes.push(this.total_taxes)
+        })
+          $(maps).each(function() {
             total_sales.push(this.total_sales)
         })
-          $(maps).each(function() {
-            gst.push(this.gst)
-        })
         $(maps).each(function() {
-            discount.push(this.discount)
-        })
-          $(maps).each(function() {
-            service_charge.push(this.service_charge)
-        })
-        $(maps).each(function() {
-            transaction.push(this.transaction)
+            total_transaction.push(this.total_transaction)
         })
 
         Highcharts.chart('branch_daily_sales_barchart', {
@@ -181,7 +183,7 @@ if (localStorage.getItem('new_brand') == null) {
                 text: 'Branch Daily Summary'
             },
             xAxis: {
-                categories: salesdate,
+                categories: date,
             },
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
@@ -200,26 +202,26 @@ if (localStorage.getItem('new_brand') == null) {
             },
             {
                 name: 'Taxes',
-                data: gst
+                data: total_taxes
             },
             {
                 name: 'Discount',
-                data: discount
+                data: total_discount
             },
             {
                 name: 'Service Charge',
-                data: service_charge
+                data: total_service_charge
             },
             {
                 name: 'Transaction',
-                data: transaction
+                data: total_transaction
             }]
         });
 
 
 
         var maps2 = JSON.parse(payload.top_10_selling)
-    
+
          console.log(maps2)
 
 
@@ -236,7 +238,7 @@ if (localStorage.getItem('new_brand') == null) {
 					    text: ''
 					  },
 					  tooltip: {
-					    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					 pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.1f}%</b>)'
 					  },
 					  plotOptions: {
 					    pie: {
@@ -252,7 +254,7 @@ if (localStorage.getItem('new_brand') == null) {
 					    }
 					  },
 					  series: [{
-					    name: 'Brands',
+					    name: 'Total',
 					    colorByPoint: true,
 					    data: maps2
 					  }]
@@ -277,7 +279,7 @@ if (localStorage.getItem('new_brand') == null) {
 					    text: ''
 					  },
 					  tooltip: {
-					    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					    pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.1f}%</b>)'
 					  },
 					  plotOptions: {
 					    pie: {
@@ -293,7 +295,7 @@ if (localStorage.getItem('new_brand') == null) {
 					    }
 					  },
 					  series: [{
-					    name: 'Brands',
+					    name: 'Total',
 					    colorByPoint: true,
 					    data: maps3
 					  }]
@@ -317,7 +319,7 @@ if (localStorage.getItem('new_brand') == null) {
 					    text: ''
 					  },
 					  tooltip: {
-					    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+					    pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.1f}%</b>)'
 					  },
 					  plotOptions: {
 					    pie: {

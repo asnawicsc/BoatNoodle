@@ -27,8 +27,8 @@ defmodule BoatNoodle.BN.DiscountItem do
   end
 
   @doc false
-  def changeset(discount_item, attrs) do
-    discount_item
+  def changeset(discount_item, attrs,user_id,action) do
+    discount_item=discount_item
     |> cast(attrs, [
       :is_force_apply,
       :min_order,
@@ -50,5 +50,15 @@ defmodule BoatNoodle.BN.DiscountItem do
       :discountitemsid,
       :pre_req_item
     ])
+
+
+     if action == "new" or action =="edit" do
+
+            
+        else
+          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount_item", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+
+  discount_item
   end
 end

@@ -27,7 +27,7 @@ defmodule BoatNoodleWeb.StaffController do
   end
 
   def new(conn, _params) do
-    changeset = BN.change_staff(%Staff{})
+    changeset = Staff.changeset(%BoatNoodle.BN.Staff{},%{},BN.current_user(conn),"new")
     roles = BN.list_staff_type()
     roles = Enum.map(roles, fn x -> {x.name, x.id} end)
     branch_access = BN.list_branch()
@@ -77,7 +77,9 @@ defmodule BoatNoodleWeb.StaffController do
 
     staff_params = Map.put(staff_params, "staff_id", latest_staff_id)
 
-    case BN.create_staff(staff_params) do
+    changeset=BoatNoodle.BN.Staff.changeset(%BoatNoodle.BN.Staff{},staff_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
       {:ok, _staff} ->
         conn =
           conn
@@ -86,7 +88,6 @@ defmodule BoatNoodleWeb.StaffController do
         render(conn, "index.html", staff: staff)
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IEx.pry()
         render(conn, "new.html", changeset: changeset)
     end
   end
@@ -102,8 +103,7 @@ defmodule BoatNoodleWeb.StaffController do
         from(s in Staff, where: s.staff_id == ^id and s.brand_id == ^BN.get_brand_id(conn))
       )
       |> hd()
-
-    changeset = BN.change_staff(staff)
+  changeset=BoatNoodle.BN.Staff.changeset(staff,%{}, BN.current_user(conn),"edit")
     roles = BN.list_staff_type()
     roles = Enum.map(roles, fn x -> {x.name, x.id} end)
     branch_access = BN.list_branch()
@@ -133,7 +133,9 @@ defmodule BoatNoodleWeb.StaffController do
 
     staff_params = Map.put(staff_params, "branch_access", branch_access)
 
-    case BN.update_staff(staff, staff_params) do
+    changeset=BoatNoodle.BN.Staff.changeset(staff,staff_params, BN.current_user(conn),"Update")
+
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, staff} ->
         conn
         |> put_flash(:info, "Staff updated successfully.")

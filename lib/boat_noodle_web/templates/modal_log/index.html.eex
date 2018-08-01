@@ -1,0 +1,32 @@
+<h2>Listing Modal logs</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>User</th>
+      <th>Description</th>
+      <th>Action</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for modal_log <- @modal_logs do %>
+    <tr>
+      <td><%= modal_log.name %></td>
+      <td><%= modal_log.user_id %></td>
+      <td><%= modal_log.description %></td>
+      <td><%= modal_log.action %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: modal_log_path(@conn, :show,BN.get_domain(@conn), modal_log), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: modal_log_path(@conn, :edit,BN.get_domain(@conn), modal_log), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: modal_log_path(@conn, :delete,BN.get_domain(@conn), modal_log), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Modal log", to: modal_log_path(@conn, :new, BN.get_domain(@conn)) %></span>

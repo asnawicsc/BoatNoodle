@@ -11,8 +11,20 @@ defmodule BoatNoodle.Images.Picture do
   end
 
   @doc false
-  def changeset(picture, attrs) do
-    picture
+  def changeset(picture, attrs,user_id,action) do
+    picture=picture
     |> cast(attrs, [:filename, :file_type, :bin, :url, :gallery_id])
+
+        if action == "new" or action =="edit" do
+
+      
+     else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "picture", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+    
+
+    picture
   end
 end

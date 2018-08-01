@@ -629,7 +629,7 @@ $("input.combo_item_tag").click(function(){
       var fr= []
       var fr = $("form[aria-label='edit_combo_price_form']").serializeArray();
 
-      channel.push("update_combo_price",{map: fr, brand_id: window.currentBrand})
+      channel.push("update_combo_price",{map: fr, user_id: window.currentUser, brand_id: window.currentBrand})
     })
   })
 

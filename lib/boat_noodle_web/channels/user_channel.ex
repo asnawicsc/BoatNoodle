@@ -2660,16 +2660,32 @@ defmodule BoatNoodleWeb.UserChannel do
 
     brand_id = payload["brand_id"] |> String.to_integer()
 
+    user_id = payload["user_id"]
+
     subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: id, brand_id: brand_id)
 
-    BN.update_item_subcat(subcat, %{
+    update_item_subcat_params=%{
       itemname: name,
       itemprice: price,
       enable_disc: enable_disc,
       is_default_combo: is_default_combo,
       is_activate: is_activate,
       include_spend: included_spend
-    })
+    }
+
+               update_item_subcat = BoatNoodle.BN.ItemSubcat.changeset(subcat, update_item_subcat_params, user_id,"Update Combo ItemSubcat ")
+
+                case Repo.update(update_item_subcat) do
+                  {:ok, item_subcat} ->
+                    true
+
+                  _ ->
+                    IO.puts("failed update item subcat")
+                    false
+                end     
+    
+
+
 
     for insert <- a do
       if elem(insert, 0) != "name" && elem(insert, 0) != "price" && elem(insert, 0) != "is_defaul" &&
@@ -2703,7 +2719,20 @@ defmodule BoatNoodleWeb.UserChannel do
         unit_price = a.price
         top_up = b.price
 
-        BN.update_combo_details(combo, %{top_up: top_up, unit_price: unit_price})
+
+
+         update_combo_details_params=%{top_up: top_up, unit_price: unit_price}
+
+               update_combo_details = BoatNoodle.BN.ComboDetails.changeset(combo, update_combo_details_params, user_id,"Update Combo Details")
+
+                case Repo.update(update_combo_details) do
+                  {:ok, combo_details} ->
+                    true
+
+                  _ ->
+                    IO.puts("failed combo details update")
+                    false
+                end     
       else
       end
     end

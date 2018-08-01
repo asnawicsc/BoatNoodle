@@ -12,7 +12,7 @@ defmodule BoatNoodleWeb.CategoryHelper do
 
   def handle_in(
         "update_category_form",
-        %{"map" => map, "cat_id" => cat_id, "brand_id" => brand_id},
+        %{"map" => map, "cat_id" => cat_id, "brand_id" => brand_id,"user_id" => user_id},
         socket
       ) do
     item_cat_params =
@@ -23,7 +23,7 @@ defmodule BoatNoodleWeb.CategoryHelper do
 
     cat = Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
 
-    cg = BoatNoodle.BN.ItemCat.changeset(cat, item_cat_params)
+    cg = BoatNoodle.BN.ItemCat.changeset(cat, item_cat_params,user_id,"Update")
 
     case Repo.update(cg) do
       {:ok, item_cat} ->
@@ -59,12 +59,18 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-  def handle_in("delete_item_category", %{"cat_id" => cat_id}, socket) do
-    cat = Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
+  def handle_in("delete_item_category", %{"user_id" => user_id,"cat_id" => cat_id,"map" => map}, socket) do
 
-    Repo.delete(cat)
+     cat= Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
 
-    menu_item = Repo.all(BoatNoodle.BN.MenuItem)
+
+  
+             changeset=BoatNoodle.BN.ItemCat.changeset(cat,%{}, user_id,"delete")
+
+      case  BoatNoodle.Repo.delete(changeset) do
+      {:ok, item_cat} ->
+
+        menu_item = Repo.all(BoatNoodle.BN.MenuItem)
 
     html =
       Phoenix.View.render_to_string(
@@ -73,12 +79,16 @@ defmodule BoatNoodleWeb.CategoryHelper do
         menu_item: menu_item
       )
 
-    broadcast(socket, "deleted_category", %{html: html})
+        broadcast(socket, "deleted_category", %{html: html})
+
+      true ->
+        IO.puts("error in inserting item cat")
+    end
 
     {:noreply, socket}
   end
 
-  def handle_in("submit_category_form", %{"map" => map,"brand_id" => brand_id}, socket) do
+  def handle_in("submit_category_form", %{"map" => map,"brand_id" => brand_id,"user_id" => user_id}, socket) do
 
     item_cat_params =
       map
@@ -87,9 +97,12 @@ defmodule BoatNoodleWeb.CategoryHelper do
       |> Enum.into(%{})
 
 
+
     item_cat_params = Map.put(item_cat_params, "brand_id", brand_id)
 
-    cg = BoatNoodle.BN.ItemCat.changeset(%BoatNoodle.BN.ItemCat{}, item_cat_params)
+  
+
+    cg = BoatNoodle.BN.ItemCat.changeset(%BoatNoodle.BN.ItemCat{}, item_cat_params,user_id,"Create")
 
     case Repo.insert(cg) do
       {:ok, item_cat} ->

@@ -14,7 +14,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
 
     if Enum.any?(items, fn x -> x == subcat_id end) do
       items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
-      MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
+      MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn),"Insert") |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
@@ -34,11 +34,10 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         |> Enum.map(fn x -> Integer.to_string(x) end)
 
       item_details = Repo.all(from(i in ItemSubcat, where: i.itemcatid == ^subcat_id))
-      IEx.pry()
     else
       unless Enum.any?(items, fn x -> x == subcat_id end) do
         items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-        MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
+        MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn),"Insert") |> Repo.update()
       end
     end
 
@@ -118,14 +117,14 @@ defmodule BoatNoodleWeb.MenuCatalogController do
     if details != [] do
       for item <- details do
         list = List.delete(combo_items, item) |> Enum.sort() |> Enum.join(",")
-        MenuCatalog.changeset(cata, %{combo_items: list}) |> Repo.update()
+        MenuCatalog.changeset(cata, %{combo_items: list}, BN.current_user(conn),"Insert") |> Repo.update()
       end
 
       list2 = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
-      MenuCatalog.changeset(cata, %{items: list2}) |> Repo.update()
+      MenuCatalog.changeset(cata, %{items: list2}, BN.current_user(conn),"Insert") |> Repo.update()
     else
       items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
-      MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
+      MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn),"Insert") |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
@@ -150,19 +149,19 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       if details != [] do
         for item <- details do
           list = List.insert_at(combo_items, 0, item) |> Enum.sort() |> Enum.join(",")
-          MenuCatalog.changeset(cata, %{combo_items: list}) |> Repo.update()
+          MenuCatalog.changeset(cata, %{combo_items: list}, BN.current_user(conn),"Insert") |> Repo.update()
         end
 
         list2 = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-        MenuCatalog.changeset(cata, %{items: list2}) |> Repo.update()
+        MenuCatalog.changeset(cata, %{items: list2}, BN.current_user(conn),"Insert") |> Repo.update()
       else
         items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-        MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
+        MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn),"Insert") |> Repo.update()
       end
     else
       unless Enum.any?(items, fn x -> x == subcat_id end) do
         items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-        MenuCatalog.changeset(cata, %{items: items}) |> Repo.update()
+        MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn),"Insert") |> Repo.update()
       end
 
     end
@@ -225,7 +224,8 @@ defmodule BoatNoodleWeb.MenuCatalogController do
   end
 
   def new(conn, _params) do
-    changeset = BN.change_menu_catalog(%MenuCatalog{})
+
+     changeset = MenuCatalog.changeset(%BoatNoodle.BN.MenuCatalog{},%{},BN.current_user(conn),"new")
     cata = Repo.all(from c in MenuCatalog, where: c.brand_id == ^BN.get_brand_id(conn), select: {c.name, c.id})
     render(conn, "new.html", changeset: changeset, cata: cata)
   end
@@ -240,7 +240,10 @@ defmodule BoatNoodleWeb.MenuCatalogController do
 
     end
      menu_catalog_params =  Map.delete(menu_catalog_params, "id")
-    case BN.create_menu_catalog(menu_catalog_params) do
+
+   changeset=BoatNoodle.BN.MenuCatalog.changeset(%BoatNoodle.BN.MenuCatalog{},menu_catalog_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do  
       {:ok, menu_catalog} ->
         conn
         |> put_flash(:info, "Menu catalog created successfully.")
@@ -297,8 +300,14 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         else
 
           menu_catalog =  Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+
+  
+             changeset=BoatNoodle.BN.MenuCatalog.changeset(menu_catalog,%{}, BN.current_user(conn),"delete")
+
+
+     {:ok, _menu_catalog} =  BoatNoodle.Repo.delete(changeset)
          
-          {:ok, _menu_catalog} = BN.delete_menu_catalog(menu_catalog)
+
 
           conn
           |> put_flash(:info, "Menu catalog deleted successfully.")

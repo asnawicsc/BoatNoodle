@@ -15,9 +15,17 @@ defmodule BoatNoodle.BN.DiscountCategory do
   end
 
   @doc false
-  def changeset(discount_category, attrs) do
-    discount_category
+  def changeset(discount_category, attrs,user_id,action) do
+    discount_category=discount_category
     |> cast(attrs, [:name, :description, :discount_type, :amount_percentage, :status, :discount_catalog])
-    |> validate_required([:name, :description, :discount_type, :amount_percentage, :status, :discount_catalog])
+
+      if action == "new" or action =="edit" do
+
+            
+        else
+          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount_category", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+
+  discount_category
   end
 end

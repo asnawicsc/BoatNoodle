@@ -17,8 +17,8 @@ defmodule BoatNoodle.BN.Staff do
   end
 
   @doc false
-  def changeset(staffs, attrs) do
-    staffs
+  def changeset(staffs, attrs, user_id, action) do
+    staffs=staffs
     |> cast(attrs, [
       :brand_id,
       :staff_id,
@@ -31,5 +31,17 @@ defmodule BoatNoodle.BN.Staff do
       :staff_type_id,
       :prof_img
     ]) |> unique_constraint(:staff_id, name: "PRIMARY")
+
+
+        if action == "new" or action =="edit" do
+
+      
+     else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "v", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+    staffs
+
   end
 end

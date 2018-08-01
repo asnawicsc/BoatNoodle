@@ -45,7 +45,8 @@ defmodule BoatNoodleWeb.BranchController do
       subcats_data
       |> Enum.reject(fn x -> String.length(Integer.to_string(x.id)) >= 6 end)
 
-    changeset = BN.change_tag(%Tag{})
+          changeset = Tag.changeset(%BoatNoodle.BN.Tag{},%{},BN.current_user(conn),"new")
+
 
     html =
       Phoenix.View.render_to_string(
@@ -127,7 +128,8 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def new(conn, _params) do
-    changeset = BN.change_branch(%Branch{})
+    
+    changeset = Branch.changeset(%BoatNoodle.BN.Branch{},%{},BN.current_user(conn),"new")
 
     managers =
       BN.list_user()
@@ -273,7 +275,9 @@ defmodule BoatNoodleWeb.BranchController do
     branch_params = Map.put(branch_params, "branchid", latest_branch_id + 1)
     branch_params = Map.put(branch_params, "brand_id", BN.get_brand_id(conn))
 
-    case BN.create_branch(branch_params) do
+    changeset=BoatNoodle.BN.Branch.changeset(%BoatNoodle.BN.Branch{},branch_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
       {:ok, branch} ->
         conn
         |> put_flash(:info, "Branch created successfully.")
@@ -284,6 +288,7 @@ defmodule BoatNoodleWeb.BranchController do
         |> put_flash(:error, "Branch not created.")
         |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
     end
+    
   end
 
   def show(conn, %{"id" => id}) do
@@ -298,7 +303,9 @@ defmodule BoatNoodleWeb.BranchController do
       )
       |> hd()
 
-    changeset = BN.change_branch(branch)
+
+      changeset=BoatNoodle.BN.Branch.changeset(branch,%{}, BN.current_user(conn),"edit")
+
 
     managers =
       BN.list_user()
@@ -331,7 +338,8 @@ defmodule BoatNoodleWeb.BranchController do
   def update(conn, %{"id" => id, "branch" => branch_params}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
 
-    case BN.update_branch(branch, branch_params) do
+    changeset=BoatNoodle.BN.Branch.changeset(branch,branch_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, branch} ->
         conn
         |> put_flash(:info, "Branch updated successfully.")
@@ -341,6 +349,8 @@ defmodule BoatNoodleWeb.BranchController do
         render(conn, "edit.html", branch: branch, changeset: changeset)
     end
   end
+
+   
 
   def delete(conn, %{"id" => id}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))

@@ -438,10 +438,9 @@ end
 
               month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -462,14 +461,22 @@ end
 
         end|>List.flatten
 
+ year=category_trend|> Enum.group_by(fn x -> x.year end)|>Map.keys
+
+        ct_graph=for item <- year do
 
 
-  month_keys=Enum.group_by(category_trend,fn x -> x.m end)|>Map.keys
+                  sales=Enum.filter(category_trend,fn x -> x.year==item end)
 
-ct_graph=for month <- month_keys do
+                  month_keys=sales|>Enum.group_by(fn x -> x.m end)|>Map.keys
+
+
+  for month <- month_keys do
+
+
 
         item=Enum.filter(category_trend,fn x -> x.m==month end)
-
+month=month|> Timex.month_name()
   add_on=item|>Enum.filter(fn x -> x.category=="F_AddOn" end)
   beverages=item|>Enum.filter(fn x -> x.category=="F_Beverages" end)
   noodle=item|>Enum.filter(fn x -> x.category=="F_Noodle" end)
@@ -536,6 +543,7 @@ rice: rice,sidedish: sidedish}
 
 
 end
+end|>List.flatten
 
 
 
@@ -1115,10 +1123,9 @@ end
 
                 month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1147,13 +1154,21 @@ end
 
         end|>List.flatten
 
+        year=category_contribute_trend|> Enum.group_by(fn x -> x.year end)|>Map.keys
+
+       cct_graph=for item <- year do
 
 
-  month_keys=Enum.group_by(category_contribute_trend,fn x -> x.m end)|>Map.keys
+                  sales=Enum.filter(category_contribute_trend,fn x -> x.year==item end)
 
-cct_graph=for month <- month_keys do
+                  month_keys=sales|>Enum.group_by(fn x -> x.m end)|>Map.keys
+
+
+for month <- month_keys do
 
         item=Enum.filter(category_contribute_trend,fn x -> x.m==month end)
+
+        month=month|>Timex.month_name
 
   add_on=item|>Enum.filter(fn x -> x.category=="F_AddOn" end)
   beverages=item|>Enum.filter(fn x -> x.category=="F_Beverages" end)
@@ -1221,7 +1236,7 @@ rice: rice,sidedish: sidedish}
 
 
 end
-
+end|>List.flatten
 
 
             broadcast(socket, "category_contribute_trend", %{cct_graph: Poison.encode!(cct_graph),category_contribute_trend: category_contribute_trend})
@@ -1353,10 +1368,9 @@ end
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -1383,14 +1397,25 @@ end
 
         end|>List.flatten
 
+        year=sales_trend_by_qty|> Enum.group_by(fn x -> x.year end)|>Map.keys
+
+        
 
 
+        stbrn_graph=for item <- year do
 
-  month_keys=Enum.group_by(sales_trend_by_qty,fn x -> x.m end)|>Map.keys
+        
 
-stbrn_graph=for month <- month_keys do
+                  sales=Enum.filter(sales_trend_by_qty,fn x -> x.year==item end)
+
+
+  month_keys=Enum.group_by(sales,fn x -> x.m end)|>Map.keys
+
+for month <- month_keys do
 
         item=Enum.filter(sales_trend_by_qty,fn x -> x.m==month end)
+
+        month=month|>Timex.month_name
 
 
           n01=item|>Enum.filter(fn x -> x.itemname=="N01 P. Beef Thai Rice Noodle" end)
@@ -1532,6 +1557,7 @@ stbrn_graph=for month <- month_keys do
 
 
 end
+end|>List.flatten
 
 
 
@@ -2011,7 +2037,7 @@ end
   end
 
 
-      def handle_in("sales_trend_by_rm", payload, socket) do
+  def handle_in("sales_trend_by_rm", payload, socket) do
 
      branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
@@ -2076,10 +2102,9 @@ end
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2106,13 +2131,26 @@ end
         end|>List.flatten
 
 
+                year=sales_trend_by_rm|> Enum.group_by(fn x -> x.year end)|>Map.keys
 
-  month_keys=Enum.group_by(sales_trend_by_rm,fn x -> x.m end)|>Map.keys
+        
 
-stbqn_graph=for month <- month_keys do
+
+       stbqn_graph=for item <- year do
+
+        
+
+                  sales=Enum.filter(sales_trend_by_rm,fn x -> x.year==item end)
+
+
+  month_keys=Enum.group_by(sales,fn x -> x.m end)|>Map.keys
+
+
+for month <- month_keys do
 
         item=Enum.filter(sales_trend_by_rm,fn x -> x.m==month end)
 
+month=month|>Timex.month_name
 
           n01=item|>Enum.filter(fn x -> x.itemname=="N01 P. Beef Thai Rice Noodle" end)
           n02=item|>Enum.filter(fn x -> x.itemname=="N02 A. Beef Thai Rice Noodle" end)
@@ -2253,6 +2291,7 @@ stbqn_graph=for month <- month_keys do
 
 
 end
+end|>List.flatten
 
 
 
@@ -2755,8 +2794,7 @@ end
 
           year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
 
-        
-
+    
 
         compare_sales_trend_rm=for item <- year do
 
@@ -2771,10 +2809,10 @@ end
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+            
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2803,12 +2841,26 @@ end
 
 
 
-  month_keys=Enum.group_by(compare_sales_trend_rm,fn x -> x.m end)|>Map.keys
+  graph_year=Enum.group_by(compare_sales_trend_rm,fn x -> x.year end)|>Map.keys
 
-compare_trend_rm_graph=for month <- month_keys do
+     compare_trend_rm_graph=for item <- graph_year do
 
-        item=Enum.filter(compare_sales_trend_rm,fn x -> x.m==month end)
+                  year=%{year: item}
 
+                  graph_year=Enum.filter(compare_sales_trend_rm,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_rm,fn x -> x.m==month end)
+     
 
           alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
           combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
@@ -2835,14 +2887,17 @@ compare_trend_rm_graph=for month <- month_keys do
                 
 
 
-              %{month: month,
+              %{month: month_name,
                alacart: alacart,
                 combo: combo ,
                }
   
+          end
+
+end|>List.flatten
 
 
-end
+
 
             broadcast(socket, "compare_sales_trend_rm", %{compare_trend_rm_graph: Poison.encode!(compare_trend_rm_graph),compare_sales_trend_rm: compare_sales_trend_rm})
     {:noreply, socket}
@@ -2912,14 +2967,14 @@ end
                   pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
           
 
-            for item <- pax_visit_trend do
+                        for item <- pax_visit_trend do
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+            
 
-              month=%{month: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -2948,8 +3003,68 @@ end
 
 
 
+  graph_year=Enum.group_by(compare_sales_trend_rm_rice,fn x -> x.year end)|>Map.keys
 
-            broadcast(socket, "compare_sales_trend_rm_rice", %{compare_sales_trend_rm_rice: compare_sales_trend_rm_rice})
+     compare_trend_rm_rice_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_rm_rice,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_rm_rice,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo ,
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+
+
+
+
+            broadcast(socket, "compare_sales_trend_rm_rice", %{compare_trend_rm_rice_graph: Poison.encode!(compare_trend_rm_rice_graph),compare_sales_trend_rm_rice: compare_sales_trend_rm_rice})
     {:noreply, socket}
 
   
@@ -3017,14 +3132,14 @@ end
                   pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
           
 
-            for item <- pax_visit_trend do
+                       for item <- pax_visit_trend do
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+            
 
-              month=%{month: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3050,7 +3165,67 @@ end
 
         end|>List.flatten
 
-            broadcast(socket, "compare_sales_trend_rm_beverage", %{compare_sales_trend_rm_beverage: compare_sales_trend_rm_beverage})
+
+
+
+  graph_year=Enum.group_by(compare_sales_trend_rm_beverage,fn x -> x.year end)|>Map.keys
+
+     compare_trend_rm_beverage_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_rm_beverage,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_rm_beverage,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo ,
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+            broadcast(socket, "compare_sales_trend_rm_beverage", %{compare_trend_rm_beverage_graph: Poison.encode!(compare_trend_rm_beverage_graph),compare_sales_trend_rm_beverage: compare_sales_trend_rm_beverage})
     {:noreply, socket}
 
   
@@ -3119,14 +3294,14 @@ end
                   pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
           
 
-            for item <- pax_visit_trend do
+                           for item <- pax_visit_trend do
 
-                month=item|>elem(0)|> Timex.month_name()
+                 month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+            
 
-              month=%{month: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3152,7 +3327,67 @@ end
 
         end|>List.flatten
 
-            broadcast(socket, "compare_sales_trend_rm_dessert", %{compare_sales_trend_rm_dessert: compare_sales_trend_rm_dessert})
+
+
+
+  graph_year=Enum.group_by(compare_sales_trend_rm_dessert,fn x -> x.year end)|>Map.keys
+
+     compare_trend_rm_dessert_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_rm_dessert,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_rm_dessert,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo ,
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+            broadcast(socket, "compare_sales_trend_rm_dessert", %{compare_trend_rm_dessert_graph: Poison.encode!(compare_trend_rm_dessert_graph),compare_sales_trend_rm_dessert: compare_sales_trend_rm_dessert})
     {:noreply, socket}
 
   
@@ -3220,14 +3455,14 @@ end
                   pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
           
 
-            for item <- pax_visit_trend do
+                           for item <- pax_visit_trend do
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+            
 
-              month=%{month: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3255,7 +3490,67 @@ end
 
 
 
-            broadcast(socket, "compare_sales_trend_rm_others", %{compare_sales_trend_rm_others: compare_sales_trend_rm_others})
+
+  graph_year=Enum.group_by(compare_sales_trend_rm_others,fn x -> x.year end)|>Map.keys
+
+     compare_trend_rm_others_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_rm_others,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_rm_others,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo ,
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+
+
+            broadcast(socket, "compare_sales_trend_rm_others", %{compare_trend_rm_others_graph: Poison.encode!(compare_trend_rm_others_graph),compare_sales_trend_rm_others: compare_sales_trend_rm_others})
     {:noreply, socket}
 
   
@@ -3327,10 +3622,10 @@ end
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+             
 
-              month=%{month: month,m: month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3361,12 +3656,26 @@ end
 
 
 
-  month_keys=Enum.group_by(compare_sales_trend_qty,fn x -> x.m end)|>Map.keys
+graph_year=Enum.group_by(compare_sales_trend_qty,fn x -> x.year end)|>Map.keys
 
-compare_trend_qty_graph=for month <- month_keys do
+     compare_trend_qty_graph=for item <- graph_year do
 
-        item=Enum.filter(compare_sales_trend_qty,fn x -> x.m==month end)
+                  year=%{year: item}
 
+                  graph_year=Enum.filter(compare_sales_trend_qty,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_qty,fn x -> x.m==month end)
+     
 
           alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
           combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
@@ -3393,14 +3702,16 @@ compare_trend_qty_graph=for month <- month_keys do
                 
 
 
-              %{month: month,
+              %{month: month_name,
                alacart: alacart,
-                combo: combo ,
+                combo: combo
                }
   
+          end
+
+end|>List.flatten
 
 
-end
 
 
             broadcast(socket, "compare_sales_trend_qty", %{compare_trend_qty_graph: Poison.encode!(compare_trend_qty_graph),compare_sales_trend_qty: compare_sales_trend_qty})
@@ -3475,10 +3786,10 @@ end
 
                 month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+          
 
-              month=%{month: month_number<>month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3506,7 +3817,67 @@ end
 
         end|>List.flatten
 
-            broadcast(socket, "compare_sales_trend_qty_rice", %{compare_sales_trend_qty_rice: compare_sales_trend_qty_rice})
+
+
+
+graph_year=Enum.group_by(compare_sales_trend_qty_rice,fn x -> x.year end)|>Map.keys
+
+     compare_trend_qty_rice_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_qty_rice,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_qty_rice,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+            broadcast(socket, "compare_sales_trend_qty_rice", %{compare_trend_qty_rice_graph: Poison.encode!(compare_trend_qty_rice_graph),compare_sales_trend_qty_rice: compare_sales_trend_qty_rice})
     {:noreply, socket}
 
   
@@ -3579,10 +3950,10 @@ end
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+          
 
-              month=%{month: month_number<>month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3610,7 +3981,67 @@ end
 
         end|>List.flatten
 
-            broadcast(socket, "compare_sales_trend_qty_beverage", %{compare_sales_trend_qty_beverage: compare_sales_trend_qty_beverage})
+
+
+graph_year=Enum.group_by(compare_sales_trend_qty_beverage,fn x -> x.year end)|>Map.keys
+
+     compare_trend_qty_beverage_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_qty_beverage,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_qty_beverage,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+
+            broadcast(socket, "compare_sales_trend_qty_beverage", %{compare_trend_qty_beverage_graph: Poison.encode!(compare_trend_qty_beverage_graph),compare_sales_trend_qty_beverage: compare_sales_trend_qty_beverage})
     {:noreply, socket}
 
   
@@ -3678,14 +4109,17 @@ end
                   pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
           
 
+
+
+
             for item <- pax_visit_trend do
 
-                month=item|>elem(0)|> Timex.month_name()
+                 month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+          
 
-              month=%{month: month_number<>month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3695,7 +4129,7 @@ end
 
                                   category=cat|>elem(0)
   
-                                   grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
                                         grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                     
                                         count=cat|>elem(1)|>Enum.count() 
@@ -3713,7 +4147,67 @@ end
 
         end|>List.flatten
 
-            broadcast(socket, "compare_sales_trend_qty_dessert", %{compare_sales_trend_qty_dessert: compare_sales_trend_qty_dessert})
+
+
+graph_year=Enum.group_by(compare_sales_trend_qty_dessert,fn x -> x.year end)|>Map.keys
+
+     compare_trend_qty_dessert_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_qty_dessert,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_qty_dessert,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+
+            broadcast(socket, "compare_sales_trend_qty_dessert", %{compare_trend_qty_dessert_graph: Poison.encode!(compare_trend_qty_dessert_graph),compare_sales_trend_qty_dessert: compare_sales_trend_qty_dessert})
     {:noreply, socket}
 
   
@@ -3782,14 +4276,14 @@ end
                   pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
           
 
-            for item <- pax_visit_trend do
+                      for item <- pax_visit_trend do
 
                  month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+             month_number=item|>elem(0)
+          
 
-              month=%{month: month_number<>month}
+              month=%{month: month,m: month_number}
 
               count1=item|>elem(1)|>Enum.count() 
 
@@ -3799,7 +4293,7 @@ end
 
                                   category=cat|>elem(0)
   
-                                    grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
+                                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
                                         grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                     
                                         count=cat|>elem(1)|>Enum.count() 
@@ -3817,7 +4311,67 @@ end
 
         end|>List.flatten
 
-            broadcast(socket, "compare_sales_trend_qty_others", %{compare_sales_trend_qty_others: compare_sales_trend_qty_others})
+
+
+graph_year=Enum.group_by(compare_sales_trend_qty_others,fn x -> x.year end)|>Map.keys
+
+     compare_trend_qty_others_graph=for item <- graph_year do
+
+                  year=%{year: item}
+
+                  graph_year=Enum.filter(compare_sales_trend_qty_others,fn x -> x.year==item end)
+
+                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
+          
+
+    
+ 
+              for month <- compare_sales_trend_rm_graph do
+
+                month=month|>elem(0)
+                 month_name=month|> Timex.month_name()
+    
+            item=Enum.filter(compare_sales_trend_qty_others,fn x -> x.m==month end)
+     
+
+          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
+          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
+ 
+                 
+                  if alacart == [] do
+
+                    alacart=0.0
+                  else
+                    alacart=alacart|>hd
+                    alacart=alacart.percentage
+                    
+                  end
+
+                    if combo == [] do
+
+                    combo=0.0
+                  else
+                    combo=combo|>hd
+                    combo=combo.percentage
+                    
+                  end
+
+                
+
+
+              %{month: month_name,
+               alacart: alacart,
+                combo: combo
+               }
+  
+          end
+
+end|>List.flatten
+
+
+
+
+            broadcast(socket, "compare_sales_trend_qty_others", %{compare_trend_qty_others_graph: Poison.encode!(compare_trend_qty_others_graph),compare_sales_trend_qty_others: compare_sales_trend_qty_others})
     {:noreply, socket}
 
   

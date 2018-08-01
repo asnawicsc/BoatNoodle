@@ -94,7 +94,7 @@ defmodule BoatNoodleWeb.PageController do
 
   def index2(conn, _params) do
 
-  branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn)))
+  branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
  
     render(conn, "dashboard.html",branches: branches)
   end

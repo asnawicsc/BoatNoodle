@@ -1,0 +1,5 @@
+<h2>Edit Modal log</h2>
+
+<%= render "form.html", Map.put(assigns, :action, modal_log_path(@conn, :update,BN.get_brand(@conn), @modal_log)) %>
+
+<span><%= link "Back", to: modal_log_path(@conn, :index,BN.get_brand(@conn)) %></span>

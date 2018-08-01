@@ -100,7 +100,7 @@ defmodule BoatNoodleWeb.TagController do
         alert = "success"
       end
 
-      Repo.update(Tag.changeset(tag, %{combo_item_ids: new_subcatids}))
+      Repo.update(Tag.changeset(tag, %{combo_item_ids: new_subcatids}, BN.current_user(conn),"Update"))
 
       map =
         %{
@@ -209,7 +209,7 @@ defmodule BoatNoodleWeb.TagController do
         alert = "success"
       end
 
-      Repo.update(Tag.changeset(tag, %{subcat_ids: new_subcatids}))
+      Repo.update(Tag.changeset(tag, %{subcat_ids: new_subcatids}, BN.current_user(conn),"Update"))
 
       map =
         %{
@@ -351,7 +351,8 @@ defmodule BoatNoodleWeb.TagController do
   end
 
   def new(conn, _params) do
-    changeset = BN.change_tag(%Tag{})
+
+    changeset = Tag.changeset(%BoatNoodle.BN.Tag{},%{},BN.current_user(conn),"new")
 
     branches =
       BN.list_branch()
@@ -375,7 +376,9 @@ defmodule BoatNoodleWeb.TagController do
     tag_params = Map.put(tag_params, "branch_id", String.to_integer(tag_params["branch_id"]))
     tag_params = Map.put(tag_params, "brand_id", BN.get_brand_id(conn))
 
-    case BN.create_tag(tag_params) do
+    changeset=BoatNoodle.BN.Tag.changeset(%BoatNoodle.BN.Tag{},tag_params,BN.current_user(conn),"Create")
+
+    case BoatNoodle.Repo.insert(changeset) do
       {:ok, tag} ->
         conn
         |> put_flash(:info, "Printer created successfully.")
@@ -399,7 +402,7 @@ defmodule BoatNoodleWeb.TagController do
     id = id |> String.to_integer()
 
     tag = Repo.get_by(Tag, tagid: id, brand_id: BN.get_brand_id(conn))
-    changeset = BN.change_tag(tag)
+    changeset=BoatNoodle.BN.Tag.changeset(tag,%{}, BN.current_user(conn),"edit")
     render(conn, "edit.html", tag: tag, changeset: changeset)
   end
 
@@ -408,7 +411,8 @@ defmodule BoatNoodleWeb.TagController do
 
     tag = Repo.get_by(Tag, tagid: id, brand_id: BN.get_brand_id(conn))
 
-    case BN.update_tag(tag, tag_params) do
+    changeset=BoatNoodle.BN.Tag.changeset(tag,tag_params, BN.current_user(conn),"Update")
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, tag} ->
         conn
         |> put_flash(:info, "Printer updated successfully.")

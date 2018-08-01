@@ -21,6 +21,8 @@ defmodule BoatNoodle.BN do
     Repo.all(MenuItem)
   end
 
+
+
   @doc """
   Gets a single menu_item.
 
@@ -1239,6 +1241,10 @@ defmodule BoatNoodle.BN do
   """
   def delete_user(%User{} = user) do
     Repo.delete(user)
+  end
+
+  def current_user(conn) do
+    conn.private.plug_session["user_id"]
   end
 
   @doc """
@@ -4631,5 +4637,101 @@ defmodule BoatNoodle.BN do
   """
   def change_unauthorize_menu(%UnauthorizeMenu{} = unauthorize_menu) do
     UnauthorizeMenu.changeset(unauthorize_menu, %{})
+  end
+
+  alias BoatNoodle.BN.ModalLog
+
+  @doc """
+  Returns the list of modal_logs.
+
+  ## Examples
+
+      iex> list_modal_logs()
+      [%ModalLog{}, ...]
+
+  """
+  def list_modal_logs do
+    Repo.all(ModalLog)
+  end
+
+  @doc """
+  Gets a single modal_log.
+
+  Raises `Ecto.NoResultsError` if the Modal log does not exist.
+
+  ## Examples
+
+      iex> get_modal_log!(123)
+      %ModalLog{}
+
+      iex> get_modal_log!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_modal_log!(id), do: Repo.get!(ModalLog, id)
+
+  @doc """
+  Creates a modal_log.
+
+  ## Examples
+
+      iex> create_modal_log(%{field: value})
+      {:ok, %ModalLog{}}
+
+      iex> create_modal_log(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_modal_log(attrs \\ %{}) do
+    %ModalLog{}
+    |> ModalLog.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a modal_log.
+
+  ## Examples
+
+      iex> update_modal_log(modal_log, %{field: new_value})
+      {:ok, %ModalLog{}}
+
+      iex> update_modal_log(modal_log, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_modal_log(%ModalLog{} = modal_log, attrs) do
+    modal_log
+    |> ModalLog.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ModalLog.
+
+  ## Examples
+
+      iex> delete_modal_log(modal_log)
+      {:ok, %ModalLog{}}
+
+      iex> delete_modal_log(modal_log)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_modal_log(%ModalLog{} = modal_log) do
+    Repo.delete(modal_log)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking modal_log changes.
+
+  ## Examples
+
+      iex> change_modal_log(modal_log)
+      %Ecto.Changeset{source: %ModalLog{}}
+
+  """
+  def change_modal_log(%ModalLog{} = modal_log) do
+    ModalLog.changeset(modal_log, %{})
   end
 end

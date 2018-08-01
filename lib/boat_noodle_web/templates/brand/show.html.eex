@@ -19,5 +19,3 @@
 
 </ul>
 
-<span><%= link "Edit", to: brand_path(@conn, :edit, @brand) %></span>
-<span><%= link "Back", to: brand_path(@conn, :index,@conn.private.plug_session["brand"]) %></span>

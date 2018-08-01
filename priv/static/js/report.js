@@ -4136,6 +4136,81 @@ Highcharts.chart('compare_trend_rm_graph', {
                 }
             ]
         });
+
+                             var maps = JSON.parse(payload.compare_trend_rm_rice_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_rm_rice_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Rice Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -4261,6 +4336,81 @@ Highcharts.chart('compare_trend_rm_graph', {
                 }
             ]
         });
+
+                             var maps = JSON.parse(payload.compare_trend_rm_beverage_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_rm_beverage_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Beverage Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -4387,6 +4537,81 @@ Highcharts.chart('compare_trend_rm_graph', {
                 }
             ]
         });
+
+                             var maps = JSON.parse(payload.compare_trend_rm_dessert_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_rm_dessert_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Dessert Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -4512,6 +4737,81 @@ Highcharts.chart('compare_trend_rm_graph', {
                 }
             ]
         });
+
+                             var maps = JSON.parse(payload.compare_trend_rm_others_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_rm_others_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Others Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -4841,6 +5141,83 @@ Highcharts.chart('compare_trend_qty_graph', {
                 }
             ]
         });
+
+
+
+                      var maps = JSON.parse(payload.compare_trend_qty_rice_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_qty_rice_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Rice Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -4967,6 +5344,82 @@ Highcharts.chart('compare_trend_qty_graph', {
                 }
             ]
         });
+
+
+                      var maps = JSON.parse(payload.compare_trend_qty_beverage_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_qty_beverage_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Beverage Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     }) 
 
@@ -5093,6 +5546,82 @@ Highcharts.chart('compare_trend_qty_graph', {
                 }
             ]
         });
+
+
+                      var maps = JSON.parse(payload.compare_trend_qty_dessert_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_qty_dessert_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Rice Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })
 
@@ -5220,6 +5749,82 @@ Highcharts.chart('compare_trend_qty_graph', {
                 }
             ]
         });
+
+
+                      var maps = JSON.parse(payload.compare_trend_qty_others_graph)
+        var month = []
+        var alacart = []
+        var combo = []
+
+        $(maps).each(function() {
+        month.push(this.month)
+        })
+        $(maps).each(function() {
+            alacart.push(this.alacart)
+        })
+        $(maps).each(function() {
+            combo.push(this.combo)
+        })
+       
+
+
+
+Highcharts.chart('compare_trend_qty_others_graph', {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Rice Sales Trend By Category Chart'
+  },
+  xAxis: {
+    categories: month,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Total fruit consumption'
+    },
+    stackLabels: {
+      enabled: true,
+      style: {
+        fontWeight: 'bold',
+        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+      }
+    }
+  },
+  legend: {
+    align: 'right',
+    x: -30,
+    verticalAlign: 'top',
+    y: 25,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    shadow: false
+  },
+  tooltip: {
+    headerFormat: '<b>{point.x}</b><br/>',
+    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true,
+        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+      }
+    }
+  },
+  series: [{
+                name: 'ALA CART',
+                data: alacart
+            },
+            {
+                name: 'COMBO',
+                data: combo
+            }]
+});
         $("#backdrop").delay(500).fadeOut()
     })                                                                                  
 

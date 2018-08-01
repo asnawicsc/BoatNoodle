@@ -298,6 +298,39 @@ $("div.jumbotron").html("")
     $("ol#list7").append(this)
   })
 
+     $("ol#dis1").on("click", "li", function(){
+
+    $("ol#dis2").append(this)
+    var list_ids = [] 
+    $("ol#dis2 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='a[cat]']").val(list_ids)
+  })
+
+  $("ol#dis2").on("click", "li", function(){
+
+    $("ol#dis1").append(this)
+  })
+
+
+       $("ol#dis3").on("click", "li", function(){
+
+    $("ol#dis4").append(this)
+    var list_ids = [] 
+    $("ol#dis4 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='a[items]']").val(list_ids)
+  })
+
+  $("ol#dis4").on("click", "li", function(){
+
+    $("ol#dis3").append(this)
+  })
+
 
 
   $('button[data-original-title="combo new"]').click(function() {

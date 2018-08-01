@@ -14,7 +14,7 @@ $(document).ready(function(){
 
 	$("input.printer_subcat").click(function(){
 		var info = $(this).attr("name")
-		tag_channel.push("toggle_printer", {info: info, brand_id: window.currentBrand})
+		tag_channel.push("toggle_printer", {info: info, user_id: window.currentUser, brand_id: window.currentBrand})
 	})
 
 	tag_channel.on("updated_printer", payload => {
@@ -34,7 +34,7 @@ $(document).ready(function(){
 
 	$("input.printer_combo_item").click(function(){
 		var info = $(this).attr("name")
-		tag_channel.push("toggle_printer_combo", {info: info, brand_id: window.currentBrand})
+		tag_channel.push("toggle_printer_combo", {info: info, user_id: window.currentUser, brand_id: window.currentBrand})
 	})
 
 	tag_channel.on("updated_printer_combo", payload => {
@@ -54,7 +54,7 @@ $(document).ready(function(){
 
 	$("input.user_branch").click(function(){
 		var info = $(this).attr("name")
-		tag_channel.push("toggle_user_branch", {info: info})
+		tag_channel.push("toggle_user_branch", { user_id: window.currentUser,info: info})
 	})
 
 	tag_channel.on("updated_branch_access", payload => {

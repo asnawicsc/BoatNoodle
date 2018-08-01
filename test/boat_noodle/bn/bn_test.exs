@@ -3724,4 +3724,70 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_unauthorize_menu(unauthorize_menu)
     end
   end
+
+  describe "modal_logs" do
+    alias BoatNoodle.BN.ModalLog
+
+    @valid_attrs %{action: "some action", description: "some description", name: "some name", user_id: 42}
+    @update_attrs %{action: "some updated action", description: "some updated description", name: "some updated name", user_id: 43}
+    @invalid_attrs %{action: nil, description: nil, name: nil, user_id: nil}
+
+    def modal_log_fixture(attrs \\ %{}) do
+      {:ok, modal_log} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_modal_log()
+
+      modal_log
+    end
+
+    test "list_modal_logs/0 returns all modal_logs" do
+      modal_log = modal_log_fixture()
+      assert BN.list_modal_logs() == [modal_log]
+    end
+
+    test "get_modal_log!/1 returns the modal_log with given id" do
+      modal_log = modal_log_fixture()
+      assert BN.get_modal_log!(modal_log.id) == modal_log
+    end
+
+    test "create_modal_log/1 with valid data creates a modal_log" do
+      assert {:ok, %ModalLog{} = modal_log} = BN.create_modal_log(@valid_attrs)
+      assert modal_log.action == "some action"
+      assert modal_log.description == "some description"
+      assert modal_log.name == "some name"
+      assert modal_log.user_id == 42
+    end
+
+    test "create_modal_log/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_modal_log(@invalid_attrs)
+    end
+
+    test "update_modal_log/2 with valid data updates the modal_log" do
+      modal_log = modal_log_fixture()
+      assert {:ok, modal_log} = BN.update_modal_log(modal_log, @update_attrs)
+      assert %ModalLog{} = modal_log
+      assert modal_log.action == "some updated action"
+      assert modal_log.description == "some updated description"
+      assert modal_log.name == "some updated name"
+      assert modal_log.user_id == 43
+    end
+
+    test "update_modal_log/2 with invalid data returns error changeset" do
+      modal_log = modal_log_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_modal_log(modal_log, @invalid_attrs)
+      assert modal_log == BN.get_modal_log!(modal_log.id)
+    end
+
+    test "delete_modal_log/1 deletes the modal_log" do
+      modal_log = modal_log_fixture()
+      assert {:ok, %ModalLog{}} = BN.delete_modal_log(modal_log)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_modal_log!(modal_log.id) end
+    end
+
+    test "change_modal_log/1 returns a modal_log changeset" do
+      modal_log = modal_log_fixture()
+      assert %Ecto.Changeset{} = BN.change_modal_log(modal_log)
+    end
+  end
 end

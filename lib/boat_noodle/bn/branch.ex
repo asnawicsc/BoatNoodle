@@ -34,8 +34,8 @@ defmodule BoatNoodle.BN.Branch do
   end
 
   @doc false
-  def changeset(branch, attrs) do
-    branch
+  def changeset(branch, attrs,user_id,action) do
+    branch=branch
     |> cast(attrs, [
       :def_open_amt,
       :api_key,
@@ -65,5 +65,17 @@ defmodule BoatNoodle.BN.Branch do
       :report_class
     ])
     |> unique_constraint(:branchid, name: "PRIMARY")
+
+        if action == "new" or action =="edit" do
+
+      
+     else
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "branch", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+    end
+
+    
+
+    branch
   end
 end
