@@ -36,7 +36,17 @@ defmodule BoatNoodle.BN.ItemCat do
       :updated_at
     ])
 
-      BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "item_cat", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      if action == "new" or action =="edit" do
+
+            
+        else
+
+            if action == "Update" do
+             attrs = Map.put(attrs, "itemcatid", item_cat.data.itemcatid)
+            end 
+          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount_item", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      end
+     
 
 
   item_cat

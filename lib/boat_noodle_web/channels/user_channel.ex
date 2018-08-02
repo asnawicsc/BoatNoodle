@@ -1194,15 +1194,15 @@ defmodule BoatNoodleWeb.UserChannel do
           on: sd.itemid == i.subcatid,
           left_join: ic in BoatNoodle.BN.ItemCat,
           on: ic.itemcatid == i.itemcatid,
-          group_by: i.itemname,
+          group_by: sd.itemid,
           where:
-            sd.afterdisc != 0.00 and s.branchid == ^payload["branch_id"] and
+            s.is_void == 0 and s.branchid == ^payload["branch_id"] and
               s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
               s.brand_id == ^payload["brand_id"],
           select: %{
             itemname: i.itemname,
             qty: sum(sd.qty),
-            afterdisc: sum(sd.afterdisc),
+            afterdisc: sum(sd.order_price),
             itemcatname: ic.itemcatname
           }
         )
@@ -1227,11 +1227,17 @@ defmodule BoatNoodleWeb.UserChannel do
           on: ic.itemcatid == i.itemcatid,
           left_join: f in BoatNoodle.BN.Staff,
           on: s.staffid == f.staff_id,
+          left_join: br in BoatNoodle.BN.Branch,
+          on: br.branchid == s.branchid,
           left_join: b in BoatNoodle.BN.Brand,
-          on: b.id == s.brand_id,
+          on: b.id == sd.brand_id,
           where:
-            s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              s.is_void == 0
+              and b.id == ^payload["brand_id"] 
+              and br.branchid ==^branchid 
+              and sd.brand_id ==^payload["brand_id"] 
+              and s.salesdate >= ^payload["s_date"]
+               and s.salesdate <= ^payload["e_date"], 
           select: %{
             itemcatcode: ic.itemcatcode,
             itemname: i.itemname,

@@ -68,8 +68,12 @@ defmodule BoatNoodle.BN.Branch do
 
         if action == "new" or action =="edit" do
 
-      
-     else
+          else
+      if action == "Update" do
+        attrs = Map.put(attrs, "brand_id", branch.data.brand_id)
+      end
+
+     
 
        BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "branch", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
     end

@@ -18,6 +18,11 @@ defmodule BoatNoodle.BN.UserBranchAccess do
     
        else
 
+          if action == "Update" do
+        attrs = Map.put(attrs, "userbranchid", user_brnch_access.data.userbranchid)
+      end
+
+
        BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "user_brnch_access", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
       end
 

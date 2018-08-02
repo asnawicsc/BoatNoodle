@@ -26,6 +26,10 @@ defmodule BoatNoodle.BN.Organization do
       
      else
 
+           if action == "Update" do
+        attrs = Map.put(attrs, "organisationid", organization.data.organisationid)
+      end
+
        BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "organization", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
     end
 
