@@ -390,7 +390,7 @@
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             columns: [{
-                    data: 'itemcatcode'
+                    data: 'itemcode'
                 },
                 {
                     data: 'itemname'
