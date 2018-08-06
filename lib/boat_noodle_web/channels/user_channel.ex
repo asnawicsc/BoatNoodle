@@ -1446,7 +1446,7 @@ defmodule BoatNoodleWeb.UserChannel do
             a.branchid == ^payload["branch_id"] and a.salesdate >= ^payload["s_date"] and
               a.salesdate <= ^payload["e_date"] and v.brand_id == ^payload["brand_id"],
           select: %{
-            salesdatetime: a.salesdatetime,
+            salesdatetime: v.void_datetime,
             salesdate: a.salesdate,
             itemname: v.itemname,
             invoiceno: a.invoiceno,
@@ -2664,7 +2664,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
     subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: id, brand_id: brand_id)
 
-    update_item_subcat_params=%{
+    update_item_subcat_params = %{
       itemname: name,
       itemprice: price,
       enable_disc: enable_disc,
@@ -2673,19 +2673,22 @@ defmodule BoatNoodleWeb.UserChannel do
       include_spend: included_spend
     }
 
-               update_item_subcat = BoatNoodle.BN.ItemSubcat.changeset(subcat, update_item_subcat_params, user_id,"Update Combo ItemSubcat ")
+    update_item_subcat =
+      BoatNoodle.BN.ItemSubcat.changeset(
+        subcat,
+        update_item_subcat_params,
+        user_id,
+        "Update Combo ItemSubcat "
+      )
 
-                case Repo.update(update_item_subcat) do
-                  {:ok, item_subcat} ->
-                    true
+    case Repo.update(update_item_subcat) do
+      {:ok, item_subcat} ->
+        true
 
-                  _ ->
-                    IO.puts("failed update item subcat")
-                    false
-                end     
-    
-
-
+      _ ->
+        IO.puts("failed update item subcat")
+        false
+    end
 
     for insert <- a do
       if elem(insert, 0) != "name" && elem(insert, 0) != "price" && elem(insert, 0) != "is_defaul" &&
@@ -2719,20 +2722,24 @@ defmodule BoatNoodleWeb.UserChannel do
         unit_price = a.price
         top_up = b.price
 
+        update_combo_details_params = %{top_up: top_up, unit_price: unit_price}
 
+        update_combo_details =
+          BoatNoodle.BN.ComboDetails.changeset(
+            combo,
+            update_combo_details_params,
+            user_id,
+            "Update Combo Details"
+          )
 
-         update_combo_details_params=%{top_up: top_up, unit_price: unit_price}
+        case Repo.update(update_combo_details) do
+          {:ok, combo_details} ->
+            true
 
-               update_combo_details = BoatNoodle.BN.ComboDetails.changeset(combo, update_combo_details_params, user_id,"Update Combo Details")
-
-                case Repo.update(update_combo_details) do
-                  {:ok, combo_details} ->
-                    true
-
-                  _ ->
-                    IO.puts("failed combo details update")
-                    false
-                end     
+          _ ->
+            IO.puts("failed combo details update")
+            false
+        end
       else
       end
     end

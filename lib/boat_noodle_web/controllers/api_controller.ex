@@ -95,7 +95,7 @@ defmodule BoatNoodleWeb.ApiController do
   def push_scope_void_receipt(conn, params, user) do
     params = Map.put(params, "branch_id", user.branchid)
     params = Map.put(params, "brand_id", user.brand_id)
-    # post the cash in cash out shits...
+    IO.inspect(params)
     cg = BoatNoodle.BN.VoidItems.changeset(%BoatNoodle.BN.VoidItems{}, params)
 
     case Repo.insert(cg) do

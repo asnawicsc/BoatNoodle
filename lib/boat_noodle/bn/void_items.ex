@@ -2,7 +2,6 @@ defmodule BoatNoodle.BN.VoidItems do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key false
   schema "voiditems" do
     field(:discount, :float)
     field(:discountitemsid, :integer)
@@ -24,12 +23,15 @@ defmodule BoatNoodle.BN.VoidItems do
     field(:void_by, :integer)
     field(:voidreason, :string)
     field(:brand_id, :integer)
+    field(:rowid, :integer)
+    field(:void_datetime, :naive_datetime)
   end
 
   @doc false
   def changeset(void_items, attrs) do
     void_items
     |> cast(attrs, [
+      :rowid,
       :itemcode,
       :itemname,
       :quantity,
@@ -49,7 +51,8 @@ defmodule BoatNoodle.BN.VoidItems do
       :void_by,
       :voidreason,
       :orderid,
-      :brand_id
+      :brand_id,
+      :void_datetime
     ])
     |> validate_required([
       :itemcode,
