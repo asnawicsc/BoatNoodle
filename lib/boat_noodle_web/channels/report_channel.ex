@@ -23,7 +23,7 @@ defmodule BoatNoodleWeb.ReportChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: s.salesdate,
             select: %{
@@ -90,7 +90,7 @@ end
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: s.salesdate,
             select: %{
@@ -123,7 +123,7 @@ average_daily=for item <- year do
              average1=grand_total/count|>Float.round(2)|>Number.Delimit.number_to_delimited()
              average=grand_total/count|>Float.round(2)
 
-              a=%{month: month_number<>month,m: month, grand_total: average, grand_total1: average1}
+              a=%{month: month,m: month, grand_total: average, grand_total1: average1}
 
                Map.merge(year,a)
           end
@@ -156,7 +156,7 @@ end
         Repo.all(
           from(s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: s.salesdate,
             select: %{
@@ -218,7 +218,7 @@ end
         Repo.all(
           from(s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: s.salesdate,
             select: %{
@@ -282,7 +282,7 @@ end
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: s.salesdate,
             select: %{
@@ -344,7 +344,7 @@ end
         Repo.all(
           from(s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: s.salesdate,
             select: %{
@@ -381,7 +381,7 @@ end
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
              left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,      
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -403,7 +403,7 @@ end
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                   group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -567,7 +567,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
               left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,      
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -587,7 +587,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                   group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -667,7 +667,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
              left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,           
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -687,7 +687,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                   group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -767,7 +767,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,  
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -787,7 +787,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                   group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -868,7 +868,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,    
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -888,7 +888,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                   group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -970,7 +970,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and  c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -990,7 +990,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                   group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -1070,7 +1070,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -1089,7 +1089,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                   group_by: [c.itemcatname,s.salesdate],
             select: %{
@@ -1120,14 +1120,13 @@ end|>List.flatten
 
             for item <- pax_visit_trend do
 
-
                 month=item|>elem(0)|> Timex.month_name()
               month=item|>elem(0)|> Timex.month_name()
              month_number=item|>elem(0)
 
               month=%{month: month,m: month_number}
 
-              count1=item|>elem(1)|>Enum.count() 
+              count1=item|>elem(1)|>Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)|>Enum.sum
 
               all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
 
@@ -1139,7 +1138,7 @@ end|>List.flatten
                                 grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
                                   
 
-                                        count=cat|>elem(1)|>Enum.count() 
+                                        count=cat|>elem(1)|>Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)|>Enum.sum
                                        a=count/count1
                                        percentage=a*100|>Float.round(2)
 
@@ -1259,7 +1258,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales, on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,
-            where: b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [i.subcatid,i.itemname],
             select: %{
@@ -1278,7 +1277,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales, on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,
-            where: b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
                 group_by: [i.subcatid,i.itemname],
             select: %{
@@ -1317,7 +1316,7 @@ end
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1335,7 +1334,7 @@ end
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1581,7 +1580,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1600,7 +1599,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1689,7 +1688,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1707,7 +1706,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1795,7 +1794,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1813,7 +1812,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1904,7 +1903,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 6  and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 6  and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1924,7 +1923,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 10  and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 10  and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1943,7 +1942,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -1960,7 +1959,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 10 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 10 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2051,7 +2050,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2070,7 +2069,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2316,7 +2315,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2335,7 +2334,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2417,7 +2416,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2436,7 +2435,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where:  s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2518,7 +2517,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2537,7 +2536,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2618,7 +2617,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2637,7 +2636,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.itemcatid == 10 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where:  s.is_void == 0 and c.itemcatid == 10 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2656,7 +2655,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2673,7 +2672,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 10 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 10 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2758,7 +2757,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2778,7 +2777,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2919,7 +2918,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -2939,7 +2938,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3084,7 +3083,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3104,7 +3103,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3246,7 +3245,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3266,7 +3265,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where:  s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3407,7 +3406,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3427,7 +3426,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3570,7 +3569,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3590,7 +3589,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3734,7 +3733,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3754,7 +3753,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3898,7 +3897,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -3918,7 +3917,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -4061,7 +4060,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -4081,7 +4080,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -4228,7 +4227,7 @@ end|>List.flatten
             left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
             left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,
@@ -4248,7 +4247,7 @@ end|>List.flatten
             left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
             left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
             select: %{
               salesdate: s.salesdate,

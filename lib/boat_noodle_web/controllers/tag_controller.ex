@@ -70,7 +70,15 @@ defmodule BoatNoodleWeb.TagController do
       tag_id = elem(tuple, 1)
       combo_item_id = elem(tuple, 2) |> String.trim()
       tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
-      combo_detail = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
+      combo_detail = Repo.get_by(ComboDetails, combo_item_id: combo_item_id, brand_id: BN.get_brand_id(conn))
+      
+
+      if combo_detail == nil do
+        combo_detail = Repo.get_by(ItemSubcat, subcatid: combo_item_id, brand_id: BN.get_brand_id(conn))
+        combo_item_name=combo_detail.itemname
+      else
+        combo_item_name=combo_detail.combo_item_name
+      end
 
       if tag.combo_item_ids != nil do
         items = tag.combo_item_ids
@@ -105,7 +113,7 @@ defmodule BoatNoodleWeb.TagController do
       map =
         %{
           printer_name: tag.tagname,
-          item_name: combo_detail.combo_item_name,
+          item_name: combo_item_name,
           action: action,
           alert: alert
         }

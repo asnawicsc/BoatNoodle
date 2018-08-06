@@ -8,13 +8,15 @@ defmodule BoatNoodle.BN.ModalLog do
     field :description, :binary
     field :name, :string
     field :user_id, :integer
+    field :inserted_at, :string
+    field :updated_at, :string
 
-    timestamps()
+
   end
 
   @doc false
   def changeset(modal_log, attrs) do
     modal_log
-    |> cast(attrs, [:name, :user_id, :description, :action])
+    |> cast(attrs, [:name, :user_id, :description, :action,:inserted_at, :updated_at])
   end
 end

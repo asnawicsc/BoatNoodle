@@ -56,6 +56,11 @@ defmodule BoatNoodle.BN.DiscountItem do
 
             
         else
+
+            if action == "Update" do
+        attrs = Map.put(attrs, "discountitemsid", discount_item.data.discountitemsid)
+      end
+          
           BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount_item", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
       end
 

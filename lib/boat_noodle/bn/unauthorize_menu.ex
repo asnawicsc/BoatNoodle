@@ -25,6 +25,10 @@ defmodule BoatNoodle.BN.UnauthorizeMenu do
     
        else
 
+         if action == "Update" do
+        attrs = Map.put(attrs, "id", unauthorize_menu.data.id)
+      end
+
        BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "unauthorize_menu", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
       end
 

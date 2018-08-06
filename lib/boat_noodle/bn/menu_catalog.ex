@@ -23,6 +23,10 @@ defmodule BoatNoodle.BN.MenuCatalog do
       
      else
 
+          if action == "Update" do
+        attrs = Map.put(attrs, "id", menu_catalog.data.id)
+      end
+
     BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "menu_catalog", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
     end
 

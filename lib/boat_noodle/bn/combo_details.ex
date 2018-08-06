@@ -38,10 +38,14 @@ defmodule BoatNoodle.BN.ComboDetails do
       :top_up
     ])
 
-             if action == "new" or action =="edit" do
+     if action == "new" or action =="edit" do
 
       
-     else
+     
+      else
+      if action == "Update" do
+        attrs = Map.put(attrs, "combo_id", combo_details.data.combo_id)
+      end
 
     BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "combo_details", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
     end
