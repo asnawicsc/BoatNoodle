@@ -29,14 +29,7 @@ defmodule BoatNoodleWeb.Router do
   # Other scopes may use custom stacks.
   scope "/api", BoatNoodleWeb do
     pipe_through(:api)
-    get("/get_deployment_key", PageController, :webhook_key)
     get("/:code/get_api2", BranchController, :get_api2)
-    get("/sales", PageController, :webhook_get)
-    post("/sales", PageController, :webhook_post)
-  end
-
-  scope "/:brand/api", BoatNoodleWeb do
-    pipe_through(:api)
     get("/sales", ApiController, :webhook_get)
     post("/sales", ApiController, :webhook_post)
     post("/operations", ApiController, :webhook_post_operations)
@@ -52,6 +45,7 @@ defmodule BoatNoodleWeb.Router do
     get("/get_brands", PageController, :get_brands)
     get("/reports", PageController, :report_index)
     get("/top_sales", SalesController, :top_sales)
+    get("/logout", UserController, :logout)
   end
 
   scope "/:brand", BoatNoodleWeb do
@@ -280,6 +274,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/api_log", ApiLogController)
     resources("/vouchers", VoucherController)
     resources("/modal_logs", ModalLogController)
+    get("/advance", PageController, :advance)
     get("/experiment", PageController, :experiment)
     get("/*path", PageController, :no_page_found)
   end

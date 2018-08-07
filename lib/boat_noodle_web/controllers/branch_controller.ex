@@ -87,7 +87,7 @@ defmodule BoatNoodleWeb.BranchController do
       Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
       |> Base.url_encode64()
 
-    cg = Branch.changeset(branch, %{api_key: api_key})
+    cg = Branch.changeset(branch, %{api_key: api_key}, BN.current_user(conn), "Update")
     map = %{key: api_key} |> Poison.encode!()
 
     case Repo.update(cg) do

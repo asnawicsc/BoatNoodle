@@ -85,20 +85,7 @@
 
 $(document).ready(function(){
 
-  $.ajax({
-    url: "/get_brands", 
-    dataType: "json"
-  }).done(function(j){
-    $(j).each(function(){
-      var html = "<li class='nav-item' id='"+this.name+"'><a href='/"+this.name+"/login' class='nav-link'><i class='material-icons'>lock_open</i>"+this.name+"</a></li>"
-      $("ul[aria-label='various_brands']").append(html)
-    })
-  var pathname = window.location.pathname;
-  var split_path = pathname.split("/");
-  var domain_name = split_path[1];
-  console.log(domain_name)
-  $("li#"+domain_name).toggleClass("active")
-  })
+
 })
 
 

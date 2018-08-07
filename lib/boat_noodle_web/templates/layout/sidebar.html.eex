@@ -216,6 +216,12 @@
                     <span class="sidebar-normal"> User Branch Access </span>
                   </a>
                 </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/advance">
+                    <span class="sidebar-mini"> AS </span>
+                    <span class="sidebar-normal"> Advance Settings </span>
+                  </a>
+                </li>
               </ul>
             </div>
           </li>

@@ -12,6 +12,21 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
+  def handle_in("choose_new_brand", %{"val" => val, "name" => name, "user_id" => user_id}, socket) do
+    user_id = name |> String.split("[") |> hd()
+    user = Repo.get(User, user_id)
+
+    brand = Repo.get_by(Brand, name: val)
+    User.changeset(user, %{brand_id: brand.id}, user_id, "Update") |> Repo.update!()
+
+    broadcast(socket, "notify_user_brand_changed", %{
+      name: user.username,
+      brand_name: brand.name
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_in("find_organization", %{"name" => name}, socket) do
     name = name |> String.replace("#", "")
 
@@ -1469,7 +1484,7 @@ defmodule BoatNoodleWeb.UserChannel do
               s.salesdate <= ^payload["e_date"] and v.brand_id == ^payload["brand_id"],
           select: %{
             salesdatetime: v.void_datetime,
-            salesdate: a.salesdate,
+            salesdate: s.salesdate,
             itemname: v.itemname,
             invoiceno: s.invoiceno,
             unit_price: i.itemprice,

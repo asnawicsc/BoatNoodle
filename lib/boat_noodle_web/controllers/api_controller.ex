@@ -6,8 +6,6 @@ defmodule BoatNoodleWeb.ApiController do
 
   def webhook_post_operations(conn, params) do
     IO.inspect(params)
-    brand = params["brand"]
-    bb = Repo.get_by(Brand, domain_name: brand)
 
     cond do
       params["scope"] == nil ->
@@ -180,9 +178,6 @@ defmodule BoatNoodleWeb.ApiController do
       params["key"] == nil ->
         send_resp(conn, 200, "please include key .")
 
-      params["brand"] == nil ->
-        send_resp(conn, 200, "please include brand name.")
-
       params["fields"] == nil ->
         send_resp(conn, 200, "please include sales id in field.")
 
@@ -190,24 +185,21 @@ defmodule BoatNoodleWeb.ApiController do
         brb = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
 
         if brb != nil do
-          branch_id = params["branch_id"]
-          brand = params["brand"]
-          bb = Repo.get_by(Brand, domain_name: brand)
-          branch = Repo.get_by(Branch, branchcode: params["code"], brand_id: bb.id)
+          branch = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
 
           if branch != nil do
             case params["fields"] do
               "sales_id" ->
-                get_scope_sales_id(conn, branch.branchid, bb.id, params["code"])
+                get_scope_sales_id(conn, branch.branchid, branch.brand_id, params["code"])
 
               "printers" ->
-                get_scope_branch_printer(conn, branch.branchid, bb.id, params["code"])
+                get_scope_branch_printer(conn, branch.branchid, branch.brand_id, params["code"])
 
               "items" ->
                 get_scope_branch_items(
                   conn,
                   branch.branchid,
-                  bb.id,
+                  branch.brand_id,
                   params["code"],
                   branch.menu_catalog
                 )
@@ -216,22 +208,22 @@ defmodule BoatNoodleWeb.ApiController do
                 get_scope_branch_details(conn, branch)
 
               "vouchers" ->
-                get_scope_vouchers(conn, branch.branchid, bb.id, params["code"])
+                get_scope_vouchers(conn, branch.branchid, branch.brand_id, params["code"])
 
               "item_remarks" ->
-                get_scope_item_remarks(conn, branch.branchid, bb.id, params["code"])
+                get_scope_item_remarks(conn, branch.branchid, branch.brand_id, params["code"])
 
               "staffs" ->
-                get_scope_staffs(conn, branch.branchid, bb.id, params["code"])
+                get_scope_staffs(conn, branch.branchid, branch.brand_id, params["code"])
 
               "payment_types" ->
-                get_scope_payment_types(conn, branch.branchid, bb.id, params["code"])
+                get_scope_payment_types(conn, branch.branchid, branch.brand_id, params["code"])
 
               "discount" ->
                 get_scope_discount(
                   conn,
                   branch.branchid,
-                  bb.id,
+                  branch.brand_id,
                   params["code"],
                   branch.disc_catalog
                 )
@@ -671,8 +663,6 @@ defmodule BoatNoodleWeb.ApiController do
 
     IO.inspect(params)
     a_list = params["details"]
-    brand = params["brand"]
-    bb = Repo.get_by(Brand, domain_name: brand)
 
     cond do
       params["key"] == nil ->
@@ -805,7 +795,7 @@ defmodule BoatNoodleWeb.ApiController do
                     Repo.delete_all(
                       from(
                         s in SalesMaster,
-                        where: s.salesid == ^sales.salesid and s.brand_id == ^bb.id
+                        where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
                       )
                     )
 

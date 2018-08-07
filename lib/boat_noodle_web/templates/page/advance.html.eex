@@ -1,0 +1,64 @@
+<h1>Advance Settings</h1>
+<div class="row" id="explaination">
+	<div class="col-lg-12">
+		<div class="jumbotron">
+			Here are the advance settings for the super admins. One of it which controls the users brand access.
+		</div>
+	</div>
+
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<form>
+		<table class="table">
+			<thead>
+				<tr>
+					<td>Name</td>
+					<td>Email</td>
+					<%= for brand <- @brands do %>
+						<td>
+							
+						 <%= brand.name%>
+						</td>
+						<% end %>
+				</tr>
+			</thead>
+			<tbody>
+		<%= for user <- @users do %>
+
+				<tr>
+					<td><%= user.username %></td>
+					<td><%= user.email %></td>
+					
+						<%= for brand <- @brands do %>
+						<td>
+							<%= if user.brand_id == brand.id do %>
+								<input class="brand_access" type="radio" name="<%= user.id%>[brand]" value="<%= brand.name%>" checked> <%= brand.name%>
+							<% else %>
+								<input class="brand_access" type="radio" name="<%= user.id%>[brand]" value="<%= brand.name%>"> <%= brand.name%>
+							<% end %>
+						</td>
+						<% end %>
+					
+				</tr>
+		<% end %>
+			</tbody>
+		</table>
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	$("#explaination").delay(15000).hide(3000);
+
+	$("input.brand_access").click(function(){
+		var val = $(this).val()
+		var name = $(this).attr("name")
+
+		channel.push("choose_new_brand", {val: val, name: name, user_id: window.currentUser})
+	})
+
+	$(".table").DataTable();
+
+</script>

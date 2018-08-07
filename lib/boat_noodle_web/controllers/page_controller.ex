@@ -4,14 +4,21 @@ defmodule BoatNoodleWeb.PageController do
   import Ecto.Query
   require IEx
 
+  def advance(conn, params) do
+    users = Repo.all(from(u in User))
+    brands = Repo.all(from(b in Brand))
+
+    # html side have a radio button, indicate they can only appear at 1 brand at 1 time.
+    render(conn, "advance.html", users: users, brands: brands)
+  end
+
   def experiment(conn, params) do
-        render(conn, "experiment.html")
+    render(conn, "experiment.html")
   end
 
   def logout(conn, _params) do
     conn
     |> delete_session(:user_id)
-
     |> put_flash(:info, "Logout successfully")
     |> redirect(to: page_path(conn, :report_login))
   end
@@ -23,9 +30,13 @@ defmodule BoatNoodleWeb.PageController do
       p2 = String.replace(user.password, "$2y", "$2b")
 
       if Comeonin.Bcrypt.checkpw(password, p2) do
+        brand = Repo.get(Brand, user.brand_id)
+
         conn
         |> put_session(:user_id, user.id)
-        |> redirect(to: page_path(conn, :report_index))
+        |> put_session(:brand, brand.domain_name)
+        |> put_session(:brand_id, brand.id)
+        |> redirect(to: page_path(conn, :index2, brand.domain_name))
       else
         conn
         |> put_flash(:error, "Wrong password!")
@@ -39,7 +50,7 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def report_login(conn, params) do
-    render(conn, "login.html")
+    render(conn, "login.html", layout: {BoatNoodleWeb.LayoutView, "report_layout.html"})
   end
 
   def report_index(conn, params) do
@@ -49,18 +60,17 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def webhook_key(conn, params) do
-
-
-    bb = Repo.all(from b in Branch, where: b.branchcode ==^ params["code"])
-
+    bb = Repo.all(from(b in Branch, where: b.branchcode == ^params["code"]))
 
     if bb != [] do
       branch = hd(bb)
- 
 
-        api_key = Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y") |> Base.url_encode64()
-        cg = Branch.changeset(branch, %{api_key: api_key})
-        map = %{key: api_key} |> Poison.encode!()
+      api_key =
+        Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
+        |> Base.url_encode64()
+
+      cg = Branch.changeset(branch, %{api_key: api_key})
+      map = %{key: api_key} |> Poison.encode!()
 
       case Repo.update(cg) do
         {:ok, bb} ->
@@ -71,13 +81,7 @@ defmodule BoatNoodleWeb.PageController do
       end
     else
       send_resp(conn, 500, " not ok")
-
-
     end
- 
-
-
-
   end
 
   def get_brands(conn, _params) do
@@ -93,16 +97,21 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def index2(conn, _params) do
+    branches =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.Branch,
+          where: s.brand_id == ^BN.get_brand_id(conn),
+          order_by: s.branchname
+        )
+      )
 
-  branches = Repo.all(from(s in BoatNoodle.BN.Branch, where: s.brand_id==^BN.get_brand_id(conn),order_by: s.branchname))
- 
-    render(conn, "dashboard.html",branches: branches)
+    render(conn, "dashboard.html", branches: branches)
   end
-
 
   def no_page_found(conn, _params) do
     conn
     |> put_flash(:error, "No page found")
-    |> redirect(to: page_path(conn, :index, BN.get_domain(conn)))
+    |> redirect(to: page_path(conn, :index2, BN.get_domain(conn)))
   end
 end
