@@ -1,32 +1,54 @@
 <h2>Listing Modal logs</h2>
 
-<table class="table data" id ="a">
+<table class="table" id="example">
   <thead>
   
     <tr align="left">
-      <th style="width: 30px;">Name</th>
       <th style="width: 30px;">User</th>
-      <th style="width: 30px;">Description</th>
+      <th style="width: 30px;">Module Change</th>
+      <th style="width: 30px;">Action</th>
       <th style="width: 30px;">Date</th>
 
     </tr>
   </thead>
   <tbody>
 <%= for modal_log <- @modal_logs do %>
-    <tr align="left">
+    <tr align="left">    
+      <% user=Repo.get_by(User, %{id: modal_log.user_id, brand_id: BN.get_brand_id(@conn) }) %>
+      <td style="width: 30px;"><%= user.username %></td>
       <td style="width: 30px;"><%= modal_log.name %></td>
-      <td style="width: 30px;"><%= modal_log.user_id %></td>
-      <td style="width: 30px;"><%= modal_log.description %></td>
+      <td style="width: 30px;"><%= modal_log.action %></td>
       <td style="width: 30px;"><%= modal_log.inserted_at %></td> 
     </tr>
 <% end %>
   </tbody>
 </table>
 
-<script type="text/javascript">
-  $('#a').dataTable(   th, td {
-    white-space: nowrap;
-}
-);
-</script>
+    <script>
+    $(document).ready(function() {
+        $('#example').DataTable({
+            initComplete: function() {
+                this.api().columns().every(function() {
+                    var column = this;
+                    $(column.header()).append("<br>")
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo($(column.header()))
+                        .on('change', function() {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+                            column
+                                .search(val ? '^' + val + '$' : '', true, false)
+                                .draw();
+                        });
+                    column.data().unique().sort().each(function(d, j) {
+                        select.append('<option value="' + d + '">' + d + '</option>')
+                    });
+                });
+            }
+        });
+    });
+    </script>
+
+
 

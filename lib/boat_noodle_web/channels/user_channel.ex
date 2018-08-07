@@ -101,6 +101,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
     res = total_transaction |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
 
+
     if res == 0 do
       res = 0.00
     else
