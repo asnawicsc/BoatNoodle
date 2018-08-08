@@ -31,9 +31,13 @@
     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
 
     <div class="card card-profile text-center">
-        <div class="card-header" >
-        	Gummy POS v2
-        </div>
+        <div class="card-header ">
+              <div class="card-avatar" style="margin-top: 10px;">
+                <a href="#pablo">
+                  <img class="img" src="/images/gummylogo.png">
+                </a>
+              </div>
+            </div>
 
       <div class="card-body ">
        <div style = "text-align: center;">

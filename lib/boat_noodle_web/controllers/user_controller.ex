@@ -336,46 +336,41 @@ defmodule BoatNoodleWeb.UserController do
       |> put_flash(:error, "User not found")
       |> redirect(to: user_path(conn, :forget_password, BN.get_domain(conn)))
     else
-      if user.password_v2 != "" do
-        bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
+      # if user.password != "" do
+      #   password_not_set = false
+      #   decrypted_pasword = "123"
 
-        {:ok, decrypted_pasword} =
-          Plug.Crypto.MessageEncryptor.decrypt(user.password_v2, bin, bin)
+      #   BoatNoodle.Email.forget_password(
+      #     user.email,
+      #     decrypted_pasword,
+      #     user.username,
+      #     password_not_set
+      #   )
+      #   |> BoatNoodle.Mailer.deliver_later()
+      # else
+      preset_password = "8888"
+      crypted_password = Comeonin.Bcrypt.hashpwsalt(preset_password)
+      p2 = String.replace(crypted_password, "$2b", "$2y")
+      user_params = %{password: p2}
 
-        password_not_set = false
+      changeset = BoatNoodle.BN.User.changeset(user, user_params, BN.current_user(conn), "Update")
 
-        BoatNoodle.Email.forget_password(
-          user.email,
-          decrypted_pasword,
-          user.username,
-          password_not_set
-        )
-        |> BoatNoodle.Mailer.deliver_later()
-      else
-        preset_password = "8888"
-        bin = Plug.Crypto.KeyGenerator.generate("resertech", "damien")
-        crypted_password = Plug.Crypto.MessageEncryptor.encrypt(preset_password, bin, bin)
-        user_params = %{password_v2: crypted_password}
+      BoatNoodle.Repo.update(changeset)
+      password_not_set = true
 
-        changeset =
-          BoatNoodle.BN.User.changeset(user, user_params, BN.current_user(conn), "Update")
+      BoatNoodle.Email.forget_password(
+        user.email,
+        preset_password,
+        user.username,
+        password_not_set
+      )
+      |> BoatNoodle.Mailer.deliver_later()
 
-        BoatNoodle.Repo.update(changeset)
-        password_not_set = true
-
-        BoatNoodle.Email.forget_password(
-          user.email,
-          # "yithanglee@gmail.com",
-          preset_password,
-          user.username,
-          password_not_set
-        )
-        |> BoatNoodle.Mailer.deliver_later()
-      end
+      # end
 
       conn
       |> put_flash(:info, "Password has been sent to your email. Please check !")
-      |> redirect(to: user_path(conn, :login, BN.get_domain(conn)))
+      |> redirect(to: page_path(conn, :report_login))
     end
   end
 

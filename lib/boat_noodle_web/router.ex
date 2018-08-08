@@ -46,6 +46,8 @@ defmodule BoatNoodleWeb.Router do
     get("/reports", PageController, :report_index)
     get("/top_sales", SalesController, :top_sales)
     get("/logout", UserController, :logout)
+    get("/forget_password", UserController, :forget_password)
+    post("/forget_password_email", UserController, :forget_password_email)
   end
 
   scope "/:brand", BoatNoodleWeb do

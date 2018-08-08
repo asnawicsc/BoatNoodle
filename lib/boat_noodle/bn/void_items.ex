@@ -25,12 +25,14 @@ defmodule BoatNoodle.BN.VoidItems do
     field(:brand_id, :integer)
     field(:rowid, :integer)
     field(:void_datetime, :naive_datetime)
+    field(:branch_id, :integer)
   end
 
   @doc false
   def changeset(void_items, attrs) do
     void_items
     |> cast(attrs, [
+      :branch_id,
       :rowid,
       :itemcode,
       :itemname,
@@ -55,7 +57,7 @@ defmodule BoatNoodle.BN.VoidItems do
       :void_datetime
     ])
     |> validate_required([
-      :itemcode,
+      :branch_id,
       :itemname,
       :quantity,
       :price,

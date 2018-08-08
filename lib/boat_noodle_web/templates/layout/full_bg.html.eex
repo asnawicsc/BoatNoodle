@@ -1,8 +1,5 @@
 <!doctype html>
 <html lang="en">
-<% require IEx %>
-<% conn = @conn %>
-<% brand = Repo.all(from b in Brand, where: b.domain_name == ^conn.params["brand"]) |> hd() %>
 
 <head>
   <meta charset="utf-8">
@@ -40,7 +37,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbar">
         <ul class="navbar-nav" aria-label="various_brands">
 
-<li class="nav-item" id="reports"><a href="/" class="nav-link"><i class="material-icons">lock_open</i>Report<div class="ripple-container"></div></a></li>
+
           
     
         </ul>
@@ -143,23 +140,6 @@
 
   <% end %>
 
-$(document).ready(function(){
-  
-  $.ajax({
-    url: "/get_brands", 
-    dataType: "json"
-  }).done(function(j){
-    $(j).each(function(){
-      var html = "<li class='nav-item' id='"+this.name+"'><a href='/"+this.name+"/login' class='nav-link'><i class='material-icons'>lock_open</i>"+this.name+"</a></li>"
-      $("ul[aria-label='various_brands']").append(html)
-    })
-  var pathname = window.location.pathname;
-  var split_path = pathname.split("/");
-  var domain_name = split_path[1];
-  console.log(domain_name)
-  $("li#"+domain_name).toggleClass("active")
-  })
-})
 
 
 

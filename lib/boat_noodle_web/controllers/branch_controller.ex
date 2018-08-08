@@ -314,7 +314,7 @@ defmodule BoatNoodleWeb.BranchController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id, "brand" => brand}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
     render(conn, "show.html", branch: branch)
   end

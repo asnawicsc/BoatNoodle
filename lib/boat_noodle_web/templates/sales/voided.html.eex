@@ -1,159 +1,159 @@
 <div class="row">
-    <div class="col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header card-header-rose card-header-text">
-                                <div class="card-icon">
-                                    <i class="material-icons">library_books</i>
-                                </div>
-                                <h4 class="card-title">Date</h4>
-                            </div>
-                            <div class="card-body ">
-                                <br>
-                                <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                                    <i class="fa fa-calendar"></i>&nbsp;
-                                    <span></span> <i class="fa fa-caret-down"></i>
-                                    <input type="hidden" name="start_date">
-                                    <input type="hidden" name="end_date">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="card">
+							<div class="card-header card-header-rose card-header-text">
+								<div class="card-icon">
+									<i class="material-icons">library_books</i>
+								</div>
+								<h4 class="card-title">Date</h4>
+							</div>
+							<div class="card-body ">
+								<br>
+								<div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+									<i class="fa fa-calendar"></i>&nbsp;
+									<span></span> <i class="fa fa-caret-down"></i>
+									<input type="hidden" name="start_date">
+									<input type="hidden" name="end_date">
+								</div>
+							</div>
+						</div>
+					</div>
 
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header card-header-rose card-header-text">
-                                <div class="card-icon">
-                                    <i class="material-icons">library_books</i>
-                                </div>
-                                <h4 class="card-title">Branch</h4>
-                            </div>
-                            <div class="card-body ">
-                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
-                                          <%= for branch <- @branches do %>
-                                            <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
-                                          <% end %>
-                                        </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+					<div class="col-md-6">
+						<div class="card">
+							<div class="card-header card-header-rose card-header-text">
+								<div class="card-icon">
+									<i class="material-icons">library_books</i>
+								</div>
+								<h4 class="card-title">Branch</h4>
+							</div>
+							<div class="card-body ">
+								<select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
+										  <%= for branch <- @branches do %>
+											<option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+										  <% end %>
+										</select>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-md-8 ml-auto mr-auto">
-                <div class="page-categories">
-                    <br />
-                    <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
-                        <li class="nav-item" id="morning_sales_summary">
-                            <a class="nav-link active" data-toggle="tab" id="voided_receipt" href="" role="tablist">
-                      <i class="material-icons">money_off</i> Voided Receipt
-                    </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" id="voided_order" href="" role="tablist">
-                      <i class="material-icons">receipt</i> Voided Order
-                    </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <div class="panel-body" id="voided_receipt" style="width: 100%; overflow-x: scroll; ">
-            <div class="col-md-12">
-                <div class="card" style="width: 100%; overflow-x: scroll; ">
-                    <div class="card-header card-header-icon card-header-rose">
-
-                        <h4 class="card-title">Voided Receipt
-                        </h4>
-                    </div>
-                    <div class="card-body" style="width: 100%; overflow-x: scroll; ">
-
-                        <table id="voided_receipt" class="table">
-                            <thead align="center">
-                                <tr>
-                                    <th>Date Time</th>
-                                    <th>Ref No</th>
-                                    <th>Total</th>
-                                    <th>Table</th>
-                                    <th>Pax</th>
-                                    <th>Cashier</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody align="center">
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="panel-body" id="voided_order" style="width: 100%; overflow-x: scroll;">
-            <div class="col-md-12">
-                <div class="card" style="width: 100%; overflow-x: scroll; ">
-                    <div class="card-header card-header-icon card-header-rose">
-
-                        <h4 class="card-title">Voided Order
-                        </h4>
-                    </div>
-                    <div class="card-body" style="width: 100%; overflow-x: scroll; ">
-
-                        <table id="voided_order" class="table">
-                            <thead>
-                                <tr>
-                                    <th>Date Time</th>
-                                    <th>Item Name</th>
-                                    <th>Unit Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total Price</th>
-                                    <th>Cashier</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
+			</div>
+		</div>
 
 
-    </div>
+		<div class="row">
+			<div class="col-md-8 ml-auto mr-auto">
+				<div class="page-categories">
+					<br />
+					<ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+						<li class="nav-item" id="morning_sales_summary">
+							<a class="nav-link active" data-toggle="tab" id="voided_receipt" href="" role="tablist">
+					  <i class="material-icons">money_off</i> Voided Receipt
+					</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="tab" id="voided_order" href="" role="tablist">
+					  <i class="material-icons">receipt</i> Voided Order
+					</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel-body" id="voided_receipt" style="width: 100%; overflow-x: scroll; ">
+			<div class="col-md-12">
+				<div class="card" style="width: 100%; overflow-x: scroll; ">
+					<div class="card-header card-header-icon card-header-rose">
+
+						<h4 class="card-title">Voided Receipt
+						</h4>
+					</div>
+					<div class="card-body" style="width: 100%; overflow-x: scroll; ">
+
+						<table id="voided_receipt" class="table">
+							<thead align="center">
+								<tr>
+									<th>Date Time</th>
+									<th>Ref No</th>
+									<th>Total</th>
+									<th>Table</th>
+									<th>Pax</th>
+									<th>Cashier</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody align="center">
+								<tr>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="panel-body" id="voided_order" style="width: 100%; overflow-x: scroll;">
+			<div class="col-md-12">
+				<div class="card" style="width: 100%; overflow-x: scroll; ">
+					<div class="card-header card-header-icon card-header-rose">
+
+						<h4 class="card-title">Voided Order
+						</h4>
+					</div>
+					<div class="card-body" style="width: 100%; overflow-x: scroll; ">
+
+						<table id="voided_order" class="table">
+							<thead>
+								<tr>
+									<th>Date Time</th>
+									<th>Item Name</th>
+									<th>Unit Price</th>
+									<th>Quantity</th>
+									<th>Total Price</th>
+									<th>Cashier</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+	</div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function() {
+	$(document).ready(function() {
 
   
  $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
@@ -164,245 +164,245 @@
  
 
 
-    $(".panel-body#sales_transaction").hide();
-    $("table#sales_transaction").hide();
+	$(".panel-body#sales_transaction").hide();
+	$("table#sales_transaction").hide();
 
-    $(".panel-body#hourly_pax_summary").hide();
-    $("table#hourly_pax_summary").hide();
+	$(".panel-body#hourly_pax_summary").hide();
+	$("table#hourly_pax_summary").hide();
 
-    $(".panel-body#hourly_sales_summary").hide();
-    $("table#hourly_sales_summary").hide();
+	$(".panel-body#hourly_sales_summary").hide();
+	$("table#hourly_sales_summary").hide();
 
-    $(".panel-body#hourly_transaction_summary").hide();
-    $("table#hourly_transaction_summary").hide();
+	$(".panel-body#hourly_transaction_summary").hide();
+	$("table#hourly_transaction_summary").hide();
 
-    $(".panel-body#item_sold").hide();
-    $("table#item_sold").hide();
+	$(".panel-body#item_sold").hide();
+	$("table#item_sold").hide();
 
-    $(".panel-body#item_sales_detail").hide();
-    $("table#item_sales_detail").hide();
+	$(".panel-body#item_sales_detail").hide();
+	$("table#item_sales_detail").hide();
 
-    $(".panel-body#discount_receipt").hide();
-    $("table#discount_receipt").hide();
+	$(".panel-body#discount_receipt").hide();
+	$("table#discount_receipt").hide();
 
-    $(".panel-body#discount_summary").hide();
-    $("table#discount_summary").hide();
+	$(".panel-body#discount_summary").hide();
+	$("table#discount_summary").hide();
 
-    $(".panel-body#voided_receipt").show();
-    $("table#voided_receipt").show();
+	$(".panel-body#voided_receipt").show();
+	$("table#voided_receipt").show();
 
-       var b_id = $("select#branch_list").val()
+	   var b_id = $("select#branch_list").val()
 
-      var s_date = localStorage.getItem('start_date')
-        var e_date = localStorage.getItem('end_date')
-        channel.push("voided_receipt", {
-            user_id: window.currentUser,
-            branch_id: b_id,
-            s_date: s_date,
-            e_date: e_date,
-            brand_id: window.currentBrand
-        })
+	  var s_date = localStorage.getItem('start_date')
+		var e_date = localStorage.getItem('end_date')
+		channel.push("voided_receipt", {
+			user_id: window.currentUser,
+			branch_id: b_id,
+			s_date: s_date,
+			e_date: e_date,
+			brand_id: window.currentBrand
+		})
 
-    $(".panel-body#voided_order").hide();
-    $("table#voided_order").hide();
+	$(".panel-body#voided_order").hide();
+	$("table#voided_order").hide();
 
-    $(".panel-body#sales_summary").hide();
-    $("table#sales_summary").hide();
+	$(".panel-body#sales_summary").hide();
+	$("table#sales_summary").hide();
 
-    $(".panel-body#pax_summary").hide();
-    $("table#pax_summary").hide();
+	$(".panel-body#pax_summary").hide();
+	$("table#pax_summary").hide();
   
 
 
-    $(".nav-link#voided_receipt").click(function() {
+	$(".nav-link#voided_receipt").click(function() {
 
-        $("#backdrop").fadeIn()
+		$("#backdrop").fadeIn()
 
-        $(".panel-body#sales_transaction").hide();
-        $("table#sales_transaction").hide();
+		$(".panel-body#sales_transaction").hide();
+		$("table#sales_transaction").hide();
 
-        $(".panel-body#hourly_pax_summary").hide();
-        $("table#hourly_pax_summary").hide();
+		$(".panel-body#hourly_pax_summary").hide();
+		$("table#hourly_pax_summary").hide();
 
-        $(".panel-body#hourly_sales_summary").hide();
-        $("table#hourly_sales_summary").hide();
+		$(".panel-body#hourly_sales_summary").hide();
+		$("table#hourly_sales_summary").hide();
 
-        $(".panel-body#hourly_transaction_summary").hide();
-        $("table#hourly_transaction_summary").hide();
+		$(".panel-body#hourly_transaction_summary").hide();
+		$("table#hourly_transaction_summary").hide();
 
-        $(".panel-body#item_sold").hide();
-        $("table#item_sold").hide();
+		$(".panel-body#item_sold").hide();
+		$("table#item_sold").hide();
 
-        $(".panel-body#item_sales_detail").hide();
-        $("table#item_sales_detail").hide();
+		$(".panel-body#item_sales_detail").hide();
+		$("table#item_sales_detail").hide();
 
-        $(".panel-body#discount_receipt").hide();
-        $("table#discount_receipt").hide();
+		$(".panel-body#discount_receipt").hide();
+		$("table#discount_receipt").hide();
 
-        $(".panel-body#discount_summary").hide();
-        $("table#discount_summary").hide();
+		$(".panel-body#discount_summary").hide();
+		$("table#discount_summary").hide();
 
-        $(".panel-body#voided_receipt").show();
-        $("table#voided_receipt").show();
+		$(".panel-body#voided_receipt").show();
+		$("table#voided_receipt").show();
 
-        $(".panel-body#voided_order").hide();
-        $("table#voided_order").hide();
+		$(".panel-body#voided_order").hide();
+		$("table#voided_order").hide();
 
-        $(".panel-body#sales_summary").hide();
-        $("table#sales_summary").hide();
+		$(".panel-body#sales_summary").hide();
+		$("table#sales_summary").hide();
 
-        $(".panel-body#pax_summary").hide();
-        $("table#pax_summary").hide();
-
-
-        var b_id = $("select#branch_list").val()
-
-        var s_date = localStorage.getItem('start_date')
-        var e_date = localStorage.getItem('end_date')
-        channel.push("voided_receipt", {
-            user_id: window.currentUser,
-            branch_id: b_id,
-            s_date: s_date,
-            e_date: e_date,
-            brand_id: window.currentBrand
-        })
-    })
-
-    channel.on("populate_table_voided_receipt_data", payload => {
-        console.log(payload.voided_receipt_data)
-        var data = payload.voided_receipt_data
-
-        $("table#voided_receipt").DataTable({
-             destroy: true,
-            data: data,
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            columns: [{
-                    data: 'salesdatetime'
-                },
-                {
-                    data: 'invoiceno'
-                },
-                {
-                    data: 'total'
-                },
-                {
-                    data: 'table'
-                },
-                {
-                    data: 'pax'
-                },
-                {
-                    data: 'staff'
-                },
-                 {
-                    data: 'invoiceno',
-                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
-                    }
-                }
-            ]
-        });
-
-        $("#backdrop").delay(500).fadeOut()
-    })
-
-    $(".nav-link#voided_order").click(function() {
-
-        $("#backdrop").fadeIn()
-
-        $(".panel-body#sales_transaction").hide();
-        $("table#sales_transaction").hide();
-
-        $(".panel-body#hourly_pax_summary").hide();
-        $("table#hourly_pax_summary").hide();
-
-        $(".panel-body#hourly_sales_summary").hide();
-        $("table#hourly_sales_summary").hide();
-
-        $(".panel-body#hourly_transaction_summary").hide();
-        $("table#hourly_transaction_summary").hide();
-
-        $(".panel-body#item_sold").hide();
-        $("table#item_sold").hide();
-
-        $(".panel-body#item_sales_detail").hide();
-        $("table#item_sales_detail").hide();
-
-        $(".panel-body#discount_receipt").hide();
-        $("table#discount_receipt").hide();
-
-        $(".panel-body#discount_summary").hide();
-        $("table#discount_summary").hide();
-
-        $(".panel-body#voided_receipt").hide();
-        $("table#voided_receipt").hide();
-
-        $(".panel-body#voided_order").show();
-        $("table#voided_order").show();
-
-        $(".panel-body#sales_summary").hide();
-        $("table#sales_summary").hide();
-
-        $(".panel-body#pax_summary").hide();
-        $("table#pax_summary").hide();
+		$(".panel-body#pax_summary").hide();
+		$("table#pax_summary").hide();
 
 
-        var b_id = $("select#branch_list").val()
+		var b_id = $("select#branch_list").val()
+
+		var s_date = localStorage.getItem('start_date')
+		var e_date = localStorage.getItem('end_date')
+		channel.push("voided_receipt", {
+			user_id: window.currentUser,
+			branch_id: b_id,
+			s_date: s_date,
+			e_date: e_date,
+			brand_id: window.currentBrand
+		})
+	})
+
+	channel.on("populate_table_voided_receipt_data", payload => {
+		console.log(payload.voided_receipt_data)
+		var data = payload.voided_receipt_data
+
+		$("table#voided_receipt").DataTable({
+			 destroy: true,
+			data: data,
+			dom: 'Bfrtip',
+			buttons: [
+				'copy', 'csv', 'excel', 'pdf', 'print'
+			],
+			columns: [{
+					data: 'void_datetime'
+				},
+				{
+					data: 'invoiceno'
+				},
+				{
+					data: 'total'
+				},
+				{
+					data: 'table'
+				},
+				{
+					data: 'pax'
+				},
+				{
+					data: 'staff'
+				},
+				 {
+					data: 'invoiceno',
+					'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+						$(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+					}
+				}
+			]
+		});
+
+		$("#backdrop").delay(500).fadeOut()
+	})
+
+	$(".nav-link#voided_order").click(function() {
+
+		$("#backdrop").fadeIn()
+
+		$(".panel-body#sales_transaction").hide();
+		$("table#sales_transaction").hide();
+
+		$(".panel-body#hourly_pax_summary").hide();
+		$("table#hourly_pax_summary").hide();
+
+		$(".panel-body#hourly_sales_summary").hide();
+		$("table#hourly_sales_summary").hide();
+
+		$(".panel-body#hourly_transaction_summary").hide();
+		$("table#hourly_transaction_summary").hide();
+
+		$(".panel-body#item_sold").hide();
+		$("table#item_sold").hide();
+
+		$(".panel-body#item_sales_detail").hide();
+		$("table#item_sales_detail").hide();
+
+		$(".panel-body#discount_receipt").hide();
+		$("table#discount_receipt").hide();
+
+		$(".panel-body#discount_summary").hide();
+		$("table#discount_summary").hide();
+
+		$(".panel-body#voided_receipt").hide();
+		$("table#voided_receipt").hide();
+
+		$(".panel-body#voided_order").show();
+		$("table#voided_order").show();
+
+		$(".panel-body#sales_summary").hide();
+		$("table#sales_summary").hide();
+
+		$(".panel-body#pax_summary").hide();
+		$("table#pax_summary").hide();
+
+
+		var b_id = $("select#branch_list").val()
    
-        var s_date = localStorage.getItem('start_date')
-        var e_date = localStorage.getItem('end_date')
-        channel.push("voided_order", {
-            user_id: window.currentUser,
-            branch_id: b_id,
-            s_date: s_date,
-            e_date: e_date,
-            brand_id: window.currentBrand
-        })
-    })
+		var s_date = localStorage.getItem('start_date')
+		var e_date = localStorage.getItem('end_date')
+		channel.push("voided_order", {
+			user_id: window.currentUser,
+			branch_id: b_id,
+			s_date: s_date,
+			e_date: e_date,
+			brand_id: window.currentBrand
+		})
+	})
 
-    channel.on("populate_table_voided_order_data", payload => {
-        console.log(payload.voided_order_data)
-        var data = payload.voided_order_data
+	channel.on("populate_table_voided_order_data", payload => {
+		console.log(payload.voided_order_data)
+		var data = payload.voided_order_data
 
-        $("table#voided_order").DataTable({
-             destroy: true,
-            data: data,
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            columns: [{
-                    data: 'salesdatetime'
-                },
-                {
-                    data: 'itemname'
-                },
-                {
-                    data: 'unit_price'
-                },
-                {
-                    data: 'quantity'
-                },
-                {
-                    data: 'totalprice'
-                },
-                {
-                    data: 'staff'
-                },
-               {
-                    data: 'invoiceno',
-                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
-                    }
-                }
-            ]
-        });
+		$("table#voided_order").DataTable({
+			 destroy: true,
+			data: data,
+			dom: 'Bfrtip',
+			buttons: [
+				'copy', 'csv', 'excel', 'pdf', 'print'
+			],
+			columns: [{
+					data: 'void_datetime'
+				},
+				{
+					data: 'itemname'
+				},
+				{
+					data: 'unit_price'
+				},
+				{
+					data: 'quantity'
+				},
+				{
+					data: 'totalprice'
+				},
+				{
+					data: 'staff'
+				},
+			   {
+					data: 'invoiceno',
+					'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+						$(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+					}
+				}
+			]
+		});
 
-        $("#backdrop").delay(500).fadeOut()
-    })
+		$("#backdrop").delay(500).fadeOut()
+	})
  
 })
 </script>

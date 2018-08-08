@@ -5,7 +5,7 @@
 
       <div class="logo">
         <a href="/" class="simple-text logo-mini">
-          V2
+          GP
         </a>
         <a href="/" class="simple-text logo-normal">
           Gummy POS
@@ -119,8 +119,8 @@
                 </li>
                 <li class="nav-item ">
                   <a class="nav-link" href="/<%= @conn.params["brand"]%>/report">
-                    <span class="sidebar-mini"> R </span>
-                    <span class="sidebar-normal"> Report </span>
+                    <span class="sidebar-mini"> I </span>
+                    <span class="sidebar-normal"> Insights </span>
                   </a>
                 </li>
 

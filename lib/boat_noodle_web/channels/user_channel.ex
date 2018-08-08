@@ -1462,17 +1462,29 @@ defmodule BoatNoodleWeb.UserChannel do
     brand_id = payload["brand_id"]
 
     brand = Repo.get_by(Brand, id: brand_id)
+    [y, m, d] = payload["s_date"] |> String.split("-")
+
+    {:ok, start_n} =
+      NaiveDateTime.new(String.to_integer(y), String.to_integer(m), String.to_integer(d), 0, 0, 0)
+
+    [y1, m1, d1] = payload["e_date"] |> String.split("-")
+
+    {:ok, end_n} =
+      NaiveDateTime.new(
+        String.to_integer(y1),
+        String.to_integer(m1),
+        String.to_integer(d1),
+        0,
+        0,
+        0
+      )
 
     voided_order_data =
       Repo.all(
         from(
           v in BoatNoodle.BN.VoidItems,
-          left_join: sp in BoatNoodle.BN.SalesPayment,
-          on: sp.salesid == v.orderid,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sp.salesid,
           left_join: br in BoatNoodle.BN.Branch,
-          on: br.branchid == s.branchid,
+          on: br.branchid == v.branch_id,
           left_join: f in BoatNoodle.BN.Staff,
           on: v.void_by == f.staff_id,
           left_join: i in BoatNoodle.BN.ItemSubcat,
@@ -1480,18 +1492,17 @@ defmodule BoatNoodleWeb.UserChannel do
           left_join: r in BoatNoodle.BN.Brand,
           on: r.id == v.brand_id,
           where:
-            br.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"] and v.brand_id == ^payload["brand_id"],
+            br.branchid == ^payload["branch_id"] and v.brand_id == ^payload["brand_id"] and
+              v.void_datetime >= ^start_n and v.void_datetime <= ^end_n,
           select: %{
-            salesdatetime: v.void_datetime,
-            salesdate: s.salesdate,
+            void_datetime: v.void_datetime,
             itemname: v.itemname,
-            invoiceno: s.invoiceno,
-            unit_price: i.itemprice,
+            invoiceno: v.orderid,
+            unit_price: v.priceafterdiscount,
             quantity: v.quantity,
             totalprice: v.price,
             staff: f.staff_name,
-            branchid: s.branchid,
+            branchid: v.branch_id,
             domainname: r.domain_name
           }
         )
@@ -1499,12 +1510,11 @@ defmodule BoatNoodleWeb.UserChannel do
 
     voided_order_data =
       for item <- voided_order_data do
-        date = item.salesdatetime |> NaiveDateTime.to_string() |> String.split_at(19) |> elem(0)
+        date = item.void_datetime |> NaiveDateTime.to_string() |> String.split_at(19) |> elem(0)
 
         %{
           invoiceno: item.invoiceno,
-          salesdatetime: date,
-          salesdate: item.salesdate,
+          void_datetime: date,
           itemname: item.itemname,
           unit_price: item.unit_price,
           quantity: item.quantity,
