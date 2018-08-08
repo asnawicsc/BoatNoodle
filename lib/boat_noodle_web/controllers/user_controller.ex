@@ -146,8 +146,9 @@ defmodule BoatNoodleWeb.UserController do
           email: params["email"]
         }
 
-        crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["new_pass"])
-        user_params = Map.put(user_params, :password, crypted_password)
+        crypted_password = Comeonin.Bcrypt.hashpwsalt(conn.params["new_pass"])
+        p2 = String.replace(crypted_password, "$2b", "$2y")
+        user_params = Map.put(user_params, :password, p2)
 
         changeset =
           BoatNoodle.BN.User.changeset(user, user_params, BN.current_user(conn), "Update")
@@ -203,14 +204,9 @@ defmodule BoatNoodleWeb.UserController do
         {:ok, gallery} = Images.create_gallery(%{})
         {:ok, user} = BN.update_user(user, %{gall_id: gallery.id})
 
-        case Images.upload(params["user"]["image"]) do
+        case Images.upload(params["user"]["image"], user.id, gallery.id, "profile_picture") do
           {:ok, picture} ->
-            picture_params = %{gallery_id: gallery.id, file_type: "profile_picture"}
-
-            changeset =
-              BoatNoodle.BN.User.changeset(user, picture_params, BN.current_user(conn), "Update")
-
-            BoatNoodle.Repo.update(changeset)
+            nil
         end
 
         conn
@@ -225,14 +221,9 @@ defmodule BoatNoodleWeb.UserController do
           Images.delete_picture(old_pic)
         end
 
-        case Images.upload(params["user"]["image"]) do
+        case Images.upload(params["user"]["image"], user.id, gallery.id, "profile_picture") do
           {:ok, picture} ->
-            picture_params = %{gallery_id: gallery.id, file_type: "profile_picture"}
-
-            changeset =
-              BoatNoodle.BN.User.changeset(user, picture_params, BN.current_user(conn), "Update")
-
-            BoatNoodle.Repo.update(changeset)
+            nil
         end
 
         conn

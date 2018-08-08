@@ -199,7 +199,7 @@ defmodule BoatNoodle.Images do
     Picture.changeset(picture, %{})
   end
 
-  def upload(param) do
+  def upload(param, user_id, gallery_id, filetype) do
     {:ok, seconds} = Timex.format(Timex.now(), "%s", :strftime)
 
     path = File.cwd!() <> "/media"
@@ -226,6 +226,17 @@ defmodule BoatNoodle.Images do
     File.rm(resized.path)
 
     {:ok, picture} =
-      BoatNoodle.Images.create_picture(%{filename: seconds <> fl, bin: Base.encode64(bin)})
+      BoatNoodle.Images.Picture.changeset(
+        %BoatNoodle.Images.Picture{},
+        %{
+          file_type: filetype,
+          filename: seconds <> fl,
+          bin: Base.encode64(bin),
+          gallery_id: gallery_id
+        },
+        user_id,
+        "Create"
+      )
+      |> Repo.insert()
   end
 end
