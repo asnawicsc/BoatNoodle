@@ -10,11 +10,11 @@ defmodule BoatNoodle.BN.Branch do
     field(:b_phoneno, :string, default: "")
     field(:manager, :integer)
     field(:branchname, :string)
-    field(:tax_percent, :decimal)
+    field(:tax_percent, :decimal, default: 0.00)
     field(:num_staff, :integer)
     field(:org_id, :string)
     field(:report_class, :string)
-    field(:service_charge, :decimal)
+    field(:service_charge, :decimal, default: 0.00)
     field(:qb_custref, :string)
     field(:qb_dep2acc, :string)
     field(:currency, :string)
@@ -34,51 +34,53 @@ defmodule BoatNoodle.BN.Branch do
   end
 
   @doc false
-  def changeset(branch, attrs,user_id,action) do
-    branch=branch
-    |> cast(attrs, [
-      :def_open_amt,
-      :api_key,
-      :brand_id,
-      :created_at,
-      :updated_at,
-      :payment_catalog,
-      :version,
-      :tag_catalog,
-      :disc_catalog,
-      :menu_catalog,
-      :remain_sync,
-      :sync_status,
-      :currency,
-      :qb_dep2acc,
-      :qb_custref,
-      :branchid,
-      :branchname,
-      :branchcode,
-      :b_phoneno,
-      :b_address,
-      :org_id,
-      :tax_percent,
-      :service_charge,
-      :manager,
-      :num_staff,
-      :report_class
-    ])
-    |> unique_constraint(:branchid, name: "PRIMARY")
+  def changeset(branch, attrs, user_id, action) do
+    branch =
+      branch
+      |> cast(attrs, [
+        :def_open_amt,
+        :api_key,
+        :brand_id,
+        :created_at,
+        :updated_at,
+        :payment_catalog,
+        :version,
+        :tag_catalog,
+        :disc_catalog,
+        :menu_catalog,
+        :remain_sync,
+        :sync_status,
+        :currency,
+        :qb_dep2acc,
+        :qb_custref,
+        :branchid,
+        :branchname,
+        :branchcode,
+        :b_phoneno,
+        :b_address,
+        :org_id,
+        :tax_percent,
+        :service_charge,
+        :manager,
+        :num_staff,
+        :report_class
+      ])
+      |> unique_constraint(:branchid, name: "PRIMARY")
 
-        if action == "new" or action =="edit" do
-
-          else
+    if action == "new" or action == "edit" do
+    else
       if action == "Update" do
         attrs = Map.put(attrs, "brand_id", branch.data.brand_id)
       end
 
-     
-
-       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "branch", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+      BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
+        name: "branch",
+        user_id: user_id,
+        description: Poison.encode!(attrs),
+        action: action
+      })
+      |> BoatNoodle.Repo.insert()
     end
-
-    
 
     branch
   end

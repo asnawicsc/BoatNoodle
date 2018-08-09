@@ -312,7 +312,14 @@ defmodule BoatNoodleWeb.MenuItemController do
                   order_by: [asc: s.subcatid]
                 )
               )
-              |> List.last()
+
+            if a != [] do
+              a =
+                a
+                |> List.last()
+            else
+              a = 0
+            end
 
             item_param = Map.put(item_param, "subcatid", a + 1)
 

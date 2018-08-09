@@ -20,6 +20,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:itemcode, :string)
     field(:itemdesc, :string)
     field(:itemimage, :binary, default: "")
+
     field(:itemname, :string)
     field(:itemprice, :decimal, default: 0)
     field(:part_code, :string)

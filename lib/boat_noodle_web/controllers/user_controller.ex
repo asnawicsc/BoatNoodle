@@ -202,7 +202,9 @@ defmodule BoatNoodleWeb.UserController do
     else
       if user.gall_id == 1 do
         {:ok, gallery} = Images.create_gallery(%{})
-        {:ok, user} = BN.update_user(user, %{gall_id: gallery.id})
+
+        {:ok, user} =
+          User.changeset(user, %{gall_id: gallery.id}, user.id, "Update") |> Repo.update()
 
         case Images.upload(params["user"]["image"], user.id, gallery.id, "profile_picture") do
           {:ok, picture} ->
@@ -211,7 +213,7 @@ defmodule BoatNoodleWeb.UserController do
 
         conn
         |> put_flash(:info, "Profile picture updated successfully.")
-        |> redirect(to: user_path(conn, :edit, params["user_id"]))
+        |> redirect(to: user_path(conn, :edit, BN.get_domain(conn), params["user_id"]))
       else
         gallery = Repo.get(Gallery, user.gall_id)
 

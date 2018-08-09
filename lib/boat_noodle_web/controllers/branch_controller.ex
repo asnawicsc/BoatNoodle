@@ -310,12 +310,12 @@ defmodule BoatNoodleWeb.BranchController do
       {:ok, branch} ->
         conn
         |> put_flash(:info, "Branch created successfully.")
-        |> redirect(to: branch_path(conn, :show, branch.branchid, BN.get_domain(conn)))
+        |> redirect(to: branch_path(conn, :show, branch.branchid, BN.get_brand_id(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_flash(:error, "Branch not created.")
-        |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
+        |> redirect(to: branch_path(conn, :index, BN.get_brand_id(conn)))
     end
   end
 

@@ -636,9 +636,7 @@ defmodule BoatNoodleWeb.ApiController do
         from(
           s in Sales,
           where: s.branchid == ^Integer.to_string(branch_id) and s.brand_id == ^brand_id,
-          select: %{
-            invoiceno: s.invoiceno
-          },
+          select: %{invoiceno: s.invoiceno},
           order_by: [s.invoiceno]
         )
       )
@@ -745,7 +743,7 @@ defmodule BoatNoodleWeb.ApiController do
               IO.inspect(sales_params)
 
               salesdate =
-                sales_params.salesdatetime |> String.split("") |> Enum.take(10) |> Enum.join()
+                sales_params.salesdatetime |> String.split("") |> Enum.take(11) |> Enum.join()
 
               sales_params = Map.put(sales_params, :salesdate, salesdate)
 
@@ -765,7 +763,7 @@ defmodule BoatNoodleWeb.ApiController do
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->
                   sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
-
+                  sales_payment_params = Map.put(sales_payment_params, :brand_id, user.brand_id)
                   Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
 
                   sd =

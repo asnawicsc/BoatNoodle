@@ -14,7 +14,11 @@ defmodule BoatNoodleWeb.DashboardChannel do
   def handle_in("dashboard", payload, socket) do
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
+    [y, m, d] = payload["s_date"] |> String.split("-")
+    {:ok, start_d} = Date.new(String.to_integer(y), String.to_integer(m), String.to_integer(d))
 
+    [y1, m1, d1] = payload["e_date"] |> String.split("-")
+    {:ok, end_d} = Date.new(String.to_integer(y1), String.to_integer(m1), String.to_integer(d1))
     brand = Repo.get_by(Brand, id: brand_id)
 
     if branchid != "0" do
@@ -27,8 +31,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"] and
+              s.branchid == ^payload["branch_id"] and s.salesdate >= ^start_d and
+                s.salesdate <= ^end_d and s.brand_id == ^payload["brand_id"] and
                 b.brand_id == ^brand_id and sp.brand_id == ^brand_id,
             group_by: [s.salesdate, b.branchname],
             select: %{
@@ -46,82 +50,67 @@ defmodule BoatNoodleWeb.DashboardChannel do
           )
         )
 
-      # 
       grp = a |> Enum.group_by(fn x -> x.salesdate end)
 
+      year = a |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        year=a|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+      grp_daily =
+        for item <- year do
+          sales = Enum.filter(a, fn x -> x.salesdate.year == item end)
 
-        
+          months = sales |> Enum.group_by(fn x -> x.salesdate.month end) |> Map.keys()
 
+          for month <- months do
+            sales = Enum.filter(a, fn x -> x.salesdate.month == month end)
 
-        grp_daily=for item <- year do
+            days = sales |> Enum.group_by(fn x -> x.salesdate end) |> Map.keys()
 
+            for day <- days do
+              data = Enum.filter(a, fn x -> x.salesdate == day end)
 
-                  sales=Enum.filter(a,fn x -> x.salesdate.year==item end)
+              total_grand_total =
+                Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
 
-                  months=sales|>Enum.group_by(fn x -> x.salesdate.month end)|>Map.keys
-          
+              total_after_disc =
+                Enum.map(data, fn x -> Decimal.to_float(x.after_disc) end) |> Enum.sum()
 
-            for month <- months do
+              total_sub_total =
+                Enum.map(data, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
 
-  
-              sales=Enum.filter(a,fn x -> x.salesdate.month==month end)
+              total_sales =
+                Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+                |> Float.round(2)
 
-               days=sales|>Enum.group_by(fn x -> x.salesdate end)|>Map.keys
-          
-           
-                for day <- days do
+              total_rounding =
+                Enum.map(data, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
 
-                   data=Enum.filter(a,fn x -> x.salesdate==day end)
+              total_taxes =
+                Enum.map(data, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+                |> Float.round(2)
 
-                  total_grand_total =
-                    Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+              total_service_charge =
+                Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end) |> Enum.sum()
+                |> Float.round(2)
 
-                  total_after_disc =
-                    Enum.map(data, fn x -> Decimal.to_float(x.after_disc) end) |> Enum.sum()
+              total_discount =
+                (total_grand_total -
+                   (total_sub_total + total_taxes + total_service_charge + total_rounding))
+                |> Float.round(2)
 
-                  total_sub_total =
-                    Enum.map(data, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
+              total_transaction = Enum.map(data, fn x -> x.transaction end) |> Enum.sum()
 
-                  total_sales =
-                    Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
-                    |> Float.round(2)
-
-                  total_rounding =
-                    Enum.map(data, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
-
-                    total_taxes =
-                    Enum.map(data, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum() |> Float.round(2)
-
-                    total_service_charge =
-                    Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end) |> Enum.sum()
-                    |> Float.round(2)
-
-
-                  total_discount = (total_grand_total-(total_sub_total+total_taxes+total_service_charge+total_rounding)) |> Float.round(2)
-
-                  total_transaction = Enum.map(data, fn x -> x.transaction end) |> Enum.sum()
-
-
-                  
-
-                  %{
-                    date: day,
-                    total_sales: total_sales,
-                    total_taxes: total_taxes,
-                    total_discount: total_discount,
-                    total_service_charge: total_service_charge,
-                    total_transaction: total_transaction
-                  }
-
-                  
-              end
-
+              %{
+                date: day,
+                total_sales: total_sales,
+                total_taxes: total_taxes,
+                total_discount: total_discount,
+                total_service_charge: total_service_charge,
+                total_transaction: total_transaction
+              }
+            end
           end
-      end|>List.flatten
-   
-
+        end
+        |> List.flatten()
 
       group_data = a |> Enum.group_by(fn x -> x.branchname end) |> Map.keys()
 
@@ -135,9 +124,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
               item = item |> elem(1)
 
               if name == data do
-
-               grand_total =
-                    Enum.map(item, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+                grand_total =
+                  Enum.map(item, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
 
                 after_disc =
                   Enum.map(item, fn x -> Decimal.to_float(x.after_disc) end) |> Enum.sum()
@@ -151,8 +139,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 gst = Enum.map(item, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
                 rounding = Enum.map(item, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
 
-               
-                nett_sale = grand_total - gst-rounding
+                nett_sale = grand_total - gst - rounding
 
                 branchname = Enum.map(item, fn x -> x.branchname end) |> Enum.uniq() |> hd
 
@@ -174,10 +161,12 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   |> Float.round(2)
                   |> Number.Delimit.number_to_delimited()
 
-                discounts = (grand_total-(sub_total+gst+service_charge+rounding))  |> Number.Delimit.number_to_delimited()
+                discounts =
+                  (grand_total - (sub_total + gst + service_charge + rounding))
+                  |> Number.Delimit.number_to_delimited()
 
                 nett_sales =
-                 (grand_total - gst-rounding)
+                  (grand_total - gst - rounding)
                   |> Number.Delimit.number_to_delimited()
 
                 roundings =
@@ -187,11 +176,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   |> Number.Delimit.number_to_delimited()
 
                 total_sales =
-                  (grand_total) |> Float.round(2) |> Number.Delimit.number_to_delimited()
+                  grand_total |> Float.round(2) |> Number.Delimit.number_to_delimited()
 
-                pax =
-                  Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
-                
+                pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
                 transaction =
                   Enum.map(item, fn x -> x.transaction end) |> Enum.sum()
@@ -223,20 +210,33 @@ defmodule BoatNoodleWeb.DashboardChannel do
       rounding = Enum.map(a, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
       pax = Enum.map(a, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
       transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()
-      discount = grand_total-(sub_total+gst+service_charge+rounding)
+      discount = grand_total - (sub_total + gst + service_charge + rounding)
 
-      d_nett_sales =
-        (grand_total - gst-rounding) |> Number.Delimit.number_to_delimited()
+      d_nett_sales = (grand_total - gst - rounding) |> Number.Delimit.number_to_delimited()
 
       d_taxes =
         Enum.map(a, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
         |> Number.Delimit.number_to_delimited()
 
-      d_pax = Enum.map(a, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()|>Kernel.trunc() 
-      |> Number.Delimit.number_to_delimited()|>String.reverse|>String.split_at(3)|>elem(1)|>String.reverse 
+      d_pax =
+        Enum.map(a, fn x -> Decimal.to_float(x.pax) end)
+        |> Enum.sum()
+        |> Kernel.trunc()
+        |> Number.Delimit.number_to_delimited()
+        |> String.reverse()
+        |> String.split_at(3)
+        |> elem(1)
+        |> String.reverse()
 
-
-      d_transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()|>Kernel.trunc() |> Number.Delimit.number_to_delimited()|>String.reverse|>String.split_at(3)|>elem(1)|>String.reverse 
+      d_transaction =
+        Enum.map(a, fn x -> x.transaction end)
+        |> Enum.sum()
+        |> Kernel.trunc()
+        |> Number.Delimit.number_to_delimited()
+        |> String.reverse()
+        |> String.split_at(3)
+        |> elem(1)
+        |> String.reverse()
 
       order_query =
         Repo.all(
@@ -255,9 +255,16 @@ defmodule BoatNoodleWeb.DashboardChannel do
           )
         )
 
-
-
-      d_order = order_query |> Enum.map(fn x -> Decimal.to_float(x.sales_details) end) |> Enum.sum()|>Kernel.trunc() |> Number.Delimit.number_to_delimited() |>String.reverse|>String.split_at(3)|>elem(1)|>String.reverse 
+      d_order =
+        order_query
+        |> Enum.map(fn x -> Decimal.to_float(x.sales_details) end)
+        |> Enum.sum()
+        |> Kernel.trunc()
+        |> Number.Delimit.number_to_delimited()
+        |> String.reverse()
+        |> String.split_at(3)
+        |> elem(1)
+        |> String.reverse()
 
       top_10_items_qty =
         Repo.all(
@@ -301,11 +308,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
             select: %{
               itemname: i.itemname,
               value: i.itemprice,
-              qty: sum(sm.qty),
+              qty: sum(sm.qty)
             }
           )
         )
-
 
       top_10_selling =
         for item <- top_10_items_qty do
@@ -314,11 +320,12 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
       top_10_selling_revenue =
         for item <- top_10_items_value do
-
-             total=Decimal.to_float(item.value)*Decimal.to_float(item.qty)|>Float.round(2)
-          %{y: total,name: item.itemname}
-        end|>Enum.sort_by(fn x -> x.y end )|>Enum.reverse|>Enum.take(10)
-
+          total = (Decimal.to_float(item.value) * Decimal.to_float(item.qty)) |> Float.round(2)
+          %{y: total, name: item.itemname}
+        end
+        |> Enum.sort_by(fn x -> x.y end)
+        |> Enum.reverse()
+        |> Enum.take(10)
 
       all =
         Repo.all(
@@ -343,8 +350,6 @@ defmodule BoatNoodleWeb.DashboardChannel do
             }
           )
         )
-
-
 
       combo_detail =
         Repo.all(
@@ -374,7 +379,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
       new_one = new_one |> Enum.group_by(fn x -> x.name end)
 
-               top_10_selling_category =
+      top_10_selling_category =
         for item <- new_one do
           y =
             item |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.y) end) |> Enum.sum()
@@ -384,8 +389,6 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
           %{name: name, y: y}
         end
-
-     
     else
       a =
         Repo.all(
@@ -416,71 +419,56 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
       grp = a |> Enum.group_by(fn x -> x.salesdate end)
 
-       year=a|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+      year = a |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+      grp_daily =
+        for item <- year do
+          sales = Enum.filter(a, fn x -> x.salesdate.year == item end)
 
+          months = sales |> Enum.group_by(fn x -> x.salesdate.month end) |> Map.keys()
 
-        grp_daily=for item <- year do
+          for month <- months do
+            sales = Enum.filter(a, fn x -> x.salesdate.month == month end)
 
+            days = sales |> Enum.group_by(fn x -> x.salesdate end) |> Map.keys()
 
-                  sales=Enum.filter(a,fn x -> x.salesdate.year==item end)
+            for day <- days do
+              data = Enum.filter(a, fn x -> x.salesdate == day end)
 
-                  months=sales|>Enum.group_by(fn x -> x.salesdate.month end)|>Map.keys
-          
+              total_after_disc =
+                Enum.map(data, fn x -> Decimal.to_float(x.after_disc) end) |> Enum.sum()
 
-            for month <- months do
+              total_sub_total =
+                Enum.map(data, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
 
-  
-              sales=Enum.filter(a,fn x -> x.salesdate.month==month end)
+              total_sales =
+                Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+                |> Float.round(2)
 
-               days=sales|>Enum.group_by(fn x -> x.salesdate end)|>Map.keys
-          
-           
-                for day <- days do
+              total_taxes =
+                Enum.map(data, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+                |> Float.round(2)
 
-                   data=Enum.filter(a,fn x -> x.salesdate==day end)
+              total_discount = (total_after_disc - total_sub_total) |> Float.round(2)
 
-                  
+              total_service_charge =
+                Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end) |> Enum.sum()
+                |> Float.round(2)
 
-                  total_after_disc =
-                    Enum.map(data, fn x -> Decimal.to_float(x.after_disc) end) |> Enum.sum()
+              total_transaction = Enum.map(data, fn x -> x.transaction end) |> Enum.sum()
 
-                  total_sub_total =
-                    Enum.map(data, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
-
-                  total_sales =
-                    Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
-                    |> Float.round(2)
-
-                  total_taxes =
-                    Enum.map(data, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum() |> Float.round(2)
-
-                  total_discount = (total_after_disc - total_sub_total) |> Float.round(2)
-
-                  total_service_charge =
-                    Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end) |> Enum.sum()
-                    |> Float.round(2)
-
-                  total_transaction = Enum.map(data, fn x -> x.transaction end) |> Enum.sum()
-
-
-                  
-
-                  %{
-                    date: day,
-                    total_sales: total_sales,
-                    total_taxes: total_taxes,
-                    total_discount: total_discount,
-                    total_service_charge: total_service_charge,
-                    total_transaction: total_transaction
-                  }
-
-                  
-              end
-
+              %{
+                date: day,
+                total_sales: total_sales,
+                total_taxes: total_taxes,
+                total_discount: total_discount,
+                total_service_charge: total_service_charge,
+                total_transaction: total_transaction
+              }
+            end
           end
-      end|>List.flatten
+        end
+        |> List.flatten()
 
       group_data = a |> Enum.group_by(fn x -> x.branchname end) |> Map.keys()
 
@@ -494,9 +482,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
               item = item |> elem(1)
 
               if name == data do
-
-                 grand_total =
+                grand_total =
                   Enum.map(item, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+
                 after_disc =
                   Enum.map(item, fn x -> Decimal.to_float(x.after_disc) end) |> Enum.sum()
 
@@ -509,7 +497,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 gst = Enum.map(item, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
                 rounding = Enum.map(item, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
                 discount = after_disc - sub_total
-                nett_sale = sub_total + service_charge  + discount
+                nett_sale = sub_total + service_charge + discount
 
                 branchname = Enum.map(item, fn x -> x.branchname end) |> Enum.uniq() |> hd
 
@@ -534,7 +522,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 discounts = (after_disc - sub_total) |> Number.Delimit.number_to_delimited()
 
                 nett_sales =
-                  (grand_total - gst-rounding)
+                  (grand_total - gst - rounding)
                   |> Number.Delimit.number_to_delimited()
 
                 roundings =
@@ -544,11 +532,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   |> Number.Delimit.number_to_delimited()
 
                 total_sales =
-                  (nett_sale + rounding + gst) |> Float.round(2) |> Number.Delimit.number_to_delimited()
+                  (nett_sale + rounding + gst) |> Float.round(2)
+                  |> Number.Delimit.number_to_delimited()
 
-                pax =
-                  Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
-             
+                pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
                 transaction =
                   Enum.map(item, fn x -> x.transaction end) |> Enum.sum()
@@ -571,6 +558,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
         end
         |> List.flatten()
         |> Enum.reject(fn x -> x == nil end)
+
       grand_total = Enum.map(a, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
       after_disc = Enum.map(a, fn x -> Decimal.to_float(x.after_disc) end) |> Enum.sum()
       sub_total = Enum.map(a, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
@@ -581,15 +569,31 @@ defmodule BoatNoodleWeb.DashboardChannel do
       transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()
       discount = after_disc - sub_total
 
-      d_nett_sales =
-        (grand_total - gst-rounding) |> Number.Delimit.number_to_delimited()
+      d_nett_sales = (grand_total - gst - rounding) |> Number.Delimit.number_to_delimited()
 
       d_taxes =
         Enum.map(a, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
         |> Number.Delimit.number_to_delimited()
 
-      d_pax = Enum.map(a, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()|>Kernel.trunc() |> Number.Delimit.number_to_delimited()|>String.reverse|>String.split_at(3)|>elem(1)|>String.reverse 
-      d_transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()|>Kernel.trunc() |> Number.Delimit.number_to_delimited()|>String.reverse|>String.split_at(3)|>elem(1)|>String.reverse 
+      d_pax =
+        Enum.map(a, fn x -> Decimal.to_float(x.pax) end)
+        |> Enum.sum()
+        |> Kernel.trunc()
+        |> Number.Delimit.number_to_delimited()
+        |> String.reverse()
+        |> String.split_at(3)
+        |> elem(1)
+        |> String.reverse()
+
+      d_transaction =
+        Enum.map(a, fn x -> x.transaction end)
+        |> Enum.sum()
+        |> Kernel.trunc()
+        |> Number.Delimit.number_to_delimited()
+        |> String.reverse()
+        |> String.split_at(3)
+        |> elem(1)
+        |> String.reverse()
 
       order_query =
         Repo.all(
@@ -608,7 +612,16 @@ defmodule BoatNoodleWeb.DashboardChannel do
           )
         )
 
-      d_order = order_query |> Enum.map(fn x -> Decimal.to_float(x.sales_details) end) |> Enum.sum()|>Kernel.trunc() |> Number.Delimit.number_to_delimited()|>String.reverse|>String.split_at(3)|>elem(1)|>String.reverse 
+      d_order =
+        order_query
+        |> Enum.map(fn x -> Decimal.to_float(x.sales_details) end)
+        |> Enum.sum()
+        |> Kernel.trunc()
+        |> Number.Delimit.number_to_delimited()
+        |> String.reverse()
+        |> String.split_at(3)
+        |> elem(1)
+        |> String.reverse()
 
       top_10_items_qty =
         Repo.all(
@@ -648,16 +661,13 @@ defmodule BoatNoodleWeb.DashboardChannel do
               b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
                 s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
             group_by: [i.subcatid, i.itemname],
-           select: %{
+            select: %{
               itemname: i.itemname,
               value: i.itemprice,
-              qty: sum(sm.qty),
+              qty: sum(sm.qty)
             }
           )
         )
-
-
-
 
       top_10_selling =
         for item <- top_10_items_qty do
@@ -666,10 +676,12 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
       top_10_selling_revenue =
         for item <- top_10_items_value do
-
-             total=Decimal.to_float(item.value)*Decimal.to_float(item.qty)
-          %{y: total,name: item.itemname}
-        end|>Enum.sort_by(fn x -> x.y end )|>Enum.reverse|>Enum.take(10)
+          total = Decimal.to_float(item.value) * Decimal.to_float(item.qty)
+          %{y: total, name: item.itemname}
+        end
+        |> Enum.sort_by(fn x -> x.y end)
+        |> Enum.reverse()
+        |> Enum.take(10)
 
       all =
         Repo.all(
