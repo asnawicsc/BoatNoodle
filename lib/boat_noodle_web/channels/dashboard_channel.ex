@@ -266,6 +266,14 @@ defmodule BoatNoodleWeb.DashboardChannel do
         |> elem(1)
         |> String.reverse()
 
+      broadcast(socket, "dashboard_1", %{
+        nett_sales: d_nett_sales,
+        taxes: d_taxes,
+        order: d_order,
+        pax: d_pax,
+        transaction: d_transaction
+      })
+
       top_10_items_qty =
         Repo.all(
           from(
@@ -623,6 +631,14 @@ defmodule BoatNoodleWeb.DashboardChannel do
         |> elem(1)
         |> String.reverse()
 
+      broadcast(socket, "dashboard_1", %{
+        nett_sales: d_nett_sales,
+        taxes: d_taxes,
+        order: d_order,
+        pax: d_pax,
+        transaction: d_transaction
+      })
+
       top_10_items_qty =
         Repo.all(
           from(
@@ -747,11 +763,6 @@ defmodule BoatNoodleWeb.DashboardChannel do
     end
 
     broadcast(socket, "dashboard", %{
-      nett_sales: d_nett_sales,
-      taxes: d_taxes,
-      order: d_order,
-      pax: d_pax,
-      transaction: d_transaction,
       table_branch_daily_sales_sumary: table_branch_daily_sales_sumary,
       branch_daily_sales_sumary: Poison.encode!(grp_daily),
       top_10_selling: Poison.encode!(top_10_selling),

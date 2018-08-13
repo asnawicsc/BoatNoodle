@@ -49,7 +49,7 @@ defmodule BoatNoodleWeb do
         StaffType,
         Tag,
         TagCatalog,
-        TagItem,
+        TagItems,
         Tax,
         User,
         UserBranchAccess,

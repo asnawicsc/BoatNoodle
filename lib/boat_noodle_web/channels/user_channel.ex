@@ -1503,7 +1503,8 @@ defmodule BoatNoodleWeb.UserChannel do
             totalprice: v.price,
             staff: f.staff_name,
             branchid: v.branch_id,
-            domainname: r.domain_name
+            domainname: r.domain_name,
+            voidreason: v.voidreason
           }
         )
       )
@@ -1521,7 +1522,8 @@ defmodule BoatNoodleWeb.UserChannel do
           totalprice: item.totalprice,
           staff: item.staff,
           domainname: item.domainname,
-          branchid: item.branchid
+          branchid: item.branchid,
+          voidreason: item.voidreason
         }
       end
 

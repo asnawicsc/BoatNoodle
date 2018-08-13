@@ -220,6 +220,8 @@ defmodule BoatNoodleWeb.ApiController do
                 get_scope_payment_types(conn, branch.branchid, branch.brand_id, params["code"])
 
               "discount" ->
+                IO.inspect(branch.branchid)
+
                 get_scope_discount(
                   conn,
                   branch.branchid,
@@ -251,9 +253,27 @@ defmodule BoatNoodleWeb.ApiController do
 
   def get_scope_discount(conn, branch_id, brand_id, branchcode, disc_catalog_id) do
     # get the branch discount catalog
+    IO.inspect(branch_id)
     disc_catalog = Repo.get_by(DiscountCatalog, id: disc_catalog_id, brand_id: brand_id)
-    ids = disc_catalog.categories |> String.split(",") |> Enum.sort()
-    item_ids = disc_catalog.discounts |> String.split(",") |> Enum.sort()
+    IO.inspect(disc_catalog)
+
+    ids =
+      disc_catalog.categories
+      |> String.split(",")
+      |> Enum.sort()
+      |> Enum.reject(fn x -> x == "" end)
+      |> Enum.map(fn x -> String.to_integer(x) end)
+
+    IO.inspect(ids)
+
+    item_ids =
+      disc_catalog.discounts
+      |> String.split(",")
+      |> Enum.sort()
+      |> Enum.reject(fn x -> x == "" end)
+      |> Enum.map(fn x -> String.to_integer(x) end)
+
+    IO.inspect(item_ids)
     # arrange the discount category
     disc_categories =
       Repo.all(
@@ -276,6 +296,8 @@ defmodule BoatNoodleWeb.ApiController do
           }
         )
       )
+
+    IO.inspect(disc_categories)
 
     disc_items =
       Repo.all(
@@ -329,10 +351,13 @@ defmodule BoatNoodleWeb.ApiController do
         }
       end)
 
+    IO.inspect(disc_items)
     # arrange the discount item
     json_map = %{disc_categories: disc_categories, disc_items: disc_items} |> Poison.encode!()
+    IO.inspect(json_map)
     message = List.insert_at(conn.req_headers, 0, {"discount", "discount"})
     log_error_api(message, "#{branchcode} - API GET - discount")
+    IO.inspect(message)
     send_resp(conn, 200, json_map)
   end
 
@@ -448,7 +473,6 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           v in Voucher,
-          where: v.is_used == ^false and v.branchid in ^[0, branch_id],
           select: %{
             id: v.id,
             code_number: v.code_number,
