@@ -87,24 +87,24 @@ defmodule BoatNoodleWeb.MenuCatalog do
 
     subcat = Repo.get_by(ItemSubcat, subcatid: map["subcat_id"], brand_id: payload["brand_id"])
 
-    case subcat.price_code do
+      style = case subcat.price_code do
       "A" ->
-        style = "primary"
+      "primary"
 
       "B" ->
-        style = "warning"
+       "warning"
 
       "C" ->
-        style = "success"
+       "success"
 
       "D" ->
-        style = "info"
+       "info"
 
       "E" ->
-        style = "rose"
+       "rose"
 
       _ ->
-        style = "danger"
+      "danger"
     end
 
     if map["current_subcat_id"] == map["subcat_id"] do

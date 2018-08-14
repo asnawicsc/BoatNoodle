@@ -11,13 +11,34 @@ defmodule BoatNoodleWeb.DashboardChannel do
     end
   end
 
+  def handle_in("dashboard_local_storage", payload, socket) do
+
+    IEx.pry
+
+    #   broadcast(socket, "dashboard", %{
+    #   nett_sales: payload.d_nett_sales,
+    #   taxes: payload.d_taxes,
+    #   order: payload.d_order,
+    #   pax: payload.d_pax,
+    #   transaction: payload.d_transaction,
+    #   table_branch_daily_sales_sumary: Poison.encode!(table_branch_daily_sales_sumary),
+    #   branch_daily_sales_sumary: Poison.encode!(grp_daily),
+    #   top_10_selling: Poison.encode!(top_10_selling),
+    #   top_10_selling_revenue: Poison.encode!(top_10_selling_revenue),
+    #   top_10_selling_category: Poison.encode!(top_10_selling_category)
+    # })
+
+    # {:noreply, socket}
+  end
+
   def handle_in("dashboard", payload, socket) do
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
     brand = Repo.get_by(Brand, id: brand_id)
 
-    if branchid != "0" do
+   {d_nett_sales,d_taxes,d_order,d_pax,d_transaction,table_branch_daily_sales_sumary,grp_daily,
+top_10_selling,top_10_selling_revenue,top_10_selling_category}=if branchid != "0" do
       a =
         Repo.all(
           from(
@@ -384,9 +405,13 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
           %{name: name, y: y}
         end
-
+{d_nett_sales,d_taxes,d_order,d_pax,d_transaction,table_branch_daily_sales_sumary,grp_daily,
+top_10_selling,top_10_selling_revenue,top_10_selling_category}
      
     else
+
+
+
       a =
         Repo.all(
           from(
@@ -732,6 +757,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
           %{name: name, y: y}
         end
+
+
+        {d_nett_sales,d_taxes,d_order,d_pax,d_transaction,table_branch_daily_sales_sumary,grp_daily,
+top_10_selling,top_10_selling_revenue,top_10_selling_category}
     end
 
     broadcast(socket, "dashboard", %{
@@ -740,7 +769,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
       order: d_order,
       pax: d_pax,
       transaction: d_transaction,
-      table_branch_daily_sales_sumary: table_branch_daily_sales_sumary,
+      table_branch_daily_sales_sumary: Poison.encode!(table_branch_daily_sales_sumary),
       branch_daily_sales_sumary: Poison.encode!(grp_daily),
       top_10_selling: Poison.encode!(top_10_selling),
       top_10_selling_revenue: Poison.encode!(top_10_selling_revenue),
@@ -755,7 +784,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
     branch_id = payload["branch_id"]
 
-    if branch_id != "0" do
+    yearly=if branch_id != "0" do
       all =
         Repo.all(
           from(
@@ -795,7 +824,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
           pax =
             Enum.map(data, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum() |> Float.round(2)
 
-          %{month: month, grand_total: grand_total, gst: gst, pax: pax}
+          yearly=%{month: month, grand_total: grand_total, gst: gst, pax: pax}
         end
     else
       all =
@@ -835,9 +864,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
           pax =
             Enum.map(data, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum() |> Float.round(2)
 
-          %{month: month, grand_total: grand_total, gst: gst, pax: pax}
+          yearly=%{month: month, grand_total: grand_total, gst: gst, pax: pax}
         end
     end
+
 
     broadcast(socket, "yearly", %{yearly: Poison.encode!(yearly)})
     {:noreply, socket}

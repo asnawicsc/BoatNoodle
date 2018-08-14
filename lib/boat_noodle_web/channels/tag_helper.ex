@@ -56,30 +56,36 @@ defmodule BoatNoodleWeb.TagHelper do
     tag = Repo.get_by(Tag, tagid: tagid, brand_id: brand_id)
     combo_item = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
 
-    if tag.combo_item_ids != nil do
-      existing_combo_item_ids = tag.combo_item_ids |> String.split(",")
+     existing_combo_item_ids = if tag.combo_item_ids != nil do
+     tag.combo_item_ids |> String.split(",")
     else
-      existing_combo_item_ids = []
+      []
     end
 
-    if Enum.any?(existing_combo_item_ids, fn x -> x == combo_item_id end) do
-      new_combo_ids =
-        List.delete(existing_combo_item_ids, combo_item_id)
+    {new_combo_ids,action,alert}=if Enum.any?(existing_combo_item_ids, fn x -> x == combo_item_id end) do
+      
+        
+
+        {List.delete(existing_combo_item_ids, combo_item_id)
         |> Enum.sort()
         |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(",")
+        |> Enum.join(","),
+        "removed from",
+        "danger"}
 
-      action = "removed from"
-      alert = "danger"
+      
     else
-      new_combo_ids =
+     
+
+        { new_combo_ids =
         List.insert_at(existing_combo_item_ids, 0, combo_item_id)
         |> Enum.sort()
         |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(",")
+        |> Enum.join(","),
+        "added to",
+        "success"}
 
-      action = "added to"
-      alert = "success"
+      
     end
 
     cg = Tag.changeset(tag, %{combo_item_ids: new_combo_ids}, user_id,"Update")
@@ -125,22 +131,23 @@ defmodule BoatNoodleWeb.TagHelper do
       )
       |> Enum.map(fn x -> Integer.to_string(x) end)
 
-    if Enum.any?(existing_subcats, fn x -> x == subcatid end) do
-      new_subcatids =
-        List.delete(existing_subcats, subcatid) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(",")
+     {new_subcatids,action,alert}= if Enum.any?(existing_subcats, fn x -> x == subcatid end) do
+     
+        
 
-      action = "removed from"
-      alert = "danger"
+      {List.delete(existing_subcats, subcatid) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+        |> Enum.join(","),
+        "removed from",
+        "danger"}
     else
-      new_subcatids =
-        List.insert_at(existing_subcats, 0, subcatid)
+       
+      { List.insert_at(existing_subcats, 0, subcatid)
         |> Enum.sort()
         |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(",")
-
-      action = "added to"
-      alert = "success"
+        |> Enum.join(","),
+        "added to",
+        "success"
+      }
     end
 
     cg = Tag.changeset(tag, %{subcat_ids: new_subcatids}, user_id,"Update")
@@ -183,17 +190,18 @@ defmodule BoatNoodleWeb.TagHelper do
     # )
     uba = Repo.get_by(UserBranchAccess, userid: user_id, branchid: branch_id)
 
-    if uba != nil do
+     {action,alert}= if uba != nil do
       Repo.delete(uba)
-      action = "removed from"
-      alert = "danger"
+
+       {"removed from","danger"}
+      
     else
       cg =
         UserBranchAccess.changeset(%UserBranchAccess{}, %{userid: user_id, branchid: branch_id})
 
       Repo.insert(cg)
-      action = "added to"
-      alert = "success"
+
+      {"added to","success"}
     end
 
     broadcast(socket, "updated_branch_access", %{

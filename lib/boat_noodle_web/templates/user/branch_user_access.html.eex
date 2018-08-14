@@ -36,14 +36,15 @@
                             <td style="width: 200px; text-align: center;">
                               <% 
                               uba = @uba[manager_access_user.id]
-                              if uba != nil do
+                               {checkbox}=if uba != nil do
                           
                                 a = uba |> Enum.filter(fn x -> x.branchid == branch.id end)
-                                if a != [] do
-                                  checkbox = true
+                                checkbox=if a != [] do
+                                  true
                                 else
-                                  checkbox = false
+                                 false
                                 end
+                                {checkbox}
                               end
                               %>
                             

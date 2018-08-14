@@ -208,25 +208,25 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
 
   
 
-     if a["enable_disc"] == "on" do
-      enable_disc = 1
+     enable_disc = if a["enable_disc"] == "on" do
+      1
     else
-      enable_disc = 0
+      0
     end
 
 
-     if a["is_active"] == "on" do
-      is_activate = 1
+     is_activate = if a["is_active"] == "on" do
+      1
     else
-      is_activate = 0
+       0
     end
 
 
 
-     if a["include_spend"] == "on" do
-      include_spend = 1
+     include_spend =  if a["include_spend"] == "on" do
+     1
     else
-      include_spend = 0
+      0
     end
 
  item_subcat_params = Map.put(item_subcat_params, "enable_disc", enable_disc)
@@ -371,13 +371,13 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
       myers = List.myers_difference(item_codes_str, subcat_ids)
       answer = myers |> Keyword.get(:eq) |> hd()
 
-      if Enum.any?(items_ids, fn x -> x == answer end) do
+      nl = if Enum.any?(items_ids, fn x -> x == answer end) do
         # remove it
         # nl = List.delete(items_ids, answer) |> Enum.reject(fn x -> x == "" end)
         # keep it
-        nl = items_ids
+        items_ids
       else
-        nl = List.insert_at(items_ids, 0, answer) |> Enum.reject(fn x -> x == "" end)
+        List.insert_at(items_ids, 0, answer) |> Enum.reject(fn x -> x == "" end)
       end
 
       new_items = Enum.join(nl, ",")
@@ -424,25 +424,25 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
       }) do
     # menu_item = BN.get_menu_item!(id)
 
-    if a["enable_disc"] == "on" do
-      enable_disc = 1
+     enable_disc = if a["enable_disc"] == "on" do
+     1
     else
-      enable_disc = 0
+     0
     end
 
 
-     if a["is_active"] == "on" do
-      is_activate = 1
+      is_activate = if a["is_active"] == "on" do
+     1
     else
-      is_activate = 0
+     0
     end
 
 
 
-     if a["include_spend"] == "on" do
-      include_spend = 1
+      include_spend = if a["include_spend"] == "on" do
+      1
     else
-      include_spend = 0
+     0
     end
 
    menu_item_params = Map.put(menu_item_params, "enable_disc", enable_disc)

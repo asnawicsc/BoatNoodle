@@ -6,16 +6,18 @@ defmodule BoatNoodleWeb.SalesController do
   def top_sales(conn, params) do
     date_setting = params["date"]
 
-    case date_setting do
+     {start_date,end_date,dat}=case date_setting do
       "last_month" ->
         start_date = Timex.beginning_of_month(Date.utc_today())
         end_date = Timex.end_of_month(Date.utc_today())
         dat = "Monthly"
+        {start_date,end_date,dat}
 
       "weekly" ->
         start_date = Timex.beginning_of_week(Date.utc_today()) |> Timex.shift(months: -3)
         end_date = Timex.end_of_week(Date.utc_today()) |> Timex.shift(months: -3)
         dat = "Weekly"
+         {start_date,end_date,dat}
 
       "daily" ->
         # start_date = Date.utc_today
@@ -23,6 +25,7 @@ defmodule BoatNoodleWeb.SalesController do
         start_date = Date.new(2018, 6, 14) |> elem(1)
         end_date = Date.new(2018, 6, 14) |> elem(1)
         dat = "Daily"
+         {start_date,end_date,dat}
     end
 
     outlet_sales =
@@ -104,12 +107,32 @@ defmodule BoatNoodleWeb.SalesController do
             grand_total: sp.grand_total,
             cash: sp.cash,
             changes: sp.changes,
-            salesdate: s.salesdate,
+            salesdate: s.salesdatetime,
             invoiceno: s.invoiceno
           }
         )
       )
       |> hd
+
+      salesdatetime=DateTime.from_naive!(detail.salesdate, "Etc/UTC")|>DateTime.to_string|>String.split_at(19)|>elem(0)
+
+      
+         detail=%{staff_name: detail.staff_name,
+            tbl_no: detail.tbl_no,
+            pax: detail.pax,
+            sub_total: detail.sub_total,
+            after_disc: detail.after_disc,
+            service_charge: detail.service_charge,
+            gst_charge: detail.gst_charge,
+            rounding: detail.rounding,
+            grand_total: detail.grand_total,
+            cash: detail.cash,
+            changes: detail.changes,
+            salesdate: salesdatetime,
+            invoiceno: detail.invoiceno
+          }
+
+     
 
     detail_item =
       Repo.all(
@@ -649,11 +672,11 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
                 ] 
     data=for item <- item_sales_outlet do
 
-            if item.foc_qty == nil do
+             foc_qty=if item.foc_qty == nil do
 
-              foc_qty= 0
+             0
             else
-              foc_qty=Decimal.to_float(item.foc_qty)
+             Decimal.to_float(item.foc_qty)
 
             end
            
@@ -770,11 +793,11 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
                 ] 
     data=for item <- item_sales_outlet do
 
-            if item.foc_qty == nil do
+             foc_qty=if item.foc_qty == nil do
 
-              foc_qty=0
+             0
             else
-              foc_qty=Decimal.to_float(item.foc_qty)
+             Decimal.to_float(item.foc_qty)
 
        end
            

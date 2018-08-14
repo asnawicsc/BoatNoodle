@@ -67,10 +67,10 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         count = elem(cat, 1)["all_item"] |> String.split(",") |> Enum.count()
       end
 
-    if Enum.all?(count, fn x -> x == 1 end) do
-      a = true
+     a = if Enum.all?(count, fn x -> x == 1 end) do
+     true
     else
-      a = false
+     false
     end
 
     if a == true do
@@ -175,28 +175,28 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     enable_discount=params["enable_discount"]
     included_spend=params["included_spend"]
 
-    if is_default_combo == "on" do
-      is_default_combo=1
+    is_default_combo=if is_default_combo == "on" do
+     1
     else
-      is_default_combo=0
+      0
     end
 
-    if is_activate == "on" do
-      is_activate=1
+     is_activate=if is_activate == "on" do
+    1
     else
-      is_activate=0   
+     0   
     end
 
-    if enable_discount == "on" do
-      enable_discount=1
+    enable_discount=if enable_discount == "on" do
+      1
     else
-      enable_discount=0  
+      0  
     end
 
-    if included_spend == "on" do
-      included_spend=1
+     included_spend=if included_spend == "on" do
+     1
     else
-      included_spend=0
+     0
     end
 
     prev_subcatid =
@@ -422,28 +422,28 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     all_item = params["all"]
 
 
-    if params["is_default_combo"] == "on" do
-      is_default_combo=1
+    is_default_combo=if params["is_default_combo"] == "on" do
+     1
     else
-      is_default_combo=0
+      0
     end
 
-    if params["is_activate"] == "on" do
-      is_activate=1
+     is_activate=if params["is_activate"] == "on" do
+      1
     else
-      is_activate=0
+     0
     end
 
-    if params["included_spend"] == "on" do
-      enable_discount=1
+    enable_discount=if params["included_spend"] == "on" do
+      1
     else
-      enable_discount=0
+    0
     end
 
-    if params["included_spend"] == "on" do
-      included_spend=1
+     included_spend=if params["included_spend"] == "on" do
+     1
     else
-      included_spend=0
+     0
     end 
   
     item_category = combo["itemcat"]
@@ -761,12 +761,26 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         )
       )
 
-    if same_items == [] do
-      same_items = [item_subcat]
+    same_items = if same_items == [] do
+      [item_subcat]
+    else
+      
+   
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where: s.itemcode == ^item_subcat.itemcode and s.is_delete == ^0,
+          order_by: [asc: s.price_code]
+        )
+      )
+
     end
 
     ids = same_items |> Enum.map(fn x -> x.subcatid end)
     combo_items = Repo.all(from(c in ComboDetails, where: c.combo_id in ^ids))
+
+
+   
 
     no_selection_combo_items =
       Repo.all(
