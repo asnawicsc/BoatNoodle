@@ -3,6 +3,80 @@ defmodule BoatNoodleWeb.SalesController do
 
   require IEx
 
+  def query(conn, params) do
+    payload = %{}
+    payload = Map.put(payload, "branch_id", "58")
+    payload = Map.put(payload, "s_date", "2018-08-01")
+    payload = Map.put(payload, "e_date", "2018-08-31")
+    payload = Map.put(payload, "brand_id", 1)
+    brand_id = 1
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    count_sales_data =
+      Repo.all(
+        from(
+          sp in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: s.salesid == sp.salesid,
+          left_join: st in BoatNoodle.BN.Staff,
+          on: s.staffid == st.staff_id,
+          left_join: b in BoatNoodle.BN.Brand,
+          where:
+            b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+              s.brand_id == ^payload["brand_id"],
+          select: count(s.salesid)
+        )
+      )
+      |> hd()
+
+    sales_data =
+      Repo.all(
+        from(
+          sp in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: s.salesid == sp.salesid,
+          left_join: st in BoatNoodle.BN.Staff,
+          on: s.staffid == st.staff_id,
+          left_join: b in BoatNoodle.BN.Brand,
+          where:
+            b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+              s.brand_id == ^payload["brand_id"],
+          select: %{
+            salesdatetime: s.salesdatetime,
+            invoiceno: s.invoiceno,
+            payment_type: sp.payment_type,
+            grand_total: sp.grand_total,
+            tbl_no: s.tbl_no,
+            pax: s.pax,
+            staff_name: st.staff_name,
+            branchid: s.branchid,
+            domainname: b.domain_name
+          }
+        )
+      )
+
+    sales_data =
+      for item <- sales_data do
+        date = item.salesdatetime |> NaiveDateTime.to_string() |> String.split_at(19) |> elem(0)
+
+        %{
+          invoiceno: item.invoiceno,
+          salesdatetime: date,
+          payment_type: item.payment_type,
+          grand_total: item.grand_total,
+          tbl_no: item.tbl_no,
+          pax: item.pax,
+          staff_name: item.staff_name,
+          branchid: item.branchid
+        }
+      end
+
+    json_map = %{data: sales_data} |> Poison.encode!()
+    send_resp(conn, 200, json_map)
+  end
+
   def top_sales(conn, params) do
     date_setting = params["date"]
 

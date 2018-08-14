@@ -277,6 +277,27 @@ defmodule BoatNoodleWeb.UserChannel do
 
     brand = Repo.get_by(Brand, id: brand_id)
 
+    count_sales_data =
+      Repo.all(
+        from(
+          sp in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: s.salesid == sp.salesid,
+          left_join: st in BoatNoodle.BN.Staff,
+          on: s.staffid == st.staff_id,
+          left_join: b in BoatNoodle.BN.Brand,
+          where:
+            b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+              s.brand_id == ^payload["brand_id"],
+          select: count(s.salesid)
+        )
+      )
+      |> hd()
+
+    limit = 10
+    total_pages = count_sales_data / limit
+
     sales_data =
       Repo.all(
         from(
@@ -321,7 +342,11 @@ defmodule BoatNoodleWeb.UserChannel do
         }
       end
 
-    broadcast(socket, "populate_table_sales_transaction", %{sales_data: sales_data})
+    broadcast(socket, "populate_table_sales_transaction", %{
+      sales_data: sales_data,
+      total_pages: total_pages
+    })
+
     {:noreply, socket}
   end
 
