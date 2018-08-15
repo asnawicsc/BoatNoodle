@@ -58,7 +58,7 @@
                             else 
                               checkbox
                               end
-                              IEx.pry
+                              
                             %>
                       
                              <div style="height: 25px;">

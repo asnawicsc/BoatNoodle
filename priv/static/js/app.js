@@ -27,14 +27,27 @@ $(document).ready(function(){
   var html = "<img style='border-radius: 50%;  width: 34px; height: 34px;' src='data:image/jpg;base64, "+map.bin +"'>" 
   $("div[aria-lable='photo']").html(html)
   $("span[aria-label='username']").append(map.name)
-} else {
-if (window.currentUser != "lobby") {
-  
-  channel.push("load_user_sidebar", {userid: window.currentUser,brandid: window.currentBrand})
-}
+    } else {
+    if (window.currentUser != "lobby") { 
+      channel.push("load_user_sidebar", {userid: window.currentUser,brandid: window.currentBrand})
+    }
 
+    }
 
-}
+    channel.on("notify_user_brand_changed", payload => {
+      $.notify({
+          icon: "notifications",
+          message: payload.name+" brand access changed to "+payload.brand_name
+
+      }, {
+          type: "info",
+          timer: 100,
+          placement: {
+              from: 'bottom',
+              align: 'right'
+          }
+      });
+    })
 
   channel.on("append_api_log", payload => {
     var messages = payload.messages

@@ -29,13 +29,7 @@ defmodule BoatNoodleWeb.Router do
   # Other scopes may use custom stacks.
   scope "/api", BoatNoodleWeb do
     pipe_through(:api)
-    get("/get_deployment_key", PageController, :webhook_key)
-    get("/sales", PageController, :webhook_get)
-    post("/sales", PageController, :webhook_post)
-  end
-
-  scope "/:brand/api", BoatNoodleWeb do
-    pipe_through(:api)
+    get("/:code/get_api2", BranchController, :get_api2)
     get("/sales", ApiController, :webhook_get)
     post("/sales", ApiController, :webhook_post)
     post("/operations", ApiController, :webhook_post_operations)
@@ -46,16 +40,20 @@ defmodule BoatNoodleWeb.Router do
     pipe_through([:management, :report_layout])
 
     get("/", PageController, :report_login)
-      get("/reports/logout", PageController, :logout)
+    get("/reports/logout", PageController, :logout)
     post("/report_authenticate_login", PageController, :authenticate_login)
     get("/get_brands", PageController, :get_brands)
     get("/reports", PageController, :report_index)
     get("/top_sales", SalesController, :top_sales)
-
+    get("/logout", UserController, :logout)
+    get("/forget_password", UserController, :forget_password)
+    post("/forget_password_email", UserController, :forget_password_email)
   end
 
   scope "/:brand", BoatNoodleWeb do
     pipe_through(:browser)
+
+    get("/data_source/:query", SalesController, :query)
 
     get("/", PageController, :index2)
     post("/sales_graph_by_year", PageController, :sales_graph_by_year)
@@ -101,32 +99,62 @@ defmodule BoatNoodleWeb.Router do
     get("/discount_remove_from_catalog", DiscountCatalogController, :discount_remove_from_catalog)
     get("/list_discount_catalog2", DiscountCatalogController, :list_discount_catalog2)
     get("/list_discount_catalog3", DiscountCatalogController, :list_discount_catalog3)
-    get("/show_voucher",ItemSubcatController, :show_voucher)
-    post("/upload_voucher",DiscountController, :upload_voucher)
-    get "/csv", MenuItemController, :export
-    get "/csv_discount", DiscountController, :export
-    get "/quickbook", SalesController, :quickbook
-    get "/tables", SalesController, :tables
-    post "/item_sales_report_csv", SalesController, :item_sales_report_csv
-    post "/item_sales_outlet_csv", SalesController, :item_sales_outlet_csv
-    post "/combo_item_sales_csv", SalesController, :combo_item_sales_csv 
-    post "/discount_item_report_csv", SalesController, :discount_item_report_csv
-    post "/discount_item_detail_report_csv", SalesController, :discount_item_detail_report_csv 
+    get("/show_voucher", ItemSubcatController, :show_voucher)
+    post("/upload_voucher", DiscountController, :upload_voucher)
+    get("/csv", MenuItemController, :export)
+    get("/csv_discount", DiscountController, :export)
+    get("/quickbook", SalesController, :quickbook)
+    get("/tables", SalesController, :tables)
+    post("/item_sales_report_csv", SalesController, :item_sales_report_csv)
+    post("/item_sales_outlet_csv", SalesController, :item_sales_outlet_csv)
+    post("/combo_item_sales_csv", SalesController, :combo_item_sales_csv)
+    post("/discount_item_report_csv", SalesController, :discount_item_report_csv)
+    post("/discount_item_detail_report_csv", SalesController, :discount_item_detail_report_csv)
 
-    get("/discount_insert_into_catalog3",DiscountCatalogController,:discount_insert_into_catalog3)
-    get("/discount_remove_from_catalog3",DiscountCatalogController,:discount_remove_from_catalog3)
+    get(
+      "/discount_insert_into_catalog3",
+      DiscountCatalogController,
+      :discount_insert_into_catalog3
+    )
+
+    get(
+      "/discount_remove_from_catalog3",
+      DiscountCatalogController,
+      :discount_remove_from_catalog3
+    )
+
     get("/list_discount_catalog4", DiscountCatalogController, :list_discount_catalog4)
-    get("/discount_insert_into_catalog4",DiscountCatalogController,:discount_insert_into_catalog4)
-    get("/discount_remove_from_catalog4",DiscountCatalogController,:discount_remove_from_catalog4)
+
+    get(
+      "/discount_insert_into_catalog4",
+      DiscountCatalogController,
+      :discount_insert_into_catalog4
+    )
+
+    get(
+      "/discount_remove_from_catalog4",
+      DiscountCatalogController,
+      :discount_remove_from_catalog4
+    )
+
     get("/discount_catalog_copy/:id", DiscountController, :discount_catalog_copy)
     post("/create_discount_catalog_copy", DiscountController, :create_discount_catalog_copy)
-    get("/discount_insert_into_catalog2",DiscountCatalogController,:discount_insert_into_catalog2)
-    get("/discount_remove_from_catalog2",DiscountCatalogController,:discount_remove_from_catalog2 )
 
-    resources "/unauthorize_menu", UnauthorizeMenuController
-    get("/menu",UnauthorizeMenuController,:menu)
-    post("/update_menu",UnauthorizeMenuController,:update_menu)
+    get(
+      "/discount_insert_into_catalog2",
+      DiscountCatalogController,
+      :discount_insert_into_catalog2
+    )
 
+    get(
+      "/discount_remove_from_catalog2",
+      DiscountCatalogController,
+      :discount_remove_from_catalog2
+    )
+
+    resources("/unauthorize_menu", UnauthorizeMenuController)
+    get("/menu", UnauthorizeMenuController, :menu)
+    post("/update_menu", UnauthorizeMenuController, :update_menu)
 
     post("/edit_discount_catalog_detail", DiscountController, :edit_discount_catalog_detail)
     post("/edit_discount_category_detail", DiscountController, :edit_discount_category_detail)
@@ -135,7 +163,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/tag", TagController)
     get("/check_printer", TagController, :check_printer)
     get("/toggle_printer/edit", TagController, :toggle_printer)
-     get("/toggle_printer_combo/edit", TagController, :toggle_printer_combo)
+    get("/toggle_printer_combo/edit", TagController, :toggle_printer_combo)
     resources("/tag_catalog", TagCatalogController)
     resources("/tag_items", TagItemsController)
     resources("/staff", StaffController)
@@ -153,6 +181,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/organization", OrganizationController)
     resources("/branch", BranchController)
     get("/branch/:id/get_api", BranchController, :get_api)
+
     get("/branch/:id/printers", BranchController, :printers)
     resources("/payment_type", PaymentTypeController)
     resources("/sales_master", SalesMasterController)
@@ -208,7 +237,13 @@ defmodule BoatNoodleWeb.Router do
     post("/combos/combo_create_price", ItemSubcatController, :combo_create_price)
     post("/combos/combo_create_price_update", ItemSubcatController, :combo_create_price_update)
     post("/user_branch_accesss", UserBranchAccessController, :update_branch_access)
-    post("/combos/combo_create_price_unselect",ItemSubcatController,:combo_create_price_unselect)
+
+    post(
+      "/combos/combo_create_price_unselect",
+      ItemSubcatController,
+      :combo_create_price_unselect
+    )
+
     post("/combos/branch", ItemSubcatController, :combo_branch)
     post("/combos/unselect", ItemSubcatController, :combo_unselect)
     post("/combos/finish", ItemSubcatController, :combo_finish)
@@ -240,9 +275,10 @@ defmodule BoatNoodleWeb.Router do
     resources("/user_role", UserRoleController)
     resources("/voiditems", VoidItemsController)
     resources("/salespayment", SalesPaymentController)
-    resources "/api_log", ApiLogController
-    resources "/vouchers", VoucherController
-    resources "/modal_logs", ModalLogController
+    resources("/api_log", ApiLogController)
+    resources("/vouchers", VoucherController)
+    resources("/modal_logs", ModalLogController)
+    get("/advance", PageController, :advance)
     get("/experiment", PageController, :experiment)
     get("/*path", PageController, :no_page_found)
   end

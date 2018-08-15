@@ -80,7 +80,9 @@
                     <div class="row">
                       <div class="fileinput fileinput-new text-center" data-provides="fileinput" >
                             <div  class="fileinput-new thumbnail img-circle">
+                              <%= if @picture != nil do %>
                                 <img  src="data:image/png;base64, <%= @picture.bin %>" alt="...">
+                                <% end %>
                             </div>
                             <div class="fileinput-preview fileinput-exists thumbnail img-circle" style=""></div>
                             

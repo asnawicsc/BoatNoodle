@@ -45,8 +45,7 @@ defmodule BoatNoodleWeb.BranchController do
       subcats_data
       |> Enum.reject(fn x -> String.length(Integer.to_string(x.id)) >= 6 end)
 
-          changeset = Tag.changeset(%BoatNoodle.BN.Tag{},%{},BN.current_user(conn),"new")
-
+    changeset = Tag.changeset(%BoatNoodle.BN.Tag{}, %{}, BN.current_user(conn), "new")
 
     html =
       Phoenix.View.render_to_string(
@@ -88,7 +87,27 @@ defmodule BoatNoodleWeb.BranchController do
       Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
       |> Base.url_encode64()
 
-    cg = Branch.changeset(branch, %{api_key: api_key})
+    cg = Branch.changeset(branch, %{api_key: api_key}, BN.current_user(conn), "Update")
+    map = %{key: api_key} |> Poison.encode!()
+
+    case Repo.update(cg) do
+      {:ok, bb} ->
+        send_resp(conn, 200, map)
+
+      {:error, cg} ->
+        send_resp(conn, 500, " not ok")
+    end
+  end
+
+  def get_api2(conn, %{"code" => branch_code}) do
+    branch = Repo.get_by(Branch, branchcode: branch_code)
+
+    api_key =
+      Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
+      |> Base.url_encode64()
+
+    cg = Branch.changeset(branch, %{api_key: api_key}, 0, "edit")
+
     map = %{key: api_key} |> Poison.encode!()
 
     case Repo.update(cg) do
@@ -128,8 +147,7 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def new(conn, _params) do
-    
-    changeset = Branch.changeset(%BoatNoodle.BN.Branch{},%{},BN.current_user(conn),"new")
+    changeset = Branch.changeset(%BoatNoodle.BN.Branch{}, %{}, BN.current_user(conn), "new")
 
     managers =
       BN.list_user()
@@ -270,28 +288,38 @@ defmodule BoatNoodleWeb.BranchController do
           order_by: [desc: b.branchid]
         )
       )
-      |> hd()
+
+    if latest_branch_id == [] do
+      latest_branch_id = 0
+    else
+      latest_branch_id = hd(latest_branch_id)
+    end
 
     branch_params = Map.put(branch_params, "branchid", latest_branch_id + 1)
     branch_params = Map.put(branch_params, "brand_id", BN.get_brand_id(conn))
 
-    changeset=BoatNoodle.BN.Branch.changeset(%BoatNoodle.BN.Branch{},branch_params,BN.current_user(conn),"Create")
+    changeset =
+      BoatNoodle.BN.Branch.changeset(
+        %BoatNoodle.BN.Branch{},
+        branch_params,
+        BN.current_user(conn),
+        "Create"
+      )
 
     case BoatNoodle.Repo.insert(changeset) do
       {:ok, branch} ->
         conn
         |> put_flash(:info, "Branch created successfully.")
-        |> redirect(to: branch_path(conn, :show, branch.branchid, BN.get_domain(conn)))
+        |> redirect(to: branch_path(conn, :show, branch.branchid, BN.get_brand_id(conn)))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_flash(:error, "Branch not created.")
-        |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
+        |> redirect(to: branch_path(conn, :index, BN.get_brand_id(conn)))
     end
-    
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id, "brand" => brand}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
     render(conn, "show.html", branch: branch)
   end
@@ -303,9 +331,7 @@ defmodule BoatNoodleWeb.BranchController do
       )
       |> hd()
 
-
-      changeset=BoatNoodle.BN.Branch.changeset(branch,%{}, BN.current_user(conn),"edit")
-
+    changeset = BoatNoodle.BN.Branch.changeset(branch, %{}, BN.current_user(conn), "edit")
 
     managers =
       BN.list_user()
@@ -338,7 +364,9 @@ defmodule BoatNoodleWeb.BranchController do
   def update(conn, %{"id" => id, "branch" => branch_params}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
 
-    changeset=BoatNoodle.BN.Branch.changeset(branch,branch_params, BN.current_user(conn),"Update")
+    changeset =
+      BoatNoodle.BN.Branch.changeset(branch, branch_params, BN.current_user(conn), "Update")
+
     case BoatNoodle.Repo.update(changeset) do
       {:ok, branch} ->
         conn
@@ -349,8 +377,6 @@ defmodule BoatNoodleWeb.BranchController do
         render(conn, "edit.html", branch: branch, changeset: changeset)
     end
   end
-
-   
 
   def delete(conn, %{"id" => id}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))

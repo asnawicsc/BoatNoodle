@@ -33,6 +33,19 @@
     </div>
     
     <div class="card-body" >
+       <div style="">
+          
+          <b>
+            
+          Price Codes: 
+          </b>
+          <span class="badge badge-primary" >A</span>
+          <span class="badge badge-warning" >B</span>
+          <span class="badge badge-success" >C</span>
+          <span class="badge badge-info" >D</span>
+          <span class="badge badge-rose" >E</span>
+          <span class="badge badge-danger" >Others</span>
+        </div>
 	  	<table class="table data">
       <thead>
         <tr>
@@ -40,6 +53,7 @@
           <th>Code</th>
           <th>Name</th>
           <th>Category</th>
+          <th>Price</th>
           <th>Edit</th>
         </tr>
       </thead>  
@@ -52,6 +66,7 @@
         <td><%= elem(subcat,0).itemcode %></td>
         <td><%= elem(subcat,0).itemname %></td>
         <td><%= elem(subcat,0).category %></td>
+        <td class="subcat_price"><%= raw(pricing(elem(subcat,0).subcatid, @conn)) %></td>
         <td>
           
           <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
@@ -88,3 +103,4 @@
   </div>
 </div>
 </form>
+

@@ -76,8 +76,7 @@ config :boat_noodle, BoatNoodle.RepoChillChill,
   pool_size: 10,
   timeout: 1500_000
 
-
-  config :boat_noodle, BoatNoodle.Repo,
+config :boat_noodle, BoatNoodle.Repo,
   adapter: Ecto.Adapters.MySQL,
   hostname: "110.4.42.47",
   port: "15100",
@@ -86,8 +85,6 @@ config :boat_noodle, BoatNoodle.RepoChillChill,
   database: "posgb_boatnoodle",
   pool_size: 10,
   timeout: 1500_000
-
-
 
 # @doc """
 # # regarding consolidating databases, im wondering should i wrtie another function that will interact

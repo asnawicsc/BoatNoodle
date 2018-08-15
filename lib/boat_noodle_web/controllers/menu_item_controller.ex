@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.MenuItemController do
   use BoatNoodleWeb, :controller
   use Task
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, Remark,Brand}
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, Remark, Brand}
 
   require IEx
 
@@ -39,38 +39,73 @@ defmodule BoatNoodleWeb.MenuItemController do
     conn
     |> put_resp_content_type("text/csv")
     |> put_resp_header("content-disposition", "attachment; filename=\"Menu Item List.csv\"")
-    |> send_resp(200, csv_content(conn,_params))
+    |> send_resp(200, csv_content(conn, _params))
   end
 
-  defp csv_content(conn,_params) do
-   brand=Repo.get_by(Brand,domain_name: _params["brand"])
+  defp csv_content(conn, _params) do
+    brand = Repo.get_by(Brand, domain_name: _params["brand"])
 
-all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.itemcatid and s.brand_id==^brand.id ,
- select: %{subcatid: s.subcatid,
- itemcode: s.itemcode,
- itemname: s.itemname,
- itemcatname: d.itemcatname,
- itemdesc: s.itemdesc,
- itemprice: s.itemprice,
- is_categorize: s.is_categorize,
- is_activate: s.is_activate,
- part_code: s.part_code,
- price_code: s.price_code
- })
-  
- csv_content = ['id', 'Item Code', 'Item Name','Item Category','Item Descriptions','Item Price','is_categorize','is_activated','Part Code','Price Code','Branch'] 
-    data=for item <- all do
-    [item.subcatid,item.itemcode,item.itemname,item.itemcatname,item.itemdesc,item.itemprice,item.is_categorize,item.is_activate,item.part_code,item.price_code,'ALL'] 
-    end
-   
-   csv_content=List.insert_at(data,0,csv_content)
-    |> CSV.encode
-    |> Enum.to_list
-    |> to_string
+    all =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          left_join: d in ItemCat,
+          where: s.itemcatid == d.itemcatid and s.brand_id == ^brand.id,
+          select: %{
+            subcatid: s.subcatid,
+            itemcode: s.itemcode,
+            itemname: s.itemname,
+            itemcatname: d.itemcatname,
+            itemdesc: s.itemdesc,
+            itemprice: s.itemprice,
+            is_categorize: s.is_categorize,
+            is_activate: s.is_activate,
+            part_code: s.part_code,
+            price_code: s.price_code
+          }
+        )
+      )
+
+    csv_content = [
+      'id',
+      'Item Code',
+      'Item Name',
+      'Item Category',
+      'Item Descriptions',
+      'Item Price',
+      'is_categorize',
+      'is_activated',
+      'Part Code',
+      'Price Code',
+      'Branch'
+    ]
+
+    data =
+      for item <- all do
+        [
+          item.subcatid,
+          item.itemcode,
+          item.itemname,
+          item.itemcatname,
+          item.itemdesc,
+          item.itemprice,
+          item.is_categorize,
+          item.is_activate,
+          item.part_code,
+          item.price_code,
+          'ALL'
+        ]
+      end
+
+    csv_content =
+      List.insert_at(data, 0, csv_content)
+      |> CSV.encode()
+      |> Enum.to_list()
+      |> to_string
   end
 
   def index(conn, _params) do
-    menu_catalog = Repo.all(from(m in MenuCatalog,where: m.brand_id==^BN.get_brand_id(conn)))
+    menu_catalog = Repo.all(from(m in MenuCatalog, where: m.brand_id == ^BN.get_brand_id(conn)))
 
     subcats =
       Repo.all(
@@ -109,46 +144,47 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
       )
       |> Enum.filter(fn x -> x.brand_id == BN.get_brand_id(conn) end)
 
+    user = BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
 
-        user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
-    
-     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
-     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
-     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
-      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+    admin_menus =
+      BoatNoodle.Repo.all(
+        from(
+          b in BoatNoodle.BN.UnauthorizeMenu,
+          left_join: g in BoatNoodle.BN.User,
+          on: b.role_id == g.roleid,
+          left_join: c in BoatNoodle.BN.UserRole,
+          on: g.roleid == c.roleid,
+          where: g.id == ^user.id and b.active == 1
+        )
+      )
+      |> Enum.map(fn x -> x.url end)
 
+    a = conn.path_info |> List.delete_at(1)
+    b = "categories"
+    c = List.insert_at(a, 2, b)
+    d = "edit"
+    e = List.insert_at(c, 2, d)
+    f = e |> Enum.join("/")
+    e = "/"
+    edit_url = e <> f
 
+    g = conn.path_info |> List.delete_at(1)
+    h = "categories"
+    i = List.insert_at(g, 2, h)
+    j = "new"
+    k = List.insert_at(i, 2, j)
+    l = k |> Enum.join("/")
+    m = "/"
+    new_url = m <> l
 
-     a=conn.path_info|>List.delete_at(1)
-     b="categories"
-     c=List.insert_at(a,2,b)
-     d="edit"
-     e=List.insert_at(c,2,d)
-     f=e|>Enum.join("/")
-     e="/"
-     edit_url=e<>f
-
-
-     g=conn.path_info|>List.delete_at(1)
-     h="categories"
-     i=List.insert_at(g,2,h)
-     j="new"
-     k=List.insert_at(i,2,j)
-     l=k|>Enum.join("/")
-     m="/"
-     new_url=m<>l
-
-     n=conn.path_info|>List.delete_at(1)
-     o="categories"
-     p=List.insert_at(n,2,o)
-     q="delete"
-     r=List.insert_at(p,2,q)
-     s=r|>Enum.join("/")
-     t="/"
-     delete_url=t<>s
-
-
-
+    n = conn.path_info |> List.delete_at(1)
+    o = "categories"
+    p = List.insert_at(n, 2, o)
+    q = "delete"
+    r = List.insert_at(p, 2, q)
+    s = r |> Enum.join("/")
+    t = "/"
+    delete_url = t <> s
 
     render(
       conn,
@@ -200,23 +236,26 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
     render(conn, "new.html", changeset: changeset, item_cat: item_cat, itemcodes: itemcodes)
   end
 
-  def create(conn, %{"menu_item" => item_subcat_params,"a" => a}) do
-   
+  def create(conn, %{"menu_item" => item_subcat_params, "a" => a}) do
     cat_id = item_subcat_params["itemcatid"]
     cat = Repo.get_by(BoatNoodle.BN.ItemCat, itemcatid: cat_id, brand_id: BN.get_brand_id(conn))
     itemcode = item_subcat_params["itemcode"]
+
 
   
 
      enable_disc = if a["enable_disc"] == "on" do
       1
+
     else
       0
     end
 
 
+
      is_activate = if a["is_active"] == "on" do
       1
+
     else
        0
     end
@@ -225,19 +264,15 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
 
      include_spend =  if a["include_spend"] == "on" do
      1
+
     else
       0
     end
 
- item_subcat_params = Map.put(item_subcat_params, "enable_disc", enable_disc)
-  item_subcat_params = Map.put(item_subcat_params, "is_activate", is_activate)
-   item_subcat_params = Map.put(item_subcat_params, "include_spend", include_spend)
- item_subcat_params = Map.put(item_subcat_params, "brand_id", BN.get_brand_id(conn))
-
-
-
-
-
+    item_subcat_params = Map.put(item_subcat_params, "enable_disc", enable_disc)
+    item_subcat_params = Map.put(item_subcat_params, "is_activate", is_activate)
+    item_subcat_params = Map.put(item_subcat_params, "include_spend", include_spend)
+    item_subcat_params = Map.put(item_subcat_params, "brand_id", BN.get_brand_id(conn))
 
     first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
 
@@ -251,7 +286,15 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
         itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
         extension_params = %{"itemname" => itemname, "part_code" => part_code}
         item_param = Map.merge(item_subcat_params, extension_params)
-        cg = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param, BN.current_user(conn),"Create")
+
+        cg =
+          BoatNoodle.BN.ItemSubcat.changeset(
+            %BoatNoodle.BN.ItemSubcat{},
+            item_param,
+            BN.current_user(conn),
+            "Create"
+          )
+
         # subcat id needs to be generated manually.
 
         price_codes = item_subcat_params["price_code"] |> Map.keys()
@@ -279,17 +322,30 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
                   order_by: [asc: s.subcatid]
                 )
               )
-              |> List.last()
+
+            if a != [] do
+              a =
+                a
+                |> List.last()
+            else
+              a = 0
+            end
 
             item_param = Map.put(item_param, "subcatid", a + 1)
-            cg2 = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, item_param, BN.current_user(conn),"Create")
+
+            cg2 =
+              BoatNoodle.BN.ItemSubcat.changeset(
+                %BoatNoodle.BN.ItemSubcat{},
+                item_param,
+                BN.current_user(conn),
+                "Create"
+              )
 
             case Repo.insert(cg2) do
               {:ok, item_cat} ->
                 item_cat
 
               {:error, cg2} ->
-             
                 false
             end
           end
@@ -418,7 +474,6 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
   def update(conn, %{
         "id" => subcatid,
         "menu_item" => menu_item_params,
-        
         "brand" => brand,
         "a" => a
       }) do
@@ -431,8 +486,11 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
     end
 
 
+
       is_activate = if a["is_active"] == "on" do
      1
+
+
     else
      0
     end
@@ -441,21 +499,20 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
 
       include_spend = if a["include_spend"] == "on" do
       1
+
     else
      0
     end
 
-   menu_item_params = Map.put(menu_item_params, "enable_disc", enable_disc)
-   menu_item_params = Map.put(menu_item_params, "is_activate", is_activate)
-   menu_item_params = Map.put(menu_item_params, "include_spend", include_spend)
+    menu_item_params = Map.put(menu_item_params, "enable_disc", enable_disc)
+    menu_item_params = Map.put(menu_item_params, "is_activate", is_activate)
+    menu_item_params = Map.put(menu_item_params, "include_spend", include_spend)
 
-   item_start_hour = menu_item_params["item_start_hour"]
-   item_end_hour = menu_item_params["item_end_hour"]
+    item_start_hour = menu_item_params["item_start_hour"]
+    item_end_hour = menu_item_params["item_end_hour"]
 
-   menu_item_params = Map.put(menu_item_params, "item_start_hour", item_start_hour)
-   menu_item_params = Map.put(menu_item_params, "item_end_hour", item_end_hour)
-
-
+    menu_item_params = Map.put(menu_item_params, "item_start_hour", item_start_hour)
+    menu_item_params = Map.put(menu_item_params, "item_end_hour", item_end_hour)
 
     item_subcat =
       Repo.all(
@@ -475,8 +532,6 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
           order_by: [asc: s.price_code]
         )
       )
-
-  
 
     cat =
       Repo.all(
@@ -518,7 +573,16 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
 
             isc = same_items |> Enum.filter(fn x -> x.price_code == price_code end) |> hd()
 
-            cg2 = BoatNoodle.BN.ItemSubcat.changeset(isc, item_param, BN.current_user(conn),"Update")
+            file_param = conn.params["image"]
+
+            if file_param != nil do
+              {:ok, bin} = File.read(file_param.path)
+
+              item_param = Map.put(item_param, "itemimage", Base.encode64(bin))
+            end
+
+            cg2 =
+              BoatNoodle.BN.ItemSubcat.changeset(isc, item_param, BN.current_user(conn), "Update")
 
             case Repo.update(cg2) do
               {:ok, item_cat} ->
@@ -547,6 +611,7 @@ all=Repo.all(from s in ItemSubcat,left_join: d in ItemCat,where: s.itemcatid==d.
 
     # case BN.update_menu_item(menu_item, menu_item_params) do
     #   {:ok, menu_item} ->
+
     conn
     |> put_flash(:info, "Menu item updated successfully.")
     |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))

@@ -86,6 +86,29 @@
 
     window.currentUser = '<%=  @conn.private.plug_session["user_id"] %>';
   <% end %>
+
+  <%= cond do %>
+
+  <% get_flash(@conn, :info) != nil -> %>
+
+  swal(
+    '<%= get_flash(@conn, :info) %>',
+    '',
+    'success'
+  )
+  <% get_flash(@conn, :error) != nil -> %>
+
+
+  swal(
+    '<%= get_flash(@conn, :error) %>',
+    '',
+    'error'
+  )
+
+  <% true -> %>
+
+  <% end %>
+  
 </script>
 
 

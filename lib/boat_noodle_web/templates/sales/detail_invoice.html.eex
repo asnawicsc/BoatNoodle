@@ -126,14 +126,14 @@
                         </tr>
                         <tr>
                             <td width="1105px"></td>
-                            <td width="170px" align="left"><b>Service Charge(5%)</b></td>
+                            <td width="170px" align="left"><b>Service Charge(<%= @detail.servicepercentage%>%)</b></td>
                             <td align="right">
                                 <%= @detail.service_charge%>
                             </td>
                         </tr>
                         <tr>
                             <td width="1105px"></td>
-                            <td width="170px" align="left"><b>GST (6%)</b></td>
+                            <td width="170px" align="left"><b>GST (<%= @detail.gstpercentage%>%)</b></td>
                             <td align="right">
                                 <%= @detail.gst_charge%>
                             </td>

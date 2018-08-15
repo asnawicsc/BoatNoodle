@@ -6,8 +6,6 @@ defmodule BoatNoodleWeb.ApiController do
 
   def webhook_post_operations(conn, params) do
     IO.inspect(params)
-    brand = params["brand"]
-    bb = Repo.get_by(Brand, domain_name: brand)
 
     cond do
       params["scope"] == nil ->
@@ -95,7 +93,7 @@ defmodule BoatNoodleWeb.ApiController do
   def push_scope_void_receipt(conn, params, user) do
     params = Map.put(params, "branch_id", user.branchid)
     params = Map.put(params, "brand_id", user.brand_id)
-    # post the cash in cash out shits...
+    IO.inspect(params)
     cg = BoatNoodle.BN.VoidItems.changeset(%BoatNoodle.BN.VoidItems{}, params)
 
     case Repo.insert(cg) do
@@ -180,9 +178,6 @@ defmodule BoatNoodleWeb.ApiController do
       params["key"] == nil ->
         send_resp(conn, 200, "please include key .")
 
-      params["brand"] == nil ->
-        send_resp(conn, 200, "please include brand name.")
-
       params["fields"] == nil ->
         send_resp(conn, 200, "please include sales id in field.")
 
@@ -190,24 +185,21 @@ defmodule BoatNoodleWeb.ApiController do
         brb = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
 
         if brb != nil do
-          branch_id = params["branch_id"]
-          brand = params["brand"]
-          bb = Repo.get_by(Brand, domain_name: brand)
-          branch = Repo.get_by(Branch, branchcode: params["code"], brand_id: bb.id)
+          branch = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
 
           if branch != nil do
             case params["fields"] do
               "sales_id" ->
-                get_scope_sales_id(conn, branch.branchid, bb.id, params["code"])
+                get_scope_sales_id(conn, branch.branchid, branch.brand_id, params["code"])
 
               "printers" ->
-                get_scope_branch_printer(conn, branch.branchid, bb.id, params["code"])
+                get_scope_branch_printer(conn, branch.branchid, branch.brand_id, params["code"])
 
               "items" ->
                 get_scope_branch_items(
                   conn,
                   branch.branchid,
-                  bb.id,
+                  branch.brand_id,
                   params["code"],
                   branch.menu_catalog
                 )
@@ -216,22 +208,24 @@ defmodule BoatNoodleWeb.ApiController do
                 get_scope_branch_details(conn, branch)
 
               "vouchers" ->
-                get_scope_vouchers(conn, branch.branchid, bb.id, params["code"])
+                get_scope_vouchers(conn, branch.branchid, branch.brand_id, params["code"])
 
               "item_remarks" ->
-                get_scope_item_remarks(conn, branch.branchid, bb.id, params["code"])
+                get_scope_item_remarks(conn, branch.branchid, branch.brand_id, params["code"])
 
               "staffs" ->
-                get_scope_staffs(conn, branch.branchid, bb.id, params["code"])
+                get_scope_staffs(conn, branch.branchid, branch.brand_id, params["code"])
 
               "payment_types" ->
-                get_scope_payment_types(conn, branch.branchid, bb.id, params["code"])
+                get_scope_payment_types(conn, branch.branchid, branch.brand_id, params["code"])
 
               "discount" ->
+                IO.inspect(branch.branchid)
+
                 get_scope_discount(
                   conn,
                   branch.branchid,
-                  bb.id,
+                  branch.brand_id,
                   params["code"],
                   branch.disc_catalog
                 )
@@ -259,9 +253,27 @@ defmodule BoatNoodleWeb.ApiController do
 
   def get_scope_discount(conn, branch_id, brand_id, branchcode, disc_catalog_id) do
     # get the branch discount catalog
+    IO.inspect(branch_id)
     disc_catalog = Repo.get_by(DiscountCatalog, id: disc_catalog_id, brand_id: brand_id)
-    ids = disc_catalog.categories |> String.split(",") |> Enum.sort()
-    item_ids = disc_catalog.discounts |> String.split(",") |> Enum.sort()
+    IO.inspect(disc_catalog)
+
+    ids =
+      disc_catalog.categories
+      |> String.split(",")
+      |> Enum.sort()
+      |> Enum.reject(fn x -> x == "" end)
+      |> Enum.map(fn x -> String.to_integer(x) end)
+
+    IO.inspect(ids)
+
+    item_ids =
+      disc_catalog.discounts
+      |> String.split(",")
+      |> Enum.sort()
+      |> Enum.reject(fn x -> x == "" end)
+      |> Enum.map(fn x -> String.to_integer(x) end)
+
+    IO.inspect(item_ids)
     # arrange the discount category
     disc_categories =
       Repo.all(
@@ -284,6 +296,8 @@ defmodule BoatNoodleWeb.ApiController do
           }
         )
       )
+
+    IO.inspect(disc_categories)
 
     disc_items =
       Repo.all(
@@ -337,10 +351,13 @@ defmodule BoatNoodleWeb.ApiController do
         }
       end)
 
+    IO.inspect(disc_items)
     # arrange the discount item
     json_map = %{disc_categories: disc_categories, disc_items: disc_items} |> Poison.encode!()
+    IO.inspect(json_map)
     message = List.insert_at(conn.req_headers, 0, {"discount", "discount"})
     log_error_api(message, "#{branchcode} - API GET - discount")
+    IO.inspect(message)
     send_resp(conn, 200, json_map)
   end
 
@@ -456,7 +473,6 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           v in Voucher,
-          where: v.is_used == ^false and v.branchid in ^[0, branch_id],
           select: %{
             id: v.id,
             code_number: v.code_number,
@@ -598,7 +614,8 @@ defmodule BoatNoodleWeb.ApiController do
             # update_qty: c.update_qty,
             top_up: c.top_up,
             unit_price: c.unit_price,
-            is_default: c.is_default
+            is_default: c.is_default,
+            is_delete: c.is_delete
           }
         )
       )
@@ -644,9 +661,7 @@ defmodule BoatNoodleWeb.ApiController do
         from(
           s in Sales,
           where: s.branchid == ^Integer.to_string(branch_id) and s.brand_id == ^brand_id,
-          select: %{
-            invoiceno: s.invoiceno
-          },
+          select: %{invoiceno: s.invoiceno},
           order_by: [s.invoiceno]
         )
       )
@@ -671,8 +686,6 @@ defmodule BoatNoodleWeb.ApiController do
 
     IO.inspect(params)
     a_list = params["details"]
-    brand = params["brand"]
-    bb = Repo.get_by(Brand, domain_name: brand)
 
     cond do
       params["key"] == nil ->
@@ -755,7 +768,7 @@ defmodule BoatNoodleWeb.ApiController do
               IO.inspect(sales_params)
 
               salesdate =
-                sales_params.salesdatetime |> String.split("") |> Enum.take(10) |> Enum.join()
+                sales_params.salesdatetime |> String.split("") |> Enum.take(11) |> Enum.join()
 
               sales_params = Map.put(sales_params, :salesdate, salesdate)
 
@@ -775,7 +788,7 @@ defmodule BoatNoodleWeb.ApiController do
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->
                   sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
-
+                  sales_payment_params = Map.put(sales_payment_params, :brand_id, user.brand_id)
                   Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
 
                   sd =
@@ -805,7 +818,7 @@ defmodule BoatNoodleWeb.ApiController do
                     Repo.delete_all(
                       from(
                         s in SalesMaster,
-                        where: s.salesid == ^sales.salesid and s.brand_id == ^bb.id
+                        where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
                       )
                     )
 

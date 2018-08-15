@@ -9,7 +9,7 @@
 
     </div>
 
-    <%= form_for @conn, menu_item_path(@conn, :update, BN.get_domain(@conn), @item_subcat.subcatid), [method: "PUT",class: "form-horizontal"], fn f -> %>
+    <%= form_for @conn, menu_item_path(@conn, :update, BN.get_domain(@conn), @item_subcat.subcatid), [multipart: true, method: "PUT",class: "form-horizontal"], fn f -> %>
       <div class="card-body">
 
         <div class="row">
@@ -148,7 +148,25 @@
               </div>
             </div>
  
-
+<div class="row" style="justify-content: center">
+                      <div class="fileinput fileinput-new text-center" data-provides="fileinput" >
+                            <div  class="fileinput-new thumbnail">
+                                
+                                <%= if @item_subcat.itemimage == nil do %>
+                       
+                       
+                                <% else %>
+                                  <img src="data:image/png;base64, <%= @item_subcat.itemimage %>" alt="..." >
+                                <% end %>
+                            </div>
+                            <div class="fileinput-preview fileinput-exists thumbnail" style=""></div>
+                            
+                            <div style="padding-left: 15%">
+                               <input type="file" name="image" accept="image/*">
+                            </div>
+                             
+                      </div>
+                    </div>
         </div>
 
 

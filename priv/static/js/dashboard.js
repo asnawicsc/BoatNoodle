@@ -95,18 +95,13 @@ if (localStorage.getItem('new_brand') == null) {
         var pax = payload.pax
         var transaction = payload.transaction
 
-        localStorage.setItem('nett_sales', nett_sales)
-        localStorage.setItem('taxes', taxes)
-        localStorage.setItem('order', order)
-        localStorage.setItem('pax', pax)
-        localStorage.setItem('transaction', transaction)
-     
 
-        $("div#nett_sales").html(nett_sales);
-        $("div#tax").html(taxes);
-        $("div#order").html(order);
-        $("div#pax").html(pax);
-        $("div#transaction").html(transaction);
+             $("div#nett_sales").html(nett_sales);  
+            $("div#tax").html(taxes);      
+            $("div#order").html(order);     
+            $("div#pax").html(pax);      
+            $("div#transaction").html(transaction);
+   
 
         localStorage.setItem('table_branch_daily_sales_sumary', payload.table_branch_daily_sales_sumary)
 

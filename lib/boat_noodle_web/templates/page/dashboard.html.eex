@@ -264,42 +264,10 @@ $('select[name="year"]').selectpicker('val',localStorage.getItem("year"));
 
 
         var b_id = $("select#branch_list").val()
-         var brand = localStorage.getItem('new_brand')
+       
         var s_date = localStorage.getItem('start_date')
         var e_date = localStorage.getItem('end_date')
-   
-        // if (s_date == '2018-05-01' && e_date == '2018-05-31' && b_id =='0') {
 
-   
-        // nett_sales=localStorage.setItem('nett_sales')
-        // taxes= localStorage.getItem('taxes')
-        // order=localStorage.getItem('order')
-        // pax=localStorage.getItem('pax')
-        // transaction=  localStorage.getItem('transaction')
-        // table_branch_daily_sales_sumary= localStorage.getItem('table_branch_daily_sales_sumary')
-        // branch_daily_sales_sumary= localStorage.getItem('branch_daily_sales_sumary')
-        // top_10_selling= localStorage.getItem('top_10_selling')
-        // top_10_selling_revenue=localStorage.getItem('top_10_selling_revenue')
-        // top_10_selling_revenue= localStorage.getItem('top_10_selling_revenue')
-
-        //    dashboard_channel.push("dashboard_local_storage", {
-        //     user_id: window.currentUser,
-        //     nett_sales: nett_sales,
-        //     taxes: taxes,
-        //     order: order,
-        //     pax: pax,
-        //     transaction: transaction,
-        //     table_branch_daily_sales_sumary: table_branch_daily_sales_sumary,
-        //     branch_daily_sales_sumary: branch_daily_sales_sumary,
-        //     top_10_selling: top_10_selling,
-        //     top_10_selling_revenue: top_10_selling_revenue,
-        //     top_10_selling_revenue: top_10_selling_revenue,
-        //     brand_id: window.currentBrand
-        // })
-
-
-
-        // }
        
         dashboard_channel.push("dashboard", {
             user_id: window.currentUser,

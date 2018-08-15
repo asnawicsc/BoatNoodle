@@ -116,7 +116,9 @@ defmodule BoatNoodleWeb.SalesController do
 
       salesdatetime=DateTime.from_naive!(detail.salesdate, "Etc/UTC")|>DateTime.to_string|>String.split_at(19)|>elem(0)
 
-      
+ gstpercentage=Decimal.to_float(detail.gst_charge)/Decimal.to_float(detail.sub_total)*100
+ servicepercentage= Decimal.to_float(detail.service_charge)/Decimal.to_float(detail.sub_total)*100
+   
          detail=%{staff_name: detail.staff_name,
             tbl_no: detail.tbl_no,
             pax: detail.pax,
@@ -129,12 +131,13 @@ defmodule BoatNoodleWeb.SalesController do
             cash: detail.cash,
             changes: detail.changes,
             salesdate: salesdatetime,
-            invoiceno: detail.invoiceno
+            invoiceno: detail.invoiceno,
+            gstpercentage: gstpercentage|>Float.to_string|>String.reverse|>String.split_at(2)|>elem(1)|>String.reverse,
+            servicepercentage: servicepercentage|>Float.to_string|>String.reverse|>String.split_at(2)|>elem(1)|>String.reverse
+
           }
 
-     
-
-    detail_item =
+  detail_item =
       Repo.all(
         from(
           s in BoatNoodle.BN.Sales,
@@ -149,7 +152,7 @@ defmodule BoatNoodleWeb.SalesController do
             combo_item_name: c.combo_item_name,
             itemname: is.itemname,
             qty: sd.qty,
-            afterdisc: sd.afterdisc
+            afterdisc: sd.order_price
           }
         )
       )
@@ -181,23 +184,83 @@ id=branch.branchid|>Integer.to_string
 
 all=Repo.all(from s in Sales,
 left_join: p in SalesMaster, on: s.salesid==p.salesid,
-left_join: g in ItemSubcat, on: p.itemid==g.subcatid, 
-  where: s.branchid==^id and s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"],
-  group_by: [s.salesdate,g.itemname,g.itemdesc],
+left_join: b in Branch, on: b.branchid==s.branchid,
+left_join: t in Brand, on: t.id == p.brand_id, 
+  where: s.is_void ==0 
+  and  p.order_price > 0 
+  and b.branchid==^id 
+  and b.brand_id==^brand.id
+  and p.brand_id==^brand.id
+  and s.brand_id==^brand.id
+   and s.salesdate >= ^params["start_date"] 
+   and s.salesdate <= ^params["end_date"],
+  group_by: [s.salesdate,p.itemname],
+  order_by: [s.salesdate,p.itemname],
  select: %{
  date: s.salesdate,
- name: g.itemname,
- desc: g.itemdesc,
+ name: p.itemname,
+ desc: p.itemname,
+ branch: b.branchcode,
  qty: sum(p.qty),
  order_price: sum(p.order_price)
- })
+ })|>Enum.group_by(fn x -> x.date end)
 
- 
+
 
  csv_content = ['CustomerRefFullName ', 'ClassRefFullName', 'TempleteRefFullName','TxnDate','RefNumber','DepositToAccountRefFullName','ItemRefFullName','Desc','Quantity','Rate','Amount','LineClassRefFullName','SalesTaxCodeFullName'] 
     data=for item <- all do
 
-      date=item.date|>Date.to_string|>String.split_at(2)|>elem(1)|>String.split("-")|>Enum.join|>String.split_at(2)
+      date2=item|>elem(0)|>Date.to_string
+      date=item|>elem(0)
+      item=item|>elem(1)
+
+    
+
+
+
+      gft=for item <- item do
+
+   
+
+        trkh=item.date|>Date.to_string
+
+        order_price=Decimal.to_float(item.order_price)|>Float.to_string
+        qty=Decimal.to_float(item.qty)|>Float.to_string
+
+         date=item.date|>Date.to_string|>String.split_at(2)|>elem(1)|>String.split("-")|>Enum.join|>String.split_at(2)
+ 
+      year=date|>elem(0)
+
+      b=date|>elem(1)
+
+      rate=Decimal.to_float(item.order_price)/Decimal.to_float(item.qty)|>Float.to_string
+
+
+      c= b|>String.split_at(2)
+
+      month=c|>elem(0)
+
+      day=c|>elem(1)
+
+      string=item.branch
+
+      join=day<>month<>year<>string
+
+      name=branch.branchname
+      cashin="CashInDrawer:"
+      full=cashin<>name
+
+       ['Daily Sales',branch.branchname,'Custom Sales Receipt',trkh,join,full,item.name,item.desc,qty,rate,order_price,branch.branchname,'SR0'] 
+
+      end
+
+
+
+    
+
+        date=date|>Date.to_string|>String.split_at(2)|>elem(1)|>String.split("-")|>Enum.join|>String.split_at(2)
+
+        code=item|>hd
  
       year=date|>elem(0)
 
@@ -210,7 +273,7 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
 
       day=c|>elem(1)
 
-      string="BNAM"
+      string=code.branch
 
       join=day<>month<>year<>string
 
@@ -218,12 +281,61 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
       cashin="CashInDrawer:"
       full=cashin<>name
 
+          rpt=Repo.all(from s in Sales,
+      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
+      left_join: b in Branch,on: b.branchid==s.branchid,
+      left_join: d in DiscountItem,on: sp.discountid==d.discountitemsid,
+      where: s.is_void==0 and s.salesdate ==^date2 and b.report_class ==^branch.report_class,
+      select: %{ svc_chg: sum(sp.service_charge),
+                grand_total: sum(sp.grand_total),
+                sub_total: sum(sp.sub_total),
+                service_charge: sum(sp.service_charge),
+                gst_charge: sum(sp.gst_charge),
+                rounding: sum(sp.rounding)
+              })|>hd
 
 
-    ['Daily Sales',branch.branchname,'Custom Sales Receipt',item.date,join,full,item.name,item.desc,item.qty,'rate',item.order_price,branch.branchname,'SR'] 
-    end
-   
-   csv_content=List.insert_at(data,0,csv_content)
+      svc_chg= rpt.service_charge|>Decimal.to_float|>Float.to_string
+      a=Decimal.to_float(rpt.sub_total)-Decimal.to_float(rpt.service_charge)-Decimal.to_float(rpt.gst_charge)-Decimal.to_float(rpt.rounding)
+      disc_amt=Decimal.to_float(rpt.grand_total)-a|>Float.round(2)|>Float.to_string
+
+
+
+
+          tpm=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"sevc charge","","",svc_chg,svc_chg,branch.branchname,'SR0'] 
+           tpq=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"Discount","","",disc_amt,disc_amt,branch.branchname,'SR0'] 
+
+
+           
+
+       IEx.pry
+
+             paytype=Repo.all(from s in Sales,
+      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
+      left_join: p in PaymentType, on: p.payment_type_id==sp.payment_type_id1,
+      left_join: b in Branch,on: b.branchid==s.branchid,
+      group_by: p.payment_type_name,
+       where: s.is_void==0 and s.salesdate ==^date2 and
+       p.payment_type_id != 1 and p.payment_type_id != 2,
+       select: %{ payment_type_name: p.payment_type_name,
+                  pay_amt: sum(sp.grand_total)})
+          
+             trm=for item <- paytype do
+
+       ['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,item.payment_type_name,"","",Decimal.to_float(item.pay_amt)|>Float.to_string,0-Decimal.to_float(item.pay_amt)|>Float.to_string,branch.branchname,'SR0'] 
+  
+             end
+
+             tq=List.insert_at(gft,-1,tpm) 
+             tq1=List.insert_at(tq,-1,tpq)
+             tq2=tq1++trm
+
+    end|>Enum.flat_map(fn x -> x end)
+
+
+
+ csv_content=List.insert_at(data,0,csv_content)
+
     |> CSV.encode
     |> Enum.to_list
     |> to_string
@@ -512,15 +624,7 @@ left_join: g in ItemSubcat, on: p.itemid==g.subcatid,
     )
   end
 
-   def quickbook(conn,params) do
 
-
-   
-  
-
-  end
-
- 
 
  
   def item_sales_report_csv(conn, params) do

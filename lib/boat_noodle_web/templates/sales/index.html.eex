@@ -515,8 +515,7 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
     })
 
     channel.on("populate_table_sales_transaction", payload => {
-        console.log(payload.sales_data)
-        console.log(payload.brand)
+       
         var data = payload.sales_data
 
 

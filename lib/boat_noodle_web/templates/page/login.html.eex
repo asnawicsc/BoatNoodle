@@ -31,9 +31,13 @@
     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
 
     <div class="card card-profile text-center">
-        <div class="card-header" >
-        	Gummy POS v2
-        </div>
+        <div class="card-header ">
+              <div class="card-avatar" style="margin-top: 10px;">
+                <a href="#pablo">
+                  <img class="img" src="/images/gummylogo.png">
+                </a>
+              </div>
+            </div>
 
       <div class="card-body ">
        <div style = "text-align: center;">
@@ -85,20 +89,7 @@
 
 $(document).ready(function(){
 
-  $.ajax({
-    url: "/get_brands", 
-    dataType: "json"
-  }).done(function(j){
-    $(j).each(function(){
-      var html = "<li class='nav-item' id='"+this.name+"'><a href='/"+this.name+"/login' class='nav-link'><i class='material-icons'>lock_open</i>"+this.name+"</a></li>"
-      $("ul[aria-label='various_brands']").append(html)
-    })
-  var pathname = window.location.pathname;
-  var split_path = pathname.split("/");
-  var domain_name = split_path[1];
-  console.log(domain_name)
-  $("li#"+domain_name).toggleClass("active")
-  })
+
 })
 
 

@@ -26,118 +26,119 @@ defmodule BoatNoodle.Authorization do
          ""
         end
       else
+
          brands = if conn.private.plug_session["brand"] != conn.params["brand"] do
          ""
           else
          conn.private.plug_session["brand"]
+
         end
       end
 
       if brands != "" do
         route_user_brand(conn, brands)
-        else 
-          route_user(conn)
+      else
+        route_user(conn)
       end
 
     end
 
-    if conn.private.plug_session["user_id"] == nil do 
+    if conn.private.plug_session["user_id"] == nil do
+      conn
+    else
+      if authorize?(conn, brands) do
         conn
-    else 
-        if authorize?(conn, brands) do
-          conn
-          |> put_flash(:error, "Unauthorized")
-          |> redirect(to: "/#{brands}")
-          |> halt
-        else
-          conn
-        end
-      end 
-
-
+        |> put_flash(:error, "Unauthorized")
+        |> redirect(to: "/#{brands}")
+        |> halt
+      else
+        conn
+      end
+    end
   end
 
   def route_user_brand(conn, brands) do
-      if conn.private.plug_session["user_id"] == nil do
-        if conn.request_path == "/#{brands}/login" or
-             conn.request_path == "/#{brands}/authenticate_login" or
-             conn.request_path == "/#{brands}/forget_password" or
-             conn.request_path == "/#{brands}/forget_password_email" or
-             conn.request_path == "/#{brands}/api/sales" do
-          conn
-        else
-          conn
-          |> put_flash(:error, "Please login first!")
-          |> redirect(to: "/#{brands}/login")
-          |> halt
-        end
+    if conn.private.plug_session["user_id"] == nil do
+      if conn.request_path == "/#{brands}/login" or
+           conn.request_path == "/#{brands}/authenticate_login" or
+           conn.request_path == "/#{brands}/forget_password" or
+           conn.request_path == "/#{brands}/forget_password_email" or
+           conn.request_path == "/#{brands}/api/sales" do
+        conn
       else
         conn
+        |> put_flash(:error, "Please login first!")
+        |> redirect(to: "/login")
+        |> halt
       end
+    else
+      conn
+    end
   end
 
   def route_user(conn) do
-      if conn.private.plug_session["user_id"] == nil do
-        if conn.request_path == "/" or
-             conn.request_path == "/authenticate_login" or
-             conn.request_path == "/forget_password" or
-             conn.request_path == "/logout" or
-             conn.request_path == "/forget_password_email" or
-             conn.request_path == "/api/sales" do
-          conn
-        else
-          conn
-          |> put_flash(:error, "Please login first!")
-          |> redirect(to: "/")
-          |> halt
-        end
+    if conn.private.plug_session["user_id"] == nil do
+      if conn.request_path == "/" or conn.request_path == "/authenticate_login" or
+           conn.request_path == "/forget_password" or conn.request_path == "/logout" or
+           conn.request_path == "/forget_password_email" or conn.request_path == "/api/sales" do
+        conn
       else
-        if conn.private.plug_session["brand"] == conn.params["brand"] do
-          conn
-          else
-          conn
-          |> delete_session(:user_id)
-          |> delete_session(:brand_id)
-          |> delete_session(:brand)
-          |> put_flash(:error, "Please login first!")
-          |> redirect(to: "/")
-          |> halt
-        end
-        
-
+        conn
+        |> delete_session(:user_id)
+        |> delete_session(:brand_id)
+        |> delete_session(:brand)
+        |> redirect(to: "/")
+        |> halt
       end
+    else
+      if conn.private.plug_session["brand"] == conn.params["brand"] do
+        conn
+      else
+        conn
+        |> delete_session(:user_id)
+        |> delete_session(:brand_id)
+        |> delete_session(:brand)
+        |> redirect(to: "/")
+        |> halt
+      end
+    end
   end
 
+  def authorize?(conn, brands) do
+    user = BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
 
-  def authorize?(conn,brands) do
+    admin_menus =
+      BoatNoodle.Repo.all(
+        from(
+          b in BoatNoodle.BN.UnauthorizeMenu,
+          left_join: g in BoatNoodle.BN.User,
+          on: b.role_id == g.roleid,
+          left_join: c in BoatNoodle.BN.UserRole,
+          on: g.roleid == c.roleid,
+          where: g.id == ^user.id and b.active == 1
+        )
+      )
+      |> Enum.map(fn x -> x.url end)
 
-   user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
-    
-     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
-     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
-     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
-      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+    path = conn.path_info |> List.delete_at(2) |> List.to_string()
+    status = conn.path_info |> List.last()
 
-      path=conn.path_info|>List.delete_at(2)|>List.to_string
-      status=conn.path_info|>List.last
+    if status == "edits" or status == "edit" do
+      admin_menus = admin_menus |> Enum.map(fn x -> String.replace(x, "/", "") end)
 
-      if status == "edits" or status =="edit"  do
-
-        admin_menus = admin_menus |> Enum.map(fn x -> String.replace(x, "/", "") end)
-         if Enum.any?(admin_menus, fn x -> x == path end) do
-          conn
-              |> put_flash(:error, "Unauthorized")
-              |> redirect(to: "/#{brands}")
-              |> halt 
-         end
-      else
-
-         if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
-          conn
-              |> put_flash(:error, "Unauthorized")
-              |> redirect(to: "/#{brands}")
-              |> halt 
-         end
-     end
+      if Enum.any?(admin_menus, fn x -> x == path end) do
+        conn
+        |> put_flash(:error, "Unauthorized")
+        |> redirect(to: "/#{brands}")
+        |> halt
+      end
+    else
+      if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
+        conn
+        |> put_flash(:error, "Unauthorized")
+        |> redirect(to: "/#{brands}")
+        |> halt
+      end
+    end
   end
 end
