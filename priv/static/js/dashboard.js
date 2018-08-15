@@ -89,13 +89,23 @@ if (localStorage.getItem('new_brand') == null) {
             $("div#pax").html(pax);
             $("div#transaction").html(transaction);
 
+
         })
 
+
+        localStorage.setItem('nett_sales', nett_sales)
+        localStorage.setItem('taxes', taxes)
+        localStorage.setItem('order', order)
+        localStorage.setItem('pax', pax)
+        localStorage.setItem('transaction', transaction)
+     
 
       dashboard_channel.on("dashboard", payload => {
       
 
-        var data = payload.table_branch_daily_sales_sumary
+        localStorage.setItem('table_branch_daily_sales_sumary', payload.table_branch_daily_sales_sumary)
+
+        var data = JSON.parse(payload.table_branch_daily_sales_sumary)
 
 
        $("table#outlet_sales_information").DataTable({
@@ -137,21 +147,26 @@ if (localStorage.getItem('new_brand') == null) {
 
 
 
-
+       localStorage.setItem('branch_daily_sales_sumary',payload.branch_daily_sales_sumary)
 
 
         var maps = JSON.parse(payload.branch_daily_sales_sumary)
+
+
+        
         var date = []
         var total_discount = []
         var total_sales = []
         var total_service_charge = []
         var total_taxes = []
         var total_transaction = []
-        
+
+
 
         $(maps).each(function() {
             date.push(this.date)
         })
+
         $(maps).each(function() {
             total_discount.push(this.total_discount)
         })
@@ -211,7 +226,7 @@ if (localStorage.getItem('new_brand') == null) {
             }]
         });
 
-
+        localStorage.setItem('top_10_selling',payload.top_10_selling)
 
         var maps2 = JSON.parse(payload.top_10_selling)
 
@@ -254,6 +269,7 @@ if (localStorage.getItem('new_brand') == null) {
 					});
 
 
+                     localStorage.setItem('top_10_selling_revenue',payload.top_10_selling_revenue)
 					        var maps3 = JSON.parse(payload.top_10_selling_revenue)
     
          console.log(maps3)
@@ -293,6 +309,8 @@ if (localStorage.getItem('new_brand') == null) {
 					    data: maps3
 					  }]
 					});
+
+                    localStorage.setItem('top_10_selling_revenue',payload.top_10_selling_revenue)
 
 					  var maps4 = JSON.parse(payload.top_10_selling_category)
     
@@ -345,7 +363,7 @@ if (localStorage.getItem('new_brand') == null) {
 
       dashboard_channel.on("yearly", payload => {
 
-
+ localStorage.setItem('yearly',payload.yearly)
 
         var maps = JSON.parse(payload.yearly)
         var grand_total = []

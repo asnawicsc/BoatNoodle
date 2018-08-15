@@ -56,10 +56,10 @@
 	                	<label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Branches</label>
 	                	<div style="padding-left: 10px; padding-top: 10px; height: 300px;overflow-y: scroll;">
 	                		
-		                  <%= if @staff.branch_access == nil do %>
-		                    <% branch_access = [] %>
+		                  <%= branch_access = if @staff.branch_access == nil do %>
+		                    <% [] %>
 		                      <% else %>
-		                        <% branch_access = String.split(@staff.branch_access,",") %>
+		                        <% String.split(@staff.branch_access,",") %>
 		                          <% end %>
 
 		                            <%= for branch <- @branches do %>

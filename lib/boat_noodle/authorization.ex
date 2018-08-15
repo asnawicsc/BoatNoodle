@@ -10,35 +10,41 @@ defmodule BoatNoodle.Authorization do
   end
 
   def call(conn, opts) do
-    if conn.request_path == "/" do
-      conn
-    else
-      if conn.private.plug_session["brand"] == nil do
-        if conn.params["brand"] != nil do
-          brand = BoatNoodle.Repo.get_by(BoatNoodle.BN.Brand, domain_name: conn.params["brand"])
+    brands =
+      if conn.request_path == "/" do
+        conn
+      else
+        brands =
+          if conn.private.plug_session["brand"] == nil do
+            brands =
+              if conn.params["brand"] != nil do
+                brand =
+                  BoatNoodle.Repo.get_by(BoatNoodle.BN.Brand, domain_name: conn.params["brand"])
 
-          if brand != nil do
-            brands = brand.domain_name
+                brands =
+                  if brand != nil do
+                    brand.domain_name
+                  else
+                    ""
+                  end
+              else
+                ""
+              end
           else
-            brands = ""
+            brands =
+              if conn.private.plug_session["brand"] != conn.params["brand"] do
+                ""
+              else
+                conn.private.plug_session["brand"]
+              end
           end
-        else
-          brands = ""
-        end
-      else
-        if conn.private.plug_session["brand"] != conn.params["brand"] do
-          brands = ""
-        else
-          brands = conn.private.plug_session["brand"]
-        end
-      end
 
-      if brands != "" do
-        route_user_brand(conn, brands)
-      else
-        route_user(conn)
+        if brands != "" do
+          route_user_brand(conn, brands)
+        else
+          route_user(conn)
+        end
       end
-    end
 
     if conn.private.plug_session["user_id"] == nil do
       conn

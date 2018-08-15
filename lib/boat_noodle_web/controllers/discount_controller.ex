@@ -90,26 +90,26 @@ all=Repo.all(from s in DiscountItem,
     data=for item <- all do
 
 
-  if item.target_cat != 0 do
+   cat_name=if item.target_cat != 0 do
 
-     cat_name=item.target_cat
+    item.target_cat
    else
-    cat_name=0
+   0
   end
 
-  if item.is_visable != 0 do
+  is_visable=if item.is_visable != 0 do
 
-     is_visable="YES"
+     "YES"
    else
-     is_visable="NO"
+    "NO"
   end
 
    is_targetmenuitems=item.is_targetmenuitems
-  if is_targetmenuitems != 0 do
+   item_name=if is_targetmenuitems != 0 do
 
-     item_name=is_targetmenuitems
+    is_targetmenuitems
    else
-   item_name=item.multi_item_list
+ item.multi_item_list
   end
 
 
@@ -144,26 +144,28 @@ all=Repo.all(from s in DiscountItem,
     item = params["item"]
     discname = item["discount_name"]
 
-    if item["amount_percentage"] == "" do
-      discamtpercentage = 0
+     discamtpercentage = if item["amount_percentage"] == "" do
+     0
     else
-      discamtpercentage = item["amount_percentage"]
+      item["amount_percentage"]
     end
 
-    if item["select"] == "1" do
+    {disctype,is_categorize}=if item["select"] == "1" do
       disctype = "CASH"
       is_categorize = 0
+      {disctype,is_categorize}
     else
        disctype = "FREE"
       is_categorize = 1
+      {disctype,is_categorize}
     end
 
     descriptions = item["description"]
 
-    if item["status"] == "on" do
-      is_visable = 1
+    is_visable = if item["status"] == "on" do
+      1
     else
-      is_visable = 0
+     0
     end
 
     discountid =
@@ -335,11 +337,11 @@ all=Repo.all(from s in DiscountItem,
 
     item = params["item"]
 
-    if item["discount_category"] == "" do
-      discountid= 0
+     discountid = if item["discount_category"] == "" do
+      0
 
     else
-       discountid = item["discount_category"] |> String.to_integer()
+      item["discount_category"] |> String.to_integer()
     end
 
     descriptions = item["description"]
@@ -352,60 +354,64 @@ all=Repo.all(from s in DiscountItem,
     all_disc_type = Repo.get_by(DiscountType, disctypeid: type)
     disc_type = all_disc_type.disctypename
 
-    if item["target_category"] == "" do
-      target_cat = 0
+     target_cat = if item["target_category"] == "" do
+     0
     else
-      target_cat = item["target_category"] |> String.to_integer()
+     item["target_category"] |> String.to_integer()
     end
 
-    if type == 1 do
-      discamtpercentage = item["discount_amount"]
+      discamtpercentage = if type == 1 do
+    item["discount_amount"]
  
     end
 
-     if type == 2 do
-      discamtpercentage = item["discount_percentage"]
+    discamtpercentage =  if type == 2 do
+      item["discount_percentage"]
  
     end
 
-     if type == 3 do
-      discamtpercentage = item["voucher_amount"]
+      discamtpercentage = if type == 3 do
+     item["voucher_amount"]
  
     end
 
-     if type == 4 do
-      discamtpercentage = 0
+      discamtpercentage = if type == 4 do
+     0
  
     end
 
-     if type == 5 do
-      discamtpercentage = 0
+      discamtpercentage =if type == 5 do
+      0
     end
 
-     if type == 6 do
-      discamtpercentage = item["discount_percentage"]
+      discamtpercentage = if type == 6 do
+     item["discount_percentage"]
  
     end
 
-    if item["target_items"] == ""  do
+     {is_targetmenuitems,multi_item_list}=if item["target_items"] == ""  do
        is_targetmenuitems = 0
+       multi_item_list=""
      else
    
       count=item["target_items"]|>String.split(",")|>Enum.count
 
-     if count > 1 do
+     {is_targetmenuitems,multi_item_list}=if count > 1 do
        is_targetmenuitems = 0
        multi_item_list=item["target_items"]
+        {is_targetmenuitems,multi_item_list}
      else
+      multi_item_list=""
       is_targetmenuitems = item["target_items"] |> String.to_integer()
+       {is_targetmenuitems,multi_item_list}
      end
 
       end
 
-    if item["status"] == "on" do
-      is_used = 1
+    is_used = if item["status"] == "on" do
+     1
     else
-      is_used = 0
+      0
     end
 
 
@@ -621,18 +627,20 @@ all=Repo.all(from s in DiscountItem,
     discount_type = params["discount_type"] |> String.to_integer()
    
 
-    if discount_type == 1 do
+     {disc_type,discamtpercentage}=if discount_type == 1 do
       disc_type = "FREE"
        discamtpercentage = 0
+       {disc_type,discamtpercentage}
     else
       disc_type = "CASH"
        discamtpercentage = params["discamtpercentage"]
+        {disc_type,discamtpercentage}
     end
 
-    if params["is_visable"] == "on" do
-      is_visable = 1
+    is_visable=if params["is_visable"] == "on" do
+    1
     else
-      is_visable = 0
+     0
     end
 
     discount = Repo.get_by(BoatNoodle.BN.Discount, discountid: id, brand_id: brand)
@@ -675,24 +683,26 @@ all=Repo.all(from s in DiscountItem,
     target_cat = params["target_cat"] |> String.to_integer()
     voucher_amount = params["voucher_amount"]
 
-    if params["is_visable"] == "on" do
-      is_visable = 1
+     is_visable =if params["is_visable"] == "on" do
+      1
     else
-      is_visable = 0
+      0
     end
 
-    if params["is_targetmenuitems"] == nil do
-       is_targetmenuitems = 0
+     {is_targetmenuitems,multi_item_list}=if params["is_targetmenuitems"] == nil do
+     0
      else
 
       count=params["is_targetmenuitems"]|>Enum.count
 
-     if count > 1 do
+     {is_targetmenuitems,multi_item_list}=if count > 1 do
        is_targetmenuitems = 0
        multi_item_list=params["is_targetmenuitems"]|>Enum.join(",")
+       {is_targetmenuitems,multi_item_list}
      else
-  
+  multi_item_list=""
       is_targetmenuitems = params["is_targetmenuitems"]|>hd|> String.to_integer()
+      {is_targetmenuitems,multi_item_list}
      end
       
     end

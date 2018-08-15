@@ -24,8 +24,8 @@ defmodule BoatNoodleWeb.TagController do
     path = conn.path_info |> List.delete_at(2) |> List.to_string()
     status = conn.path_info |> List.last()
 
-    if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
-      s = "on"
+     s = if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
+     "on"
     end
 
     if s == "on" do
@@ -68,28 +68,30 @@ defmodule BoatNoodleWeb.TagController do
       subcat_id = elem(tuple, 0)
       subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: BN.get_brand_id(conn))
       tag_id = elem(tuple, 1)
-      combo_item_id = elem(tuple, 2) |> String.trim()
+      combo_item_id = elem(tuple, 2) |> String.trim()|>String.to_integer
       tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
       combo_detail = Repo.get_by(ComboDetails, combo_item_id: combo_item_id, brand_id: BN.get_brand_id(conn))
-      
+     
 
-      if combo_detail == nil do
-        combo_detail = Repo.get_by(ItemSubcat, subcatid: combo_item_id, brand_id: BN.get_brand_id(conn))
-        combo_item_name=combo_detail.itemname
+        {combo_item_name}=if combo_detail == nil do
+        combo_detail = Repo.get_by(ItemSubcat, subcatid: String.to_integer(combo_item_id), brand_id: BN.get_brand_id(conn))
+        {combo_detail.itemname}
+
+
       else
-        combo_item_name=combo_detail.combo_item_name
+      {combo_detail.combo_item_name}
       end
-
-      if tag.combo_item_ids != nil do
-        items = tag.combo_item_ids
+    
+       items = if tag.combo_item_ids != nil do
+       tag.combo_item_ids
       else
-        items = ""
+       ""
       end
 
       combo_item_ids = String.split(items, ",")
 
-      if Enum.any?(combo_item_ids, fn x -> x == combo_item_id end) do
-        new_subcatids =
+       {new_subcatids ,action,alert} =if Enum.any?(combo_item_ids, fn x -> x == combo_item_id end) do
+       new_subcatids =
           List.delete(combo_item_ids, combo_item_id)
           |> Enum.sort()
           |> Enum.reject(fn x -> x == "" end)
@@ -97,8 +99,9 @@ defmodule BoatNoodleWeb.TagController do
 
         action = "removed from"
         alert = "danger"
+       {new_subcatids,action,alert}
       else
-        new_subcatids =
+       new_subcatids =
           List.insert_at(combo_item_ids, 0, combo_item_id)
           |> Enum.sort()
           |> Enum.reject(fn x -> x == "" end)
@@ -106,6 +109,7 @@ defmodule BoatNoodleWeb.TagController do
 
         action = "added to"
         alert = "success"
+        {new_subcatids,action,alert}
       end
 
       Repo.update(Tag.changeset(tag, %{combo_item_ids: new_subcatids}, BN.current_user(conn),"Update"))
@@ -142,8 +146,8 @@ defmodule BoatNoodleWeb.TagController do
     path = conn.path_info |> List.delete_at(2) |> List.to_string()
     status = conn.path_info |> List.last()
 
-    if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
-      s = "on"
+     s = if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
+     "on"
     end
 
     if s == "on" do
@@ -189,15 +193,15 @@ defmodule BoatNoodleWeb.TagController do
 
       tag = Repo.get_by(Tag, tagid: tag_id, brand_id: BN.get_brand_id(conn))
 
-      if tag.subcat_ids != nil do
-        items = tag.subcat_ids
+      items = if tag.subcat_ids != nil do
+        tag.subcat_ids
       else
-        items = ""
+        ""
       end
 
       subcat_ids = String.split(items, ",")
 
-      if Enum.any?(subcat_ids, fn x -> x == subcat_id end) do
+      {new_subcatids,action,alert}=if Enum.any?(subcat_ids, fn x -> x == subcat_id end) do
         new_subcatids =
           List.delete(subcat_ids, subcat_id)
           |> Enum.sort()
@@ -206,6 +210,7 @@ defmodule BoatNoodleWeb.TagController do
 
         action = "removed from"
         alert = "danger"
+         { new_subcatids,action,alert}
       else
         new_subcatids =
           List.insert_at(subcat_ids, 0, subcat_id)
@@ -215,6 +220,7 @@ defmodule BoatNoodleWeb.TagController do
 
         action = "added to"
         alert = "success"
+         { new_subcatids,action,alert}
       end
 
       Repo.update(Tag.changeset(tag, %{subcat_ids: new_subcatids}, BN.current_user(conn),"Update"))
@@ -237,8 +243,8 @@ defmodule BoatNoodleWeb.TagController do
     # need to list all available printers
     user = Repo.get(User, conn.private.plug_session["user_id"])
 
-    if user.roleid == 7 do
-      tags_original =
+   tags_original = if user.roleid == 7 do
+    
         Repo.all(
           from(
             t in Tag,
@@ -260,7 +266,7 @@ defmodule BoatNoodleWeb.TagController do
         |> Enum.map(fn x -> Map.put(x, :combos, String.split(x.combos, ",")) end)
         |> Enum.group_by(fn x -> x.branchname end)
     else
-      tags_original =
+      
         Repo.all(
           from(
             t in Tag,
@@ -341,10 +347,10 @@ defmodule BoatNoodleWeb.TagController do
 
     final_answer = a |> Enum.reject(fn x -> x == nil end)
 
-    if final_answer != [] do
-      tagid = final_answer |> hd()
+       tagid = if final_answer != [] do
+     final_answer |> hd()
     else
-      tagid = hd(a)
+   hd(a)
     end
 
     json = %{name: name, tag_id: tagid} |> Poison.encode!()

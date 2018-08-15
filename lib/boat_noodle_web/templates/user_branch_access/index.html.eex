@@ -1,4 +1,4 @@
-
+<% require IEx %>
 <div class="col-lg-12">
    <form method="post" action="/<%= @conn.params["brand"] %>/user_branch_accesss" class="form-horizontal" aria-label="item_form">
  <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
@@ -38,6 +38,7 @@
                           </th>
                         <% end %>
                       </tr>
+                      <%b = @manager_access_users%>
 
                      <%= for branch <- @branches do %>
                        
@@ -45,21 +46,24 @@
                           <%= for manager_access_user <- @manager_access_users do %>
                             <td style="width: 200px; text-align: center; line-height: 0px;">
                               <% 
+                              checkbox = false
                               uba = @uba[manager_access_user.id]
-                              if uba != nil do
-                          
-                                a = uba |> Enum.filter(fn x -> x.branchid == branch.id end)
-                                if a != [] do
-                                  checkbox = true
+                                 if uba != nil do
+                                 a = uba |> Enum.filter(fn x -> x.branchid == branch.id end)
+                                 checkbox = if a != [] do
+                                  true
                                 else
-                                  checkbox = false
+                                 false
                                 end
+                            else 
+                              checkbox
                               end
-                              %>
+                              IEx.pry
+                            %>
                       
                              <div style="height: 25px;">
-                               
-                              <%= if checkbox do %>
+                          
+                              <%= if checkbox == true do %>
                                 <input style="position: relative; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox" checked="checked">
                               <% else %>
                                 <input style="position: relative; margin-left: 10px; margin-right: 10px;" class="form-check-input user_branch" name= "user_branch_access[<%= manager_access_user.id %>][<%= branch.id %>]" type="checkbox">

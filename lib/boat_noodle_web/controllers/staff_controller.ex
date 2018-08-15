@@ -40,10 +40,10 @@ defmodule BoatNoodleWeb.StaffController do
   end
 
   def create(conn, %{"staff" => staff_params}) do
-    if conn.params["branch_ids"] == nil do
-      branch_access = ""
+    branch_access = if conn.params["branch_ids"] == nil do
+    ""
     else
-      branch_access = conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
+      conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
     end
 
     staff =
@@ -125,10 +125,10 @@ defmodule BoatNoodleWeb.StaffController do
   def update(conn, %{"id" => id, "staff" => staff_params}) do
     staff = Repo.get_by(Staff, staff_id: id, brand_id: BN.get_brand_id(conn))
 
-    if conn.params["branch_ids"] == nil do
-      branch_access = ""
+     branch_access = if conn.params["branch_ids"] == nil do
+     ""
     else
-      branch_access = conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
+     conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
     end
 
     staff_params = Map.put(staff_params, "branch_access", branch_access)

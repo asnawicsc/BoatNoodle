@@ -214,15 +214,15 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def run(arg) do
-    case arg do
+     repo = case arg do
       "boat_noodle" ->
-        repo = BoatNoodle.Repo
+      BoatNoodle.Repo
 
       "chill_chill" ->
-        repo = BoatNoodle.RepoChillChill
+        BoatNoodle.RepoChillChill
 
       _ ->
-        repo = nil
+       nil
     end
 
     if repo != nil do
@@ -235,12 +235,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new_cash_in_out(arg) do
-    case arg do
+     brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+       1
 
       "chill_chill" ->
-        brand_id = 2
+       2
 
       _ ->
         repo = nil
@@ -277,12 +277,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new_payment_type(arg) do
-    case arg do
+     brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+       1
 
       "chill_chill" ->
-        brand_id = 2
+       2
 
       _ ->
         repo = nil
@@ -320,12 +320,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new_staff(arg) do
-    case arg do
+     brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+       1
 
       "chill_chill" ->
-        brand_id = 2
+      2
 
       _ ->
         repo = nil
@@ -365,12 +365,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new_menu_cat(arg) do
-    case arg do
+     brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+       1
 
       "chill_chill" ->
-        brand_id = 2
+      2
 
       _ ->
         repo = nil
@@ -406,12 +406,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new_branch(arg) do
-    case arg do
+      brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+      1
 
       "chill_chill" ->
-        brand_id = 2
+       2
 
       _ ->
         repo = nil
@@ -464,12 +464,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new_remark(arg) do
-    case arg do
+      brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+      1
 
       "chill_chill" ->
-        brand_id = 2
+       2
 
       _ ->
         repo = nil
@@ -504,12 +504,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new_subcat(arg) do
-    case arg do
+     brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+       1
 
       "chill_chill" ->
-        brand_id = 2
+       2
 
       _ ->
         repo = nil
@@ -567,10 +567,10 @@ defmodule BoatNoodle.UltiMigrator do
               brand_id: 1
             )
 
-          if cat == nil do
-            catcode = "0"
+           catcode = if cat == nil do
+           "0"
           else
-            catcode = cat.itemcatcode
+           cat.itemcatcode
           end
 
           chill_item_cat =
@@ -596,12 +596,12 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def migrate_new(arg) do
-    case arg do
+     brand_id = case arg do
       "boat_noodle" ->
-        brand_id = 1
+       1
 
       "chill_chill" ->
-        brand_id = 2
+       2
 
       _ ->
         repo = nil

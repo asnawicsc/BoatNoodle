@@ -27,9 +27,6 @@ defmodule BoatNoodleWeb.PageController do
     #   |> Enum.sort()
     #   |> Enum.reject(fn x -> x == "" end)
 
-    # tag_ids = Repo.all(from(t in Tag, where: t.brand_id == ^2, select: t.tagid))
-    # IEx.pry()
-
     # for tag_id <- tag_ids do
     #   subcat_ids =
     #     Repo.all(

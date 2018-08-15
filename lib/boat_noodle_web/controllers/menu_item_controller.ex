@@ -241,23 +241,26 @@ defmodule BoatNoodleWeb.MenuItemController do
     cat = Repo.get_by(BoatNoodle.BN.ItemCat, itemcatid: cat_id, brand_id: BN.get_brand_id(conn))
     itemcode = item_subcat_params["itemcode"]
 
-    if a["enable_disc"] == "on" do
-      enable_disc = 1
-    else
-      enable_disc = 0
-    end
+    enable_disc =
+      if a["enable_disc"] == "on" do
+        1
+      else
+        0
+      end
 
-    if a["is_active"] == "on" do
-      is_activate = 1
-    else
-      is_activate = 0
-    end
+    is_activate =
+      if a["is_active"] == "on" do
+        1
+      else
+        0
+      end
 
-    if a["include_spend"] == "on" do
-      include_spend = 1
-    else
-      include_spend = 0
-    end
+    include_spend =
+      if a["include_spend"] == "on" do
+        1
+      else
+        0
+      end
 
     item_subcat_params = Map.put(item_subcat_params, "enable_disc", enable_disc)
     item_subcat_params = Map.put(item_subcat_params, "is_activate", is_activate)
@@ -417,14 +420,15 @@ defmodule BoatNoodleWeb.MenuItemController do
       myers = List.myers_difference(item_codes_str, subcat_ids)
       answer = myers |> Keyword.get(:eq) |> hd()
 
-      if Enum.any?(items_ids, fn x -> x == answer end) do
-        # remove it
-        # nl = List.delete(items_ids, answer) |> Enum.reject(fn x -> x == "" end)
-        # keep it
-        nl = items_ids
-      else
-        nl = List.insert_at(items_ids, 0, answer) |> Enum.reject(fn x -> x == "" end)
-      end
+      nl =
+        if Enum.any?(items_ids, fn x -> x == answer end) do
+          # remove it
+          # nl = List.delete(items_ids, answer) |> Enum.reject(fn x -> x == "" end)
+          # keep it
+          items_ids
+        else
+          List.insert_at(items_ids, 0, answer) |> Enum.reject(fn x -> x == "" end)
+        end
 
       new_items = Enum.join(nl, ",")
 
@@ -469,23 +473,26 @@ defmodule BoatNoodleWeb.MenuItemController do
       }) do
     # menu_item = BN.get_menu_item!(id)
 
-    if a["enable_disc"] == "on" do
-      enable_disc = 1
-    else
-      enable_disc = 0
-    end
+    enable_disc =
+      if a["enable_disc"] == "on" do
+        1
+      else
+        0
+      end
 
-    if a["is_active"] == "on" do
-      is_activate = 1
-    else
-      is_activate = 0
-    end
+    is_activate =
+      if a["is_active"] == "on" do
+        1
+      else
+        0
+      end
 
-    if a["include_spend"] == "on" do
-      include_spend = 1
-    else
-      include_spend = 0
-    end
+    include_spend =
+      if a["include_spend"] == "on" do
+        1
+      else
+        0
+      end
 
     menu_item_params = Map.put(menu_item_params, "enable_disc", enable_disc)
     menu_item_params = Map.put(menu_item_params, "is_activate", is_activate)

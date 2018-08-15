@@ -87,19 +87,19 @@
                             <%= for d <- data do %>
 
                               <%= if Enum.any?(ids, fn x -> x == d.subcatid end) do %>
-                                 <% case d.price_code do 
+                                 <%  style = case d.price_code do 
                                  "A" ->
-                                    style = "primary"
+                                    "primary"
                                   "B" ->
-                                    style = "warning"
+                                    "warning"
                                   "C" ->
-                                    style = "success"
+                                   "success"
                                   "D" ->
-                                    style = "info"
+                                    "info"
                                   "E" ->
-                                    style = "rose"
+                                    "rose"
                                   _ ->
-                                    style = "danger"
+                                   "danger"
                                   end %>
                                 
                                 <%= if Decimal.to_float(d.itemprice) != 0.0  do %>

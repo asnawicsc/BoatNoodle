@@ -47,21 +47,24 @@
                 </tr>
 
                 <%= for printer <- @printers do %>
+            
+                  <%
+                   gp = 
+                   if printer.subcat_ids == nil do 
+                       [] 
+                    else 
+                 printer.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end ) 
+               end 
 
-                  <% 
+               %>
 
-                  if printer.subcat_ids == nil do
-                    gp = []
-                    else
-                    gp = printer.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )
-                  end
 
-                  %>
+           
                   <tr>
-
+              
                     <%= for subcat <- @subcats do %>
                       <td style="width: 200px; padding-right: 5px;">
-
+                
 
                        <%= if Enum.any?(gp, fn x -> x == Integer.to_string(subcat.id) end) do %>
                  
@@ -180,11 +183,11 @@
                           <tr>
 
                             <%= for printer <- @printers do %>
-                            <%= if printer.combo_item_ids == nil do %>
-                            <% printer_combo_items = [] %>
-                            <%else %>
-                          <% printer_combo_items = printer.combo_item_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )%>
-                          <% end %>
+                            <% printer_combo_items = if printer.combo_item_ids == nil do 
+                             [] 
+                            else 
+                          printer.combo_item_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end )
+                           end %>
                               <td style="width: 200px; padding-right: 5px;">
 
                                 <div class="form-check" style="margin-top: 5px; margin-bottom: 5px; margin-right: 20px; margin-left: 20px;">
@@ -192,6 +195,7 @@
                                     <% item = combo_item.combo_item_id |> Integer.to_string %>
 
                                     <%= if Enum.any?(printer_combo_items, fn x -> x == item end) do %>
+
                                       <input class="form-check-input printer_combo_item" name= "subcat_ids[<%= printer.tagid %>][<%= combo_item.combo_item_id %>]" type="checkbox" checked="" value="" >
                                       <% else %>
                                       <input class="form-check-input printer_combo_item" name= "subcat_ids[<%= printer.tagid %>][<%= combo_item.combo_item_id %>]" type="checkbox" value="" >
