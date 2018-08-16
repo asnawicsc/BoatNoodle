@@ -16,6 +16,7 @@ defmodule BoatNoodle.BN.ComboDetails do
     field(:top_up, :decimal)
     field(:unit_price, :decimal)
     field(:update_qty, :integer)
+    field(:is_delete, :integer, default: 0)
     field(:brand_id, :integer, primary_key: true)
   end
 
@@ -35,7 +36,8 @@ defmodule BoatNoodle.BN.ComboDetails do
       :combo_item_qty,
       :update_qty,
       :unit_price,
-      :top_up
+      :top_up,
+      :is_delete
     ])
 
      if action == "new" or action =="edit" do

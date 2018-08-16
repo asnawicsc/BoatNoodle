@@ -215,7 +215,7 @@ top_10_selling,top_10_selling_revenue,top_10_selling_category}=if branchid != "0
       transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()
       discount = grand_total - (sub_total + gst + service_charge + rounding)
 
-      d_nett_sales = (grand_total - gst - rounding) |> Number.Delimit.number_to_delimited()
+      d_nett_sales = (grand_total - gst - rounding)+rounding |> Number.Delimit.number_to_delimited()
 
       d_taxes =
         Enum.map(a, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
@@ -587,7 +587,7 @@ top_10_selling,top_10_selling_revenue,top_10_selling_category}
       transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()
       discount = after_disc - sub_total
 
-      d_nett_sales = (grand_total - gst - rounding) |> Number.Delimit.number_to_delimited()
+      d_nett_sales = (grand_total - gst - rounding)+rounding |> Number.Delimit.number_to_delimited()
 
       d_taxes =
         Enum.map(a, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
