@@ -3378,6 +3378,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
     combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1))
 
+
     html =
       Phoenix.View.render_to_string(
         BoatNoodleWeb.ItemSubcatView,
@@ -3403,6 +3404,7 @@ defmodule BoatNoodleWeb.UserChannel do
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
       |> Enum.sort()
+
 
     a =
       for item <- map do
@@ -3524,6 +3526,8 @@ defmodule BoatNoodleWeb.UserChannel do
         false
     end
 
+
+
     for insert <- a do
       if elem(insert, 0) != "name" && elem(insert, 0) != "price" && elem(insert, 0) != "is_defaul" &&
            elem(insert, 0) != "is_activa" && elem(insert, 0) != "include_s" &&
@@ -3553,11 +3557,32 @@ defmodule BoatNoodleWeb.UserChannel do
           |> Enum.filter(fn x -> x != nil end)
           |> hd
 
+            is_delete="0"
+
+
+
+            
+          c=Enum.filter(elem(insert, 1),fn x ->  x.item=="[is_delete]" end)
+
+          is_delete=if c == [] do
+
+            "0"
+
+          else
+
+            "1"
+
+          end
+
+
         unit_price = a.price
         top_up = b.price
 
-        update_combo_details_params = %{top_up: top_up, unit_price: unit_price}
 
+
+        update_combo_details_params = %{top_up: top_up, unit_price: unit_price, is_delete: String.to_integer(is_delete)}
+
+      
         update_combo_details =
           BoatNoodle.BN.ComboDetails.changeset(
             combo,

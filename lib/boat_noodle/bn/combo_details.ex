@@ -21,6 +21,7 @@ defmodule BoatNoodle.BN.ComboDetails do
   end
 
   @doc false
+
   def changeset(combo_details, attrs, user_id, action) do
     combo_details =
       combo_details

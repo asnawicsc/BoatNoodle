@@ -405,8 +405,6 @@ defmodule BoatNoodleWeb.SalesController do
           'SR0'
         ]
 
-        IEx.pry()
-
         paytype =
           Repo.all(
             from(
@@ -944,24 +942,6 @@ defmodule BoatNoodleWeb.SalesController do
         nett_qty = Decimal.to_float(item.gross_qty) - foc_qty
         discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
         service_charge = (Decimal.to_float(item.nett_sales) / 20) |> Float.round(2)
-
-        [
-          item.salesdate,
-          item.branchname,
-          item.hierachy,
-          item.category,
-          item.itemcode,
-          item.itemname,
-          item.gross_qty,
-          nett_qty,
-          foc_qty,
-          item.gross_sales,
-          item.nett_sales,
-          item.unit_price,
-          discount_value,
-          service_charge,
-          item.store_owner
-        ]
       end
 
     csv_content2 =
@@ -1055,30 +1035,6 @@ defmodule BoatNoodleWeb.SalesController do
           end
 
         nett_qty = Decimal.to_float(item.gross_qty) - foc_qty
-
-        gross_sales = Decimal.to_float(item.unit_price) * nett_qty
-        nett_sales = Decimal.to_float(item.unit_price) * nett_qty
-        service_charge = (nett_sales / 20) |> Float.round(2)
-        discount_value = gross_sales - nett_sales
-
-        [
-          item.salesdate,
-          item.branchname,
-          item.hierachy,
-          item.category,
-          item.itemcode,
-          item.comboname,
-          item.itemname,
-          item.gross_qty,
-          nett_qty,
-          foc_qty,
-          gross_sales,
-          nett_sales,
-          item.unit_price,
-          discount_value,
-          service_charge,
-          item.store_owner
-        ]
       end
 
     csv_content2 =
