@@ -3,80 +3,6 @@ defmodule BoatNoodleWeb.SalesController do
 
   require IEx
 
-  def query(conn, params) do
-    payload = %{}
-    payload = Map.put(payload, "branch_id", "58")
-    payload = Map.put(payload, "s_date", "2018-08-01")
-    payload = Map.put(payload, "e_date", "2018-08-31")
-    payload = Map.put(payload, "brand_id", 1)
-    brand_id = 1
-    brand = Repo.get_by(Brand, id: brand_id)
-
-    count_sales_data =
-      Repo.all(
-        from(
-          sp in BoatNoodle.BN.SalesPayment,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sp.salesid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: s.staffid == st.staff_id,
-          left_join: b in BoatNoodle.BN.Brand,
-          where:
-            b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-              s.brand_id == ^payload["brand_id"],
-          select: count(s.salesid)
-        )
-      )
-      |> hd()
-
-    sales_data =
-      Repo.all(
-        from(
-          sp in BoatNoodle.BN.SalesPayment,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sp.salesid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: s.staffid == st.staff_id,
-          left_join: b in BoatNoodle.BN.Brand,
-          where:
-            b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-              s.brand_id == ^payload["brand_id"],
-          select: %{
-            salesdatetime: s.salesdatetime,
-            invoiceno: s.invoiceno,
-            payment_type: sp.payment_type,
-            grand_total: sp.grand_total,
-            tbl_no: s.tbl_no,
-            pax: s.pax,
-            staff_name: st.staff_name,
-            branchid: s.branchid,
-            domainname: b.domain_name
-          }
-        )
-      )
-
-    sales_data =
-      for item <- sales_data do
-        date = item.salesdatetime |> NaiveDateTime.to_string() |> String.split_at(19) |> elem(0)
-
-        %{
-          invoiceno: item.invoiceno,
-          salesdatetime: date,
-          payment_type: item.payment_type,
-          grand_total: item.grand_total,
-          tbl_no: item.tbl_no,
-          pax: item.pax,
-          staff_name: item.staff_name,
-          branchid: item.branchid
-        }
-      end
-
-    json_map = %{data: sales_data} |> Poison.encode!()
-    send_resp(conn, 200, json_map)
-  end
-
   def top_sales(conn, params) do
     date_setting = params["date"]
 
@@ -212,6 +138,11 @@ defmodule BoatNoodleWeb.SalesController do
       |> String.split_at(19)
       |> elem(0)
 
+    gstpercentage = Decimal.to_float(detail.gst_charge) / Decimal.to_float(detail.sub_total) * 100
+
+    servicepercentage =
+      Decimal.to_float(detail.service_charge) / Decimal.to_float(detail.sub_total) * 100
+
     detail = %{
       staff_name: detail.staff_name,
       tbl_no: detail.tbl_no,
@@ -225,7 +156,17 @@ defmodule BoatNoodleWeb.SalesController do
       cash: detail.cash,
       changes: detail.changes,
       salesdate: salesdatetime,
-      invoiceno: detail.invoiceno
+      invoiceno: detail.invoiceno,
+      gstpercentage:
+        gstpercentage |> Float.to_string() |> String.reverse() |> String.split_at(2) |> elem(1)
+        |> String.reverse(),
+      servicepercentage:
+        servicepercentage
+        |> Float.to_string()
+        |> String.reverse()
+        |> String.split_at(2)
+        |> elem(1)
+        |> String.reverse()
     }
 
     detail_item =
@@ -241,9 +182,9 @@ defmodule BoatNoodleWeb.SalesController do
           where: s.invoiceno == ^invoiceno and s.branchid == ^branchid,
           select: %{
             combo_item_name: c.combo_item_name,
-            itemname: sd.itemname,
+            itemname: is.itemname,
             qty: sd.qty,
-            afterdisc: sd.afterdisc
+            afterdisc: sd.order_price
           }
         )
       )
@@ -271,21 +212,27 @@ defmodule BoatNoodleWeb.SalesController do
           s in Sales,
           left_join: p in SalesMaster,
           on: s.salesid == p.salesid,
-          left_join: g in ItemSubcat,
-          on: p.itemid == g.subcatid,
+          left_join: b in Branch,
+          on: b.branchid == s.branchid,
+          left_join: t in Brand,
+          on: t.id == p.brand_id,
           where:
-            s.branchid == ^id and s.salesdate >= ^params["start_date"] and
-              s.salesdate <= ^params["end_date"],
-          group_by: [s.salesdate, g.itemname, g.itemdesc],
+            s.is_void == 0 and p.order_price > 0 and b.branchid == ^id and b.brand_id == ^brand.id and
+              p.brand_id == ^brand.id and s.brand_id == ^brand.id and
+              s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"],
+          group_by: [s.salesdate, p.itemname],
+          order_by: [s.salesdate, p.itemname],
           select: %{
             date: s.salesdate,
-            name: g.itemname,
-            desc: g.itemdesc,
+            name: p.itemname,
+            desc: p.itemname,
+            branch: b.branchcode,
             qty: sum(p.qty),
             order_price: sum(p.order_price)
           }
         )
       )
+      |> Enum.group_by(fn x -> x.date end)
 
     csv_content = [
       'CustomerRefFullName ',
@@ -305,14 +252,75 @@ defmodule BoatNoodleWeb.SalesController do
 
     data =
       for item <- all do
+        date2 = item |> elem(0) |> Date.to_string()
+        date = item |> elem(0)
+        item = item |> elem(1)
+
+        gft =
+          for item <- item do
+            trkh = item.date |> Date.to_string()
+
+            order_price = Decimal.to_float(item.order_price) |> Float.to_string()
+            qty = Decimal.to_float(item.qty) |> Float.to_string()
+
+            date =
+              item.date
+              |> Date.to_string()
+              |> String.split_at(2)
+              |> elem(1)
+              |> String.split("-")
+              |> Enum.join()
+              |> String.split_at(2)
+
+            year = date |> elem(0)
+
+            b = date |> elem(1)
+
+            rate =
+              (Decimal.to_float(item.order_price) / Decimal.to_float(item.qty))
+              |> Float.to_string()
+
+            c = b |> String.split_at(2)
+
+            month = c |> elem(0)
+
+            day = c |> elem(1)
+
+            string = item.branch
+
+            join = day <> month <> year <> string
+
+            name = branch.branchname
+            cashin = "CashInDrawer:"
+            full = cashin <> name
+
+            [
+              'Daily Sales',
+              branch.branchname,
+              'Custom Sales Receipt',
+              trkh,
+              join,
+              full,
+              item.name,
+              item.desc,
+              qty,
+              rate,
+              order_price,
+              branch.branchname,
+              'SR0'
+            ]
+          end
+
         date =
-          item.date
+          date
           |> Date.to_string()
           |> String.split_at(2)
           |> elem(1)
           |> String.split("-")
           |> Enum.join()
           |> String.split_at(2)
+
+        code = item |> hd
 
         year = date |> elem(0)
 
@@ -324,7 +332,7 @@ defmodule BoatNoodleWeb.SalesController do
 
         day = c |> elem(1)
 
-        string = "BNAM"
+        string = code.branch
 
         join = day <> month <> year <> string
 
@@ -332,22 +340,115 @@ defmodule BoatNoodleWeb.SalesController do
         cashin = "CashInDrawer:"
         full = cashin <> name
 
-        [
+        rpt =
+          Repo.all(
+            from(
+              s in Sales,
+              left_join: sp in SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: b in Branch,
+              on: b.branchid == s.branchid,
+              left_join: d in DiscountItem,
+              on: sp.discountid == d.discountitemsid,
+              where:
+                s.is_void == 0 and s.salesdate == ^date2 and
+                  b.report_class == ^branch.report_class,
+              select: %{
+                svc_chg: sum(sp.service_charge),
+                grand_total: sum(sp.grand_total),
+                sub_total: sum(sp.sub_total),
+                service_charge: sum(sp.service_charge),
+                gst_charge: sum(sp.gst_charge),
+                rounding: sum(sp.rounding)
+              }
+            )
+          )
+          |> hd
+
+        svc_chg = rpt.service_charge |> Decimal.to_float() |> Float.to_string()
+
+        a =
+          Decimal.to_float(rpt.sub_total) - Decimal.to_float(rpt.service_charge) -
+            Decimal.to_float(rpt.gst_charge) - Decimal.to_float(rpt.rounding)
+
+        disc_amt = (Decimal.to_float(rpt.grand_total) - a) |> Float.round(2) |> Float.to_string()
+
+        tpm = [
           'Daily Sales',
           branch.branchname,
           'Custom Sales Receipt',
-          item.date,
+          date2,
           join,
           full,
-          item.name,
-          item.desc,
-          item.qty,
-          'rate',
-          item.order_price,
+          "sevc charge",
+          "",
+          "",
+          svc_chg,
+          svc_chg,
           branch.branchname,
-          'SR'
+          'SR0'
         ]
+
+        tpq = [
+          'Daily Sales',
+          branch.branchname,
+          'Custom Sales Receipt',
+          date2,
+          join,
+          full,
+          "Discount",
+          "",
+          "",
+          disc_amt,
+          disc_amt,
+          branch.branchname,
+          'SR0'
+        ]
+
+        IEx.pry()
+
+        paytype =
+          Repo.all(
+            from(
+              s in Sales,
+              left_join: sp in SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: p in PaymentType,
+              on: p.payment_type_id == sp.payment_type_id1,
+              left_join: b in Branch,
+              on: b.branchid == s.branchid,
+              group_by: p.payment_type_name,
+              where:
+                s.is_void == 0 and s.salesdate == ^date2 and p.payment_type_id != 1 and
+                  p.payment_type_id != 2,
+              select: %{payment_type_name: p.payment_type_name, pay_amt: sum(sp.grand_total)}
+            )
+          )
+
+        trm =
+          for item <- paytype do
+            [
+              'Daily Sales',
+              branch.branchname,
+              'Custom Sales Receipt',
+              date2,
+              join,
+              full,
+              item.payment_type_name,
+              "",
+              "",
+              Decimal.to_float(item.pay_amt) |> Float.to_string(),
+              (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
+              branch.branchname,
+              'SR0'
+            ]
+          end
+
+        tq = List.insert_at(gft, -1, tpm)
+        tq1 = List.insert_at(tq, -1, tpq)
+        tq2 = tq1 ++ trm
       end
+      |> Enum.flat_map(fn x -> x end)
 
     csv_content =
       List.insert_at(data, 0, csv_content)
@@ -679,9 +780,6 @@ defmodule BoatNoodleWeb.SalesController do
     )
   end
 
-  def quickbook(conn, params) do
-  end
-
   def item_sales_report_csv(conn, params) do
     conn
     |> put_resp_content_type("text/csv")
@@ -866,91 +964,6 @@ defmodule BoatNoodleWeb.SalesController do
         ]
       end
 
-    item_sales_outlet =
-      Repo.all(
-        from(
-          sd in BoatNoodle.BN.SalesMaster,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sd.salesid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          left_join: di in BoatNoodle.BN.DiscountItem,
-          on: di.discountitemsid == sd.discountid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: st.staff_id == s.staffid,
-          left_join: b in BoatNoodle.BN.Branch,
-          on: b.branchid == s.branchid,
-          group_by: [s.salesdate, i.itemname],
-          where:
-            s.branchid == ^branch_id and s.salesdate >= ^start_date and s.salesdate <= ^end_date,
-          select: %{
-            salesdate: s.salesdate,
-            branchname: b.branchname,
-            hierachy: ic.category_type,
-            category: ic.itemcatname,
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            gross_qty: sum(sd.qty),
-            foc_qty: sum(di.disc_qty),
-            gross_sales: sum(sd.order_price),
-            nett_sales: sum(sd.afterdisc),
-            unit_price: sd.unit_price,
-            store_owner: st.staff_name
-          }
-        )
-      )
-
-    csv_content = [
-      'Date ',
-      'Outlet',
-      'Hieracachy',
-      'Category',
-      'Item Code',
-      'Item Name',
-      'Gross Quantity',
-      'Nett Quantity',
-      'FOC Quantity',
-      'Gross Sales',
-      'Nett Sales',
-      'Unit Price',
-      'Discount Value',
-      'Service Charge',
-      'Store Owner'
-    ]
-
-    data =
-      for item <- item_sales_outlet do
-        if item.foc_qty == nil do
-          foc_qty = 0
-        else
-          foc_qty = Decimal.to_float(item.foc_qty)
-        end
-
-        nett_qty = Decimal.to_float(item.gross_qty) - foc_qty
-        discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
-        service_charge = (Decimal.to_float(item.nett_sales) / 20) |> Float.round(2)
-
-        [
-          item.salesdate,
-          item.branchname,
-          item.hierachy,
-          item.category,
-          item.itemcode,
-          item.itemname,
-          item.gross_qty,
-          nett_qty,
-          foc_qty,
-          item.gross_sales,
-          item.nett_sales,
-          item.unit_price,
-          discount_value,
-          service_charge,
-          item.store_owner
-        ]
-      end
-
     csv_content2 =
       List.insert_at(data, 0, csv_content)
       |> CSV.encode()
@@ -1040,98 +1053,6 @@ defmodule BoatNoodleWeb.SalesController do
           else
             Decimal.to_float(item.foc_qty)
           end
-
-        nett_qty = Decimal.to_float(item.gross_qty) - foc_qty
-
-        gross_sales = Decimal.to_float(item.unit_price) * nett_qty
-        nett_sales = Decimal.to_float(item.unit_price) * nett_qty
-        service_charge = (nett_sales / 20) |> Float.round(2)
-        discount_value = gross_sales - nett_sales
-
-        [
-          item.salesdate,
-          item.branchname,
-          item.hierachy,
-          item.category,
-          item.itemcode,
-          item.comboname,
-          item.itemname,
-          item.gross_qty,
-          nett_qty,
-          foc_qty,
-          gross_sales,
-          nett_sales,
-          item.unit_price,
-          discount_value,
-          service_charge,
-          item.store_owner
-        ]
-      end
-
-    item_sales_outlet =
-      Repo.all(
-        from(
-          sd in BoatNoodle.BN.SalesMaster,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.combo_id == i.subcatid,
-          left_join: cd in BoatNoodle.BN.ComboDetails,
-          on: cd.combo_item_id == sd.itemid,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sd.salesid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == cd.menu_cat_id,
-          left_join: di in BoatNoodle.BN.DiscountItem,
-          on: di.discountitemsid == sd.discountid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: st.staff_id == s.staffid,
-          left_join: b in BoatNoodle.BN.Branch,
-          on: b.branchid == s.branchid,
-          group_by: [s.salesdate, cd.combo_item_name],
-          where:
-            sd.combo_id != 0 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
-              s.salesdate <= ^end_date,
-          select: %{
-            salesdate: s.salesdate,
-            branchname: b.branchname,
-            hierachy: ic.category_type,
-            category: ic.itemcatname,
-            itemcode: i.itemcode,
-            comboname: i.itemname,
-            itemname: cd.combo_item_name,
-            gross_qty: sum(sd.qty),
-            foc_qty: sum(di.disc_qty),
-            unit_price: cd.unit_price,
-            store_owner: st.staff_name
-          }
-        )
-      )
-
-    csv_content = [
-      'Date ',
-      'Outlet',
-      'Hieracachy',
-      'Category',
-      'Item Code',
-      'Combo Name',
-      'Item Name',
-      'Gross Quantity',
-      'Nett Quantity',
-      'FOC Quantity',
-      'Gross Sales',
-      'Nett Sales',
-      'Unit Price',
-      'Discount Value',
-      'Service Charge',
-      'Store Owner'
-    ]
-
-    data =
-      for item <- item_sales_outlet do
-        if item.foc_qty == nil do
-          foc_qty = 0
-        else
-          foc_qty = Decimal.to_float(item.foc_qty)
-        end
 
         nett_qty = Decimal.to_float(item.gross_qty) - foc_qty
 

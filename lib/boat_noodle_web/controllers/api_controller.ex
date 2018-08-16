@@ -600,7 +600,7 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           c in ComboDetails,
-          where: c.id in ^combo_ids and c.brand_id == ^brand_id,
+          where: c.id in ^combo_ids and c.brand_id == ^brand_id and c.is_delete == 0,
           select: %{
             # brand_id: c.brand_id,
             id: c.id,
@@ -614,7 +614,8 @@ defmodule BoatNoodleWeb.ApiController do
             # update_qty: c.update_qty,
             top_up: c.top_up,
             unit_price: c.unit_price,
-            is_default: c.is_default
+            is_default: c.is_default,
+            is_delete: c.is_delete
           }
         )
       )

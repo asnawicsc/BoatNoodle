@@ -103,6 +103,7 @@
                         <thead>
                           <tr>
                             <th>Name</th>
+                             <th>Category</th>
                             <th>Combo Qty</th>
                             <th>Item Qty</th>
                             <th>Unit Price</th>
@@ -118,6 +119,9 @@
                             <tr id="<%= same_item.subcatid %>">
                               <td>
                                 <%= combo_item.combo_item_name %>
+                              </td>
+                                <td>
+                                <%= combo_item.combo_category %>
                               </td>
                               <td>
                                 <%= combo_item.combo_qty %>

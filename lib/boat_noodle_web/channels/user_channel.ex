@@ -281,7 +281,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
     brand = Repo.get_by(Brand, id: brand_id)
 
-    {sales_data} =
+    {sales_data, total_pages} =
       if branchid != "0" do
         sales_data =
           Repo.all(
@@ -328,7 +328,28 @@ defmodule BoatNoodleWeb.UserChannel do
             }
           end
 
-        {sales_data}
+        count_sales_data =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              left_join: st in BoatNoodle.BN.Staff,
+              on: s.staffid == st.staff_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              where:
+                b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: count(s.salesid)
+            )
+          )
+          |> hd()
+
+        limit = 10
+        total_pages = count_sales_data / limit
+
+        {sales_data, total_pages}
       else
         sales_data =
           Repo.all(
@@ -374,11 +395,33 @@ defmodule BoatNoodleWeb.UserChannel do
             }
           end
 
-        {sales_data}
+        count_sales_data =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              left_join: st in BoatNoodle.BN.Staff,
+              on: s.staffid == st.staff_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              where:
+                b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: count(s.salesid)
+            )
+          )
+          |> hd()
+
+        limit = 10
+        total_pages = count_sales_data / limit
+
+        {sales_data, total_pages}
       end
 
     broadcast(socket, "populate_table_sales_transaction", %{
-      sales_data: sales_data
+      sales_data: sales_data,
+      total_pages: total_pages
     })
 
     {:noreply, socket}
@@ -2190,7 +2233,7 @@ defmodule BoatNoodleWeb.UserChannel do
 
     broadcast(socket, "populate_tax_data", %{
       tax_data: :erlang.float_to_binary(tax, decimals: 2),
-      tax_total: :erlang.float_to_binary(grand_total, decimals: 2),
+      tax_total: :erlang.float_to_binary(afterdisc, decimals: 2),
       tax_details: tax_details,
       map: Poison.encode!(map)
     })
@@ -2412,6 +2455,21 @@ defmodule BoatNoodleWeb.UserChannel do
     for item <- date_data do
       total_transaction =
         if branches != "0" do
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sp.salesid == s.salesid,
+              where:
+                s.is_void == 0 and s.branchid == ^branches and s.salesdate == ^item and
+                  s.brand_id == ^brand_id,
+              select: %{
+                salesdate: s.salesdate,
+                grand_total: sp.grand_total,
+                payment_type: sp.payment_type
+              }
+            )
+          )
         else
           Repo.all(
             from(
@@ -2502,6 +2560,23 @@ defmodule BoatNoodleWeb.UserChannel do
                   c.brand_id == ^payload["brand_id"],
               select: %{
                 cash_in: sum(c.amount)
+              }
+            )
+          )
+          |> hd()
+
+        cash_out =
+          Repo.all(
+            from(
+              c in BoatNoodle.BN.CashInOut,
+              left_join: b in BoatNoodle.BN.Branch,
+              on: b.branchid == c.branch_id,
+              where:
+                c.cashtype == "CASHOUT" and c.branch_id == ^payload["branch_id"] and
+                  c.date_time >= ^new_s_date and c.date_time <= ^new_e_date and
+                  c.brand_id == ^payload["brand_id"],
+              select: %{
+                cash_out: sum(c.amount)
               }
             )
           )

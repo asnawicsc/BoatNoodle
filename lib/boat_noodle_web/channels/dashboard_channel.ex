@@ -11,25 +11,6 @@ defmodule BoatNoodleWeb.DashboardChannel do
     end
   end
 
-  def handle_in("dashboard_local_storage", payload, socket) do
-    IEx.pry()
-
-    #   broadcast(socket, "dashboard", %{
-    #   nett_sales: payload.d_nett_sales,
-    #   taxes: payload.d_taxes,
-    #   order: payload.d_order,
-    #   pax: payload.d_pax,
-    #   transaction: payload.d_transaction,
-    #   table_branch_daily_sales_sumary: Poison.encode!(table_branch_daily_sales_sumary),
-    #   branch_daily_sales_sumary: Poison.encode!(grp_daily),
-    #   top_10_selling: Poison.encode!(top_10_selling),
-    #   top_10_selling_revenue: Poison.encode!(top_10_selling_revenue),
-    #   top_10_selling_category: Poison.encode!(top_10_selling_category)
-    # })
-
-    # {:noreply, socket}
-  end
-
   def handle_in("dashboard", payload, socket) do
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]

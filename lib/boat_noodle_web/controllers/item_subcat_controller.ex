@@ -777,10 +777,22 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     end
 
     ids = same_items |> Enum.map(fn x -> x.subcatid end)
-    combo_items = Repo.all(from(c in ComboDetails, where: c.combo_id in ^ids))
+    combo_items = Repo.all(from(c in ComboDetails,
+      left_join: i in ItemCat, on: i.itemcatid == c.menu_cat_id,
+      left_join: b in Brand, on: c.brand_id == b.id,
+     where: c.combo_id in ^ids and i.brand_id ==^BN.get_brand_id(conn),
+     select: %{ combo_item_name: c.combo_item_name,
+              combo_category: i.itemcatname,
+              combo_qty: c.combo_qty,
+              combo_item_qty: c.combo_item_qty,
+              unit_price: c.unit_price,
+              top_up: c.top_up,
+              combo_item_code: c.combo_item_code,
+              combo_item_id: c.combo_item_id,
+              combo_id: c.combo_id
 
+                                      }))
 
-   
 
     no_selection_combo_items =
       Repo.all(
