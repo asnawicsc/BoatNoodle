@@ -38,6 +38,7 @@ defmodule BoatNoodle.BN.RPTCASHIEREOD do
     field(:entertainment, :decimal)
     field(:staffmeal, :decimal)
     field(:total_creditcard, :decimal)
+     field(:brand_id, :integer, primary_key: true)
   end
 
   @doc false
@@ -106,5 +107,6 @@ defmodule BoatNoodle.BN.RPTCASHIEREOD do
       :extra,
       :branchcode
     ])
+    |> unique_constraint(:rptid, name: "PRIMARY")
   end
 end

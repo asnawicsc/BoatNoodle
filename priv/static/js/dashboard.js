@@ -111,6 +111,8 @@ if (localStorage.getItem('new_brand') == null) {
 
 
        $("table#outlet_sales_information").DataTable({
+
+
              destroy: true,
             data: data,
             dom: 'Bfrtip',

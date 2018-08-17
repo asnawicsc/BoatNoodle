@@ -34,7 +34,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
-                s.branchid == ^payload["branch_id"] and s.salesdate >= ^start_d and
+                s.is_void ==0 and s.branchid == ^payload["branch_id"] and s.salesdate >= ^start_d and
                   s.salesdate <= ^end_d and s.brand_id == ^payload["brand_id"] and
                   b.brand_id == ^brand_id and sp.brand_id == ^brand_id,
               group_by: [s.salesdate, b.branchname],
@@ -253,7 +253,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
-                s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                s.is_void == 0 and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"] and
                   b.brand_id == ^brand_id and sm.brand_id == ^brand_id,
               group_by: [s.salesdate, b.branchname],
@@ -291,7 +291,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                 s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
                   s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
                   s.brand_id == ^payload["brand_id"],
               group_by: [i.itemname],
@@ -315,7 +315,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
                   s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
                   s.brand_id == ^payload["brand_id"],
               group_by: [i.itemname],
@@ -354,7 +354,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id == c.brand_id and
+                s.is_void ==0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id == c.brand_id and
                   s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
               group_by: [c.itemcatname, s.salesdate],
@@ -378,7 +378,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
                   s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
                   s.brand_id == ^payload["brand_id"],
               group_by: [c.itemcatname, s.salesdate],
@@ -416,7 +416,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
-                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.is_void == 0 and s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
                   sp.brand_id == ^brand_id and b.brand_id == ^brand_id,
               group_by: [s.salesdate, b.branchname],
               select: %{
@@ -625,7 +625,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
-                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.is_void == 0 and  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
                   s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
                   sm.brand_id == ^brand_id,
               group_by: [s.salesdate, b.branchname],
@@ -663,7 +663,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                 s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
               group_by: [i.subcatid, i.itemname],
               select: %{
@@ -687,7 +687,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                 s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
               group_by: [i.subcatid, i.itemname],
               select: %{
@@ -725,7 +725,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id == c.brand_id and
+                 s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id == c.brand_id and
                   s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
                   s.brand_id == ^payload["brand_id"],
               group_by: [c.itemcatname, s.salesdate],
@@ -749,7 +749,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Brand,
               on: b.id == ^brand.id,
               where:
-                b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                 s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
               group_by: [c.itemcatname, s.salesdate],
               select: %{
@@ -809,7 +809,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               on: sp.salesid == s.salesid,
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
-              where: s.branchid == ^payload["branch_id"] and s.brand_id == ^payload["brand_id"],
+              where:    s.is_void == 0 and s.branchid == ^payload["branch_id"] and s.brand_id == ^payload["brand_id"],
               group_by: [s.salesdate],
               select: %{
                 salesdate: s.salesdate,
@@ -851,7 +851,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: sp.salesid == s.salesid,
-              where: s.brand_id == ^payload["brand_id"],
+              where:  s.is_void == 0 and s.brand_id == ^payload["brand_id"],
               group_by: [s.salesdate],
               select: %{
                 salesdate: s.salesdate,

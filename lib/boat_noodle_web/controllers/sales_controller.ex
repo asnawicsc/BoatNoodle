@@ -192,10 +192,34 @@ defmodule BoatNoodleWeb.SalesController do
     render(conn, "detail_invoice.html", detail: detail, detail_item: detail_item)
   end
 
-  def quickbook(conn, params) do
+    def check(conn, params) do
+
+    brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
+
+    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+
+
     conn
     |> put_resp_content_type("text/csv")
-    |> put_resp_header("content-disposition", "attachment; filename=\"Daily Item Sales.csv\"")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Check Total"<>branch.branchcode<>".csv\"")
+    |> send_resp(200, check_total(conn, params))
+  end
+
+
+
+  def quickbook(conn, params) do
+
+      brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
+
+          branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+
+    id = branch.branchid |> Integer.to_string()
+
+
+
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header("content-disposition", "attachment; filename=\"Daily Item Sales"<>branch.branchcode<>".csv\"")
     |> send_resp(200, csv_content(conn, params))
   end
 
@@ -340,6 +364,7 @@ defmodule BoatNoodleWeb.SalesController do
         cashin = "CashInDrawer:"
         full = cashin <> name
 
+
         rpt =
           Repo.all(
             from(
@@ -348,13 +373,16 @@ defmodule BoatNoodleWeb.SalesController do
               on: s.salesid == sp.salesid,
               left_join: b in Branch,
               on: b.branchid == s.branchid,
-              left_join: d in DiscountItem,
-              on: sp.discountid == d.discountitemsid,
+               left_join: t in Brand, on: t.id == s.brand_id, 
               where:
                 s.is_void == 0 and s.salesdate == ^date2 and
-                  b.report_class == ^branch.report_class,
+                  b.report_class == ^branch.report_class and
+                  t.id==^brand.id and
+                  s.brand_id==^brand.id
+                  and b.brand_id==^brand.id
+                  and sp.brand_id==^brand.id
+                  and b.branchid==^id ,
               select: %{
-                svc_chg: sum(sp.service_charge),
                 grand_total: sum(sp.grand_total),
                 sub_total: sum(sp.sub_total),
                 service_charge: sum(sp.service_charge),
@@ -365,88 +393,233 @@ defmodule BoatNoodleWeb.SalesController do
           )
           |> hd
 
-        svc_chg = rpt.service_charge |> Decimal.to_float() |> Float.to_string()
 
-        a =
-          Decimal.to_float(rpt.sub_total) - Decimal.to_float(rpt.service_charge) -
-            Decimal.to_float(rpt.gst_charge) - Decimal.to_float(rpt.rounding)
 
-        disc_amt = (Decimal.to_float(rpt.grand_total) - a) |> Float.round(2) |> Float.to_string()
+          grand_total=if rpt.grand_total  != nil  do
 
-        tpm = [
-          'Daily Sales',
-          branch.branchname,
-          'Custom Sales Receipt',
-          date2,
-          join,
-          full,
-          "sevc charge",
-          "",
-          "",
-          svc_chg,
-          svc_chg,
-          branch.branchname,
-          'SR0'
-        ]
+              Decimal.to_float(rpt.grand_total)
+          else
 
-        tpq = [
-          'Daily Sales',
-          branch.branchname,
-          'Custom Sales Receipt',
-          date2,
-          join,
-          full,
-          "Discount",
-          "",
-          "",
-          disc_amt,
-          disc_amt,
-          branch.branchname,
-          'SR0'
-        ]
+            0
 
-        paytype =
-          Repo.all(
-            from(
-              s in Sales,
-              left_join: sp in SalesPayment,
-              on: s.salesid == sp.salesid,
-              left_join: p in PaymentType,
-              on: p.payment_type_id == sp.payment_type_id1,
-              left_join: b in Branch,
-              on: b.branchid == s.branchid,
-              group_by: p.payment_type_name,
-              where:
-                s.is_void == 0 and s.salesdate == ^date2 and p.payment_type_id != 1 and
-                  p.payment_type_id != 2,
-              select: %{payment_type_name: p.payment_type_name, pay_amt: sum(sp.grand_total)}
-            )
-          )
-
-        trm =
-          for item <- paytype do
-            [
-              'Daily Sales',
-              branch.branchname,
-              'Custom Sales Receipt',
-              date2,
-              join,
-              full,
-              item.payment_type_name,
-              "",
-              "",
-              Decimal.to_float(item.pay_amt) |> Float.to_string(),
-              (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
-              branch.branchname,
-              'SR0'
-            ]
+            
           end
 
-        tq = List.insert_at(gft, -1, tpm)
-        tq1 = List.insert_at(tq, -1, tpq)
-        tq2 = tq1 ++ trm
-      end
-      |> Enum.flat_map(fn x -> x end)
+
+          sub_total=if rpt.sub_total  != nil  do
+
+             Decimal.to_float(rpt.sub_total)
+          else
+
+            0
+
+            
+          end
+
+
+          service_charge=if rpt.service_charge != nil  do
+
+              Decimal.to_float(rpt.service_charge)
+          else
+
+            0
+
+            
+          end
+
+
+
+
+          gst_charge=if rpt.gst_charge != nil  do
+
+              Decimal.to_float(rpt.gst_charge)
+          else
+
+            0
+
+            
+          end
+
+               rounding=if rpt.rounding != nil  do
+
+              Decimal.to_float(rpt.rounding)
+          else
+
+            0
+
+            
+          end
+
+
+
+
+
+           rounding2=Repo.all(from s in Sales,
+      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
+      left_join: b in Branch,on: b.branchid==s.branchid,
+      left_join: t in Brand, on: t.id == s.brand_id, 
+      where: s.is_void==0 and
+       s.salesdate ==^date2 and
+        b.report_class ==^branch.report_class  and 
+         t.id==^brand.id and
+        s.brand_id==^brand.id
+        and b.brand_id==^brand.id
+        and sp.brand_id==^brand.id
+        and b.branchid==^id ,
+      select: %{
+                rounding: sum(sp.rounding)
+              })|>hd
+
+        rounding2=if rounding2.rounding != nil  do
+
+              Decimal.to_float(rounding2.rounding)
+          else
+
+            0
+
+          end
+
+      
+
+
+  
+
+   
+
+      disc_amt=0-(sub_total+service_charge+gst_charge+rounding)
+    
+
+
+          tpm=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"sevc charge","","",service_charge,service_charge,branch.branchname,'SR0'] 
+          tpf=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"Total Rounding","","",rounding2,rounding2,branch.branchname,'SR0'] 
+           tpq=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"Discount","","",disc_amt,disc_amt,branch.branchname,'SR0'] 
+
+
+             paytype1=Repo.all(from s in Sales,
+      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
+      left_join: p in PaymentType, on: p.payment_type_id==sp.payment_type_id1,
+      left_join: b in Branch,on: b.branchid==s.branchid,
+      left_join: t in Brand, on: t.id == s.brand_id, 
+      group_by: p.payment_type_name,
+       where: s.is_void==0 and 
+       s.salesdate ==^date2 and
+       sp.payment_type_id1 != 1 and 
+        t.id==^brand.id and
+        s.brand_id==^brand.id
+        and p.brand_id==^brand.id
+        and b.brand_id==^brand.id and
+        sp.brand_id==^brand.id
+        and b.branchid==^id ,
+       select: %{ payment_type_name: p.payment_type_name,
+                  pay_amt: sum(sp.payment_type_amt1)})
+
+                          paytype2=Repo.all(from s in Sales,
+      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
+      left_join: p in PaymentType, on: p.payment_type_id==sp.payment_type_id2,
+      left_join: b in Branch,on: b.branchid==s.branchid,
+      left_join: t in Brand, on: t.id == s.brand_id, 
+      group_by: p.payment_type_name,
+       where: s.is_void==0 and 
+       s.salesdate ==^date2 and
+       sp.payment_type_id2 != 1 and 
+        t.id==^brand.id
+        and p.brand_id==^brand.id and
+        s.brand_id==^brand.id
+        and b.brand_id==^brand.id and
+        sp.brand_id==^brand.id
+        and b.branchid==^id ,
+       select: %{ payment_type_name: p.payment_type_name,
+                  pay_amt: sum(sp.payment_type_amt2)})
+
+                          paytype=(paytype1++paytype2)|>Enum.filter(fn x -> x.payment_type_name != nil end)
+
+
+
+
+                        shortextra=Repo.all(from r in BoatNoodle.BN.RPTCASHIEREOD,
+                        left_join: b in Branch, on: b.branchcode == r.branchcode,
+                          left_join: t in Brand, on: t.id == r.brand_id,
+                        group_by: [r.time_end],
+                        where: r.branch_id==^id and
+                        r.brand_id==^brand.id,
+                         select: %{ totalextra: sum(r.extra),
+                          time_end: r.time_end
+                         })
+
+               extra=Enum.map(shortextra,fn x -> %{totalextra: x.totalextra, date: DateTime.to_date(x.time_end)|>Date.to_string }end)
+
+
+
+
+              
+               extra=extra|>Enum.filter(fn x -> x.date == date2 end)
+
+             
+                            shortextra=if extra != [] do
+
+                              Enum.map(extra,fn x -> Decimal.to_float(x.totalextra) end)|>Enum.sum
+
+                                    
+                            else
+                              0
+                               
+                             end
+
+  
+
+
+                    
+
+                    tpt=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"Short/Extra","","",shortextra,shortextra,branch.branchname,'SR0'] 
+
+                             ccard=Repo.all(from s in Sales,
+                        left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
+                        left_join: b in Branch,on: b.branchid==s.branchid,
+                        left_join: t in Brand, on: t.id == s.brand_id, 
+                         where: s.is_void==0 and 
+                         s.salesdate ==^date2 and
+                          t.id==^brand.id and
+                          s.brand_id==^brand.id
+                          and b.brand_id==^brand.id and
+                          sp.brand_id==^brand.id
+                          and b.branchid==^id 
+                          and sp.payment_type =="CREDITCARD",
+                         select: sum(sp.grand_total))|>hd 
+
+
+                             ccard=if ccard != nil  do
+
+                              0-Decimal.to_float(ccard)
+                            else
+                              0
+                               
+                             end
+                        
+                           
+                       
+
+              
+                      
+                           tps=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"CREDITCARD","","", ccard,ccard,branch.branchname,'SR0']  
+
+
+      
+          
+             trm=for item <- paytype do
+
+
+       ['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,item.payment_type_name,"","",0-Decimal.to_float(item.pay_amt)|>Float.to_string,0-Decimal.to_float(item.pay_amt)|>Float.to_string,branch.branchname,'SR0'] 
+  
+             end
+
+             tq=List.insert_at(gft,-1,tpm)
+             tq1=List.insert_at(tq,-1,tpf)  
+             tq2=List.insert_at(tq1,-1,tpq)
+             tq3=List.insert_at(tq2,-1,tpt)
+             tq4=List.insert_at(tq3,-1,tps)
+             tq5=tq4++trm
+
+    end|>Enum.flat_map(fn x -> x end)
 
     csv_content =
       List.insert_at(data, 0, csv_content)
