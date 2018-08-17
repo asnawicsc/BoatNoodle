@@ -192,19 +192,6 @@ defmodule BoatNoodleWeb.SalesController do
     render(conn, "detail_invoice.html", detail: detail, detail_item: detail_item)
   end
 
-    def check(conn, params) do
-
-    brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
-
-    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
-
-
-    conn
-    |> put_resp_content_type("text/csv")
-    |> put_resp_header("content-disposition", "attachment; filename=\"Check Total"<>branch.branchcode<>".csv\"")
-    |> send_resp(200, check_total(conn, params))
-  end
-
 
 
   def quickbook(conn, params) do
