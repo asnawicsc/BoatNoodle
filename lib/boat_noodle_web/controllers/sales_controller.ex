@@ -102,6 +102,8 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def detail_invoice(conn, %{"branchid" => branchid, "invoiceno" => invoiceno}) do
+
+
     detail =
       Repo.all(
         from(
@@ -112,7 +114,9 @@ defmodule BoatNoodleWeb.SalesController do
           on: sd.salesid == s.salesid,
           left_join: st in BoatNoodle.BN.Staff,
           on: st.staff_id == s.staffid,
-          where: s.invoiceno == ^invoiceno and s.branchid == ^branchid,
+           left_join: f in BoatNoodle.BN.Brand,
+          on: sp.brand_id == f.id ,
+          where: s.invoiceno == ^invoiceno and s.branchid == ^branchid and f.domain_name ==^conn.params["brand"] ,
           select: %{
             staff_name: st.staff_name,
             tbl_no: s.tbl_no,
@@ -179,7 +183,13 @@ defmodule BoatNoodleWeb.SalesController do
           on: is.subcatid == sd.itemid,
           left_join: c in BoatNoodle.BN.ComboDetails,
           on: sd.itemid == c.combo_item_id,
-          where: s.invoiceno == ^invoiceno and s.branchid == ^branchid,
+          left_join: b in BoatNoodle.BN.Branch,
+          on: s.branchid == b.branchid,
+          left_join: f in BoatNoodle.BN.Brand,
+          on: sd.brand_id == f.id,
+          where: s.invoiceno == ^invoiceno
+           and s.branchid == ^branchid and 
+           f.domain_name ==^conn.params["brand"] and is.brand_id== f.id and b.brand_id== f.id,
           select: %{
             combo_item_name: c.combo_item_name,
             itemname: is.itemname,
@@ -1148,7 +1158,9 @@ defmodule BoatNoodleWeb.SalesController do
           on: b.branchid == s.branchid,
           group_by: [s.salesdate, cd.combo_item_name],
           where:
-            sd.combo_id != 0 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
+            sd.combo_id != 0 and
+             s.branchid == ^branch_id
+              and s.salesdate >= ^start_date and
               s.salesdate <= ^end_date,
           select: %{
             salesdate: s.salesdate,
