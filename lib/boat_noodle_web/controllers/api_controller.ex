@@ -859,7 +859,16 @@ defmodule BoatNoodleWeb.ApiController do
                         type = changeset.errors |> hd() |> elem(1) |> elem(0)
                         message = List.insert_at(conn.req_headers, 0, {model, type})
                         log_error_api(message, "API POST - sales payment")
-                        send_resp(conn, 500, "Sales master failed to create.")
+
+                        Repo.delete_all(
+                          from(
+                            s in SalesMaster,
+                            where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
+                          )
+                        )
+
+                        Repo.delete(sales)
+
                         send_resp(conn, 500, "Sales payment failed to create.")
                     end
                   end
@@ -954,10 +963,10 @@ defmodule BoatNoodleWeb.ApiController do
     topic = "sales:#{brand_id}_#{branchid}"
     event = "update_sales_grandtotal"
 
-    # start_date = created_at |> DateTime.to_date()
-    # end_date = created_at |> DateTime.to_date() |> Timex.shift(days: 1)
-    start_date = Date.new(2018, 6, 14) |> elem(1)
-    end_date = Date.new(2018, 6, 15) |> elem(1)
+    start_date = created_at |> DateTime.to_date()
+    end_date = created_at |> DateTime.to_date() |> Timex.shift(days: 1)
+    # start_date = Date.new(2018, 6, 14) |> elem(1)
+    # end_date = Date.new(2018, 6, 15) |> elem(1)
 
     outlet_sales =
       Repo.all(

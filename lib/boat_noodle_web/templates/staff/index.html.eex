@@ -59,7 +59,9 @@
                           <a href="/<%= @conn.private.plug_session["brand"] %>/staff/<%= staff.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Staff">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a>
-                        
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/staff/<%= staff.id %>/regenerate_pin" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Regenerate PIN">
+                            <i class="material-icons">autorenew</i>
+                          <div class="ripple-container"></div></a>
                             
                           </td>
                        
@@ -91,7 +93,7 @@
                         <td><%= staff.staff_contact %></td>
                         <td><%= staff.staff_email %></td>
  
-                        <td><a href="/staff/<%= staff.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Staff">
+                        <td><a href="/<%= @conn.private.plug_session["brand"] %>/staff/<%= staff.id %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Staff">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a></td>
                        

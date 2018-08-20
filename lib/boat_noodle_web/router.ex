@@ -167,6 +167,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/tag_catalog", TagCatalogController)
     resources("/tag_items", TagItemsController)
     resources("/staff", StaffController)
+    get("/staff/:id/regenerate_pin", StaffController, :regenerate_pin)
     resources("/user", UserController)
 
     get("/edit_user", UserController, :edit_user)

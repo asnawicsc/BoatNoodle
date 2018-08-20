@@ -27,7 +27,7 @@ defmodule BoatNoodleWeb.StaffController do
   end
 
   def new(conn, _params) do
-    changeset = Staff.changeset(%BoatNoodle.BN.Staff{},%{},BN.current_user(conn),"new")
+    changeset = Staff.changeset(%BoatNoodle.BN.Staff{}, %{}, BN.current_user(conn), "new")
     roles = BN.list_staff_type()
     roles = Enum.map(roles, fn x -> {x.name, x.id} end)
     branch_access = BN.list_branch()
@@ -40,11 +40,12 @@ defmodule BoatNoodleWeb.StaffController do
   end
 
   def create(conn, %{"staff" => staff_params}) do
-    branch_access = if conn.params["branch_ids"] == nil do
-    ""
-    else
-      conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
-    end
+    branch_access =
+      if conn.params["branch_ids"] == nil do
+        ""
+      else
+        conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
+      end
 
     staff =
       Repo.all(
@@ -77,7 +78,13 @@ defmodule BoatNoodleWeb.StaffController do
 
     staff_params = Map.put(staff_params, "staff_id", latest_staff_id)
 
-    changeset=BoatNoodle.BN.Staff.changeset(%BoatNoodle.BN.Staff{},staff_params,BN.current_user(conn),"Create")
+    changeset =
+      BoatNoodle.BN.Staff.changeset(
+        %BoatNoodle.BN.Staff{},
+        staff_params,
+        BN.current_user(conn),
+        "Create"
+      )
 
     case BoatNoodle.Repo.insert(changeset) do
       {:ok, _staff} ->
@@ -97,34 +104,59 @@ defmodule BoatNoodleWeb.StaffController do
     render(conn, "show.html", staff: staff)
   end
 
+  def regenerate_pin(conn, %{"id" => id}) do
+    staff = Repo.get_by(Staff, staff_id: id, brand_id: BN.get_brand_id(conn))
+
+    existing_pins = Repo.all(from(s in Staff, select: s.staff_pin))
+    numbers = 1000..9999
+    new_pins = Enum.map(numbers, fn x -> x end)
+    remaining_pins = new_pins -- existing_pins
+    selected = Enum.random(remaining_pins)
+
+    changeset =
+      BoatNoodle.BN.Staff.changeset(
+        staff,
+        %{staff_pin: selected},
+        BN.current_user(conn),
+        "Update"
+      )
+
+    case Repo.update(changeset) do
+      {:ok, staff} ->
+        nil
+
+      {:error, changeset} ->
+        IO.inspect(changeset)
+    end
+
+    conn
+    |> put_flash(:info, "Staff pin regenerated successfully.")
+    |> redirect(to: staff_path(conn, :index, BN.get_domain(conn)))
+  end
+
   def edit(conn, %{"id" => id}) do
     staff =
       Repo.all(
         from(s in Staff, where: s.staff_id == ^id and s.brand_id == ^BN.get_brand_id(conn))
       )
       |> hd()
-  changeset=BoatNoodle.BN.Staff.changeset(staff,%{}, BN.current_user(conn),"edit")
+
+    changeset = BoatNoodle.BN.Staff.changeset(staff, %{}, BN.current_user(conn), "edit")
     roles = BN.list_staff_type()
     roles = Enum.map(roles, fn x -> {x.name, x.id} end)
-      
 
-     branch_access= Repo.all(from s in BN.Branch, where: s.brand_id == ^BN.get_brand_id(conn) )
+    branch_access = Repo.all(from(s in BN.Branch, where: s.brand_id == ^BN.get_brand_id(conn)))
 
     branch_access =
       Enum.map(branch_access, fn x -> {x.branchname, x.branchid} end)
       |> Enum.reject(fn x -> elem(x, 1) == 0 end)
 
-
-                    access = if staff.branch_access == nil do 
-                        [] 
-                           else 
-                           String.split(staff.branch_access,",")
-                          
-                              end
-                               
-                               
-
-
+    access =
+      if staff.branch_access == nil do
+        []
+      else
+        String.split(staff.branch_access, ",")
+      end
 
     render(
       conn,
@@ -140,15 +172,17 @@ defmodule BoatNoodleWeb.StaffController do
   def update(conn, %{"id" => id, "staff" => staff_params}) do
     staff = Repo.get_by(Staff, staff_id: id, brand_id: BN.get_brand_id(conn))
 
-     branch_access = if conn.params["branch_ids"] == nil do
-     ""
-    else
-     conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
-    end
+    branch_access =
+      if conn.params["branch_ids"] == nil do
+        ""
+      else
+        conn.params["branch_ids"] |> Map.keys() |> Enum.join(",")
+      end
 
     staff_params = Map.put(staff_params, "branch_access", branch_access)
 
-    changeset=BoatNoodle.BN.Staff.changeset(staff,staff_params, BN.current_user(conn),"Update")
+    changeset =
+      BoatNoodle.BN.Staff.changeset(staff, staff_params, BN.current_user(conn), "Update")
 
     case BoatNoodle.Repo.update(changeset) do
       {:ok, staff} ->
