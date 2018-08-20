@@ -36,14 +36,17 @@ defmodule BoatNoodle.BN.Staff do
         if action == "new" or action =="edit" do
 
       
-     else
+         else
+            attrs = if action == "Update" do
 
-       if action == "Update" do
-        attrs = Map.put(attrs, "staff_id", staffs.data.staff_id)
-      end
+                    Map.put(attrs, "staff_id", staffs.data.staff_id)
+
+                 else
+
+                end
 
 
-       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "v", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "staffs", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
     end
 
     staffs

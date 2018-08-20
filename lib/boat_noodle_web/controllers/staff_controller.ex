@@ -106,16 +106,31 @@ defmodule BoatNoodleWeb.StaffController do
   changeset=BoatNoodle.BN.Staff.changeset(staff,%{}, BN.current_user(conn),"edit")
     roles = BN.list_staff_type()
     roles = Enum.map(roles, fn x -> {x.name, x.id} end)
-    branch_access = BN.list_branch()
+      
+
+     branch_access= Repo.all(from s in BN.Branch, where: s.brand_id == ^BN.get_brand_id(conn) )
 
     branch_access =
       Enum.map(branch_access, fn x -> {x.branchname, x.branchid} end)
       |> Enum.reject(fn x -> elem(x, 1) == 0 end)
 
+
+                    access = if staff.branch_access == nil do 
+                        [] 
+                           else 
+                           String.split(staff.branch_access,",")
+                          
+                              end
+                               
+                               
+
+
+
     render(
       conn,
       "edit.html",
       staff: staff,
+      access: access,
       changeset: changeset,
       roles: roles,
       branches: branch_access

@@ -56,14 +56,10 @@
 	                	<label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Branches</label>
 	                	<div style="padding-left: 10px; padding-top: 10px; height: 300px;overflow-y: scroll;">
 	                		
-		                  <%= branch_access = if @staff.branch_access == nil do %>
-		                    <% [] %>
-		                      <% else %>
-		                        <% String.split(@staff.branch_access,",") %>
-		                          <% end %>
+                   
 
 		                            <%= for branch <- @branches do %>
-		                              <%= if Enum.any?(branch_access, fn x -> x == to_string(elem(branch,1)) end) do %>
+		                              <%= if Enum.any?(@access, fn x -> x == to_string(elem(branch,1)) end) do %>
 		                                <div class="form-check">
 		                                  <label class="form-check-label">
 								          	
@@ -75,7 +71,7 @@
 													            
 													          	</label>
 		                                </div>
-		                                <%= else %>
+		                                <% else %>
 		                                  <div class="form-check">
 		                                    <label class="form-check-label">
 								          	
