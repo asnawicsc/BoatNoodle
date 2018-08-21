@@ -765,10 +765,8 @@ defmodule BoatNoodleWeb.ApiController do
               send_resp(conn, 200, map)
 
             sales_exist == nil ->
-              IO.inspect(sales_params)
-
               salesdate =
-                sales_params.salesdatetime |> String.split("") |> Enum.take(11) |> Enum.join()
+                NaiveDateTime.from_iso8601!(sales_params.salesdatetime) |> NaiveDateTime.to_date()
 
               sales_params = Map.put(sales_params, :salesdate, salesdate)
 
@@ -784,6 +782,7 @@ defmodule BoatNoodleWeb.ApiController do
               sales_params = Map.put(sales_params, :brand_id, user.brand_id)
 
               sales_params = Map.put(sales_params, :branchid, Integer.to_string(user.branchid))
+              IO.inspect(sales_params)
 
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->
@@ -963,38 +962,38 @@ defmodule BoatNoodleWeb.ApiController do
     topic = "sales:#{brand_id}_#{branchid}"
     event = "update_sales_grandtotal"
 
-    start_date = created_at |> DateTime.to_date()
-    end_date = created_at |> DateTime.to_date() |> Timex.shift(days: 1)
-    # start_date = Date.new(2018, 6, 14) |> elem(1)
-    # end_date = Date.new(2018, 6, 15) |> elem(1)
+    # start_date = created_at |> DateTime.to_date()
+    # end_date = created_at |> DateTime.to_date() |> Timex.shift(days: 1)
+    # # start_date = Date.new(2018, 6, 14) |> elem(1)
+    # # end_date = Date.new(2018, 6, 15) |> elem(1)
 
-    outlet_sales =
-      Repo.all(
-        from(
-          sp in BoatNoodle.BN.SalesPayment,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: sp.salesid == s.salesid,
-          left_join: b in BoatNoodle.BN.Branch,
-          on: s.branchid == b.branchid,
-          where:
-            s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.branchid == ^branchid and
-              s.brand_id == ^brand_id,
-          group_by: s.branchid,
-          select: %{
-            brand_id: s.brand_id,
-            branch_id: s.branchid,
-            branchname: b.branchname,
-            sub_total: sum(sp.sub_total),
-            service_charge: sum(sp.service_charge),
-            gst_charge: sum(sp.gst_charge),
-            after_disc: sum(sp.after_disc),
-            grand_total: sum(sp.grand_total),
-            rounding: sum(sp.rounding),
-            pax: sum(s.pax)
-          }
-        )
-      )
+    # outlet_sales =
+    #   Repo.all(
+    #     from(
+    #       sp in BoatNoodle.BN.SalesPayment,
+    #       left_join: s in BoatNoodle.BN.Sales,
+    #       on: sp.salesid == s.salesid,
+    #       left_join: b in BoatNoodle.BN.Branch,
+    #       on: s.branchid == b.branchid,
+    #       where:
+    #         s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.branchid == ^branchid and
+    #           s.brand_id == ^brand_id,
+    #       group_by: s.branchid,
+    #       select: %{
+    #         brand_id: s.brand_id,
+    #         branch_id: s.branchid,
+    #         branchname: b.branchname,
+    #         sub_total: sum(sp.sub_total),
+    #         service_charge: sum(sp.service_charge),
+    #         gst_charge: sum(sp.gst_charge),
+    #         after_disc: sum(sp.after_disc),
+    #         grand_total: sum(sp.grand_total),
+    #         rounding: sum(sp.rounding),
+    #         pax: sum(s.pax)
+    #       }
+    #     )
+    #   )
 
-    BoatNoodleWeb.Endpoint.broadcast(topic, event, hd(outlet_sales))
+    # BoatNoodleWeb.Endpoint.broadcast(topic, event, hd(outlet_sales))
   end
 end

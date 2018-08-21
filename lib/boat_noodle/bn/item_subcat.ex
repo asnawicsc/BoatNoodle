@@ -29,6 +29,8 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:updated_at, :utc_datetime)
     field(:brand_id, :integer, primary_key: true)
     field(:disc_reminder, :integer, default: 0)
+    field(:tagdesc, :string)
+    field(:printer, :string)
   end
 
   @doc false
@@ -36,6 +38,8 @@ defmodule BoatNoodle.BN.ItemSubcat do
     item_subcat =
       item_subcat
       |> cast(attrs, [
+        :tagdesc,
+        :printer,
         :disc_reminder,
         :item_start_hour,
         :item_end_hour,

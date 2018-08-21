@@ -13,94 +13,38 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment(conn, params) do
-    # tagitem_ids =
-    #   Repo.all(from(t in TagCatalog, where: t.description == "Ikon", select: t.tagitems))
-    #   |> hd()
-    #   |> String.split(",")
-    #   |> Enum.sort()
-    #   |> Enum.reject(fn x -> x == "" end)
+    tags = Repo.all(from(t in Tag, where: t.brand_id == ^1 and t.branch_id == ^31))
+    # target_branch_id = 43
 
-    # tag_ids =
-    #   Repo.all(from(t in TagCatalog, where: t.description == "Ikon", select: t.tags))
-    #   |> hd()
-    #   |> String.split(",")
-    #   |> Enum.sort()
-    #   |> Enum.reject(fn x -> x == "" end)
+    for tag <- tags do
+      subcat_ids = tag.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
-    # for tag_id <- tag_ids do
-    #   subcat_ids =
-    #     Repo.all(
-    #       from(
-    #         t in TagItems,
-    #         where: t.tagitemid in ^tagitem_ids and t.tagid == ^tag_id,
-    #         select: t.itemcustomid
-    #       )
-    #     )
+      for subcat_id <- subcat_ids do
+        subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: 1)
 
-    #   old_tag = Repo.get_by(Tag, tagid: tag_id, brand_id: 1)
+        {:ok, subcat} =
+          ItemSubcat.changeset(subcat, %{tagdesc: tag.tagdesc, printer: tag.printer}, 0, "Update")
+          |> Repo.update()
 
-    #   if subcat_ids != [] do
-    #     for subcat_id <- subcat_ids do
-    #       new_tag =
-    #         Repo.all(from(t in Tag, where: t.branch_id == ^31 and t.printer == ^old_tag.printer))
+        similar_items = Repo.all(from(i in ItemSubcat, where: i.itemname == ^subcat.itemname))
 
-    #       new_tag_id =
-    #         Repo.all(from(t in Tag, select: t.tagid, order_by: [desc: t.tagid])) |> hd()
+        for item_subcat <- similar_items do
+          ItemSubcat.changeset(
+            item_subcat,
+            %{tagdesc: tag.tagdesc, printer: tag.printer},
+            0,
+            "Update"
+          )
+          |> Repo.update()
+        end
+      end
 
-    #       if new_tag == [] do
-    #         tag_id = new_tag_id + 1
+      # each branch has a menu_catalog, each catalog has its own uniq subcat it...
 
-    #         {:ok, new_tag} =
-    #           Tag.changeset(
-    #             %Tag{},
-    #             %{
-    #               tagid: tag_id,
-    #               tagdesc: old_tag.tagdesc,
-    #               printer: old_tag.printer,
-    #               tagname: old_tag.tagname,
-    #               branch_id: 31,
-    #               brand_id: 1
-    #             },
-    #             0,
-    #             "new"
-    #           )
-    #           |> Repo.insert()
-    #       else
-    #         new_tag = hd(new_tag)
-    #       end
+      # existing subcat_id.. find the item_subcat..
 
-    #       if String.length(subcat_id) > 6 do
-    #         old_ids =
-    #           if new_tag.combo_item_ids == nil do
-    #             ""
-    #           else
-    #             new_tag.combo_item_ids
-    #           end
-
-    #         IO.inspect(old_ids)
-    #         ids = old_ids |> String.split(",")
-    #         ids = List.insert_at(ids, 0, subcat_id)
-    #         new_ids = Enum.join(ids, ",") |> String.trim_trailing(",")
-
-    #         a = Tag.changeset(new_tag, %{combo_item_ids: new_ids}, 0, "Update") |> Repo.update()
-    #       else
-    #         old_ids =
-    #           if new_tag.subcat_ids == nil do
-    #             ""
-    #           else
-    #             new_tag.subcat_ids
-    #           end
-
-    #         IO.inspect(old_ids)
-    #         ids = old_ids |> String.split(",")
-    #         ids = List.insert_at(ids, 0, subcat_id)
-    #         new_ids = Enum.join(ids, ",") |> String.trim_trailing(",")
-
-    #         a = Tag.changeset(new_tag, %{subcat_ids: new_ids}, 0, "Update") |> Repo.update()
-    #       end
-    #     end
-    #   end
-    # end
+      # match with target branch menu catalog subcat ids
+    end
 
     render(conn, "experiment.html")
   end

@@ -80,6 +80,150 @@ defmodule BoatNoodleWeb.BranchController do
     )
   end
 
+  def populate_printers(conn, %{"id" => id}) do
+    branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
+
+    menu_catalog =
+      Repo.get_by(MenuCatalog, id: branch.menu_catalog, brand_id: BN.get_brand_id(conn))
+
+    # check the item subcats from menu catalog
+    item_subcats = menu_catalog.items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
+
+    subcat_printer =
+      for item_subcat <- item_subcats do
+        item_subcat_id = item_subcat
+
+        item_subcat =
+          Repo.get_by(ItemSubcat, subcatid: item_subcat_id, brand_id: BN.get_brand_id(conn))
+
+        %{
+          subcat_id: item_subcat.subcatid,
+          printer: item_subcat.printer,
+          tagdesc: item_subcat.tagdesc
+        }
+      end
+      |> Enum.reject(fn x -> x.printer == nil end)
+
+    for tag <- subcat_printer do
+      old_tag =
+        Repo.get_by(
+          Tag,
+          tagdesc: tag.tagdesc,
+          printer: tag.printer,
+          branch_id: id,
+          brand_id: BN.get_brand_id(conn)
+        )
+
+      new_tag_id = Repo.all(from(t in Tag, select: t.tagid, order_by: [desc: t.tagid])) |> hd()
+
+      if old_tag == nil do
+        tag_id = new_tag_id + 1
+
+        {:ok, old_tag} =
+          Tag.changeset(
+            %Tag{},
+            %{
+              tagid: tag_id,
+              tagname: branch.branchcode <> " " <> tag.tagdesc,
+              tagdesc: tag.tagdesc,
+              printer: tag.printer,
+              branch_id: id,
+              brand_id: BN.get_brand_id(conn)
+            },
+            0,
+            "new"
+          )
+          |> Repo.insert()
+      end
+
+      old_ids =
+        if old_tag.subcat_ids == nil do
+          ""
+        else
+          old_tag.subcat_ids
+        end
+
+      ids = old_ids |> String.split(",")
+      ids = List.insert_at(ids, 0, tag.subcat_id)
+      new_ids = Enum.join(ids, ",") |> String.trim_trailing(",")
+      Tag.changeset(old_tag, %{subcat_ids: new_ids}, 0, "Update") |> Repo.update()
+    end
+
+    # check the combo items from menu catalog
+    combo_items =
+      menu_catalog.combo_items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
+
+    combo_printer =
+      for combo_item <- combo_items do
+        combo = Repo.get_by(ComboDetails, id: combo_item, brand_id: BN.get_brand_id(conn))
+
+        subcat_id =
+          String.split(Integer.to_string(combo.combo_item_id), "") --
+            String.split(Integer.to_string(combo.combo_id), "")
+
+        item_subcat_id = subcat_id |> Enum.join() |> String.to_integer()
+
+        item_subcat =
+          Repo.get_by(ItemSubcat, subcatid: item_subcat_id, brand_id: BN.get_brand_id(conn))
+
+        %{
+          combo_item_id: combo.combo_item_id,
+          printer: item_subcat.printer,
+          tagdesc: item_subcat.tagdesc
+        }
+      end
+      |> Enum.reject(fn x -> x.printer == nil end)
+
+    for tag <- combo_printer do
+      old_tag =
+        Repo.get_by(
+          Tag,
+          tagdesc: tag.tagdesc,
+          printer: tag.printer,
+          branch_id: id,
+          brand_id: BN.get_brand_id(conn)
+        )
+
+      new_tag_id = Repo.all(from(t in Tag, select: t.tagid, order_by: [desc: t.tagid])) |> hd()
+
+      if old_tag == nil do
+        tag_id = new_tag_id + 1
+
+        {:ok, old_tag} =
+          Tag.changeset(
+            %Tag{},
+            %{
+              tagid: tag_id,
+              tagname: branch.branchcode <> " " <> tag.tagdesc,
+              tagdesc: tag.tagdesc,
+              printer: tag.printer,
+              branch_id: id,
+              brand_id: BN.get_brand_id(conn)
+            },
+            0,
+            "new"
+          )
+          |> Repo.insert()
+      end
+
+      old_ids =
+        if old_tag.combo_item_ids == nil do
+          ""
+        else
+          old_tag.combo_item_ids
+        end
+
+      ids = old_ids |> String.split(",")
+      ids = List.insert_at(ids, 0, tag.combo_item_id)
+      new_ids = Enum.join(ids, ",") |> String.trim_trailing(",")
+      Tag.changeset(old_tag, %{combo_item_ids: new_ids}, 0, "Update") |> Repo.update()
+    end
+
+    conn
+    |> put_flash(:info, "Successfully populated")
+    |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
+  end
+
   def get_api(conn, %{"brand" => brand, "id" => branch_id}) do
     branch = Repo.get_by(Branch, branchid: branch_id, brand_id: BN.get_brand_id(conn))
 

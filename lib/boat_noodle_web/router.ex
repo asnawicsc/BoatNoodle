@@ -184,6 +184,7 @@ defmodule BoatNoodleWeb.Router do
     get("/branch/:id/get_api", BranchController, :get_api)
 
     get("/branch/:id/printers", BranchController, :printers)
+    get("/branch/:id/populate_printers", BranchController, :populate_printers)
     resources("/payment_type", PaymentTypeController)
     resources("/sales_master", SalesMasterController)
     resources("/sales", SalesController)

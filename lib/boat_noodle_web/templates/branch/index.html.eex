@@ -87,7 +87,10 @@
                             <i class="material-icons">cast</i> Printers
                           <div class="ripple-container"></div></a>
 
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/populate_printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
 
+                            <i class="material-icons">cast</i> Populate
+                          <div class="ripple-container"></div></a>
 
                       </tr>
                   <% end %>
