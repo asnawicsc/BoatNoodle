@@ -2,6 +2,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
   use BoatNoodleWeb, :channel
   import Number.Currency
   require IEx
+  use Task
 
   def join("dashboard_channel:" <> user_id, payload, socket) do
     if authorized?(payload) do
@@ -9,6 +10,16 @@ defmodule BoatNoodleWeb.DashboardChannel do
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+
+  def dashboard_show(d_nett_sales, d_taxes, d_order, d_pax, d_transaction, socket) do
+    broadcast(socket, "dashboard_1", %{
+      nett_sales: d_nett_sales,
+      taxes: d_taxes,
+      order: d_order,
+      pax: d_pax,
+      transaction: d_transaction
+    })
   end
 
   def handle_in("dashboard", payload, socket) do
@@ -25,33 +36,74 @@ defmodule BoatNoodleWeb.DashboardChannel do
      grp_daily, top_10_selling, top_10_selling_revenue,
      top_10_selling_category} =
       if branchid != "0" do
-        a =
-          Repo.all(
-            from(
-              sp in BoatNoodle.BN.SalesPayment,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sp.salesid == s.salesid,
-              left_join: b in BoatNoodle.BN.Branch,
-              on: b.branchid == s.branchid,
-              where:
-                s.is_void ==0 and s.branchid == ^payload["branch_id"] and s.salesdate >= ^start_d and
-                  s.salesdate <= ^end_d and s.brand_id == ^payload["brand_id"] and
-                  b.brand_id == ^brand_id and sp.brand_id == ^brand_id,
-              group_by: [s.salesdate, b.branchname],
-              select: %{
-                salesdate: s.salesdate,
-                pax: sum(s.pax),
-                branchname: b.branchname,
-                grand_total: sum(sp.grand_total),
-                service_charge: sum(sp.service_charge),
-                gst: sum(sp.gst_charge),
-                after_disc: sum(sp.after_disc),
-                transaction: count(s.salesid),
-                sub_total: sum(sp.sub_total),
-                rounding: sum(sp.rounding)
-              }
-            )
+        history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "summary"
           )
+
+        a =
+          if history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and s.branchid == ^payload["branch_id"] and
+                      s.salesdate >= ^start_d and s.salesdate <= ^end_d and
+                      s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
+                      sp.brand_id == ^brand_id,
+                  group_by: [s.salesdate, b.branchname],
+                  select: %{
+                    salesdate: s.salesdate,
+                    pax: sum(s.pax),
+                    branchname: b.branchname,
+                    grand_total: sum(sp.grand_total),
+                    service_charge: sum(sp.service_charge),
+                    gst: sum(sp.gst_charge),
+                    after_disc: sum(sp.after_disc),
+                    transaction: count(s.salesid),
+                    sub_total: sum(sp.sub_total),
+                    rounding: sum(sp.rounding)
+                  }
+                )
+              )
+
+            {:ok, history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "summary"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+              item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
+              item = Map.put(item, :after_disc, Decimal.new(item.after_disc))
+              item = Map.put(item, :grand_total, Decimal.new(item.grand_total))
+              item = Map.put(item, :gst, Decimal.new(item.gst))
+              item = Map.put(item, :service_charge, Decimal.new(item.service_charge))
+              item = Map.put(item, :sub_total, Decimal.new(item.sub_total))
+              item = Map.put(item, :rounding, Decimal.new(item.rounding))
+              item = Map.put(item, :pax, Decimal.new(item.pax))
+            end
+          end
 
         grp = a |> Enum.group_by(fn x -> x.salesdate end)
 
@@ -253,9 +305,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
-                s.is_void == 0 and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"] and
-                  b.brand_id == ^brand_id and sm.brand_id == ^brand_id,
+                s.is_void == 0 and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
+                  sm.brand_id == ^brand_id,
               group_by: [s.salesdate, b.branchname],
               select: %{sales_details: sum(sm.qty)}
             )
@@ -272,60 +325,132 @@ defmodule BoatNoodleWeb.DashboardChannel do
           |> elem(1)
           |> String.reverse()
 
-        broadcast(socket, "dashboard_1", %{
-          nett_sales: d_nett_sales,
-          taxes: d_taxes,
-          order: d_order,
-          pax: d_pax,
-          transaction: d_transaction
-        })
+        Task.start_link(__MODULE__, :dashboard_show, [
+          d_nett_sales,
+          d_taxes,
+          d_order,
+          d_pax,
+          d_transaction,
+          socket
+        ])
+
+        top_10_items_qty_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "top_10_items_qty"
+          )
 
         top_10_items_qty =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ItemSubcat,
-              on: sm.itemid == i.subcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                 s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
-                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                  s.brand_id == ^payload["brand_id"],
-              group_by: [i.itemname],
-              select: %{
-                itemname: i.itemname,
-                qty: sum(sm.qty)
-              },
-              order_by: [desc: sum(sm.qty)],
-              limit: 10
-            )
+          if top_10_items_qty_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ItemSubcat,
+                  on: sm.itemid == i.subcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                      s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                      s.brand_id == ^payload["brand_id"],
+                  group_by: [i.itemname],
+                  select: %{
+                    itemname: i.itemname,
+                    qty: sum(sm.qty)
+                  },
+                  order_by: [desc: sum(sm.qty)],
+                  limit: 10
+                )
+              )
+
+            {:ok, top_10_items_qty_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "top_10_items_qty"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(top_10_items_qty_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+
+              item = Map.put(item, :qty, Decimal.new(item.qty))
+              item
+            end
+          end
+
+        top_10_items_value_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "top_10_items_value"
           )
 
         top_10_items_value =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ItemSubcat,
-              on: sm.itemid == i.subcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
-                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                  s.brand_id == ^payload["brand_id"],
-              group_by: [i.itemname],
-              select: %{
-                itemname: i.itemname,
-                value: i.itemprice,
-                qty: sum(sm.qty)
-              }
-            )
-          )
+          if top_10_items_value_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ItemSubcat,
+                  on: sm.itemid == i.subcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                      s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                      s.brand_id == ^payload["brand_id"],
+                  group_by: [i.itemname],
+                  select: %{
+                    itemname: i.itemname,
+                    value: i.itemprice,
+                    qty: sum(sm.qty)
+                  }
+                )
+              )
+
+            {:ok, top_10_items_value_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "top_10_items_value"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(top_10_items_value_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+
+              item = Map.put(item, :qty, Decimal.new(item.qty))
+              item = Map.put(item, :value, Decimal.new(item.value))
+              item
+            end
+          end
 
         top_10_selling =
           for item <- top_10_items_qty do
@@ -341,53 +466,122 @@ defmodule BoatNoodleWeb.DashboardChannel do
           |> Enum.reverse()
           |> Enum.take(10)
 
+        all_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "all_history_data"
+          )
+
         all =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ItemSubcat,
-              on: sm.itemid == i.subcatid,
-              left_join: c in BoatNoodle.BN.ItemCat,
-              on: i.itemcatid == c.itemcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                s.is_void ==0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id == c.brand_id and
-                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
-              group_by: [c.itemcatname, s.salesdate],
-              select: %{
-                name: c.itemcatname,
-                y: sum(sm.afterdisc)
-              }
-            )
+          if all_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ItemSubcat,
+                  on: sm.itemid == i.subcatid,
+                  left_join: c in BoatNoodle.BN.ItemCat,
+                  on: i.itemcatid == c.itemcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                      b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                      s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                      s.brand_id == ^payload["brand_id"],
+                  group_by: [c.itemcatname, s.salesdate],
+                  select: %{
+                    name: c.itemcatname,
+                    y: sum(sm.afterdisc)
+                  }
+                )
+              )
+
+            {:ok, all_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "all_history_data"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(all_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+              item = Map.put(item, :y, Decimal.new(item.y))
+              item
+            end
+          end
+
+        combo_detail_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "combo_detail"
           )
 
         combo_detail =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ComboDetails,
-              on: sm.itemid == i.combo_item_id,
-              left_join: c in BoatNoodle.BN.ItemCat,
-              on: i.menu_cat_id == c.itemcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
-                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                  s.brand_id == ^payload["brand_id"],
-              group_by: [c.itemcatname, s.salesdate],
-              select: %{
-                name: c.itemcatname,
-                y: sum(i.unit_price)
-              }
-            )
-          )
+          if combo_detail_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ComboDetails,
+                  on: sm.itemid == i.combo_item_id,
+                  left_join: c in BoatNoodle.BN.ItemCat,
+                  on: i.menu_cat_id == c.itemcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                      s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                      s.brand_id == ^payload["brand_id"],
+                  group_by: [c.itemcatname, s.salesdate],
+                  select: %{
+                    name: c.itemcatname,
+                    y: sum(i.unit_price)
+                  }
+                )
+              )
+
+            {:ok, all_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "combo_detail"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(combo_detail_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+              item = Map.put(item, :y, Decimal.new(item.y))
+              item
+            end
+          end
 
         new_one = all ++ combo_detail
 
@@ -407,32 +601,73 @@ defmodule BoatNoodleWeb.DashboardChannel do
         {d_nett_sales, d_taxes, d_order, d_pax, d_transaction, table_branch_daily_sales_sumary,
          grp_daily, top_10_selling, top_10_selling_revenue, top_10_selling_category}
       else
-        a =
-          Repo.all(
-            from(
-              sp in BoatNoodle.BN.SalesPayment,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sp.salesid == s.salesid,
-              left_join: b in BoatNoodle.BN.Branch,
-              on: b.branchid == s.branchid,
-              where:
-                s.is_void == 0 and s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                  sp.brand_id == ^brand_id and b.brand_id == ^brand_id,
-              group_by: [s.salesdate, b.branchname],
-              select: %{
-                salesdate: s.salesdate,
-                pax: sum(s.pax),
-                branchname: b.branchname,
-                grand_total: sum(sp.grand_total),
-                service_charge: sum(sp.service_charge),
-                gst: sum(sp.gst_charge),
-                after_disc: sum(sp.after_disc),
-                transaction: count(s.salesid),
-                sub_total: sum(sp.sub_total),
-                rounding: sum(sp.rounding)
-              }
-            )
+        history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "summary"
           )
+
+        a =
+          if history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and s.salesdate >= ^payload["s_date"] and
+                      s.salesdate <= ^payload["e_date"] and sp.brand_id == ^brand_id and
+                      b.brand_id == ^brand_id,
+                  group_by: [s.salesdate, b.branchname],
+                  select: %{
+                    salesdate: s.salesdate,
+                    pax: sum(s.pax),
+                    branchname: b.branchname,
+                    grand_total: sum(sp.grand_total),
+                    service_charge: sum(sp.service_charge),
+                    gst: sum(sp.gst_charge),
+                    after_disc: sum(sp.after_disc),
+                    transaction: count(s.salesid),
+                    sub_total: sum(sp.sub_total),
+                    rounding: sum(sp.rounding)
+                  }
+                )
+              )
+
+            {:ok, history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "summary"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+              item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
+              item = Map.put(item, :after_disc, Decimal.new(item.after_disc))
+              item = Map.put(item, :grand_total, Decimal.new(item.grand_total))
+              item = Map.put(item, :gst, Decimal.new(item.gst))
+              item = Map.put(item, :service_charge, Decimal.new(item.service_charge))
+              item = Map.put(item, :sub_total, Decimal.new(item.sub_total))
+              item = Map.put(item, :rounding, Decimal.new(item.rounding))
+              item = Map.put(item, :pax, Decimal.new(item.pax))
+            end
+          end
 
         grp = a |> Enum.group_by(fn x -> x.salesdate end)
 
@@ -625,9 +860,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
-                s.is_void == 0 and  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                  s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
-                  sm.brand_id == ^brand_id,
+                s.is_void == 0 and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"] and
+                  b.brand_id == ^brand_id and sm.brand_id == ^brand_id,
               group_by: [s.salesdate, b.branchname],
               select: %{sales_details: sum(sm.qty)}
             )
@@ -644,59 +879,131 @@ defmodule BoatNoodleWeb.DashboardChannel do
           |> elem(1)
           |> String.reverse()
 
-        broadcast(socket, "dashboard_1", %{
-          nett_sales: d_nett_sales,
-          taxes: d_taxes,
-          order: d_order,
-          pax: d_pax,
-          transaction: d_transaction
-        })
+        Task.start_link(__MODULE__, :dashboard_show, [
+          d_nett_sales,
+          d_taxes,
+          d_order,
+          d_pax,
+          d_transaction,
+          socket
+        ])
+
+        top_10_items_qty_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "top_10_items_qty"
+          )
 
         top_10_items_qty =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ItemSubcat,
-              on: sm.itemid == i.subcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                 s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
-                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
-              group_by: [i.subcatid, i.itemname],
-              select: %{
-                id: i.subcatid,
-                itemname: i.itemname,
-                qty: sum(sm.qty)
-              },
-              order_by: [desc: sum(sm.qty)],
-              limit: 10
-            )
+          if top_10_items_qty_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ItemSubcat,
+                  on: sm.itemid == i.subcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                      s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+                  group_by: [i.subcatid, i.itemname],
+                  select: %{
+                    id: i.subcatid,
+                    itemname: i.itemname,
+                    qty: sum(sm.qty)
+                  },
+                  order_by: [desc: sum(sm.qty)],
+                  limit: 10
+                )
+              )
+
+            {:ok, top_10_items_qty_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "top_10_items_qty"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(top_10_items_qty_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+
+              item = Map.put(item, :qty, Decimal.new(item.qty))
+              item
+            end
+          end
+
+        top_10_items_value_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "top_10_items_value"
           )
 
         top_10_items_value =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ItemSubcat,
-              on: sm.itemid == i.subcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                 s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
-                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
-              group_by: [i.subcatid, i.itemname],
-              select: %{
-                itemname: i.itemname,
-                value: i.itemprice,
-                qty: sum(sm.qty)
-              }
-            )
-          )
+          if top_10_items_value_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ItemSubcat,
+                  on: sm.itemid == i.subcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                      s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+                  group_by: [i.subcatid, i.itemname],
+                  select: %{
+                    itemname: i.itemname,
+                    value: i.itemprice,
+                    qty: sum(sm.qty)
+                  }
+                )
+              )
+
+            {:ok, top_10_items_value_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "top_10_items_value"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(top_10_items_value_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+
+              item = Map.put(item, :qty, Decimal.new(item.qty))
+              item = Map.put(item, :value, Decimal.new(item.value))
+              item
+            end
+          end
 
         top_10_selling =
           for item <- top_10_items_qty do
@@ -712,52 +1019,120 @@ defmodule BoatNoodleWeb.DashboardChannel do
           |> Enum.reverse()
           |> Enum.take(10)
 
+        all_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "all_history_data"
+          )
+
         all =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ItemSubcat,
-              on: sm.itemid == i.subcatid,
-              left_join: c in BoatNoodle.BN.ItemCat,
-              on: i.itemcatid == c.itemcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                 s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id == c.brand_id and
-                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                  s.brand_id == ^payload["brand_id"],
-              group_by: [c.itemcatname, s.salesdate],
-              select: %{
-                name: c.itemcatname,
-                y: sum(sm.afterdisc)
-              }
-            )
+          if all_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ItemSubcat,
+                  on: sm.itemid == i.subcatid,
+                  left_join: c in BoatNoodle.BN.ItemCat,
+                  on: i.itemcatid == c.itemcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                      b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                      s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+                  group_by: [c.itemcatname, s.salesdate],
+                  select: %{
+                    name: c.itemcatname,
+                    y: sum(sm.afterdisc)
+                  }
+                )
+              )
+
+            {:ok, all_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "all_history_data"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(all_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+              item = Map.put(item, :y, Decimal.new(item.y))
+              item
+            end
+          end
+
+        combo_detail_history_data =
+          Repo.get_by(
+            HistoryData,
+            start_date: start_d,
+            end_date: end_d,
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "combo_detail"
           )
 
         combo_detail =
-          Repo.all(
-            from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
-              on: sm.salesid == s.salesid,
-              left_join: i in BoatNoodle.BN.ComboDetails,
-              on: sm.itemid == i.combo_item_id,
-              left_join: c in BoatNoodle.BN.ItemCat,
-              on: i.menu_cat_id == c.itemcatid,
-              left_join: b in BoatNoodle.BN.Brand,
-              on: b.id == ^brand.id,
-              where:
-                 s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
-                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
-              group_by: [c.itemcatname, s.salesdate],
-              select: %{
-                name: c.itemcatname,
-                y: sum(i.unit_price)
-              }
-            )
-          )
+          if combo_detail_history_data == nil do
+            b =
+              Repo.all(
+                from(
+                  sm in BoatNoodle.BN.SalesMaster,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sm.salesid == s.salesid,
+                  left_join: i in BoatNoodle.BN.ComboDetails,
+                  on: sm.itemid == i.combo_item_id,
+                  left_join: c in BoatNoodle.BN.ItemCat,
+                  on: i.menu_cat_id == c.itemcatid,
+                  left_join: b in BoatNoodle.BN.Brand,
+                  on: b.id == ^brand.id,
+                  where:
+                    s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                      s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+                  group_by: [c.itemcatname, s.salesdate],
+                  select: %{
+                    name: c.itemcatname,
+                    y: sum(i.unit_price)
+                  }
+                )
+              )
+
+            {:ok, all_history_data} =
+              HistoryData.changeset(%HistoryData{}, %{
+                start_date: start_d,
+                end_date: end_d,
+                json_map: Poison.encode!(b),
+                branch_id: branchid,
+                brand_id: brand_id,
+                name: "combo_detail"
+              })
+              |> Repo.insert()
+
+            b
+          else
+            data = Poison.decode!(combo_detail_history_data.json_map)
+
+            for item <- data do
+              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+              item = Map.put(item, :y, Decimal.new(item.y))
+              item
+            end
+          end
 
         new_one = all ++ combo_detail
 
@@ -809,7 +1184,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
               on: sp.salesid == s.salesid,
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
-              where:    s.is_void == 0 and s.branchid == ^payload["branch_id"] and s.brand_id == ^payload["brand_id"],
+              where:
+                s.is_void == 0 and s.branchid == ^payload["branch_id"] and
+                  s.brand_id == ^payload["brand_id"],
               group_by: [s.salesdate],
               select: %{
                 salesdate: s.salesdate,
@@ -851,7 +1228,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: sp.salesid == s.salesid,
-              where:  s.is_void == 0 and s.brand_id == ^payload["brand_id"],
+              where: s.is_void == 0 and s.brand_id == ^payload["brand_id"],
               group_by: [s.salesdate],
               select: %{
                 salesdate: s.salesdate,

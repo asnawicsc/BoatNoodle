@@ -1,0 +1,32 @@
+<h2>Listing History data</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Start date</th>
+      <th>End date</th>
+      <th>Json map</th>
+      <th>Brand</th>
+      <th>Branch</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for history_data <- @history_data do %>
+    <tr>
+      <td><%= history_data.start_date %></td>
+      <td><%= history_data.end_date %></td>
+      <td><%= history_data.json_map %></td>
+      <td><%= history_data.brand_id %></td>
+      <td><%= history_data.branch_id %></td>
+
+      <td class="text-right">
+      
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+

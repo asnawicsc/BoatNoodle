@@ -40,9 +40,7 @@ defmodule BoatNoodleWeb.PageController do
       end
 
       # each branch has a menu_catalog, each catalog has its own uniq subcat it...
-
       # existing subcat_id.. find the item_subcat..
-
       # match with target branch menu catalog subcat ids
     end
 

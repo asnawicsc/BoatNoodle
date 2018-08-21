@@ -4734,4 +4734,100 @@ defmodule BoatNoodle.BN do
   def change_modal_log(%ModalLog{} = modal_log) do
     ModalLog.changeset(modal_log, %{})
   end
+
+  alias BoatNoodle.BN.HistoryData
+
+  @doc """
+  Returns the list of history_data.
+
+  ## Examples
+
+      iex> list_history_data()
+      [%HistoryData{}, ...]
+
+  """
+  def list_history_data do
+    Repo.all(HistoryData)
+  end
+
+  @doc """
+  Gets a single history_data.
+
+  Raises `Ecto.NoResultsError` if the History data does not exist.
+
+  ## Examples
+
+      iex> get_history_data!(123)
+      %HistoryData{}
+
+      iex> get_history_data!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_history_data!(id), do: Repo.get!(HistoryData, id)
+
+  @doc """
+  Creates a history_data.
+
+  ## Examples
+
+      iex> create_history_data(%{field: value})
+      {:ok, %HistoryData{}}
+
+      iex> create_history_data(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_history_data(attrs \\ %{}) do
+    %HistoryData{}
+    |> HistoryData.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a history_data.
+
+  ## Examples
+
+      iex> update_history_data(history_data, %{field: new_value})
+      {:ok, %HistoryData{}}
+
+      iex> update_history_data(history_data, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_history_data(%HistoryData{} = history_data, attrs) do
+    history_data
+    |> HistoryData.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a HistoryData.
+
+  ## Examples
+
+      iex> delete_history_data(history_data)
+      {:ok, %HistoryData{}}
+
+      iex> delete_history_data(history_data)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_history_data(%HistoryData{} = history_data) do
+    Repo.delete(history_data)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking history_data changes.
+
+  ## Examples
+
+      iex> change_history_data(history_data)
+      %Ecto.Changeset{source: %HistoryData{}}
+
+  """
+  def change_history_data(%HistoryData{} = history_data) do
+    HistoryData.changeset(history_data, %{})
+  end
 end

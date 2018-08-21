@@ -3790,4 +3790,72 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_modal_log(modal_log)
     end
   end
+
+  describe "history_data" do
+    alias BoatNoodle.BN.HistoryData
+
+    @valid_attrs %{branch_id: 42, brand_id: 42, end_date: ~D[2010-04-17], json_map: "some json_map", start_date: ~D[2010-04-17]}
+    @update_attrs %{branch_id: 43, brand_id: 43, end_date: ~D[2011-05-18], json_map: "some updated json_map", start_date: ~D[2011-05-18]}
+    @invalid_attrs %{branch_id: nil, brand_id: nil, end_date: nil, json_map: nil, start_date: nil}
+
+    def history_data_fixture(attrs \\ %{}) do
+      {:ok, history_data} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_history_data()
+
+      history_data
+    end
+
+    test "list_history_data/0 returns all history_data" do
+      history_data = history_data_fixture()
+      assert BN.list_history_data() == [history_data]
+    end
+
+    test "get_history_data!/1 returns the history_data with given id" do
+      history_data = history_data_fixture()
+      assert BN.get_history_data!(history_data.id) == history_data
+    end
+
+    test "create_history_data/1 with valid data creates a history_data" do
+      assert {:ok, %HistoryData{} = history_data} = BN.create_history_data(@valid_attrs)
+      assert history_data.branch_id == 42
+      assert history_data.brand_id == 42
+      assert history_data.end_date == ~D[2010-04-17]
+      assert history_data.json_map == "some json_map"
+      assert history_data.start_date == ~D[2010-04-17]
+    end
+
+    test "create_history_data/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_history_data(@invalid_attrs)
+    end
+
+    test "update_history_data/2 with valid data updates the history_data" do
+      history_data = history_data_fixture()
+      assert {:ok, history_data} = BN.update_history_data(history_data, @update_attrs)
+      assert %HistoryData{} = history_data
+      assert history_data.branch_id == 43
+      assert history_data.brand_id == 43
+      assert history_data.end_date == ~D[2011-05-18]
+      assert history_data.json_map == "some updated json_map"
+      assert history_data.start_date == ~D[2011-05-18]
+    end
+
+    test "update_history_data/2 with invalid data returns error changeset" do
+      history_data = history_data_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_history_data(history_data, @invalid_attrs)
+      assert history_data == BN.get_history_data!(history_data.id)
+    end
+
+    test "delete_history_data/1 deletes the history_data" do
+      history_data = history_data_fixture()
+      assert {:ok, %HistoryData{}} = BN.delete_history_data(history_data)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_history_data!(history_data.id) end
+    end
+
+    test "change_history_data/1 returns a history_data changeset" do
+      history_data = history_data_fixture()
+      assert %Ecto.Changeset{} = BN.change_history_data(history_data)
+    end
+  end
 end

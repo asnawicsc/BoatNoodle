@@ -58,7 +58,7 @@ defmodule BoatNoodleWeb.Router do
     get("/", PageController, :index2)
     post("/sales_graph_by_year", PageController, :sales_graph_by_year)
     post("/sales_bar_graph_by_year", SalesMasterController, :sales_bar_graph_by_year)
-
+    resources("/history_data", HistoryDataController)
     resources("/menu_item", MenuItemController)
     resources("/brand", BrandController)
     post("/create", BrandController, :create)
