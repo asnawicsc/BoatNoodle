@@ -1,13 +1,11 @@
 defmodule BoatNoodleWeb.ItemSubcatController do
   use BoatNoodleWeb, :controller
-
+  use Task
   alias BoatNoodle.BN
-  alias BoatNoodle.BN.{MenuItem,Discount, ItemSubcat, ComboDetails, Branch, ItemCat,Tag}
+  alias BoatNoodle.BN.{MenuItem, Discount, ItemSubcat, ComboDetails, Branch, ItemCat, Tag}
   require IEx
 
   def combo_create(conn, params) do
-
-
     ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
     itemname = params["itemcode"] <> " " <> params["itemdesc"]
     params = Map.put(params, "itemname", itemname)
@@ -21,7 +19,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     subcatid = String.to_integer(prev_subcatid) + 1
     params = Map.put(params, "subcatid", subcatid)
-
 
     brand = BN.get_brand_id(conn)
     itemcat = params["itemcat"]
@@ -59,7 +56,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_create_price(conn, params) do
-
     pa = params["a"]
 
     count =
@@ -67,16 +63,24 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         count = elem(cat, 1)["all_item"] |> String.split(",") |> Enum.count()
       end
 
-     a = if Enum.all?(count, fn x -> x == 1 end) do
-     true
-    else
-     false
-    end
+    a =
+      if Enum.all?(count, fn x -> x == 1 end) do
+        true
+      else
+        false
+      end
 
     if a == true do
-      brand=BN.get_brand_id(conn)
+      brand = BN.get_brand_id(conn)
+
       menu_catalog =
-        Repo.all(from(m in BoatNoodle.BN.MenuCatalog, where: m.brand_id==^brand, select: %{id: m.id, name: m.name}))
+        Repo.all(
+          from(
+            m in BoatNoodle.BN.MenuCatalog,
+            where: m.brand_id == ^brand,
+            select: %{id: m.id, name: m.name}
+          )
+        )
 
       pr = params["a"] |> Enum.map(fn x -> x end) |> hd |> elem(1)
       item_name = pr["itemname"]
@@ -113,13 +117,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       item_code = pr["itemcode"]
       item_cat = pr["itemcat"]
       price_code = pr["price_code"]
-    is_default_combo = params["item"]["is_default_combo"]
+      is_default_combo = params["item"]["is_default_combo"]
       is_activate = params["item"]["is_activate"]
 
       enable_discount = params["item"]["enable_discount"]
 
       included_spend = params["item"]["included_spend"]
-
 
       render(
         conn,
@@ -139,18 +142,24 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_branch(conn, params) do
-
     com = params["com"]
     items = params["item"]
 
-    is_default_combo=params["is_default_combo"]
-    is_activate=params["is_activate"]
-    enable_discount=params["enable_discount"]
-    included_spend=params["included_spend"]
+    is_default_combo = params["is_default_combo"]
+    is_activate = params["is_activate"]
+    enable_discount = params["enable_discount"]
+    included_spend = params["included_spend"]
 
-    brand=BN.get_brand_id(conn)
+    brand = BN.get_brand_id(conn)
+
     menu_catalog =
-      Repo.all(from(m in BoatNoodle.BN.MenuCatalog, where: m.brand_id==^brand, select: %{id: m.id, name: m.name}))
+      Repo.all(
+        from(
+          m in BoatNoodle.BN.MenuCatalog,
+          where: m.brand_id == ^brand,
+          select: %{id: m.id, name: m.name}
+        )
+      )
 
     render(
       conn,
@@ -162,7 +171,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       is_activate: is_activate,
       enable_discount: enable_discount,
       included_spend: included_spend
-      )
+    )
   end
 
   def combo_unselect(conn, params) do
@@ -170,34 +179,38 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     com = params["com"]
 
-    is_default_combo=params["is_default_combo"]
-    is_activate=params["is_activate"]
-    enable_discount=params["enable_discount"]
-    included_spend=params["included_spend"]
+    is_default_combo = params["is_default_combo"]
+    is_activate = params["is_activate"]
+    enable_discount = params["enable_discount"]
+    included_spend = params["included_spend"]
 
-    is_default_combo=if is_default_combo == "on" do
-     1
-    else
-      0
-    end
+    is_default_combo =
+      if is_default_combo == "on" do
+        1
+      else
+        0
+      end
 
-     is_activate=if is_activate == "on" do
-    1
-    else
-     0   
-    end
+    is_activate =
+      if is_activate == "on" do
+        1
+      else
+        0
+      end
 
-    enable_discount=if enable_discount == "on" do
-      1
-    else
-      0  
-    end
+    enable_discount =
+      if enable_discount == "on" do
+        1
+      else
+        0
+      end
 
-     included_spend=if included_spend == "on" do
-     1
-    else
-     0
-    end
+    included_spend =
+      if included_spend == "on" do
+        1
+      else
+        0
+      end
 
     prev_subcatid =
       Repo.all(from(c in ItemSubcat, select: %{subcatid: c.subcatid}))
@@ -229,36 +242,38 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     total_price = com["total_price"]
     brand_id = itemcat.brand_id
 
+    stat = %{
+      subcatid: subcatid,
+      itemcatid: itemcatid,
+      itemname: itemname,
+      itemcode: itemcode,
+      product_code: product_code,
+      price_code: price_code,
+      part_code: part_code,
+      itemdesc: item_desc,
+      itemprice: total_price,
+      brand_id: brand_id,
+      is_default_combo: is_default_combo,
+      is_activate: is_activate,
+      enable_disc: enable_discount,
+      include_spend: included_spend
+    }
 
+    cg2 =
+      BoatNoodle.BN.ItemSubcat.changeset(
+        %BoatNoodle.BN.ItemSubcat{},
+        stat,
+        BN.current_user(conn),
+        "Create"
+      )
 
+    case Repo.insert(cg2) do
+      {:ok, itemsubcat} ->
+        true
 
-    stat =
-     %{
-        subcatid: subcatid,
-        itemcatid: itemcatid,
-        itemname: itemname,
-        itemcode: itemcode,
-        product_code: product_code,
-        price_code: price_code,
-        part_code: part_code,
-        itemdesc: item_desc,
-        itemprice: total_price,
-        brand_id: brand_id,
-        is_default_combo: is_default_combo,
-        is_activate: is_activate,
-        enable_disc: enable_discount,
-        include_spend: included_spend
-      }
-
-      cg2 = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, stat, BN.current_user(conn),"Create")
-
-        case Repo.insert(cg2) do
-          {:ok, itemsubcat} ->
-            true
-          {:error, changeset} ->
-            true
-        end
-
+      {:error, changeset} ->
+        true
+    end
 
     for branch <- branchs do
       id = branch |> String.to_integer()
@@ -269,25 +284,25 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       all_items = List.insert_at(comb, 0, subcatid)
       new_items = all_items |> Enum.join(",")
 
-      params=%{items: new_items}
+      params = %{items: new_items}
 
-       update_menu_catalog = BoatNoodle.BN.MenuCatalog.changeset(item, params, BN.current_user(conn),"Update")
+      update_menu_catalog =
+        BoatNoodle.BN.MenuCatalog.changeset(item, params, BN.current_user(conn), "Update")
 
-            case Repo.update(update_menu_catalog) do
-              {:ok, menu_catalog} ->
-                true
+      case Repo.update(update_menu_catalog) do
+        {:ok, menu_catalog} ->
+          true
 
-              _ ->
-                IO.puts("failed menu catalog update")
-                false
-            end
+        _ ->
+          IO.puts("failed menu catalog update")
+          false
+      end
     end
 
     for item <- all_item do
-
-       itemname = elem(item, 1)["product_name"]
+      itemname = elem(item, 1)["product_name"]
       item_coded = itemname |> String.split_at(3) |> elem(0)
-      s=elem(item,1)["subcatid"]|>String.to_integer
+      s = elem(item, 1)["subcatid"] |> String.to_integer()
       item_subcat = Repo.get_by(ItemSubcat, subcatid: s, brand_id: BN.get_brand_id(conn))
       menu_cat_id = item_subcat.itemcatid
       combo_id = subcatid
@@ -297,8 +312,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       brand_id = itemcat.brand_id
 
       sub = subcatid2 |> String.to_integer()
-
-
 
       if sub < 100 do
         sub =
@@ -312,7 +325,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         sub = sub |> Integer.to_string()
       end
 
-       p = (comboid2 <> sub) |> String.to_integer()
+      p = (comboid2 <> sub) |> String.to_integer()
 
       combo_item_id = p
 
@@ -322,15 +335,22 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       top_up = 0
 
-      printers=Repo.all(from s in Tag,where: s.brand_id==^BN.get_brand_id(conn),select: %{tagid: s.tagid,subcat_ids: s.subcat_ids,combo_item_ids: s.combo_item_ids})|>Enum.reject(fn x -> x.subcat_ids== nil end)
+      printers =
+        Repo.all(
+          from(
+            s in Tag,
+            where: s.brand_id == ^BN.get_brand_id(conn),
+            select: %{tagid: s.tagid, subcat_ids: s.subcat_ids, combo_item_ids: s.combo_item_ids}
+          )
+        )
+        |> Enum.reject(fn x -> x.subcat_ids == nil end)
 
       for printer <- printers do
         subcatids = printer.subcat_ids
         all = subcatids |> String.split(",")
 
         if Enum.any?(all, fn x -> x == subcatid2 end) do
-
-          combo_id=combo_item_id|> Integer.to_string()
+          combo_id = combo_item_id |> Integer.to_string()
           comboitemids = printer.combo_item_ids
           comb = comboitemids |> String.split(",")
           all_items = List.insert_at(comb, 0, combo_id)
@@ -338,77 +358,88 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
           tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
 
-         tag_params=%{combo_item_ids: new_items}
+          tag_params = %{combo_item_ids: new_items}
 
-               update_tag = BoatNoodle.BN.Tag.changeset(tag, tag_params, BN.current_user(conn),"Update Printer")
+          update_tag =
+            BoatNoodle.BN.Tag.changeset(tag, tag_params, BN.current_user(conn), "Update Printer")
 
-                case Repo.update(update_tag) do
-                  {:ok, tag} ->
-                    true
+          case Repo.update(update_tag) do
+            {:ok, tag} ->
+              true
 
-                  _ ->
-                    IO.puts("failed tag update")
-                    false
-                end
-             
-         end 
+            _ ->
+              IO.puts("failed tag update")
+              false
+          end
+        end
       end
-        
 
-      stat2 =
-       %{
-          menu_cat_id: menu_cat_id,
-          combo_id: combo_id,
-          combo_qty: combo_qty,
-          combo_item_id: combo_item_id,
-          combo_item_name: itemname,
-          combo_item_code: item_coded,
-          combo_item_qty: combo_item_qty,
-          unit_price: unit_price,
-          top_up: top_up,
-          brand_id: brand_id
-        }
+      stat2 = %{
+        menu_cat_id: menu_cat_id,
+        combo_id: combo_id,
+        combo_qty: combo_qty,
+        combo_item_id: combo_item_id,
+        combo_item_name: itemname,
+        combo_item_code: item_coded,
+        combo_item_qty: combo_item_qty,
+        unit_price: unit_price,
+        top_up: top_up,
+        brand_id: brand_id
+      }
 
-          create_combo_details = BoatNoodle.BN.ComboDetails.changeset(%BoatNoodle.BN.ComboDetails{}, stat2, BN.current_user(conn),"Create Combo Details")
+      create_combo_details =
+        BoatNoodle.BN.ComboDetails.changeset(
+          %BoatNoodle.BN.ComboDetails{},
+          stat2,
+          BN.current_user(conn),
+          "Create Combo Details"
+        )
 
-            case Repo.insert(create_combo_details) do
-                 {:ok, combo_details} ->
-                combo_details =Repo.get_by(ComboDetails,combo_item_id: combo_details.combo_item_id,brand_id: BN.get_brand_id(conn))
+      case Repo.insert(create_combo_details) do
+        {:ok, combo_details} ->
+          combo_details =
+            Repo.get_by(
+              ComboDetails,
+              combo_item_id: combo_details.combo_item_id,
+              brand_id: BN.get_brand_id(conn)
+            )
 
-                a = params["branc"]
-                branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
+          a = params["branc"]
+          branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
 
-                for branch <- branchs do
-                  id = branch |> String.to_integer()
-                  catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+          for branch <- branchs do
+            id = branch |> String.to_integer()
+            catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
 
-                  combo_items = catalog.combo_items
-                  comb = combo_items |> String.split(",")
+            combo_items = catalog.combo_items
+            comb = combo_items |> String.split(",")
 
-                  combo_id = combo_details.id |> Integer.to_string()
+            combo_id = combo_details.id |> Integer.to_string()
 
-                  all_combo_items = List.insert_at(comb, 0, combo_id)
+            all_combo_items = List.insert_at(comb, 0, combo_id)
 
-                  new = all_combo_items |> Enum.join(",")
+            new = all_combo_items |> Enum.join(",")
 
+            catalog_params = %{combo_items: new}
 
-                   catalog_params=%{combo_items: new}
+            update_menu_catalog =
+              BoatNoodle.BN.MenuCatalog.changeset(
+                catalog,
+                catalog_params,
+                BN.current_user(conn),
+                "Update Menu Catalog"
+              )
 
-                     update_menu_catalog = BoatNoodle.BN.MenuCatalog.changeset(catalog, catalog_params, BN.current_user(conn),"Update Menu Catalog")
+            case Repo.update(update_menu_catalog) do
+              {:ok, tag} ->
+                true
 
-                      case Repo.update(update_menu_catalog) do
-                        {:ok, tag} ->
-                          true
-
-                        _ ->
-                          IO.puts("failed menu catalog update")
-                          false
-                      end
-
-
-                end
-             end
-     
+              _ ->
+                IO.puts("failed menu catalog update")
+                false
+            end
+          end
+      end
     end
 
     conn
@@ -417,35 +448,37 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_finish(conn, params) do
- 
     combo = params["item"]
     all_item = params["all"]
 
+    is_default_combo =
+      if params["is_default_combo"] == "on" do
+        1
+      else
+        0
+      end
 
-    is_default_combo=if params["is_default_combo"] == "on" do
-     1
-    else
-      0
-    end
+    is_activate =
+      if params["is_activate"] == "on" do
+        1
+      else
+        0
+      end
 
-     is_activate=if params["is_activate"] == "on" do
-      1
-    else
-     0
-    end
+    enable_discount =
+      if params["included_spend"] == "on" do
+        1
+      else
+        0
+      end
 
-    enable_discount=if params["included_spend"] == "on" do
-      1
-    else
-    0
-    end
+    included_spend =
+      if params["included_spend"] == "on" do
+        1
+      else
+        0
+      end
 
-     included_spend=if params["included_spend"] == "on" do
-     1
-    else
-     0
-    end 
-  
     item_category = combo["itemcat"]
     item_code = combo["itemcode"]
 
@@ -474,36 +507,38 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     total_price = combo["total_price"]
     brand_id = itemcat.brand_id
 
+    stat = %{
+      subcatid: subcatid,
+      itemcatid: itemcatid,
+      itemname: itemname,
+      itemcode: itemcode,
+      product_code: product_code,
+      price_code: price_code,
+      part_code: part_code,
+      itemdesc: item_desc,
+      itemprice: total_price,
+      brand_id: brand_id,
+      is_default_combo: is_default_combo,
+      is_activate: is_activate,
+      enable_disc: enable_discount,
+      include_spend: included_spend
+    }
 
+    cg2 =
+      BoatNoodle.BN.ItemSubcat.changeset(
+        %BoatNoodle.BN.ItemSubcat{},
+        stat,
+        BN.current_user(conn),
+        "Create Combo"
+      )
 
-    stat =
-     %{
-        subcatid: subcatid,
-        itemcatid: itemcatid,
-        itemname: itemname,
-        itemcode: itemcode,
-        product_code: product_code,
-        price_code: price_code,
-        part_code: part_code,
-        itemdesc: item_desc,
-        itemprice: total_price,
-        brand_id: brand_id,
-        is_default_combo: is_default_combo,
-        is_activate: is_activate,
-        enable_disc: enable_discount,
-        include_spend: included_spend
-      }
+    case Repo.insert(cg2) do
+      {:ok, itemsubcat} ->
+        true
 
-      cg2 = BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{}, stat, BN.current_user(conn),"Create Combo")
-
-        case Repo.insert(cg2) do
-          {:ok, itemsubcat} ->
-            true
-          {:error, changeset} ->
-            true
-        end
-
-       
+      {:error, changeset} ->
+        true
+    end
 
     a = params["branc"]
     branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
@@ -517,27 +552,25 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       all_items = List.insert_at(comb, 0, subcatid)
       new_items = all_items |> Enum.join(",")
 
-      params=%{items: new_items}
+      params = %{items: new_items}
 
-       update_menu_catalog = BoatNoodle.BN.MenuCatalog.changeset(item, params, BN.current_user(conn),"Update")
+      update_menu_catalog =
+        BoatNoodle.BN.MenuCatalog.changeset(item, params, BN.current_user(conn), "Update")
 
-            case Repo.update(update_menu_catalog) do
-              {:ok, menu_catalog} ->
-                true
+      case Repo.update(update_menu_catalog) do
+        {:ok, menu_catalog} ->
+          true
 
-              _ ->
-                IO.puts("failed menu catalog update")
-                false
-            end
+        _ ->
+          IO.puts("failed menu catalog update")
+          false
+      end
     end
 
-
     for item <- all_item do
-    
-
       itemname = elem(item, 1)["product_name"]
       item_coded = itemname |> String.split_at(3) |> elem(0)
-      s=elem(item,1)["subcatid"]|>String.to_integer
+      s = elem(item, 1)["subcatid"] |> String.to_integer()
       itemcat = Repo.get_by(ItemSubcat, subcatid: s, brand_id: BN.get_brand_id(conn))
       menu_cat_id = itemcat.itemcatid
       combo_id = subcatid
@@ -570,101 +603,118 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       top_up = elem(item, 1)["top_up"]
 
-
-      printers=Repo.all(from s in Tag,where: s.brand_id==^BN.get_brand_id(conn),select: %{tagid: s.tagid,subcat_ids: s.subcat_ids,combo_item_ids: s.combo_item_ids})
+      printers =
+        Repo.all(
+          from(
+            s in Tag,
+            where: s.brand_id == ^BN.get_brand_id(conn),
+            select: %{tagid: s.tagid, subcat_ids: s.subcat_ids, combo_item_ids: s.combo_item_ids}
+          )
+        )
 
       for printer <- printers do
         subcatids = printer.subcat_ids
-         if subcatids != nil do
-            all = subcatids |> String.split(",")
 
+        if subcatids != nil do
+          all = subcatids |> String.split(",")
 
-            if Enum.any?(all, fn x -> x == subcatid2 end) do
+          if Enum.any?(all, fn x -> x == subcatid2 end) do
+            combo_id = combo_item_id |> Integer.to_string()
+            comboitemids = printer.combo_item_ids
+            comb = comboitemids |> String.split(",")
+            all_items = List.insert_at(comb, 0, combo_id)
+            new_items = all_items |> Enum.join(",")
 
-              combo_id=combo_item_id|> Integer.to_string()
-              comboitemids = printer.combo_item_ids
-              comb = comboitemids |> String.split(",")
-              all_items = List.insert_at(comb, 0, combo_id)
-              new_items = all_items |> Enum.join(",")
+            tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
 
-              tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
+            tag_params = %{combo_item_ids: new_items}
 
-               tag_params=%{combo_item_ids: new_items}
+            update_tag =
+              BoatNoodle.BN.Tag.changeset(
+                tag,
+                tag_params,
+                BN.current_user(conn),
+                "Update Printer"
+              )
 
-               update_tag = BoatNoodle.BN.Tag.changeset(tag, tag_params, BN.current_user(conn),"Update Printer")
+            case Repo.update(update_tag) do
+              {:ok, tag} ->
+                true
 
-                case Repo.update(update_tag) do
-                  {:ok, tag} ->
-                    true
-
-                  _ ->
-                    IO.puts("failed tag update")
-                    false
-                end
-                 
+              _ ->
+                IO.puts("failed tag update")
+                false
             end
-             
           end
+        end
       end
 
-  
+      stat2 = %{
+        menu_cat_id: menu_cat_id,
+        combo_id: combo_id,
+        combo_qty: combo_qty,
+        combo_item_id: combo_item_id,
+        combo_item_name: itemname,
+        combo_item_code: item_coded,
+        combo_item_qty: combo_item_qty,
+        unit_price: unit_price,
+        top_up: top_up,
+        brand_id: brand_id
+      }
 
-     
-        
-      stat2 =
-       %{
-          menu_cat_id: menu_cat_id,
-          combo_id: combo_id,
-          combo_qty: combo_qty,
-          combo_item_id: combo_item_id,
-          combo_item_name: itemname,
-          combo_item_code: item_coded,
-          combo_item_qty: combo_item_qty,
-          unit_price: unit_price,
-          top_up: top_up,
-          brand_id: brand_id
-        }
+      create_combo_details =
+        BoatNoodle.BN.ComboDetails.changeset(
+          %BoatNoodle.BN.ComboDetails{},
+          stat2,
+          BN.current_user(conn),
+          "Create Combo Details"
+        )
 
-          create_combo_details = BoatNoodle.BN.ComboDetails.changeset(%BoatNoodle.BN.ComboDetails{}, stat2, BN.current_user(conn),"Create Combo Details")
+      case Repo.insert(create_combo_details) do
+        {:ok, combo_details} ->
+          combo_details =
+            Repo.get_by(
+              ComboDetails,
+              combo_item_id: combo_details.combo_item_id,
+              brand_id: BN.get_brand_id(conn)
+            )
 
-            case Repo.insert(create_combo_details) do
-                 {:ok, combo_details} ->
-                combo_details =Repo.get_by(ComboDetails,combo_item_id: combo_details.combo_item_id,brand_id: BN.get_brand_id(conn))
+          a = params["branc"]
+          branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
 
-                a = params["branc"]
-                branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
+          for branch <- branchs do
+            id = branch |> String.to_integer()
+            catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
 
-                for branch <- branchs do
-                  id = branch |> String.to_integer()
-                  catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+            combo_items = catalog.combo_items
+            comb = combo_items |> String.split(",")
 
-                  combo_items = catalog.combo_items
-                  comb = combo_items |> String.split(",")
+            combo_id = combo_details.id |> Integer.to_string()
 
-                  combo_id = combo_details.id |> Integer.to_string()
+            all_combo_items = List.insert_at(comb, 0, combo_id)
 
-                  all_combo_items = List.insert_at(comb, 0, combo_id)
+            new = all_combo_items |> Enum.join(",")
 
-                  new = all_combo_items |> Enum.join(",")
+            catalog_params = %{combo_items: new}
 
+            update_menu_catalog =
+              BoatNoodle.BN.MenuCatalog.changeset(
+                catalog,
+                catalog_params,
+                BN.current_user(conn),
+                "Update Menu Catalog"
+              )
 
-                   catalog_params=%{combo_items: new}
+            case Repo.update(update_menu_catalog) do
+              {:ok, tag} ->
+                true
 
-                     update_menu_catalog = BoatNoodle.BN.MenuCatalog.changeset(catalog, catalog_params, BN.current_user(conn),"Update Menu Catalog")
-
-                      case Repo.update(update_menu_catalog) do
-                        {:ok, tag} ->
-                          true
-
-                        _ ->
-                          IO.puts("failed menu catalog update")
-                          false
-                      end
-
-
-                end
-             end
-     
+              _ ->
+                IO.puts("failed menu catalog update")
+                false
+            end
+          end
+      end
     end
 
     conn
@@ -729,28 +779,221 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     )
   end
 
+  def add_item(conn, %{"subcatid" => id}) do
+    id = String.to_integer(id)
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
+
+    user = BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+
+    ala_carte1 =
+      Repo.all(
+        from(
+          c in ItemCat,
+          where: c.brand_id == ^BN.get_brand_id(conn) and c.visable == ^1,
+          select: %{
+            itemcatcode: c.itemcatcode,
+            itemcatdesc: c.itemcatdesc,
+            itemcatid: c.itemcatid,
+            itemcatname: c.itemcatname
+          }
+        )
+      )
+
+    item_subcats =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where: s.price_code == ^item_subcat.price_code and s.brand_id == ^BN.get_brand_id(conn),
+          order_by: [s.itemcode]
+        )
+      )
+
+    # IEx.pry()
+
+    render(
+      conn,
+      "add_combo_item.html",
+      item_subcat: item_subcat,
+      ala_carte1: ala_carte1,
+      item_subcats: item_subcats
+    )
+  end
+
+  def post_add_item(conn, params) do
+    user = BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
+    subcatid = params["subcatid"]
+    itemcatid = params["itemcat"]
+    combo_qty = params["combo_qty"]
+
+    old_combo_items =
+      Repo.all(
+        from(
+          c in ComboDetails,
+          where:
+            c.combo_id == ^subcatid and c.menu_cat_id == ^itemcatid and
+              c.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+
+    ids = params[itemcatid] |> Map.keys()
+
+    combo_items =
+      for id <- ids do
+        combo_detail_param = params[itemcatid][id]
+        subcat = Repo.get_by(ItemSubcat, brand_id: BN.get_brand_id(conn), subcatid: id)
+
+        if combo_detail_param["unit_price"] != "" do
+          {:ok, combo_item} =
+            ComboDetails.changeset(
+              %ComboDetails{},
+              %{
+                menu_cat_id: itemcatid,
+                combo_id: subcatid,
+                combo_qty: combo_qty,
+                combo_item_id: subcatid <> id,
+                combo_item_name: subcat.itemname,
+                combo_item_code: subcat.itemcode,
+                combo_item_qty: combo_qty,
+                update_qty: 0,
+                unit_price: Decimal.new(combo_detail_param["unit_price"]),
+                topup_price: Decimal.new(combo_detail_param["topup_price"]),
+                brand_id: BN.get_brand_id(conn)
+              },
+              user.id,
+              "new"
+            )
+            |> Repo.insert()
+
+          combo_item
+        else
+          nil
+        end
+      end
+      |> Enum.reject(fn x -> x == nil end)
+
+    branches = Repo.all(from(b in Branch, where: b.brand_id == ^BN.get_brand_id(conn)))
+
+    affected_branches =
+      for branch <- branches do
+        id = branch.menu_catalog
+        item = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+        com_items = item.items
+        comb = com_items |> String.split(",")
+
+        if Enum.any?(comb, fn x -> x == subcatid end) do
+          menu_cat_combo_items = item.combo_items |> String.split(",")
+          list = Enum.map(combo_items, fn x -> x.id end)
+          old_list = Enum.map(old_combo_items, fn x -> x.id end)
+
+          new_list =
+            (menu_cat_combo_items ++ (list -- old_list)) |> Enum.join(",")
+            |> String.trim_trailing(",")
+
+          params = %{combo_items: new_list}
+
+          update_menu_catalog =
+            BoatNoodle.BN.MenuCatalog.changeset(item, params, BN.current_user(conn), "Update")
+
+          case Repo.update(update_menu_catalog) do
+            {:ok, menu_catalog} ->
+              true
+
+            _ ->
+              IO.puts("failed menu catalog update")
+              false
+          end
+
+          branch.branchid
+        else
+          nil
+        end
+      end
+      |> Enum.reject(fn x -> x == nil end)
+
+    Task.start_link(__MODULE__, :add_combo_item_to_printers, [
+      affected_branches,
+      combo_items,
+      conn,
+      old_combo_items
+    ])
+
+    old_list = Enum.map(old_combo_items, fn x -> x.id end)
+
+    Repo.delete_all(
+      from(
+        c in ComboDetails,
+        where: c.id in ^old_list
+      )
+    )
+
+    conn
+    |> put_flash(:info, "Combo item added!")
+    |> redirect(to: item_subcat_path(conn, :combo_show, BN.get_domain(conn), subcatid))
+  end
+
+  def add_combo_item_to_printers(affected_branches, combo_items, conn, old_combo_items) do
+    printers =
+      Repo.all(
+        from(
+          s in Tag,
+          where: s.brand_id == ^BN.get_brand_id(conn) and s.branch_id in ^affected_branches,
+          select: %{tagid: s.tagid, subcat_ids: s.subcat_ids, combo_item_ids: s.combo_item_ids}
+        )
+      )
+      |> Enum.reject(fn x -> x.subcat_ids == nil end)
+
+    for printer <- printers do
+      combo_item_ids = printer.combo_item_ids
+      all = combo_item_ids |> String.split(",")
+      current_list = Enum.map(combo_items, fn x -> x.combo_item_id end)
+      old_current_list = Enum.map(old_combo_items, fn x -> x.combo_item_id end)
+      new_list = all ++ (current_list -- old_current_list)
+
+      new_items = new_list |> Enum.join(",") |> String.trim_trailing(",")
+
+      tag = Repo.get_by(Tag, tagid: printer.tagid, brand_id: BN.get_brand_id(conn))
+
+      tag_params = %{combo_item_ids: new_items}
+
+      update_tag =
+        BoatNoodle.BN.Tag.changeset(tag, tag_params, BN.current_user(conn), "Update Printer")
+
+      case Repo.update(update_tag) do
+        {:ok, tag} ->
+          true
+
+        _ ->
+          IO.puts("failed tag update")
+          false
+      end
+    end
+  end
+
   def combo_show(conn, %{"subcatid" => id}) do
-      id=String.to_integer(id)
-      item_subcat =
-      Repo.get_by(ItemSubcat,subcatid: id,brand_id: BN.get_brand_id(conn))
-      
-     user =BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
-    
-     admin_menus = BoatNoodle.Repo.all(from b in BoatNoodle.BN.UnauthorizeMenu,
-     left_join: g in BoatNoodle.BN.User, on: b.role_id==g.roleid,
-     left_join: c in BoatNoodle.BN.UserRole, on: g.roleid==c.roleid,
-      where: g.id == ^user.id and b.active==1)|> Enum.map(fn x -> x.url end)
+    id = String.to_integer(id)
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
+    user = BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
 
+    admin_menus =
+      BoatNoodle.Repo.all(
+        from(
+          b in BoatNoodle.BN.UnauthorizeMenu,
+          left_join: g in BoatNoodle.BN.User,
+          on: b.role_id == g.roleid,
+          left_join: c in BoatNoodle.BN.UserRole,
+          on: g.roleid == c.roleid,
+          where: g.id == ^user.id and b.active == 1
+        )
+      )
+      |> Enum.map(fn x -> x.url end)
 
-     a=conn.path_info|>List.delete_at(2)
-     b="edit"
-     c=List.insert_at(a,2,b)
-     d=c|>Enum.join("/")
-     e="/"
-     url=e<>d
-
-
+    a = conn.path_info |> List.delete_at(2)
+    b = "edit"
+    c = List.insert_at(a, 2, b)
+    d = c |> Enum.join("/")
+    e = "/"
+    url = e <> d
 
     same_items =
       Repo.all(
@@ -761,39 +1004,44 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         )
       )
 
-    same_items = if same_items == [] do
-      [item_subcat]
-    else
-      
-   
-      Repo.all(
-        from(
-          s in ItemSubcat,
-          where: s.itemcode == ^item_subcat.itemcode and s.is_delete == ^0,
-          order_by: [asc: s.price_code]
+    same_items =
+      if same_items == [] do
+        [item_subcat]
+      else
+        Repo.all(
+          from(
+            s in ItemSubcat,
+            where: s.itemcode == ^item_subcat.itemcode and s.is_delete == ^0,
+            order_by: [asc: s.price_code]
+          )
         )
-      )
-
-    end
+      end
 
     ids = same_items |> Enum.map(fn x -> x.subcatid end)
-    combo_items = Repo.all(from(c in ComboDetails,
-      left_join: i in ItemCat, on: i.itemcatid == c.menu_cat_id,
-      left_join: b in Brand, on: c.brand_id == b.id,
-     where: c.combo_id in ^ids and i.brand_id ==^BN.get_brand_id(conn) and c.is_delete == 0,
-     select: %{ combo_item_name: c.combo_item_name,
-              combo_category: i.itemcatname,
-              combo_qty: c.combo_qty,
-              combo_item_qty: c.combo_item_qty,
-              unit_price: c.unit_price,
-              top_up: c.top_up,
-              combo_item_code: c.combo_item_code,
-              combo_item_id: c.combo_item_id,
-              combo_id: c.combo_id,
-              is_delete: c.is_delete
 
-                                      }))
-
+    combo_items =
+      Repo.all(
+        from(
+          c in ComboDetails,
+          left_join: i in ItemCat,
+          on: i.itemcatid == c.menu_cat_id,
+          left_join: b in Brand,
+          on: c.brand_id == b.id,
+          where: c.combo_id in ^ids and i.brand_id == ^BN.get_brand_id(conn) and c.is_delete == 0,
+          select: %{
+            combo_item_name: c.combo_item_name,
+            combo_category: i.itemcatname,
+            combo_qty: c.combo_qty,
+            combo_item_qty: c.combo_item_qty,
+            unit_price: c.unit_price,
+            top_up: c.top_up,
+            combo_item_code: c.combo_item_code,
+            combo_item_id: c.combo_item_id,
+            combo_id: c.combo_id,
+            is_delete: c.is_delete
+          }
+        )
+      )
 
     no_selection_combo_items =
       Repo.all(
@@ -821,7 +1069,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         from(
           s in ItemSubcat,
           where:
-            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0 and s.brand_id == ^BN.get_brand_id(conn),
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0 and
+              s.brand_id == ^BN.get_brand_id(conn),
           order_by: [asc: s.price_code]
         )
       )
@@ -1015,16 +1264,14 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     |> redirect(to: item_subcat_path(conn, :combo_show, BN.get_brand_id(conn), subcatid))
   end
 
-   def show_voucher(conn, _params) do
+  def show_voucher(conn, _params) do
+    changeset = BN.change_item_subcat(%ItemSubcat{})
 
- changeset = BN.change_item_subcat(%ItemSubcat{})
+    discount =
+      Repo.all(from(s in Discount, select: %{discountid: s.discountid, discname: s.discname}))
 
-    discount= Repo.all(from s in Discount, select: %{discountid: s.discountid,discname: s.discname})
-
-  render(conn, "show_voucher.html", discount: discount,changeset: changeset)
+    render(conn, "show_voucher.html", discount: discount, changeset: changeset)
   end
-
-
 
   def index(conn, _params) do
     item_subcat = BN.list_item_subcat()
@@ -1060,7 +1307,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def update(conn, %{"id" => id, "item_subcat" => item_subcat_params}) do
-  
     item_subcat = BN.get_item_subcat!(id)
 
     case BN.update_item_subcat(item_subcat, item_subcat_params) do

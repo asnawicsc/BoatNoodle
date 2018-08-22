@@ -667,7 +667,13 @@ defmodule BoatNoodleWeb.ApiController do
       )
       |> Enum.map(fn x -> x.invoiceno end)
       |> Enum.map(fn x -> String.to_integer(x) end)
-      |> Enum.max()
+
+    invoiceno =
+      if invoiceno == [] do
+        0
+      else
+        invoiceno |> Enum.max()
+      end
 
     id =
       invoiceno

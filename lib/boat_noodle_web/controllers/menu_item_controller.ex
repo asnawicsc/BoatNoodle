@@ -561,7 +561,56 @@ defmodule BoatNoodleWeb.MenuItemController do
 
             item_param = Map.put(item_param, "product_code", product_code)
 
-            isc = same_items |> Enum.filter(fn x -> x.price_code == price_code end) |> hd()
+            isc = same_items |> Enum.filter(fn x -> x.price_code == price_code end)
+
+            isc =
+              if isc == [] do
+                # create new item subcat
+
+                a =
+                  Repo.all(
+                    from(
+                      s in ItemSubcat,
+                      left_join: c in ItemCat,
+                      on: c.itemcatid == s.itemcatid,
+                      where:
+                        s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO" and
+                          s.brand_id == ^BN.get_brand_id(conn),
+                      select: s.subcatid,
+                      order_by: [asc: s.subcatid]
+                    )
+                  )
+
+                if a != [] do
+                  a =
+                    a
+                    |> List.last()
+                else
+                  a = 0
+                end
+
+                item_param = Map.put(item_param, "subcatid", a + 1)
+
+                item_param = Map.put(item_param, "brand_id", BN.get_brand_id(conn))
+
+                cg2 =
+                  BoatNoodle.BN.ItemSubcat.changeset(
+                    %BoatNoodle.BN.ItemSubcat{},
+                    item_param,
+                    BN.current_user(conn),
+                    "Create"
+                  )
+
+                case Repo.insert(cg2) do
+                  {:ok, item_cat} ->
+                    item_cat
+
+                  {:error, cg2} ->
+                    false
+                end
+              else
+                isc |> hd()
+              end
 
             file_param = conn.params["image"]
 

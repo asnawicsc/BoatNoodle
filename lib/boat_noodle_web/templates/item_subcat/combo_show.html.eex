@@ -89,16 +89,22 @@
                   <div class="ripple-container"></div>
                 </button>
 
-                    <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>"  data-toggle="modal" aria-label="price" data-target="#model1" data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>Edit                   <div class="ripple-container"></div>                 </button>
+                    <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>"  data-toggle="modal" aria-label="price" data-target="#model1" data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>Edit                   <div class="ripple-container"></div>                 
                     </button>
+      
+
+                    <a href="/<%= @conn.private.plug_session["brand"] %>/combos/<%= same_item.subcatid %>/add_item" rel="tooltip" title="" class="btn btn-rose btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>"  >
+                      <i class="material-icons">autorenew</i>Add Combo Items<div class="ripple-container"></div>                 
+                    </a>
+   
 
                   </td>
 
                 </tr>
 
                 <%= if @combo_items != [] do %>
-                  <tr>
-                    <td colspan="13">
+                  <tr style="display: none;">
+                    <td colspan="16">
                       <table class="table">
                         <thead>
                           <tr>

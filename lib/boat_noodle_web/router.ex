@@ -232,6 +232,8 @@ defmodule BoatNoodleWeb.Router do
     get("/items/:subcatid", ItemSubcatController, :item_show)
     get("/items/:subcatid/edit", ItemSubcatController, :item_edit)
     get("/combos/new", ItemSubcatController, :combo_new)
+    get("/combos/:subcatid/add_item", ItemSubcatController, :add_item)
+    post("/combos/:subcatid/post_item", ItemSubcatController, :post_add_item)
     get("/combos/:subcatid", ItemSubcatController, :combo_show)
     get("/edit_combo/:subcatid/:price_code", ItemSubcatController, :edit_combo)
     post("/edit_combo_detail", ItemSubcatController, :edit_combo_detail)
