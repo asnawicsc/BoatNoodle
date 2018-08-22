@@ -315,11 +315,14 @@ defmodule BoatNoodleWeb.MenuItemController do
                   order_by: [asc: s.subcatid]
                 )
               )
+              |> Enum.map(fn x -> Integer.to_string(x) end)
+              |> Enum.reject(fn x -> String.length(x) > 5 end)
 
             if a != [] do
               a =
                 a
                 |> List.last()
+                |> String.to_integer()
             else
               a = 0
             end

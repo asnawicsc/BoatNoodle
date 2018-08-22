@@ -488,10 +488,24 @@ defmodule BoatNoodleWeb.BranchController do
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     menu_catalog =
-      Repo.all(from(m in MenuCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+      Repo.all(
+        from(
+          m in MenuCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: {m.name, m.id},
+          order_by: [asc: m.name]
+        )
+      )
 
     disc_catalog =
-      Repo.all(from(m in DiscountCatalog, select: {m.name, m.id}, order_by: [asc: m.name]))
+      Repo.all(
+        from(
+          m in DiscountCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: {m.name, m.id},
+          order_by: [asc: m.name]
+        )
+      )
 
     render(
       conn,

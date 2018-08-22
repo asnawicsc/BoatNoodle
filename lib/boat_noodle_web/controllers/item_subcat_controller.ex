@@ -733,7 +733,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           s in ItemSubcat,
           left_join: i in MenuItem,
           on: i.itemcatid == s.itemcatid,
-          where: i.category_type == ^"COMBO",
+          where: i.category_type == ^"COMBO" and i.brand_id == ^BN.get_brand_id(conn),
           group_by: [s.itemcode],
           select: %{
             itemcatcode: i.itemcatcode,
@@ -807,8 +807,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           order_by: [s.itemcode]
         )
       )
-
-    # IEx.pry()
 
     render(
       conn,
@@ -942,12 +940,52 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       )
       |> Enum.reject(fn x -> x.subcat_ids == nil end)
 
+    for branch_id <- affected_branches do
+      for combo_item <- combo_items do
+        subcat_id =
+          (String.split(combo_item.combo_item_id) -- String.split(combo_item.combo_id))
+          |> Enum.join("")
+
+        sb = Repo.get_by(ItemSubcat, brand_id: BN.get_brand_id(conn), subcatid: subcat_id)
+
+        printer =
+          Repo.get_by(
+            Tag,
+            branch_id: BN.get_brand_id(conn),
+            tagdesc: sb.tagdesc,
+            printer: sb.printer
+          )
+
+        list = printer.combo_item_ids |> String.split(",")
+
+        new_list =
+          List.insert_at(list, 0, combo_item.combo_item_id) |> Enum.join(",") |> Enum.sort()
+          |> String.trim_trailing(",")
+
+        update_tag =
+          BoatNoodle.BN.Tag.changeset(
+            printer,
+            %{combo_item_ids: new_list},
+            BN.current_user(conn),
+            "Update Printer"
+          )
+
+        case Repo.update(update_tag) do
+          {:ok, tag} ->
+            true
+
+          _ ->
+            IO.puts("failed tag update")
+            false
+        end
+      end
+    end
+
     for printer <- printers do
       combo_item_ids = printer.combo_item_ids
       all = combo_item_ids |> String.split(",")
-      current_list = Enum.map(combo_items, fn x -> x.combo_item_id end)
       old_current_list = Enum.map(old_combo_items, fn x -> x.combo_item_id end)
-      new_list = all ++ (current_list -- old_current_list)
+      new_list = all -- old_current_list
 
       new_items = new_list |> Enum.join(",") |> String.trim_trailing(",")
 
