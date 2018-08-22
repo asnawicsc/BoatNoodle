@@ -224,24 +224,24 @@ defmodule BoatNoodleWeb.BranchController do
     |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
   end
 
-  def get_api(conn, %{"brand" => brand, "id" => branch_id}) do
-    branch = Repo.get_by(Branch, branchid: branch_id, brand_id: BN.get_brand_id(conn))
+  # def get_api(conn, %{"brand" => brand, "id" => branch_id}) do
+  #   branch = Repo.get_by(Branch, branchid: branch_id, brand_id: BN.get_brand_id(conn))
 
-    api_key =
-      Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
-      |> Base.url_encode64()
+  #   api_key =
+  #     Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
+  #     |> Base.url_encode64()
 
-    cg = Branch.changeset(branch, %{api_key: api_key}, BN.current_user(conn), "Update")
-    map = %{key: api_key} |> Poison.encode!()
+  #   cg = Branch.changeset(branch, %{api_key: api_key}, BN.current_user(conn), "Update")
+  #   map = %{key: api_key} |> Poison.encode!()
 
-    case Repo.update(cg) do
-      {:ok, bb} ->
-        send_resp(conn, 200, map)
+  #   case Repo.update(cg) do
+  #     {:ok, bb} ->
+  #       send_resp(conn, 200, map)
 
-      {:error, cg} ->
-        send_resp(conn, 500, " not ok")
-    end
-  end
+  #     {:error, cg} ->
+  #       send_resp(conn, 500, " not ok")
+  #   end
+  # end
 
   def get_api2(conn, %{"code" => branch_code}) do
     branch = Repo.get_by(Branch, branchcode: branch_code)

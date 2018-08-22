@@ -943,40 +943,45 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     for branch_id <- affected_branches do
       for combo_item <- combo_items do
         subcat_id =
-          (String.split(combo_item.combo_item_id) -- String.split(combo_item.combo_id))
+          (String.split(Integer.to_string(combo_item.combo_item_id), "") --
+             String.split(Integer.to_string(combo_item.combo_id), ""))
           |> Enum.join("")
 
         sb = Repo.get_by(ItemSubcat, brand_id: BN.get_brand_id(conn), subcatid: subcat_id)
 
-        printer =
-          Repo.get_by(
-            Tag,
-            branch_id: BN.get_brand_id(conn),
-            tagdesc: sb.tagdesc,
-            printer: sb.printer
-          )
+        if sb.tagdesc != nil and sb.printer != nil do
+          printer =
+            Repo.get_by(
+              Tag,
+              branch_id: BN.get_brand_id(conn),
+              tagdesc: sb.tagdesc,
+              printer: sb.printer
+            )
 
-        list = printer.combo_item_ids |> String.split(",")
+          if printer != nil do
+            list = printer.combo_item_ids |> String.split(",")
 
-        new_list =
-          List.insert_at(list, 0, combo_item.combo_item_id) |> Enum.join(",") |> Enum.sort()
-          |> String.trim_trailing(",")
+            new_list =
+              List.insert_at(list, 0, combo_item.combo_item_id) |> Enum.join(",") |> Enum.sort()
+              |> String.trim_trailing(",")
 
-        update_tag =
-          BoatNoodle.BN.Tag.changeset(
-            printer,
-            %{combo_item_ids: new_list},
-            BN.current_user(conn),
-            "Update Printer"
-          )
+            update_tag =
+              BoatNoodle.BN.Tag.changeset(
+                printer,
+                %{combo_item_ids: new_list},
+                BN.current_user(conn),
+                "Update Printer"
+              )
 
-        case Repo.update(update_tag) do
-          {:ok, tag} ->
-            true
+            case Repo.update(update_tag) do
+              {:ok, tag} ->
+                true
 
-          _ ->
-            IO.puts("failed tag update")
-            false
+              _ ->
+                IO.puts("failed tag update")
+                false
+            end
+          end
         end
       end
     end
