@@ -179,6 +179,37 @@
                             </tbody>
                         </table>
 
+                        <table id="summary_sales_info" class="table">
+                            <thead >
+                                <tr>
+                 
+                                    <th>Gross Sales</th>
+                                    <th>Service Charge</th>
+                                    <th>GST</th>
+                                    <th>Discount Amt</th>
+                                    <th>Nett Sales</th>
+                                    <th>Roundings</th>
+                                    <th>Total Sales</th>
+                                    <th>Pax</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody >
+                                <tr>
+                             
+                                    <td id="gross_saless_data"></td>
+                                    <td id="service_charge_data"></td>
+                                    <td id="gst_data"></td>
+                                    <td id="discount_data"></td>
+                                    <td id="nett_sales_data"></td>
+                                    <td id="roundings_data"></td>
+                                    <td id="total_sales_data"></td>
+                                    <td id="pax_data"></td>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
        

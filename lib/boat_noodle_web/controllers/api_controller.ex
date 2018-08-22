@@ -279,9 +279,9 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in Discount,
-          where: d.discountid in ^ids,
+          where: d.discountid in ^ids and d.brand_id == ^brand_id,
           select: %{
-            # brand_id: d.brand_id,
+            brand_id: d.brand_id,
             DiscountID: d.discountid,
             DiscName: d.discname,
             Descriptions: d.descriptions,
@@ -303,9 +303,9 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in DiscountItem,
-          where: d.discountitemsid in ^item_ids,
+          where: d.discountitemsid in ^item_ids and d.brand_id == ^brand_id,
           select: %{
-            # brand_id: d.brand_id,
+            brand_id: d.brand_id,
             discountitemsid: d.discountitemsid,
             min_spend: d.min_spend,
             pre_req_item: d.pre_req_item,
@@ -329,7 +329,7 @@ defmodule BoatNoodleWeb.ApiController do
       )
       |> Enum.map(fn x ->
         %{
-          # brand_id: d.brand_id,
+          brand_id: x.brand_id,
           DiscountItemsID: x.discountitemsid,
           min_spend: x.min_spend,
           pre_req_item: x.pre_req_item,

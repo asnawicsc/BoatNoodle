@@ -62,7 +62,9 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
     if Enum.any?(items, fn x -> x == catalog_id end) do
       items = List.delete(items, catalog_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Insert") |> Repo.update()
+
+      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn), "Insert")
+      |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
@@ -73,7 +75,6 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
       }) do
-
     cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
 
     items =
@@ -81,24 +82,32 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
     unless Enum.any?(items, fn x -> x == catalog_id end) do
       items = List.insert_at(items, 0, catalog_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Insert") |> Repo.update()
+
+      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn), "Insert")
+      |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
   end
 
   def list_discount_catalog(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
-
     disc_cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
     categories = disc_cata.categories |> String.split(",") |> Enum.sort()
 
-    all_cata = Repo.all(from(d in Discount, select: %{id: d.discountid, name: d.discname}))
+    all_cata =
+      Repo.all(
+        from(
+          d in Discount,
+          where: d.brand_id == ^BN.get_brand_id(conn),
+          select: %{id: d.discountid, name: d.discname}
+        )
+      )
 
     disc_cat =
       Repo.all(
         from(
           d in Discount,
-          where: d.discountid in ^categories,
+          where: d.discountid in ^categories and d.brand_id == ^BN.get_brand_id(conn),
           select: %{id: d.discountid, name: d.discname}
         )
       )
@@ -109,8 +118,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     send_resp(conn, 200, json)
   end
 
-   def list_discount_catalog3(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
-   
+  def list_discount_catalog3(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
     catalogs_ori =
       Repo.all(
         from(m in DiscountCatalog, select: %{id: m.id, name: m.name, categories: m.categories})
@@ -135,42 +143,54 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     send_resp(conn, 200, json)
   end
 
-   def discount_remove_from_catalog3(conn, %{"brand" => brand,"subcat_id" => subcat_id,"tag_id" => catalog_id}) do
-          cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-          items = cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
-
-          if Enum.any?(items, fn x -> x == subcat_id end) do
-            items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
-            DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Remove") |> Repo.update()
-          end
-
-    send_resp(conn, 200, "ok")
-  end
-
-   def discount_insert_into_catalog3(conn, %{
+  def discount_remove_from_catalog3(conn, %{
         "brand" => brand,
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
       }) do
     cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-    items = cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
-    unless Enum.any?(items, fn x -> x == subcat_id end) do
+    items =
+      cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
-      items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
+    if Enum.any?(items, fn x -> x == subcat_id end) do
+      items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
 
-
-      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn),"Insert") |> Repo.update()
+      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn), "Remove")
+      |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
   end
 
-   def list_discount_catalog4(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
-   
+  def discount_insert_into_catalog3(conn, %{
+        "brand" => brand,
+        "subcat_id" => subcat_id,
+        "tag_id" => catalog_id
+      }) do
+    cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
+
+    items =
+      cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+
+    unless Enum.any?(items, fn x -> x == subcat_id end) do
+      items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
+
+      DiscountCatalog.changeset(cata, %{categories: items}, BN.current_user(conn), "Insert")
+      |> Repo.update()
+    end
+
+    send_resp(conn, 200, "ok")
+  end
+
+  def list_discount_catalog4(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
     catalogs_ori =
       Repo.all(
-        from(m in DiscountCatalog, select: %{id: m.id, name: m.name, discounts: m.discounts})
+        from(
+          m in DiscountCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: %{id: m.id, name: m.name, discounts: m.discounts}
+        )
       )
       |> Enum.map(fn x -> Map.put(x, :discounts, String.split(x.discounts, ",")) end)
 
@@ -192,20 +212,25 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     send_resp(conn, 200, json)
   end
 
-   def discount_remove_from_catalog4(conn, %{"brand" => brand,"subcat_id" => subcat_id,"tag_id" => catalog_id}) do
-          cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-          items = cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+  def discount_remove_from_catalog4(conn, %{
+        "brand" => brand,
+        "subcat_id" => subcat_id,
+        "tag_id" => catalog_id
+      }) do
+    cata = Repo.get_by(DiscountCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
+    items = cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
-          if Enum.any?(items, fn x -> x == subcat_id end) do
-         
-            items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
-            DiscountCatalog.changeset(cata, %{discounts: items},BN.current_user(conn),"Insert") |> Repo.update()
-          end
+    if Enum.any?(items, fn x -> x == subcat_id end) do
+      items = List.delete(items, subcat_id) |> Enum.sort() |> Enum.join(",")
+
+      DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn), "Insert")
+      |> Repo.update()
+    end
 
     send_resp(conn, 200, "ok")
   end
 
-   def discount_insert_into_catalog4(conn, %{
+  def discount_insert_into_catalog4(conn, %{
         "brand" => brand,
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
@@ -214,24 +239,30 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     items = cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
     unless Enum.any?(items, fn x -> x == subcat_id end) do
-
       items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{discounts: items},BN.current_user(conn),"Insert") |> Repo.update()
+
+      DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn), "Insert")
+      |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
   end
 
+  def discount_remove_from_catalog2(conn, %{
+        "brand" => brand,
+        "subcat_id" => subcat_id,
+        "tag_id" => catalog_id
+      }) do
+    cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
+    items = cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
-  def discount_remove_from_catalog2(conn, %{"brand" => brand,"subcat_id" => subcat_id,"tag_id" => catalog_id}) do
-          cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
-          items = cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+    if Enum.any?(items, fn x -> x == catalog_id end) do
+      # insert...
+      items = List.delete(items, catalog_id) |> Enum.sort() |> Enum.join(",")
 
-          if Enum.any?(items, fn x -> x == catalog_id end) do
-            # insert...
-            items = List.delete(items, catalog_id) |> Enum.sort() |> Enum.join(",")
-            DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn),"Remove") |> Repo.update()
-          end
+      DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn), "Remove")
+      |> Repo.update()
+    end
 
     send_resp(conn, 200, "ok")
   end
@@ -245,26 +276,33 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     items = cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
     unless Enum.any?(items, fn x -> x == catalog_id end) do
-
       items = List.insert_at(items, 0, catalog_id) |> Enum.sort() |> Enum.join(",")
-      DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn),"Insert") |> Repo.update()
+
+      DiscountCatalog.changeset(cata, %{discounts: items}, BN.current_user(conn), "Insert")
+      |> Repo.update()
     end
 
     send_resp(conn, 200, "ok")
   end
 
   def list_discount_catalog2(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
-
-      disc_cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
+    disc_cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
     discounts = disc_cata.discounts |> String.split(",") |> Enum.sort()
 
-    all_cata = Repo.all(from(d in DiscountItem, select: %{id: d.discountitemsid, name: d.discitemsname}))
+    all_cata =
+      Repo.all(
+        from(
+          d in DiscountItem,
+          where: d.brand_id == ^BN.get_brand_id(conn),
+          select: %{id: d.discountitemsid, name: d.discitemsname}
+        )
+      )
 
     disc_cat =
       Repo.all(
         from(
           d in DiscountItem,
-          where: d.discountitemsid in ^discounts,
+          where: d.discountitemsid in ^discounts and d.brand_id == ^BN.get_brand_id(conn),
           select: %{id: d.discountitemsid, name: d.discitemsname}
         )
       )

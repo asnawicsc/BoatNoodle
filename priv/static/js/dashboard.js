@@ -96,21 +96,134 @@ $("div#pax").html(pax);
 $("div#transaction").html(transaction);
 })
 
+      function format(n, sep, decimals) {
+            sep = sep || "."; // Default to period as decimal separator
+            decimals = decimals || 2; // Default to 2 decimals
 
+            return n.toLocaleString().split(sep)[0]
+                + sep
+                + n.toFixed(decimals).split(sep)[1];
+        }
 
       dashboard_channel.on("dashboard", payload => {
-
+        
 
         localStorage.setItem('table_branch_daily_sales_sumary', payload.table_branch_daily_sales_sumary)
 
         var data = JSON.parse(payload.table_branch_daily_sales_sumary)
 
+        var gross_sales = []
+        $(data).each(function(){
+         var ts = this.gross_sales
+         gross_sales.push(parseFloat(ts.replace(",", "")))
+        })
+
+     
+        var gross_saless_data = 0;
+ 
+        $.each(gross_sales, function(idx, num){
+            gross_saless_data += parseFloat(num)
+        })
+     
+        $("td#gross_saless_data").html(format(gross_saless_data))
+
+
+        var service_charge = []
+        $(data).each(function(){
+         var ts = this.service_charge
+         service_charge.push(parseFloat(ts.replace(",", "")))
+        })
+
+        var service_charge_data = 0;
+          $.each(service_charge, function(idx, num){
+            service_charge_data += parseFloat(num)
+        })
+         $("td#service_charge_data").html(format(service_charge_data))
+
+        var gst = []
+        $(data).each(function(){
+         var ts = this.gst
+         gst.push(parseFloat(ts.replace(",", "")))
+        })
+
+        var gst_data = 0;
+          $.each(gst, function(idx, num){
+            gst_data += parseFloat(num)
+        })
+         $("td#gst_data").html(format(gst_data))
+
+
+        var discount = []
+        $(data).each(function(){
+         var ts = this.discount
+         discount.push(parseFloat(ts.replace(",", "")))
+        })
+
+        var discount_data = 0;
+          $.each(discount, function(idx, num){
+            discount_data += parseFloat(num)
+        })
+         $("td#discount_data").html(format(discount_data))
+
+
+        var nett_sales = []
+        $(data).each(function(){
+         var ts = this.nett_sales
+         nett_sales.push(parseFloat(ts.replace(",", "")))
+        })
+
+        var nett_sales_data = 0;
+          $.each(nett_sales, function(idx, num){
+            nett_sales_data += parseFloat(num)
+        })
+         $("td#nett_sales_data").html(format(nett_sales_data))
+
+
+
+         var roundings = []
+        $(data).each(function(){
+         var ts = this.roundings
+         roundings.push(parseFloat(ts.replace(",", "")))
+        })
+
+        var roundings_data = 0;
+          $.each(roundings, function(idx, num){
+            roundings_data += parseFloat(num)
+        })
+         $("td#roundings_data").html(format(roundings_data))
+
+
+
+
+         var total_sales = []
+        $(data).each(function(){
+         var ts = this.total_sales
+         total_sales.push(parseFloat(ts.replace(",", "")))
+        })
+
+        var total_sales_data = 0;
+          $.each(total_sales, function(idx, num){
+            total_sales_data += parseFloat(num)
+        })
+         $("td#total_sales_data").html(format(total_sales_data))
+
+        var pax = []
+        $(data).each(function(){
+         var ts = this.pax
+         pax.push(parseFloat(ts))
+        })
+
+        var pax_data = 0;
+          $.each(pax, function(idx, num){
+            pax_data += parseFloat(num)
+        })
+         $("td#pax_data").html(format(pax_data))
 
        $("table#outlet_sales_information").DataTable({
 
-             destroy: true,
+            destroy: true,
             data: data,
-            dom: 'Bfrtip',
+            dom: 'BlTfgitp',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],

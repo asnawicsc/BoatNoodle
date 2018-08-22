@@ -90,18 +90,62 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
             b
           else
-            data = Poison.decode!(history_data.json_map)
+            if end_d == Date.utc_today() do
+              b =
+                Repo.all(
+                  from(
+                    sp in BoatNoodle.BN.SalesPayment,
+                    left_join: s in BoatNoodle.BN.Sales,
+                    on: sp.salesid == s.salesid,
+                    left_join: b in BoatNoodle.BN.Branch,
+                    on: b.branchid == s.branchid,
+                    where:
+                      s.is_void == 0 and s.branchid == ^payload["branch_id"] and
+                        s.salesdate >= ^start_d and s.salesdate <= ^end_d and
+                        s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
+                        sp.brand_id == ^brand_id,
+                    group_by: [s.salesdate, b.branchname],
+                    select: %{
+                      salesdate: s.salesdate,
+                      pax: sum(s.pax),
+                      branchname: b.branchname,
+                      grand_total: sum(sp.grand_total),
+                      service_charge: sum(sp.service_charge),
+                      gst: sum(sp.gst_charge),
+                      after_disc: sum(sp.after_disc),
+                      transaction: count(s.salesid),
+                      sub_total: sum(sp.sub_total),
+                      rounding: sum(sp.rounding)
+                    }
+                  )
+                )
 
-            for item <- data do
-              item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
-              item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
-              item = Map.put(item, :after_disc, Decimal.new(item.after_disc))
-              item = Map.put(item, :grand_total, Decimal.new(item.grand_total))
-              item = Map.put(item, :gst, Decimal.new(item.gst))
-              item = Map.put(item, :service_charge, Decimal.new(item.service_charge))
-              item = Map.put(item, :sub_total, Decimal.new(item.sub_total))
-              item = Map.put(item, :rounding, Decimal.new(item.rounding))
-              item = Map.put(item, :pax, Decimal.new(item.pax))
+              {:ok, history_data} =
+                HistoryData.changeset(history_data, %{
+                  start_date: start_d,
+                  end_date: end_d,
+                  json_map: Poison.encode!(b),
+                  branch_id: branchid,
+                  brand_id: brand_id,
+                  name: "summary"
+                })
+                |> Repo.update()
+
+              b
+            else
+              data = Poison.decode!(history_data.json_map)
+
+              for item <- data do
+                item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+                item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
+                item = Map.put(item, :after_disc, Decimal.new(item.after_disc))
+                item = Map.put(item, :grand_total, Decimal.new(item.grand_total))
+                item = Map.put(item, :gst, Decimal.new(item.gst))
+                item = Map.put(item, :service_charge, Decimal.new(item.service_charge))
+                item = Map.put(item, :sub_total, Decimal.new(item.sub_total))
+                item = Map.put(item, :rounding, Decimal.new(item.rounding))
+                item = Map.put(item, :pax, Decimal.new(item.pax))
+              end
             end
           end
 

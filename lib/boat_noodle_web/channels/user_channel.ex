@@ -1444,41 +1444,135 @@ defmodule BoatNoodleWeb.UserChannel do
   def handle_in("item_sales_detail", payload, socket) do
     branchid = payload["branch_id"]
 
-    item_sales_detail_data =
-      Repo.all(
-        from(
-          s in BoatNoodle.BN.Sales,
-          left_join: sd in BoatNoodle.BN.SalesMaster,
-          on: s.salesid == sd.salesid,
-          left_join: f in BoatNoodle.BN.Staff,
-          on: s.staffid == f.staff_id,
-          left_join: br in BoatNoodle.BN.Branch,
-          on: br.branchid == s.branchid,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          left_join: b in BoatNoodle.BN.Brand,
-          on: b.id == s.brand_id,
-          where:
-            s.is_void == 0 and br.branchid == ^payload["branch_id"] and
-              ic.brand_id == ^payload["brand_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
-          select: %{
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            itemcatname: ic.itemcatname,
-            qty: sd.qty,
-            invoiceno: s.invoiceno,
-            tbl_no: s.tbl_no,
-            staff_name: f.staff_name,
-            afterdisc: sd.order_price,
-            salesdate: s.salesdate,
-            branchid: s.branchid,
-            domainname: b.domain_name
-          }
-        )
+    brand_id = payload["brand_id"]
+    [y, m, d] = payload["s_date"] |> String.split("-")
+    {:ok, start_d} = Date.new(String.to_integer(y), String.to_integer(m), String.to_integer(d))
+
+    [y1, m1, d1] = payload["e_date"] |> String.split("-")
+    {:ok, end_d} = Date.new(String.to_integer(y1), String.to_integer(m1), String.to_integer(d1))
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    item_sales_detail_data_history =
+      Repo.get_by(
+        HistoryData,
+        start_date: start_d,
+        end_date: end_d,
+        branch_id: branchid,
+        brand_id: brand_id,
+        name: "item_sales_detail"
       )
+
+    item_sales_detail_data =
+      if item_sales_detail_data_history == nil do
+        b =
+          Repo.all(
+            from(
+              s in BoatNoodle.BN.Sales,
+              left_join: sd in BoatNoodle.BN.SalesMaster,
+              on: s.salesid == sd.salesid,
+              left_join: f in BoatNoodle.BN.Staff,
+              on: s.staffid == f.staff_id,
+              left_join: br in BoatNoodle.BN.Branch,
+              on: br.branchid == s.branchid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sd.itemid == i.subcatid,
+              left_join: ic in BoatNoodle.BN.ItemCat,
+              on: ic.itemcatid == i.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == s.brand_id,
+              where:
+                s.is_void == 0 and br.branchid == ^payload["branch_id"] and
+                  ic.brand_id == ^payload["brand_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                itemcode: i.itemcode,
+                itemname: i.itemname,
+                itemcatname: ic.itemcatname,
+                qty: sd.qty,
+                invoiceno: s.invoiceno,
+                tbl_no: s.tbl_no,
+                staff_name: f.staff_name,
+                afterdisc: sd.order_price,
+                salesdate: s.salesdate,
+                branchid: s.branchid,
+                domainname: b.domain_name
+              }
+            )
+          )
+
+        {:ok, item_sales_detail_data_history} =
+          HistoryData.changeset(%HistoryData{}, %{
+            start_date: start_d,
+            end_date: end_d,
+            json_map: Poison.encode!(b),
+            branch_id: branchid,
+            brand_id: brand_id,
+            name: "item_sales_detail"
+          })
+          |> Repo.insert()
+
+        b
+      else
+        if end_d == Date.utc_today() do
+          b =
+            Repo.all(
+              from(
+                s in BoatNoodle.BN.Sales,
+                left_join: sd in BoatNoodle.BN.SalesMaster,
+                on: s.salesid == sd.salesid,
+                left_join: f in BoatNoodle.BN.Staff,
+                on: s.staffid == f.staff_id,
+                left_join: br in BoatNoodle.BN.Branch,
+                on: br.branchid == s.branchid,
+                left_join: i in BoatNoodle.BN.ItemSubcat,
+                on: sd.itemid == i.subcatid,
+                left_join: ic in BoatNoodle.BN.ItemCat,
+                on: ic.itemcatid == i.itemcatid,
+                left_join: b in BoatNoodle.BN.Brand,
+                on: b.id == s.brand_id,
+                where:
+                  s.is_void == 0 and br.branchid == ^payload["branch_id"] and
+                    ic.brand_id == ^payload["brand_id"] and s.salesdate >= ^payload["s_date"] and
+                    s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+                select: %{
+                  itemcode: i.itemcode,
+                  itemname: i.itemname,
+                  itemcatname: ic.itemcatname,
+                  qty: sd.qty,
+                  invoiceno: s.invoiceno,
+                  tbl_no: s.tbl_no,
+                  staff_name: f.staff_name,
+                  afterdisc: sd.order_price,
+                  salesdate: s.salesdate,
+                  branchid: s.branchid,
+                  domainname: b.domain_name
+                }
+              )
+            )
+
+          {:ok, item_sales_detail_data_history} =
+            HistoryData.changeset(item_sales_detail_data_history, %{
+              start_date: start_d,
+              end_date: end_d,
+              json_map: Poison.encode!(b),
+              branch_id: branchid,
+              brand_id: brand_id,
+              name: "item_sales_detail"
+            })
+            |> Repo.update()
+
+          b
+        else
+          data = Poison.decode!(item_sales_detail_data_history.json_map)
+
+          for item <- data do
+            item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+            item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
+            item = Map.put(item, :qty, Decimal.new(item.qty))
+            item = Map.put(item, :afterdisc, Decimal.new(item.afterdisc))
+          end
+        end
+      end
 
     broadcast(socket, "populate_table_item_sales_detail", %{
       item_sales_detail_data: item_sales_detail_data
@@ -3378,7 +3472,6 @@ defmodule BoatNoodleWeb.UserChannel do
 
     combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1))
 
-
     html =
       Phoenix.View.render_to_string(
         BoatNoodleWeb.ItemSubcatView,
@@ -3404,7 +3497,6 @@ defmodule BoatNoodleWeb.UserChannel do
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
       |> Enum.sort()
-
 
     a =
       for item <- map do
@@ -3482,17 +3574,19 @@ defmodule BoatNoodleWeb.UserChannel do
         0
       end
 
-    if is_default_combo == "on" do
-      1
-    else
-      0
-    end
+    is_default_combo =
+      if is_default_combo == "on" do
+        1
+      else
+        0
+      end
 
-    if enable_disc == "on" do
-      1
-    else
-      0
-    end
+    enable_disc =
+      if enable_disc == "on" do
+        1
+      else
+        0
+      end
 
     brand_id = payload["brand_id"] |> String.to_integer()
 
@@ -3526,8 +3620,6 @@ defmodule BoatNoodleWeb.UserChannel do
         false
     end
 
-
-
     for insert <- a do
       if elem(insert, 0) != "name" && elem(insert, 0) != "price" && elem(insert, 0) != "is_defaul" &&
            elem(insert, 0) != "is_activa" && elem(insert, 0) != "include_s" &&
@@ -3557,32 +3649,26 @@ defmodule BoatNoodleWeb.UserChannel do
           |> Enum.filter(fn x -> x != nil end)
           |> hd
 
-            is_delete="0"
+        is_delete = "0"
 
+        c = Enum.filter(elem(insert, 1), fn x -> x.item == "[is_delete]" end)
 
-
-            
-          c=Enum.filter(elem(insert, 1),fn x ->  x.item=="[is_delete]" end)
-
-          is_delete=if c == [] do
-
+        is_delete =
+          if c == [] do
             "0"
-
           else
-
             "1"
-
           end
-
 
         unit_price = a.price
         top_up = b.price
 
+        update_combo_details_params = %{
+          top_up: top_up,
+          unit_price: unit_price,
+          is_delete: String.to_integer(is_delete)
+        }
 
-
-        update_combo_details_params = %{top_up: top_up, unit_price: unit_price, is_delete: String.to_integer(is_delete)}
-
-      
         update_combo_details =
           BoatNoodle.BN.ComboDetails.changeset(
             combo,

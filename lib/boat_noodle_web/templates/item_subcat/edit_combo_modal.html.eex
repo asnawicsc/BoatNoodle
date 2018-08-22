@@ -18,7 +18,7 @@
     <tbody>
     <tr><input type="hidden" class="form-control" name="id" value="<%= @subcatid %>">
       <td><input type="text" class="form-control" name="name" value="<%= @name %>"></td>
-      <td><input type="number" class="form-control" name="price" value="<%= @price %>"></td>
+      <td><input type="number" class="form-control" step="0.01" name="price" value="<%= @price %>"></td>
         <td> <div class="form-check form-check-inline" style="margin-left: 40px; margin-right: 40px;">
                           <label class="form-check-label">
                              <%= if  @subcat.is_default_combo == 0  do   %>

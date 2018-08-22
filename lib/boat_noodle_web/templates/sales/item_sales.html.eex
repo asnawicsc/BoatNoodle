@@ -302,7 +302,7 @@
         $("table#item_sold").DataTable({
               destroy: true,
             data: data,
-            dom: 'Bfrtip',
+            dom: 'BlTfgitp',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
@@ -385,7 +385,7 @@
         $("table#item_sales_detail").DataTable({
               destroy: true,
             data: data,
-            dom: 'Bfrtip',
+            dom: 'BlTfgitp',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
