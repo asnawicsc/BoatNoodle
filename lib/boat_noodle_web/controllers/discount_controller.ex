@@ -155,10 +155,22 @@ defmodule BoatNoodleWeb.DiscountController do
 
   def discount_category_new(conn, params) do
     discount_catalog =
-      Repo.all(from(m in BoatNoodle.BN.DiscountCatalog, select: %{id: m.id, name: m.name}))
+      Repo.all(
+        from(
+          m in BoatNoodle.BN.DiscountCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: %{id: m.id, name: m.name}
+        )
+      )
 
     discount =
-      Repo.all(from(s in BoatNoodle.BN.Discount, select: %{id: s.discountid, name: s.discname}))
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.Discount,
+          where: s.brand_id == ^BN.get_brand_id(conn),
+          select: %{id: s.discountid, name: s.discname}
+        )
+      )
 
     render(
       conn,
@@ -269,6 +281,7 @@ defmodule BoatNoodleWeb.DiscountController do
       Repo.all(
         from(
           m in BoatNoodle.BN.Discount,
+          where: m.brand_id == ^BN.get_brand_id(conn),
           select: %{discountid: m.discountid, discname: m.discname}
         )
       )
@@ -278,7 +291,7 @@ defmodule BoatNoodleWeb.DiscountController do
         from(
           m in BoatNoodle.BN.DiscountItem,
           left_join: d in BoatNoodle.BN.Discount,
-          where: d.discountid == m.discountid,
+          where: d.discountid == m.discountid and d.brand_id == ^BN.get_brand_id(conn),
           select: %{
             discname: d.discname,
             discountitemsid: m.discountid,
@@ -286,6 +299,8 @@ defmodule BoatNoodleWeb.DiscountController do
           }
         )
       )
+
+    IEx.pry()
 
     render(
       conn,

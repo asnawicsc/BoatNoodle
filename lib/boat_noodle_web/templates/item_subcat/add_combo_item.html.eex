@@ -33,35 +33,53 @@
                 <input type="text" class="form-control" name="combo_qty" required="" placeholder="Category Limit">
               </div>
             </div>
-            <div class="col-lg-9 col-md-6 col-sm-3">
+          </div>
+           <div class="row">
+            <div class="col-md-6 ">
+              <table class="table">
+                <tr>
+                  <td>Name</td>
+                  <td>Code</td>
+      
+          
+                </tr>
+                <%= for item_subcat <- @item_subcats do %>
+
+                  <tr class="cat" id="<%= item_subcat.itemcatid %>">
+                    <td>
+                      <%= item_subcat.itemname %><i style="margin-left: 20px; cursor: pointer;" class="fa fa-plus"  cat_id="<%= item_subcat.subcatid %>"></i>
+                    </td>
+                    <td>
+                      <%= item_subcat.itemcode %>
+                    </td>
+         
+                  </tr>
+                  <% end %>
+              </table>
+            </div>
+            <div class="col-md-6 ">
               <table class="table">
               	<tr>
               		<td>Name</td>
               		<td>Code</td>
-              		<td>Desc</td>
-              		<td>SubcatID</td>
-              		<td>Order Price</td>
-              		<td>Topup Price</td>
+      
+              		<td class=" ">Order Price</td>
+              		<td class=" ">Topup Price</td>
               	</tr>
                 <%= for item_subcat <- @item_subcats do %>
 
-                  <tr class="cat" id="<%= item_subcat.itemcatid %>">
+                  <tr subcat_id="<%= item_subcat.subcatid %>" class="hide">
                     <td>
                       <%= item_subcat.itemname %>
                     </td>
                     <td>
                       <%= item_subcat.itemcode %>
                     </td>
-                    <td>
-                      <%= item_subcat.itemdesc %>
-                    </td>
-                    <td>
-                      <%= item_subcat.subcatid %>
-                    </td>
+          
                     <td>
                   		<input type="number" step="0.01" name="<%= item_subcat.itemcatid %>[<%= item_subcat.subcatid %>][unit_price]">
                     </td>
-                    <td>
+                    <td >
                   		<input type="number" step="0.01" name="<%= item_subcat.itemcatid %>[<%= item_subcat.subcatid %>][topup_price]">
                     	
                     </td>
@@ -81,10 +99,17 @@
 </div>
 
 <script type="text/javascript">
+  $("tr.cat").hide()
+  $("tr.hide").hide()
   $('select[name="itemcat"]').on('changed.bs.select', function(e, clickedIndex, isSelected, previousValue) {
     var id = $("select[name='itemcat']").val()
     console.log(id)
     $("tr.cat").hide()
     $("tr#" + id + ".cat").show()
   });
+  $("i.fa.fa-plus").click(function(){
+    var cat_id = $(this).attr("cat_id")
+
+    $("tr[subcat_id='"+cat_id+"'].hide").slideToggle()
+  })
 </script>
