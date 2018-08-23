@@ -156,7 +156,7 @@
                       <div class="col-sm-5" id="target_item">
                           <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple"   title="Target Item" data-size="7">
                                            
-                                           <%= for item <- @item_subcat do %>
+                                           <%= for item <- @item_subcat |> Enum.sort() do %>
                                              <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
                                             </option>
                                            
