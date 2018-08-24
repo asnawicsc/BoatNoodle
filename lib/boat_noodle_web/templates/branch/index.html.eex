@@ -65,7 +65,7 @@
                         <th>Manager</th>
                         <th>Sync Status</th>
                         <th>Action</th>
-
+                        <th></th>
                       </tr>
                   </thead>
                   <tbody>
@@ -82,16 +82,22 @@
                           <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a>
-                          <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
+                   
+                          </td>
+                          <td>
+<%= if Enum.any?(@tag_ids, fn x -> x == branch.branchid end ) do %>
+       <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
 
                             <i class="material-icons">cast</i> Printers
                           <div class="ripple-container"></div></a>
-
-                          <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/populate_printers" type="button" rel="tooltip" title="" class="btn btn-warning btn-link btn-sm" data-original-title="Edit Printers">
+<% else %>
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/populate_printers" type="button" rel="tooltip" title="" class="btn btn-rose btn-link btn-sm" data-original-title="Edit Printers">
 
                             <i class="material-icons">cast</i> Populate
                           <div class="ripple-container"></div></a>
-
+                          <% end %>
+                            
+                          </td>
                       </tr>
                   <% end %>
                   </tbody>

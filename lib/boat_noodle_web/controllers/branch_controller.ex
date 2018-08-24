@@ -157,21 +157,24 @@ defmodule BoatNoodleWeb.BranchController do
       for combo_item <- combo_items do
         combo = Repo.get_by(ComboDetails, id: combo_item, brand_id: BN.get_brand_id(conn))
 
-        subcat_id =
-          String.split(Integer.to_string(combo.combo_item_id), "") --
-            String.split(Integer.to_string(combo.combo_id), "")
+        if combo != nil do
+          subcat_id =
+            String.split(Integer.to_string(combo.combo_item_id), "") --
+              String.split(Integer.to_string(combo.combo_id), "")
 
-        item_subcat_id = subcat_id |> Enum.join() |> String.to_integer()
+          item_subcat_id = subcat_id |> Enum.join() |> String.to_integer()
 
-        item_subcat =
-          Repo.get_by(ItemSubcat, subcatid: item_subcat_id, brand_id: BN.get_brand_id(conn))
+          item_subcat =
+            Repo.get_by(ItemSubcat, subcatid: item_subcat_id, brand_id: BN.get_brand_id(conn))
 
-        %{
-          combo_item_id: combo.combo_item_id,
-          printer: item_subcat.printer,
-          tagdesc: item_subcat.tagdesc
-        }
+          %{
+            combo_item_id: combo.combo_item_id,
+            printer: item_subcat.printer,
+            tagdesc: item_subcat.tagdesc
+          }
+        end
       end
+      |> Enum.reject(fn x -> x == nil end)
       |> Enum.reject(fn x -> x.printer == nil end)
 
     for tag <- combo_printer do
@@ -287,7 +290,11 @@ defmodule BoatNoodleWeb.BranchController do
       )
       |> Enum.reject(fn x -> x.branchcode == "ALL" end)
 
-    render(conn, "index.html", branch: branch)
+    branchids = branch |> Enum.map(fn x -> x.branchid end)
+    tags = Repo.all(from(t in Tag, where: t.branch_id in ^branchids))
+
+    tag_ids = tags |> Enum.group_by(fn x -> x.branch_id end) |> Map.keys()
+    render(conn, "index.html", branch: branch, tag_ids: tag_ids)
   end
 
   def new(conn, _params) do
