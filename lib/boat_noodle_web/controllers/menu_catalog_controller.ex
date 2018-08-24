@@ -116,6 +116,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       }) do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
     items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+    branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
 
     cata =
       if Enum.any?(items, fn x -> x == subcat_id end) do
@@ -137,6 +138,30 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       Repo.all(from(c in ComboDetails, where: c.combo_id == ^subcat_id, select: c.id))
       |> Enum.map(fn x -> Integer.to_string(x) end)
 
+    n_combo_ids = combo_ids |> Enum.map(fn x -> String.to_integer(x) end)
+
+    combo_item_ids =
+      Repo.all(from(t in ComboDetails, where: t.id in ^n_combo_ids, select: t.combo_item_id))
+      |> Enum.map(fn x -> Integer.to_string(x) end)
+
+    tags =
+      Repo.all(
+        from(
+          t in Tag,
+          where: t.branch_id == ^branch.branchid and t.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+
+    for tag <- tags do
+      existing_combo_ids = tag.combo_item_ids |> String.split(",")
+
+      new_combo_item_ids =
+        (existing_combo_ids -- combo_item_ids) |> Enum.join(",") |> String.trim_trailing(",")
+
+      Tag.changeset(tag, %{combo_item_ids: new_combo_item_ids}, BN.current_user(conn), "update")
+      |> Repo.update()
+    end
+
     new_ids = (existing_combo_ids -- combo_ids) |> Enum.join(",") |> String.trim_trailing(",")
 
     {:ok, cata} =
@@ -153,6 +178,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       }) do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
     items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+    branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
 
     cata =
       if Enum.any?(items, fn x -> x == subcat_id end) do
@@ -184,6 +210,71 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       |> Enum.reject(fn x -> x == nil end)
 
     new_ids = (existing_combo_ids ++ missing_ids) |> Enum.join(",") |> String.trim_trailing(",")
+
+    n_combo_ids = missing_ids |> Enum.map(fn x -> String.to_integer(x) end)
+
+    combo_details_data = Repo.all(from(t in ComboDetails, where: t.id in ^n_combo_ids))
+
+    combo_item_ids =
+      combo_details_data |> Enum.map(fn x -> Integer.to_string(x.combo_item_id) end)
+
+    tags =
+      Repo.all(
+        from(
+          t in Tag,
+          where: t.branch_id == ^branch.branchid and t.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+      |> Enum.map(fn x -> %{tag_id: x.tagid, subcat_ids: String.split(x.subcat_ids, ",")} end)
+
+    combo_printer =
+      for combo <- combo_details_data do
+        subcat_id =
+          (String.split(Integer.to_string(combo.combo_item_id), "") --
+             String.split(Integer.to_string(combo.combo_id), ""))
+          |> Enum.join()
+
+        tags2 = Enum.filter(tags, fn x -> Enum.any?(x.subcat_ids, fn y -> y == subcat_id end) end)
+
+        if tags2 != [] do
+          tag_data = tags2 |> hd()
+
+          tag = Repo.get_by(Tag, brand_id: BN.get_brand_id(conn), tagid: tag_data.tag_id)
+
+          %{
+            combo_item_id: combo.combo_item_id,
+            printer: tag.printer,
+            tagdesc: tag.tagdesc
+          }
+        end
+      end
+      |> Enum.reject(fn x -> x == nil end)
+      |> Enum.reject(fn x -> x.printer == nil end)
+
+    for tag <- combo_printer do
+      old_tag =
+        Repo.get_by(
+          Tag,
+          tagdesc: tag.tagdesc,
+          printer: tag.printer,
+          branch_id: branch.branchid,
+          brand_id: BN.get_brand_id(conn)
+        )
+
+      if old_tag != nil do
+        old_ids =
+          if old_tag.combo_item_ids == nil do
+            ""
+          else
+            old_tag.combo_item_ids
+          end
+
+        ids = old_ids |> String.split(",")
+        ids = List.insert_at(ids, 0, tag.combo_item_id)
+        new_ids = Enum.join(ids, ",") |> String.trim_trailing(",")
+        Tag.changeset(old_tag, %{combo_item_ids: new_ids}, 0, "Update") |> Repo.update()
+      end
+    end
 
     {:ok, cata} =
       MenuCatalog.changeset(cata, %{combo_items: new_ids}, BN.current_user(conn), "Update")

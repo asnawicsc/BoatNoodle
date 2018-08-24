@@ -31,7 +31,9 @@ defmodule BoatNoodleWeb.BranchController do
       Repo.all(
         from(
           s in ItemSubcat,
-          where: s.subcatid in ^item_ids and s.brand_id == ^BN.get_brand_id(conn),
+          where:
+            s.subcatid in ^item_ids and s.brand_id == ^BN.get_brand_id(conn) and
+              s.is_activate == ^1,
           select: %{
             id: s.subcatid,
             name: s.itemname,
