@@ -3,7 +3,7 @@ defmodule BoatNoodleWeb.UserChannel do
   require IEx
   alias BoatNoodle.Images
   alias BoatNoodle.Images.{Gallery, Picture}
-  alias BoatNoodle.BN.UnauthorizeMenu
+  alias BoatNoodle.BN.{UnauthorizeMenu, UserBranchAccess}
 
   def join("user:" <> user_id, payload, socket) do
     if authorized?(payload) do
@@ -11,6 +11,61 @@ defmodule BoatNoodleWeb.UserChannel do
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+
+  def handle_in(
+        "insert_into_uba",
+        %{"brand_id" => brand_id, "bname" => bname, "user_id" => user_id},
+        socket
+      ) do
+    user = Repo.get(User, user_id)
+    brand = Repo.get(Brand, brand_id)
+    branch = Repo.get_by(Branch, brand_id: brand_id, branchname: bname)
+
+    uba =
+      Repo.all(
+        from(
+          u in UserBranchAccess,
+          where: u.brand_id == ^brand_id and u.userid == ^user.id,
+          select: u.branchid
+        )
+      )
+
+    action =
+      if Enum.any?(uba, fn x -> x == branch.branchid end) do
+        ub =
+          Repo.get_by(
+            UserBranchAccess,
+            branchid: branch.branchid,
+            brand_id: brand_id,
+            userid: user.id
+          )
+
+        Repo.delete(ub)
+
+        "removed"
+      else
+        UserBranchAccess.changeset(
+          %UserBranchAccess{},
+          %{
+            brand_id: brand_id,
+            userid: user.id,
+            branchid: branch.branchid
+          },
+          0,
+          "insert"
+        )
+        |> Repo.insert()
+
+        "inserted"
+      end
+
+    broadcast(socket, "notify_user_branch_access_changed", %{
+      name: bname,
+      action: action
+    })
+
+    {:noreply, socket}
   end
 
   def handle_in(
@@ -23,12 +78,6 @@ defmodule BoatNoodleWeb.UserChannel do
     user = Repo.get(User, user_id)
     brand = Repo.get(Brand, val)
 
-    # User.changeset(user, %{brand_id: brand.id}, user_id, "Update") |> Repo.update!()
-
-    # broadcast(socket, "notify_user_brand_changed", %{
-    #   name: user.username,
-    #   brand_name: brand.name
-    # })
     um = Repo.get_by(UnauthorizeMenu, id: url_id, brand_id: val)
 
     action =

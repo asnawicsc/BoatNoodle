@@ -100,9 +100,85 @@
         </div>
                                 
                                 
-                          
+                       <%= if @user.roleid == 7 do %>   
                    
 
-                                
+                <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header card-header-icon card-header-rose">
+                  <div class="card-icon">
+                    <i class="material-icons">perm_identity</i>
+                  </div>
+                  <h4 class="card-title">User Branch Access
+                  </h4>
+                </div>
+                <br>
+
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <h3>Not Selected</h3>
+                      <ol class="not_selected">
+                        
+                      <%= for branch <- @branches |> Enum.sort_by(fn x -> x.branchname end) do %>
+                  
+                  <li aria-label="<%= branch.branchname %>" style="cursor: pointer;"><%= branch.branchname %></li>
+                  <%end%>
+                      </ol>
+                    </div>
+                    <div class="col-lg-6">
+                         <h3> Selected</h3>
+                         <ol class="selected">
+                          <%= for branch <- @selected |> Enum.sort_by(fn x -> x.branchname end) do %>
+                  
+                  <li aria-label="<%= branch.branchname %>" style="cursor: pointer;"><%= branch.branchname %></li>
+                  <%end%>
+                         </ol>
+                    </div>
+                  </div>
+                    
+                  
+                
+                </div>
+                </div>
+                </div> 
+                </div>                         
+<% end %>
+
+</div>
 
 
+<script type="text/javascript">
+  
+  $(document).on("click", "ol.not_selected li", function(){
+   
+
+    $("ol.selected").append( $(this))
+    var bname = $(this).attr("aria-label")
+    channel.push("insert_into_uba", {user_id: window.currentUser, bname: bname, brand_id: window.currentBrand})
+  })
+
+  $(document).on("click", "ol.selected li", function(){
+   
+
+    $("ol.not_selected").append( $(this))
+        var bname = $(this).attr("aria-label")
+    channel.push("insert_into_uba", {user_id: window.currentUser, bname: bname, brand_id: window.currentBrand})
+  })
+
+  channel.on("notify_user_branch_access_changed", payload => {
+          $.notify({
+          icon: "notifications",
+          message: payload.name+" has been "+payload.action+"!"
+
+      }, {
+          type: "info",
+          timer: 100,
+          placement: {
+              from: 'bottom',
+              align: 'right'
+          }
+      });
+  })
+</script>

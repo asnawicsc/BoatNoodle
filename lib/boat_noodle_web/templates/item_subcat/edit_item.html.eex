@@ -39,6 +39,23 @@
         </div>
         <div class="row">
           <div class="col-sm-3">
+          
+            <div class="form-group bmd-form-group">
+               <label class="bmd-label-floating">Logical Printer</label>
+              <input name="menu_item[tagdesc]" class="form-control" value="<%= @item_subcat.tagdesc %>" type="text" >
+            </div>
+          </div>
+          <div class="col-sm-3">
+
+            <div class="form-group bmd-form-group">
+
+               <label class="bmd-label-floating">Pshyical Printer</label>
+               <input name="menu_item[printer]" class="form-control" value="<%= @item_subcat.printer %>" type="text" >
+            </div>  
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
           	<div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Price Code A</label>
               <% val =  Enum.filter(@price_codes, fn x -> x.code == "A" end)  %>
@@ -87,6 +104,7 @@
                <input name="menu_item[item_end_hour]" class="form-control" value="<%= @item_subcat.item_end_hour %>" type="number" >
             </div>  
           </div>
+
            <div class="col-sm-3">
               <div class="form-check form-check-inline">
                 <label class="form-check-label">

@@ -113,27 +113,47 @@ defmodule BoatNoodleWeb.UserController do
       {:ok, bin} = File.read(path)
       bin = Base.encode64(bin)
       picture = %{bin: bin}
-
-      render(
-        conn,
-        "edit.html",
-        user: user,
-        changeset: changeset,
-        picture: picture
-      )
     else
       gallery = Repo.get(Gallery, user.gall_id)
       picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
-
-      render(
-        conn,
-        "edit.html",
-        user: user,
-        changeset: changeset,
-        gallery: gallery,
-        picture: picture
-      )
     end
+
+    branches =
+      Repo.all(
+        from(
+          b in Branch,
+          where: b.brand_id == ^BN.get_brand_id(conn),
+          select: %{
+            branchname: b.branchname
+          }
+        )
+      )
+
+    selected =
+      Repo.all(
+        from(
+          u in UserBranchAccess,
+          left_join: b in Branch,
+          on: b.branchid == u.branchid and b.brand_id == u.brand_id,
+          where: u.brand_id == ^BN.get_brand_id(conn) and u.userid == ^user.id,
+          select: %{
+            branchname: b.branchname
+          }
+        )
+      )
+
+    not_selected = branches -- selected
+
+    render(
+      conn,
+      "edit.html",
+      user: user,
+      changeset: changeset,
+      gallery: gallery,
+      picture: picture,
+      branches: not_selected,
+      selected: selected
+    )
   end
 
   def update_profile(conn, params) do
