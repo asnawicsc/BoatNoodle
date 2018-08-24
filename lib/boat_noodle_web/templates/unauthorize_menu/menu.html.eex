@@ -331,7 +331,29 @@ check_circle
    
 
           
-            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" style="float: right;" value="Submit" type="submit" >
+            <input class="btn btn-next btn-fill btn-rose btn-wd" name="" style="display: none; float: right;" value="Submit" type="submit" >
      
           
 </form>
+
+<script type="text/javascript">
+  
+  $("input[type='checkbox']").click(function(){
+    var name = $(this).attr("name")
+    channel.push("toggle_user_access", {name: name, user_id: window.currentUser, val: window.currentBrand})
+  })
+  channel.on("notify_user_access_changed", payload => {
+          $.notify({
+          icon: "notifications",
+          message: payload.name+" has been "+payload.action+"d!"
+
+      }, {
+          type: "info",
+          timer: 100,
+          placement: {
+              from: 'bottom',
+              align: 'right'
+          }
+      });
+  })
+</script>

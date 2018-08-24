@@ -3,6 +3,7 @@ defmodule BoatNoodleWeb.UserChannel do
   require IEx
   alias BoatNoodle.Images
   alias BoatNoodle.Images.{Gallery, Picture}
+  alias BoatNoodle.BN.UnauthorizeMenu
 
   def join("user:" <> user_id, payload, socket) do
     if authorized?(payload) do
@@ -10,6 +11,41 @@ defmodule BoatNoodleWeb.UserChannel do
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+
+  def handle_in(
+        "toggle_user_access",
+        %{"val" => val, "name" => name, "user_id" => user_id},
+        socket
+      ) do
+    url_id = String.split(name, "[") |> List.last() |> String.replace("]", "")
+    role_name = String.split(name, "[") |> hd()
+    user = Repo.get(User, user_id)
+    brand = Repo.get(Brand, val)
+
+    # User.changeset(user, %{brand_id: brand.id}, user_id, "Update") |> Repo.update!()
+
+    # broadcast(socket, "notify_user_brand_changed", %{
+    #   name: user.username,
+    #   brand_name: brand.name
+    # })
+    um = Repo.get_by(UnauthorizeMenu, id: url_id, brand_id: val)
+
+    action =
+      if um.active == 1 do
+        {:ok, um} = UnauthorizeMenu.changeset(um, %{active: 0}, 0, "Update") |> Repo.update()
+        "deactivate"
+      else
+        {:ok, um} = UnauthorizeMenu.changeset(um, %{active: 1}, 0, "Update") |> Repo.update()
+        "activate"
+      end
+
+    broadcast(socket, "notify_user_access_changed", %{
+      name: role_name,
+      action: action
+    })
+
+    {:noreply, socket}
   end
 
   def handle_in("choose_new_brand", %{"val" => val, "name" => name, "user_id" => user_id}, socket) do

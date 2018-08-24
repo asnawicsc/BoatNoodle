@@ -10,54 +10,55 @@ defmodule BoatNoodle.Authorization do
   end
 
   def call(conn, opts) do
-    brands =
-      if conn.request_path == "/" do
-        conn
-      else
-        brands =
-          if conn.private.plug_session["brand"] == nil do
-            brands =
-              if conn.params["brand"] != nil do
-                brand =
-                  BoatNoodle.Repo.get_by(BoatNoodle.BN.Brand, domain_name: conn.params["brand"])
-
-                brands =
-                  if brand != nil do
-                    brand.domain_name
-                  else
-                    ""
-                  end
-              else
-                ""
-              end
+    if conn.request_path == "/" do
+      conn
+    else
+      # all these will return a brand name in the url path
+      domain_name =
+        if check_plug_session_has_brand(conn) do
+          if conn.private.plug_session["brand"] != conn.params["brand"] do
+            ""
           else
-            brands =
-              if conn.private.plug_session["brand"] != conn.params["brand"] do
-                ""
-              else
-                conn.private.plug_session["brand"]
-              end
+            conn.private.plug_session["brand"]
           end
-
-        if brands != "" do
-          route_user_brand(conn, brands)
         else
-          route_user(conn)
+          # then it will go by the url provided brand name
+          if conn.params["brand"] != nil do
+            brand = BoatNoodle.Repo.get_by(BoatNoodle.BN.Brand, domain_name: conn.params["brand"])
+
+            if brand != nil do
+              brand.domain_name
+            else
+              ""
+            end
+          else
+            ""
+          end
         end
+
+      if domain_name != "" do
+        route_user_brand(conn, domain_name)
+      else
+        route_user(conn)
       end
+    end
 
     if conn.private.plug_session["user_id"] == nil do
       conn
     else
-      if authorize?(conn, brands) do
+      if authorize?(conn, domain_name) do
         conn
         |> put_flash(:error, "Unauthorized")
-        |> redirect(to: "/#{brands}")
+        |> redirect(to: "/#{domain_name}")
         |> halt
       else
         conn
       end
     end
+  end
+
+  def check_plug_session_has_brand(conn) do
+    conn.private.plug_session["brand"] != nil
   end
 
   def route_user_brand(conn, brands) do
@@ -122,26 +123,29 @@ defmodule BoatNoodle.Authorization do
         )
       )
       |> Enum.map(fn x -> x.url end)
+      |> Enum.map(fn x -> String.replace(x, "/", "") end)
 
-    path = conn.path_info |> List.delete_at(2) |> List.to_string()
-    status = conn.path_info |> List.last()
+    path = conn.path_info |> tl
 
-    if status == "edits" or status == "edit" do
-      admin_menus = admin_menus |> Enum.map(fn x -> String.replace(x, "/", "") end)
+    Enum.any?(admin_menus, fn x -> Enum.any?(path, fn y -> x == y end) end)
+    # status = conn.path_info |> List.last()
 
-      if Enum.any?(admin_menus, fn x -> x == path end) do
-        conn
-        |> put_flash(:error, "Unauthorized")
-        |> redirect(to: "/#{brands}")
-        |> halt
-      end
-    else
-      if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
-        conn
-        |> put_flash(:error, "Unauthorized")
-        |> redirect(to: "/#{brands}")
-        |> halt
-      end
-    end
+    # if status == "edits" or status == "edit" do
+    #   admin_menus = admin_menus |> Enum.map(fn x -> String.replace(x, "/", "") end)
+
+    #   if Enum.any?(admin_menus, fn x -> x == path end) do
+    #     conn
+    #     |> put_flash(:error, "Unauthorized")
+    #     |> redirect(to: "/#{brands}")
+    #     |> halt
+    #   end
+    # else
+    #   if Enum.any?(admin_menus, fn x -> x == conn.request_path end) do
+    #     conn
+    #     |> put_flash(:error, "Unauthorized")
+    #     |> redirect(to: "/#{brands}")
+    #     |> halt
+    #   end
+    # end
   end
 end

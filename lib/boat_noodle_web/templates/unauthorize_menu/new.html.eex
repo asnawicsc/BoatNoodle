@@ -1,5 +1,31 @@
 <h2>New Unauthorize menu</h2>
 
-<%= render "form.html", Map.put(assigns, :action, unauthorize_menu_path(@conn, :create, BN.get_domain(@conn))) %>
+
+
+<%= form_for @changeset, unauthorize_menu_path(@conn, :create, BN.get_domain(@conn)), fn f -> %>
+
+  
+
+
+  <div class="form-group">
+    <%= label f, :url, class: "control-label" %>
+    <%= text_input f, :url, class: "form-control" %>
+    <%= error_tag f, :url %>
+  </div>
+
+
+  <div class="form-group">
+    <%= label f, :desc, class: "control-label" %>
+    <%= text_input f, :desc, class: "form-control" %>
+    <%= error_tag f, :desc %>
+  </div>
+
+
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
+
 
 <span><%= link "Back", to: unauthorize_menu_path(@conn, :index, BN.get_domain(@conn)) %></span>

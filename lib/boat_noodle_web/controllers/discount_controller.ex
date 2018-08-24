@@ -421,39 +421,29 @@ defmodule BoatNoodleWeb.DiscountController do
       end
 
     discamtpercentage =
-      if type == 1 do
-        item["discount_amount"]
-      end
+      case type do
+        1 ->
+          item["discount_amount"]
 
-    discamtpercentage =
-      if type == 2 do
-        item["discount_percentage"]
-      end
+        2 ->
+          item["discount_percentage"]
 
-    discamtpercentage =
-      if type == 3 do
-        item["voucher_amount"]
-      end
+        3 ->
+          item["voucher_amount"]
 
-    discamtpercentage =
-      if type == 4 do
-        0
-      end
+        4 ->
+          0
 
-    discamtpercentage =
-      if type == 5 do
-        0
-      end
+        5 ->
+          0
 
-    discamtpercentage =
-      if type == 6 do
-        item["discount_percentage"]
+        6 ->
+          item["discount_percentage"]
       end
 
     {is_targetmenuitems, multi_item_list} =
       if item["target_items"] == "" do
-        is_targetmenuitems = 0
-        multi_item_list = ""
+        {is_targetmenuitems = 0, multi_item_list = ""}
       else
         count = item["target_items"] |> String.split(",") |> Enum.count()
 
