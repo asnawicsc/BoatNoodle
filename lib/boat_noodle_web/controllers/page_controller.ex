@@ -13,36 +13,26 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment(conn, params) do
-    tags = Repo.all(from(t in Tag, where: t.brand_id == ^1 and t.branch_id == ^31))
-    # target_branch_id = 43
+    # menu_catalogs = Repo.all(from m in MenuCatalog)
+tags = Repo.all(from t in Tag)
+ for tag <- tags do
+      list = tag.subcat_ids |> String.split(",") |> Enum.uniq() |> Enum.sort() |> Enum.join(",") |> String.trim_trailing(",")
+      Tag.changeset(tag, %{subcat_ids: list}, 0, "Update") |> Repo.update
+    end
 
     for tag <- tags do
-      subcat_ids = tag.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end)
-
-      for subcat_id <- subcat_ids do
-        subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: 1)
-
-        {:ok, subcat} =
-          ItemSubcat.changeset(subcat, %{tagdesc: tag.tagdesc, printer: tag.printer}, 0, "Update")
-          |> Repo.update()
-
-        similar_items = Repo.all(from(i in ItemSubcat, where: i.itemname == ^subcat.itemname))
-
-        for item_subcat <- similar_items do
-          ItemSubcat.changeset(
-            item_subcat,
-            %{tagdesc: tag.tagdesc, printer: tag.printer},
-            0,
-            "Update"
-          )
-          |> Repo.update()
-        end
-      end
-
-      # each branch has a menu_catalog, each catalog has its own uniq subcat it...
-      # existing subcat_id.. find the item_subcat..
-      # match with target branch menu catalog subcat ids
+      list = tag.combo_item_ids |> String.split(",") |> Enum.uniq() |> Enum.sort() |> Enum.join(",") |> String.trim_trailing(",")
+      Tag.changeset(tag, %{combo_item_ids: list}, 0, "Update") |> Repo.update
     end
+    # for menu_catalog <- menu_catalogs do
+    #   list = menu_catalog.items |> String.split(",") |> Enum.uniq() |> Enum.sort() |> Enum.join(",") |> String.trim_trailing(",")
+    #   MenuCatalog.changeset(menu_catalog, %{items: list}, 0, "Update") |> Repo.update
+    # end
+
+    # for menu_catalog <- menu_catalogs do
+    #   list = menu_catalog.combo_items |> String.split(",") |> Enum.uniq() |> Enum.sort() |> Enum.join(",") |> String.trim_trailing(",")
+    #   MenuCatalog.changeset(menu_catalog, %{combo_items: list}, 0, "Update") |> Repo.update
+    # end
 
     render(conn, "experiment.html")
   end
