@@ -42,7 +42,9 @@ defmodule BoatNoodleWeb.MenuItemView do
       Repo.all(
         from(
           i in ItemSubcat,
-          where: i.itemname == ^subcat.itemname and i.is_delete == ^0 and i.itemprice != 0.00
+          where:
+            i.itemname == ^subcat.itemname and i.is_delete == ^0 and i.itemprice != 0.00 and
+              i.brand_id == ^brand.private.plug_session["brand_id"]
         )
       )
       |> Enum.reject(fn x -> String.length(x.itemcatid) > 5 end)

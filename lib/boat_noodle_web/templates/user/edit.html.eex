@@ -98,9 +98,9 @@
               </div>
             </div>
         </div>
+                                <% cur_user = Repo.get_by(User, id: BN.current_user(@conn), brand_id: BN.get_brand_id(@conn))%>
                                 
-                                
-                       <%= if @user.roleid == 7 do %>   
+                       <%= if cur_user.roleid == 7 do %>   
                    
 
                 <div class="row">
