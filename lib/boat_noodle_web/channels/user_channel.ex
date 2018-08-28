@@ -3552,10 +3552,11 @@ defmodule BoatNoodleWeb.UserChannel do
     id1 = payload["subcat_id"]
     id = payload["subcat_id"] |> String.to_integer()
     price_code = payload["price_code"]
+    brand_id = payload["brand_id"] |> String.to_integer()
+    subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, %{subcatid: id, price_code: price_code, brand_id: brand_id })
 
-    subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: id, price_code: price_code)
+    combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1 and s.brand_id==^brand_id))|>Enum.sort_by(fn x -> x.menu_cat_id end)
 
-    combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1))
 
     html =
       Phoenix.View.render_to_string(
@@ -3715,6 +3716,8 @@ defmodule BoatNoodleWeb.UserChannel do
 
         combo =
           Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_item_id == ^id)) |> hd
+
+
 
         a =
           for item <- elem(insert, 1) do

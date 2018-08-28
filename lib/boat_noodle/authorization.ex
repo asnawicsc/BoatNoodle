@@ -36,12 +36,11 @@ defmodule BoatNoodle.Authorization do
           end
         end
 
-      if domain_name != "" do
+        if domain_name != "" do
         route_user_brand(conn, domain_name)
       else
         route_user(conn)
       end
-    end
 
     if conn.private.plug_session["user_id"] == nil do
       conn
@@ -55,6 +54,9 @@ defmodule BoatNoodle.Authorization do
         conn
       end
     end
+ 
+    end
+
   end
 
   def check_plug_session_has_brand(conn) do

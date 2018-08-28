@@ -91,6 +91,8 @@
      <thead class=" text-primary">
 
     <th>Name</th>
+     <th>Category</th>
+     <th>Category Limit</th>
     <th>Cost Price</th>
     <th>Top Up</th>
      <th>Deleted Item</th>
@@ -100,7 +102,12 @@
      <%= for item <- @combo do %>
      <tbody>
     <tr>  
+
+
+      <% item_cat=Repo.get_by(BN.ItemCat, %{itemcatid: item.menu_cat_id,brand_id: item.brand_id }) %>
       <td><%= item.combo_item_name %></td>
+      <td><%= item_cat.itemcatname %></td>
+      <td align="center"><%= item.combo_qty %></td>
       <td><input type="number" step="0.01" class="form-control" name="<%= item.combo_item_id%>[cost_price]" value="<%= item.unit_price %>"></td>
       <td><input type="number" step="0.01" class="form-control" name="<%= item.combo_item_id%>[top_up]" value="<%= item.top_up %>"></td>
        <td> <div class="form-check form-check-inline" style="margin-left: 40px; margin-right: 40px;">

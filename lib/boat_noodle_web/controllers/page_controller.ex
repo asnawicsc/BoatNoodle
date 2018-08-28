@@ -97,12 +97,15 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def index2(conn, _params) do
+
     branches =
       Repo.all(
         from(
-          s in BoatNoodle.BN.Branch,
-          where: s.brand_id == ^BN.get_brand_id(conn),
-          order_by: s.branchname
+          s in BoatNoodle.BN.UserBranchAccess,
+          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
+          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid,branchname: g.branchname},
+          order_by: g.branchname
         )
       )
 

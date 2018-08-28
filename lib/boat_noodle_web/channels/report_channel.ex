@@ -2093,6 +2093,7 @@ for month <- month_keys do
                     {n10}= if n10 == [] do
 
                     n10=0.0
+                    {n10}
                   else
                     n10=n10|>hd
                     n10=n10.percentage
@@ -3119,6 +3120,7 @@ month=month|>Timex.month_name
                     {n10}= if n10 == [] do
 
                     n10=0.0
+                    {n10}
                   else
                     n10=n10|>hd
                     n10=n10.percentage

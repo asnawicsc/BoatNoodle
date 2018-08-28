@@ -133,7 +133,7 @@
                         </tr>
                         <tr>
                             <td width="1105px"></td>
-                            <td width="170px" align="left"><b>GST (<%= @detail.gstpercentage%>%)</b></td>
+                            <td width="170px" align="left"><b>SST (<%= @detail.gstpercentage%>%)</b></td>
                             <td align="right">
                                 <%= @detail.gst_charge%>
                             </td>
