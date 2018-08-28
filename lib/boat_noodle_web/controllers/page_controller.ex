@@ -13,45 +13,6 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment(conn, params) do
-    # tags = Repo.all(from(t in Tag, where: t.brand_id == ^1 and t.branch_id == ^31))
-    # # target_branch_id = 43
-
-    # for tag <- tags do
-    #   subcat_ids = tag.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end)
-
-    #   for subcat_id <- subcat_ids do
-    #     subcat = Repo.get_by(ItemSubcat, subcatid: subcat_id, brand_id: 1)
-
-    #     {:ok, subcat} =
-    #       ItemSubcat.changeset(subcat, %{tagdesc: tag.tagdesc, printer: tag.printer}, 0, "Update")
-    #       |> Repo.update()
-
-    #     similar_items = Repo.all(from(i in ItemSubcat, where: i.itemname == ^subcat.itemname))
-
-    #     for item_subcat <- similar_items do
-    #       ItemSubcat.changeset(
-    #         item_subcat,
-    #         %{tagdesc: tag.tagdesc, printer: tag.printer},
-    #         0,
-    #         "Update"
-    #       )
-    #       |> Repo.update()
-    #     end
-    #   end
-
-    #   # each branch has a menu_catalog, each catalog has its own uniq subcat it...
-    #   # existing subcat_id.. find the item_subcat..
-    #   # match with target branch menu catalog subcat ids
-    # end
-
-    # sales_payments =
-    #   Repo.all(from(p in SalesPayment, where: p.brand_id == ^BN.get_brand_id(conn)))
-
-    # for sales_payment <- sales_payments do
-    #   SalesPayment.changeset(sales_payment, %{grand_total: sales_payment.sub_total})
-    #   |> Repo.update()
-    # end
-
     render(conn, "experiment.html")
   end
 
