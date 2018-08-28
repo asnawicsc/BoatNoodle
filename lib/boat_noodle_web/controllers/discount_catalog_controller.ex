@@ -4,6 +4,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
   alias BoatNoodle.BN
   alias BoatNoodle.BN.DiscountCatalog
   alias BoatNoodle.BN.DiscountItem
+  require IEx
 
   def index(conn, _params) do
     discount_catalog = Repo.all(DiscountCatalog)
@@ -92,7 +93,9 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
   def list_discount_catalog(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
     disc_cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
-    categories = disc_cata.categories |> String.split(",") |> Enum.sort()
+
+    categories =
+      disc_cata.categories |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
     all_cata =
       Repo.all(
@@ -287,7 +290,9 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
 
   def list_discount_catalog2(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
     disc_cata = Repo.get_by(DiscountCatalog, id: subcat_id, brand_id: BN.get_brand_id(conn))
-    discounts = disc_cata.discounts |> String.split(",") |> Enum.sort()
+
+    discounts =
+      disc_cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
     all_cata =
       Repo.all(
