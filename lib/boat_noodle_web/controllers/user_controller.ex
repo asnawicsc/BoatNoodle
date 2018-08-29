@@ -108,14 +108,17 @@ defmodule BoatNoodleWeb.UserController do
     user = BN.get_user!(id)
     changeset = BoatNoodle.BN.User.changeset(user, %{}, BN.current_user(conn), "edit")
 
-    if user.gall_id == 1 do
+    {gallery,picture}=if user.gall_id == 1 do
       path = File.cwd!() <> "/media/demo.png"
       {:ok, bin} = File.read(path)
       bin = Base.encode64(bin)
+      gallery=Repo.all(Gallery)|>hd
       picture = %{bin: bin}
+      {gallery,picture}
     else
       gallery = Repo.get(Gallery, user.gall_id)
       picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
+      {gallery,picture}
     end
 
     branches =

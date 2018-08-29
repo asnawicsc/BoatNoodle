@@ -291,7 +291,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         from(
           s in ItemSubcat,
           where:
-            s.is_delete == ^0 and s.is_comboitem == ^0 and s.brand_id == ^BN.get_brand_id(conn),
+            s.is_delete == ^0 and s.is_comboitem == ^0 and s.is_activate==^1 and s.brand_id == ^BN.get_brand_id(conn),
           select: %{
             subcatid: s.subcatid,
             item_code: s.itemcode,

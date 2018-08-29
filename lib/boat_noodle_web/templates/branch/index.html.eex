@@ -22,14 +22,7 @@
               <div class="ripple-container"></div>
             </a>
           </div>
-   
-      <div class="dropdown pull-right" style="padding: 10px;">
 
-      <a  href="/<%= @conn.private.plug_session["brand"] %>/tbl_syn_combo" class="btn btn-primary btn-round" >
-
-          <i class="material-icons">list</i> Syncronize Combo
-      </a>
-    </div>
 
     </div>
     <div class="card-body table-responsive">
@@ -196,3 +189,4 @@
     </div>
   </div>
 </div>
+

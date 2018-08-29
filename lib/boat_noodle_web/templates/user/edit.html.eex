@@ -117,7 +117,7 @@
 
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" style="border: solid black 1px;"  >
                       <h3>Not Selected</h3>
                       <ol class="not_selected">
                         
@@ -127,7 +127,7 @@
                   <%end%>
                       </ol>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" style="border: solid black 1px;" >
                          <h3> Selected</h3>
                          <ol class="selected">
                           <%= for branch <- @selected |> Enum.sort_by(fn x -> x.branchname end) do %>
@@ -141,7 +141,10 @@
                   
                 
                 </div>
+
                 </div>
+
+
                 </div> 
                 </div>                         
 <% end %>
@@ -150,13 +153,14 @@
 
 
 <script type="text/javascript">
-  
+  var user_id =  $("input[name='user_id']").val()
+
   $(document).on("click", "ol.not_selected li", function(){
    
 
     $("ol.selected").append( $(this))
     var bname = $(this).attr("aria-label")
-    channel.push("insert_into_uba", {user_id: window.currentUser, bname: bname, brand_id: window.currentBrand})
+    channel.push("insert_into_uba", {user_id: user_id, bname: bname, brand_id: window.currentBrand})
   })
 
   $(document).on("click", "ol.selected li", function(){
@@ -164,7 +168,7 @@
 
     $("ol.not_selected").append( $(this))
         var bname = $(this).attr("aria-label")
-    channel.push("insert_into_uba", {user_id: window.currentUser, bname: bname, brand_id: window.currentBrand})
+    channel.push("insert_into_uba", {user_id: user_id, bname: bname, brand_id: window.currentBrand})
   })
 
   channel.on("notify_user_branch_access_changed", payload => {

@@ -288,10 +288,13 @@ $("div#transaction").html(transaction);
         })
           $(maps).each(function() {
             total_sales.push(this.total_sales)
+
         })
         $(maps).each(function() {
             total_transaction.push(this.total_transaction)
         })
+
+
 
         Highcharts.chart('branch_daily_sales_barchart', {
             chart: {
@@ -306,7 +309,7 @@ $("div#transaction").html(transaction);
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                    '<td style="padding:0"><b> {point.y:.2f} </b></td></tr>',
                 footerFormat: '</table>',
                 shared: true,
                 useHTML: true
@@ -356,7 +359,7 @@ $("div#transaction").html(transaction);
 					    text: ''
 					  },
 					  tooltip: {
-					 pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.1f}%</b>)'
+					 pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.2f}%</b>)'
 					  },
 					  plotOptions: {
 					    pie: {
@@ -364,7 +367,7 @@ $("div#transaction").html(transaction);
 					      cursor: 'pointer',
 					      dataLabels: {
 					        enabled: true,
-					        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+					        format: '<b>{point.name}</b>: {point.percentage:.2f} %',
 					        style: {
 					          color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
 					        }
@@ -398,7 +401,7 @@ $("div#transaction").html(transaction);
 					    text: ''
 					  },
 					  tooltip: {
-					    pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.1f}%</b>)'
+					    pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.2f}%</b>)'
 					  },
 					  plotOptions: {
 					    pie: {
@@ -406,7 +409,7 @@ $("div#transaction").html(transaction);
 					      cursor: 'pointer',
 					      dataLabels: {
 					        enabled: true,
-					        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+					        format: '<b>{point.name}</b>: {point.percentage:.2f} %',
 					        style: {
 					          color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
 					        }
@@ -440,7 +443,7 @@ $("div#transaction").html(transaction);
 					    text: ''
 					  },
 					  tooltip: {
-					    pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.1f}%</b>)'
+					    pointFormat: '<b>{point.y} </b>(<b>{point.percentage:.2f}%</b>)'
 					  },
 					  plotOptions: {
 					    pie: {
@@ -448,7 +451,7 @@ $("div#transaction").html(transaction);
 					      cursor: 'pointer',
 					      dataLabels: {
 					        enabled: true,
-					        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+					        format: '<b>{point.name}</b>: {point.percentage:.2f} %',
 					        style: {
 					          color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
 					        }
@@ -509,7 +512,7 @@ $("div#transaction").html(transaction);
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b> {point.y:.1f} </b></td></tr>',
+                    '<td style="padding:0"><b> {point.y:.2f} </b></td></tr>',
                 footerFormat: '</table>',
                 shared: true,
                 useHTML: true
