@@ -521,7 +521,8 @@ defmodule BoatNoodleWeb.MenuItemController do
         from(
           s in ItemSubcat,
           where:
-            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0,
+            s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0 and
+              i.brand_id == ^conn.private.plug_session["brand_id"],
           order_by: [asc: s.price_code]
         )
       )
