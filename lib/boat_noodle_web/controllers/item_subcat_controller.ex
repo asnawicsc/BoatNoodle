@@ -1042,7 +1042,9 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       Repo.all(
         from(
           s in ItemSubcat,
-          where: s.itemcode == ^item_subcat.itemcode and s.is_delete == ^0,
+          where:
+            s.itemcode == ^item_subcat.itemcode and s.is_delete == ^0 and
+              s.brand_id == ^BN.get_brand_id(conn),
           order_by: [asc: s.price_code]
         )
       )
@@ -1054,7 +1056,9 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         Repo.all(
           from(
             s in ItemSubcat,
-            where: s.itemcode == ^item_subcat.itemcode and s.is_delete == ^0,
+            where:
+              s.itemcode == ^item_subcat.itemcode and s.is_delete == ^0 and
+                s.brand_id == ^BN.get_brand_id(conn),
             order_by: [asc: s.price_code]
           )
         )
@@ -1088,7 +1092,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     no_selection_combo_items =
       Repo.all(
-        from(s in ItemSubcat, where: s.itemcatid == ^Integer.to_string(item_subcat.subcatid))
+        from(
+          s in ItemSubcat,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and
+              s.itemcatid == ^Integer.to_string(item_subcat.subcatid)
+        )
       )
 
     render(
