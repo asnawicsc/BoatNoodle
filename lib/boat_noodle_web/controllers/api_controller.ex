@@ -568,7 +568,7 @@ defmodule BoatNoodleWeb.ApiController do
 
     subcats =
       Repo.all(
-        from(s in ItemSubcat, where: s.subcatid in ^subcat_ids and s.brand_id == ^brand_id)
+        from(s in ItemSubcat, where: s.subcatid in ^subcat_ids and s.brand_id == ^brand_id and s.is_activate != ^0)
       )
       |> Enum.map(fn x ->
         %{

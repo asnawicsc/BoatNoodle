@@ -17,7 +17,7 @@ defmodule BoatNoodleWeb.MenuItemController do
           on: c.itemcatid == i.itemcatid,
           where:
             c.category_type == ^"COMBO" and c.brand_id == ^BN.get_brand_id(conn) and
-              i.brand_id == ^BN.get_brand_id(conn),
+              i.brand_id == ^BN.get_brand_id(conn) and i.is_activate != ^0,
           group_by: [i.itemcode],
           select: %{
             itemcode: i.itemcode,
