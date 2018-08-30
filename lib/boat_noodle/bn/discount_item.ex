@@ -22,7 +22,7 @@ defmodule BoatNoodle.BN.DiscountItem do
     field(:pre_req_item, :string)
     field(:min_order, :integer)
     field(:is_force_apply, :boolean, default: false)
-
+    field(:is_oc, :integer, default: 0)
     field(:brand_id, :integer, primary_key: true)
   end
 
@@ -31,6 +31,7 @@ defmodule BoatNoodle.BN.DiscountItem do
     discount_item =
       discount_item
       |> cast(attrs, [
+        :is_oc,
         :is_force_apply,
         :min_order,
         :brand_id,

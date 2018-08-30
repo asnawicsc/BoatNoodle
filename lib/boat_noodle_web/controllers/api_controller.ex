@@ -279,7 +279,7 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in Discount,
-          where: d.discountid in ^ids and d.brand_id == ^brand_id,
+          where: d.discountid in ^ids and d.brand_id == ^brand_id and d.is_visable == ^1,
           select: %{
             brand_id: d.brand_id,
             DiscountID: d.discountid,
@@ -303,7 +303,7 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in DiscountItem,
-          where: d.discountitemsid in ^item_ids and d.brand_id == ^brand_id,
+          where: d.discountitemsid in ^item_ids and d.brand_id == ^brand_id and d.is_visable == ^1,
           select: %{
             brand_id: d.brand_id,
             discountitemsid: d.discountitemsid,
@@ -323,7 +323,8 @@ defmodule BoatNoodleWeb.ApiController do
             descriptions: d.descriptions,
             discitemsname: d.discitemsname,
             discountid: d.discountid,
-            is_force_apply: d.is_force_apply
+            is_force_apply: d.is_force_apply,
+            is_oc: d.is_oc
           }
         )
       )
@@ -347,7 +348,8 @@ defmodule BoatNoodleWeb.ApiController do
           Descriptions: x.descriptions,
           DiscItemsName: x.discitemsname,
           DiscountID: x.discountid,
-          is_force_apply: bol(x.is_force_apply)
+          is_force_apply: bol(x.is_force_apply),
+          is_oc: x.is_oc
         }
       end)
 

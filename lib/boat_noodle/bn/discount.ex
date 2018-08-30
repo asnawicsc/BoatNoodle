@@ -20,37 +20,41 @@ defmodule BoatNoodle.BN.Discount do
   end
 
   @doc false
-  def changeset(discount, attrs,user_id,action) do
-    discount=discount
-    |> cast(attrs, [
-      :discountid,
-      :brand_id,
-      :discname,
-      :descriptions,
-      :discamtpercentage,
-      :target_cat,
-      :is_used,
-      :disc_qty,
-      :target_itemcode,
-      :disctype,
-      :is_categorize,
-      :is_visable,
-      :is_delete
-    ])    |> unique_constraint(:discountid, name: "PRIMARY")
+  def changeset(discount, attrs, user_id, action) do
+    discount =
+      discount
+      |> cast(attrs, [
+        :discountid,
+        :brand_id,
+        :discname,
+        :descriptions,
+        :discamtpercentage,
+        :target_cat,
+        :is_used,
+        :disc_qty,
+        :target_itemcode,
+        :disctype,
+        :is_categorize,
+        :is_visable,
+        :is_delete
+      ])
+      |> unique_constraint(:discountid, name: "PRIMARY")
 
-
-
-      if action == "new" or action =="edit" do
-
-            
-        else
-
-            if action == "Update" do
+    if action == "new" or action == "edit" do
+    else
+      if action == "Update" do
         attrs = Map.put(attrs, "discountid", discount.data.discountid)
       end
-          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
-      end
 
-  discount
+      BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
+        name: "discount",
+        user_id: user_id,
+        description: Poison.encode!(attrs),
+        action: action
+      })
+      |> BoatNoodle.Repo.insert()
+    end
+
+    discount
   end
 end
