@@ -13,7 +13,7 @@ $(document).ready(function() {
       if ($("table[aria-label='categories_body']").find("tr.selected").length == 1) {
         var rw = $("table[aria-label='categories_body']").find("tr.selected")
         var cat_id = rw.find("td:first").html()
-        channel2.push("edit_item_category", {cat_id: cat_id})
+        channel2.push("edit_item_category", {cat_id: cat_id, brand_id: window.currentBrand})
       }
   });
 
@@ -182,7 +182,7 @@ $(document).ready(function() {
         var rw = $("table[aria-label='categories_body']").find("tr.selected")
         var map = rw.html()
         var cat_id = rw.find("td:first").html()
-        channel2.push("delete_item_category", {user_id: window.currentUser,map: map,cat_id: cat_id})
+        channel2.push("delete_item_category", {user_id: window.currentUser,map: map,cat_id: cat_id, brand_id: window.currentBrand})
 
         table.row('.selected').remove().draw( false );
       }

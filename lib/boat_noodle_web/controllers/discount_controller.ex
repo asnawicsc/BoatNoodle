@@ -225,7 +225,8 @@ defmodule BoatNoodleWeb.DiscountController do
       discamtpercentage: discamtpercentage,
       descriptions: descriptions,
       is_visable: is_visable,
-      target_cat: 0
+      target_cat: 0,
+      brand_id: BN.get_brand_id(conn)
     }
 
     discount =
@@ -459,7 +460,7 @@ defmodule BoatNoodleWeb.DiscountController do
           end
       end
 
-    is_used =
+    is_visable =
       if item["status"] == "on" do
         1
       else
@@ -478,7 +479,7 @@ defmodule BoatNoodleWeb.DiscountController do
       disctype: disc_type,
       multi_item_list: multi_item_list,
       is_targetmenuitems: is_targetmenuitems,
-      is_used: is_used,
+      is_visable: is_visable,
       min_spend: min_spend,
       brand_id: BN.get_brand_id(conn)
     }

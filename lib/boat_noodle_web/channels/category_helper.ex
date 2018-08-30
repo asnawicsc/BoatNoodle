@@ -12,7 +12,7 @@ defmodule BoatNoodleWeb.CategoryHelper do
 
   def handle_in(
         "update_category_form",
-        %{"map" => map, "cat_id" => cat_id, "brand_id" => brand_id,"user_id" => user_id},
+        %{"map" => map, "cat_id" => cat_id, "brand_id" => brand_id, "user_id" => user_id},
         socket
       ) do
     item_cat_params =
@@ -21,9 +21,11 @@ defmodule BoatNoodleWeb.CategoryHelper do
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
 
-    cat = Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
+    cat =
+      Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id and i.brand_id == ^brand_id))
+      |> hd()
 
-    cg = BoatNoodle.BN.ItemCat.changeset(cat, item_cat_params,user_id,"Update")
+    cg = BoatNoodle.BN.ItemCat.changeset(cat, item_cat_params, user_id, "Update")
 
     case Repo.update(cg) do
       {:ok, item_cat} ->
@@ -45,8 +47,10 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-  def handle_in("edit_item_category", %{"cat_id" => cat_id}, socket) do
-    cat = Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
+  def handle_in("edit_item_category", %{"cat_id" => cat_id, "brand_id" => brand_id}, socket) do
+    cat =
+      Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id and i.brand_id == ^brand_id))
+      |> hd()
 
     broadcast(socket, "open_edit_category", %{
       itemcatcode: cat.itemcatcode,
@@ -59,25 +63,28 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-  def handle_in("delete_item_category", %{"user_id" => user_id,"cat_id" => cat_id,"map" => map}, socket) do
+  def handle_in(
+        "delete_item_category",
+        %{"user_id" => user_id, "cat_id" => cat_id, "brand_id" => brand_id, "map" => map},
+        socket
+      ) do
+    cat =
+      Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id and i.brand_id == ^brand_id))
+      |> hd()
 
-     cat= Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id)) |> hd()
+    changeset =
+      BoatNoodle.BN.ItemCat.changeset(cat, %{is_delete: 1, visable: 0}, user_id, "delete")
 
-
-  
-             changeset=BoatNoodle.BN.ItemCat.changeset(cat,%{}, user_id,"delete")
-
-      case  BoatNoodle.Repo.delete(changeset) do
+    case BoatNoodle.Repo.update(changeset) do
       {:ok, item_cat} ->
-
         menu_item = Repo.all(BoatNoodle.BN.MenuItem)
 
-    html =
-      Phoenix.View.render_to_string(
-        BoatNoodleWeb.MenuItemView,
-        "category_sidebar.html",
-        menu_item: menu_item
-      )
+        html =
+          Phoenix.View.render_to_string(
+            BoatNoodleWeb.MenuItemView,
+            "category_sidebar.html",
+            menu_item: menu_item
+          )
 
         broadcast(socket, "deleted_category", %{html: html})
 
@@ -88,21 +95,26 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-  def handle_in("submit_category_form", %{"map" => map,"brand_id" => brand_id,"user_id" => user_id}, socket) do
-
+  def handle_in(
+        "submit_category_form",
+        %{"map" => map, "brand_id" => brand_id, "user_id" => user_id},
+        socket
+      ) do
     item_cat_params =
       map
       |> Enum.map(fn x -> %{x["name"] => x["value"]} end)
       |> Enum.flat_map(fn x -> x end)
       |> Enum.into(%{})
 
-
-
     item_cat_params = Map.put(item_cat_params, "brand_id", brand_id)
 
-  
-
-    cg = BoatNoodle.BN.ItemCat.changeset(%BoatNoodle.BN.ItemCat{}, item_cat_params,user_id,"Create")
+    cg =
+      BoatNoodle.BN.ItemCat.changeset(
+        %BoatNoodle.BN.ItemCat{},
+        item_cat_params,
+        user_id,
+        "Create"
+      )
 
     case Repo.insert(cg) do
       {:ok, item_cat} ->
@@ -128,7 +140,7 @@ defmodule BoatNoodleWeb.CategoryHelper do
     Repo.all(
       from(
         i in BoatNoodle.BN.ItemCat,
-        where: i.brand_id == ^brand_id,
+        where: i.brand_id == ^brand_id and i.visable == ^1 and i.is_delete == ^0,
         select: %{
           itemcatid: i.itemcatid,
           itemcatname: i.itemcatname,
