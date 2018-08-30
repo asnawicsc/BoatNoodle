@@ -479,7 +479,8 @@ defmodule BoatNoodleWeb.DiscountController do
       multi_item_list: multi_item_list,
       is_targetmenuitems: is_targetmenuitems,
       is_used: is_used,
-      min_spend: min_spend
+      min_spend: min_spend,
+      brand_id: BN.get_brand_id(conn)
     }
 
     discount_item =
