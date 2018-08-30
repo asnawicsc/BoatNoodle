@@ -124,7 +124,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
   def list_discount_catalog3(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
     catalogs_ori =
       Repo.all(
-        from(m in DiscountCatalog, select: %{id: m.id, name: m.name, categories: m.categories})
+        from(m in DiscountCatalog, where: m.brand_id == ^BN.get_brand_id(conn), select: %{id: m.id, name: m.name, categories: m.categories})
       )
       |> Enum.map(fn x -> Map.put(x, :categories, String.split(x.categories, ",")) end)
 

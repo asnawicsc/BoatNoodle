@@ -17,7 +17,7 @@ defmodule BoatNoodleWeb.MenuItemController do
           on: c.itemcatid == i.itemcatid,
           where:
             c.category_type == ^"COMBO" and c.brand_id == ^BN.get_brand_id(conn) and
-              i.brand_id == ^BN.get_brand_id(conn),
+              i.brand_id == ^BN.get_brand_id(conn) and i.is_activate != ^0,
           group_by: [i.itemcode],
           select: %{
             itemcode: i.itemcode,
@@ -522,7 +522,7 @@ defmodule BoatNoodleWeb.MenuItemController do
           s in ItemSubcat,
           where:
             s.itemcode == ^item_subcat.itemcode and s.is_comboitem == ^0 and s.is_delete == ^0 and
-              i.brand_id == ^conn.private.plug_session["brand_id"],
+              s.brand_id == ^conn.private.plug_session["brand_id"],
           order_by: [asc: s.price_code]
         )
       )
