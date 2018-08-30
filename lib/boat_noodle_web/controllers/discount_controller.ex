@@ -253,7 +253,7 @@ defmodule BoatNoodleWeb.DiscountController do
       id = id |> String.to_integer()
       branch = Repo.get_by(DiscountCatalog, id: id, brand_id: BN.get_brand_id(conn))
       dis_categories = branch.categories
-      disc_cat = dis_categories |> String.split(",")
+      disc_cat = dis_categories|> String.split(",")|>Enum.uniq 
 
       disc_id = discount.discountid |> Integer.to_string()
       all_discount_categories = List.insert_at(disc_cat, 0, disc_id)

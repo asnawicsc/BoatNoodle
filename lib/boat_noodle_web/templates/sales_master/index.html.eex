@@ -438,7 +438,6 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
 
         });
 
-      
 
 
     })

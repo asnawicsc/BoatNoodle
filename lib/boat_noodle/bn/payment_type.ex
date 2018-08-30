@@ -7,11 +7,11 @@ defmodule BoatNoodle.BN.PaymentType do
     field(:payment_type_id, :integer, primary_key: true)
     field(:payment_type_name, :string)
     field(:payment_type_code, :string)
-    field(:is_delivery, :integer)
-    field(:is_card_no, :integer)
-    field(:is_payment_code, :integer)
-    field(:is_default, :integer)
-    field(:is_visible, :integer)
+    field(:is_delivery, :integer, default: 0)
+    field(:is_card_no, :integer, default: 0)
+    field(:is_payment_code, :integer, default: 0)
+    field(:is_default, :integer, default: 0)
+    field(:is_visible, :integer, default: 0)
     field(:brand_id, :integer)
   end
 

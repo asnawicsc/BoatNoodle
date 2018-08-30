@@ -100,25 +100,25 @@
         </div>
                                 <% cur_user = Repo.get_by(User, id: BN.current_user(@conn), brand_id: BN.get_brand_id(@conn))%>
                                 
-                       <%= if cur_user.roleid == 7 do %>   
+                       <%= if cur_user.roleid == 1 do %>   
                    
 
                 <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-3">
               <div class="card">
-                <div class="card-header card-header-icon card-header-rose">
+                <div class="card-header card-header-icon card-header-primary">
                   <div class="card-icon">
                     <i class="material-icons">perm_identity</i>
                   </div>
-                  <h4 class="card-title">User Branch Access
+                  <h4 class="card-title">User Branch Access (Not Selected)
                   </h4>
                 </div>
                 <br>
 
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-lg-6" style="border: solid black 1px;"  >
-                      <h3>Not Selected</h3>
+                    <div class="col-lg-12"  >
+                 
                       <ol class="not_selected">
                         
                       <%= for branch <- @branches |> Enum.sort_by(fn x -> x.branchname end) do %>
@@ -127,8 +127,33 @@
                   <%end%>
                       </ol>
                     </div>
-                    <div class="col-lg-6" style="border: solid black 1px;" >
-                         <h3> Selected</h3>
+                   
+                  </div>
+                    
+                  
+                
+                </div>
+
+                </div>
+
+
+                </div>
+                            <div class="col-md-3">
+              <div class="card">
+                <div class="card-header card-header-icon card-header-primary">
+                  <div class="card-icon">
+                    <i class="material-icons">perm_identity</i>
+                  </div>
+                  <h4 class="card-title">User Branch Access (Selected)
+                  </h4>
+                </div>
+                <br>
+
+                <div class="card-body">
+                  <div class="row">
+              
+                    <div class="col-lg-12">
+                    
                          <ol class="selected">
                           <%= for branch <- @selected |> Enum.sort_by(fn x -> x.branchname end) do %>
                   
@@ -185,4 +210,24 @@
           }
       });
   })
+
+   channel.on("notify_payment_catalog_changes", payload => {
+          $.notify({
+          icon: "notifications",
+          message: payload.action
+
+      }, {
+          type: "info",
+          timer: 100,
+          placement: {
+              from: 'bottom',
+              align: 'right'
+          }
+      });
+
+        }
+
+
+
+
 </script>

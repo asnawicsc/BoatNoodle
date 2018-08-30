@@ -478,11 +478,31 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def edit(conn, %{"id" => id}) do
+
+
+
     branch =
       Repo.all(
         from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))
       )
       |> hd()
+
+       payment_catalog=branch.payment_catalog|>String.split(",")|>Enum.filter(fn x -> x != "" end)
+
+       selected=for item <- payment_catalog do
+
+        payment=Repo.get_by(BoatNoodle.BN.PaymentType, %{payment_type_id: item,brand_id: BN.get_brand_id(conn)})
+
+          %{payment_type_id: payment.payment_type_id,payment_type_code: payment.payment_type_code,payment_type_name: payment.payment_type_name}
+         
+       end
+
+       all_payment_type=Repo.all(from  b in BoatNoodle.BN.PaymentType,where: b.brand_id == ^BN.get_brand_id(conn),
+        select: %{payment_type_id: b.payment_type_id,payment_type_code: b.payment_type_code,payment_type_name: b.payment_type_name})
+
+       unselected=all_payment_type -- selected
+
+
 
     changeset = BoatNoodle.BN.Branch.changeset(branch, %{}, BN.current_user(conn), "edit")
 
@@ -524,7 +544,9 @@ defmodule BoatNoodleWeb.BranchController do
       managers: managers,
       organizations: organizations,
       menu_catalog: menu_catalog,
-      disc_catalog: disc_catalog
+      disc_catalog: disc_catalog,
+      selected: selected,
+      unselected: unselected
     )
   end
 
