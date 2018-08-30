@@ -571,23 +571,24 @@ defmodule BoatNoodleWeb.MenuItemController do
               if isc == [] do
                 # create new item subcat
 
-                a =
+                subcat_id_list =
                   Repo.all(
                     from(
                       s in ItemSubcat,
                       left_join: c in ItemCat,
                       on: c.itemcatid == s.itemcatid,
                       where:
-                        s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO" and
-                          s.brand_id == ^BN.get_brand_id(conn),
+                        s.is_comboitem == ^0 and c.category_type != "COMBO" and
+                          s.brand_id == ^BN.get_brand_id(conn) and
+                          c.brand_id == ^BN.get_brand_id(conn),
                       select: s.subcatid,
                       order_by: [asc: s.subcatid]
                     )
                   )
 
-                if a != [] do
+                if subcat_id_list != [] do
                   a =
-                    a
+                    subcat_id_list
                     |> List.last()
                 else
                   a = 0

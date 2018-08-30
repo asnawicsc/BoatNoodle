@@ -3,7 +3,7 @@ defmodule BoatNoodleWeb.BranchController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.{Branch, Organization, User, TagCatalog, Tag, TagItems}
-  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, ComboDetails}
+  alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, ComboDetails, PaymentType}
   require IEx
 
   def printers(conn, %{"id" => id}) do
@@ -478,31 +478,58 @@ defmodule BoatNoodleWeb.BranchController do
   end
 
   def edit(conn, %{"id" => id}) do
-
-
-
     branch =
       Repo.all(
         from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))
       )
       |> hd()
 
-       payment_catalog=branch.payment_catalog|>String.split(",")|>Enum.filter(fn x -> x != "" end)
+    branch =
+      if branch.payment_catalog == nil do
+        {:ok, branch} =
+          Branch.changeset(branch, %{payment_catalog: "0"}, BN.current_user(conn), "Update")
+          |> Repo.update()
 
-       selected=for item <- payment_catalog do
+        branch
+      else
+        branch
+      end
 
-        payment=Repo.get_by(BoatNoodle.BN.PaymentType, %{payment_type_id: item,brand_id: BN.get_brand_id(conn)})
+    payment_catalog =
+      branch.payment_catalog |> String.split(",") |> Enum.filter(fn x -> x != "" end)
 
-          %{payment_type_id: payment.payment_type_id,payment_type_code: payment.payment_type_code,payment_type_name: payment.payment_type_name}
-         
-       end
+    selected =
+      for item <- payment_catalog do
+        payment =
+          Repo.get_by(PaymentType, %{
+            payment_type_id: item,
+            brand_id: BN.get_brand_id(conn)
+          })
 
-       all_payment_type=Repo.all(from  b in BoatNoodle.BN.PaymentType,where: b.brand_id == ^BN.get_brand_id(conn),
-        select: %{payment_type_id: b.payment_type_id,payment_type_code: b.payment_type_code,payment_type_name: b.payment_type_name})
+        if payment != nil do
+          %{
+            payment_type_id: payment.payment_type_id,
+            payment_type_code: payment.payment_type_code,
+            payment_type_name: payment.payment_type_name
+          }
+        end
+      end
+      |> Enum.reject(fn x -> x == nil end)
 
-       unselected=all_payment_type -- selected
+    all_payment_type =
+      Repo.all(
+        from(
+          b in BoatNoodle.BN.PaymentType,
+          where: b.brand_id == ^BN.get_brand_id(conn),
+          select: %{
+            payment_type_id: b.payment_type_id,
+            payment_type_code: b.payment_type_code,
+            payment_type_name: b.payment_type_name
+          }
+        )
+      )
 
-
+    unselected = all_payment_type -- selected
 
     changeset = BoatNoodle.BN.Branch.changeset(branch, %{}, BN.current_user(conn), "edit")
 
