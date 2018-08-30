@@ -549,7 +549,12 @@ defmodule BoatNoodleWeb.ApiController do
     combo_ids = menu_catalog.combo_items |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
     item_cats =
-      Repo.all(from(i in ItemCat, where: i.itemcatid in ^cat_ids and i.brand_id == ^brand_id))
+      Repo.all(
+        from(
+          i in ItemCat,
+          where: i.itemcatid in ^cat_ids and i.brand_id == ^brand_id and i.visable == ^1
+        )
+      )
       |> Enum.map(fn x ->
         %{
           # brand_id: x.brand_id,
@@ -568,7 +573,10 @@ defmodule BoatNoodleWeb.ApiController do
 
     subcats =
       Repo.all(
-        from(s in ItemSubcat, where: s.subcatid in ^subcat_ids and s.brand_id == ^brand_id and s.is_activate != ^0)
+        from(
+          s in ItemSubcat,
+          where: s.subcatid in ^subcat_ids and s.brand_id == ^brand_id and s.is_activate != ^0
+        )
       )
       |> Enum.map(fn x ->
         %{
