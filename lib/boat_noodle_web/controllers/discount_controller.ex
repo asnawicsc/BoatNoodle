@@ -766,7 +766,9 @@ defmodule BoatNoodleWeb.DiscountController do
 
     {is_targetmenuitems, multi_item_list} =
       if params["is_targetmenuitems"] == nil do
-        0
+        is_targetmenuitems = 0
+        multi_item_list = ""
+        {is_targetmenuitems, multi_item_list}
       else
         count = params["is_targetmenuitems"] |> Enum.count()
 
