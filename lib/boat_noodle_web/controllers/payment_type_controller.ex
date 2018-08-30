@@ -3,7 +3,7 @@ defmodule BoatNoodleWeb.PaymentTypeController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.PaymentType
-
+require IEx
   def index(conn, _params) do
        branches =
       Repo.all(
@@ -15,7 +15,67 @@ defmodule BoatNoodleWeb.PaymentTypeController do
           order_by: g.branchname
         )
       )
-    render(conn, "index.html", branches: branches)
+
+      brand_id=BN.get_brand_id(conn)
+    render(conn, "index.html", branches: branches,brand_id: brand_id)
+  end
+
+  def create_payment_type(conn,params)  do
+
+    brand_id=params["brand_id"]
+
+
+  is_delivery=if params["is_delivery"]== nil do
+
+    0
+  else
+    1
+    
+  end
+
+    is_card_no=if params["is_card_no"]== nil do
+
+    0
+  else
+    1
+    
+  end
+    is_payment_code=if params["is_payment_code"]== nil do
+
+    0
+  else
+    1
+    
+  end
+    is_default=if params["is_default"]== nil do
+
+    0
+  else
+    1
+    
+  end
+    is_visible=if params["is_visible"]== nil do
+
+    0
+  else
+    1
+    
+  end
+
+  payment_type_params=%{payment_type_name: params["payment_type_name"],
+  payment_type_code: params["payment_type_code"],is_delivery: is_delivery,is_card_no: is_card_no,is_payment_code: is_payment_code,is_default: is_default,is_visible: is_visible}
+
+case BN.create_payment_type(payment_type_params) do
+      {:ok, payment_type} ->
+        conn
+        |> put_flash(:info, "Payment type created successfully.")
+        |> redirect(to: payment_type_path(conn, :index, BN.get_domain(conn)))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "new.html", changeset: changeset)
+    end
+
+  
   end
 
   

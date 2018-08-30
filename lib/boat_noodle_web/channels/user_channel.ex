@@ -3818,6 +3818,89 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
+
+   def handle_in("insert_into_payment_catalog_branch",payload,socket) do
+    brand =payload["brand_id"]
+    new_payment_id=payload["pid"]
+    branchid=payload["branchid"]|>String.trim|>String.to_integer
+
+    new=payload["brand_id"]|>String.to_integer
+
+    payment_type = Repo.get_by(BoatNoodle.BN.PaymentType, brand_id: brand, payment_type_id: new_payment_id)
+
+
+    branch=Repo.get_by(BoatNoodle.BN.Branch,branchid: branchid ,brand_id: new)
+
+
+        catalog = branch.payment_catalog|> String.split(",")|>Enum.uniq 
+
+        
+
+            all_catalog = List.insert_at(catalog, 0, new_payment_id)
+
+            new = all_catalog |> Enum.join(",")
+
+
+
+
+
+    changeset =
+      BoatNoodle.BN.Branch.changeset(branch, %{payment_catalog: new}, payload["user_id"], "Update")
+
+    BoatNoodle.Repo.update(changeset)
+
+
+  
+action="Payment Type Succesfully Added"
+      
+
+    broadcast(socket, "notify_payment_catalog_changes", %{
+      action: action
+    })
+
+    {:noreply, socket}
+  end
+
+     def handle_in("remove_from_payment_catalog_branch",payload,socket) do
+    brand =payload["brand_id"]
+    new_payment_id=payload["pid"]
+    branchid=payload["branchid"]|>String.trim|>String.to_integer
+
+    new=payload["brand_id"]|>String.to_integer
+
+    payment_type = Repo.get_by(BoatNoodle.BN.PaymentType, brand_id: brand, payment_type_id: new_payment_id)
+
+
+    branch=Repo.get_by(BoatNoodle.BN.Branch,branchid: branchid ,brand_id: new)
+
+
+        catalog = branch.payment_catalog|> String.split(",")|>Enum.uniq 
+
+        new=catalog|>Enum.filter(fn x -> x != new_payment_id end)|>Enum.join(",")
+
+
+
+
+    changeset =
+      BoatNoodle.BN.Branch.changeset(branch, %{payment_catalog: new}, payload["user_id"], "Update")
+
+    BoatNoodle.Repo.update(changeset)
+
+
+  
+action="Payment Type Succesfully Removed"
+      
+
+    broadcast(socket, "notify_payment_deleted", %{
+      action: action
+    })
+
+    {:noreply, socket}
+  end
+
+
+  
+
   defp authorized?(_payload) do
     true
   end
