@@ -130,7 +130,9 @@
             </div>
           </li>
 
-          <% user = Repo.get_by(User, id: current_user, brand_id: @conn.params["brand_id"] %>
+          <% conn = @conn %>
+      
+          <% user = Repo.get_by(User, id:  conn.private.plug_session["user_id"], brand_id: conn.private.plug_session["brand_id"]) %>
           <%= if user.read_report_only == 0 do %>
           <li class="nav-item ">
             <a class="nav-link" data-toggle="collapse" href="#menus">

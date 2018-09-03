@@ -32,17 +32,18 @@ defmodule BoatNoodleWeb.PageController do
       if Comeonin.Bcrypt.checkpw(password, p2) do
         brand = Repo.get(Brand, user.brand_id)
 
-        if user.read_report_only == 0 do
-          conn
-          |> put_session(:user_id, user.id)
-          |> put_session(:brand, brand.domain_name)
-          |> put_session(:brand_id, brand.id)
-          |> redirect(to: page_path(conn, :index2, brand.domain_name))
-        else
-          conn
-          |> put_session(:user_id, user.id)
-          |> redirect(to: page_path(conn, :report_index))
-        end
+        # if user.read_report_only == 0 do
+        conn
+        |> put_session(:user_id, user.id)
+        |> put_session(:brand, brand.domain_name)
+        |> put_session(:brand_id, brand.id)
+        |> redirect(to: page_path(conn, :index2, brand.domain_name))
+
+        # else
+        #   conn
+        #   |> put_session(:user_id, user.id)
+        #   |> redirect(to: page_path(conn, :report_index))
+        # end
       else
         conn
         |> put_flash(:error, "Wrong password!")
