@@ -3,6 +3,7 @@ $(document).ready(function() {
   $("input[name='previous_category']").click(function(){
     $("div[aria-label='add_new_category']").hide()
     $("div[aria-label='edit_new_category']").hide()
+    $("div[aria-label='view_item_category']").hide()
     $("div[aria-label='menu_item_content']").show()
   })
 
@@ -17,10 +18,22 @@ $(document).ready(function() {
       }
   });
 
+
+    $('button[aria-label="view_item_category"]').click( function () {
+    var table = $("table[aria-label='categories_body']").DataTable()
+      
+      if ($("table[aria-label='categories_body']").find("tr.selected").length == 1) {
+        var rw = $("table[aria-label='categories_body']").find("tr.selected")
+        var cat_id = rw.find("td:first").html()
+        channel2.push("view_item_category", {cat_id: cat_id, brand_id: window.currentBrand})
+      }
+  });
+
   channel2.on("open_edit_category", payload => {
     
     $("div[aria-label='menu_item_content']").hide()
     $("div[aria-label='edit_new_category']").show()
+    $("div[aria-label='view_item_category']").hide()
 
     $("input[name='category_update']").attr("id", payload.itemcatid)
     $("form[aria-label='edit_category_form'] input[name='itemcatcode']").val( payload.itemcatcode)
@@ -30,6 +43,17 @@ $(document).ready(function() {
 
     $("form[aria-label='edit_category_form'] input[name='itemcatcode']").focus()
   })
+
+    channel2.on("open_view_item_category", payload => {
+
+
+    $("#modal_form3").html(payload.html);
+    
+  })
+
+
+
+
 
 
   $("input[name='category_update']").click(function(){
@@ -42,6 +66,7 @@ $(document).ready(function() {
 
     $("div[aria-label='edit_new_category']").hide()
     $("div[aria-label='menu_item_content']").show()
+        $("div[aria-label='view_item_category']").hide()
 
     $("form[aria-label='edit_category_form'] input[name='itemcatcode']").val("")
     $("form[aria-label='edit_category_form'] input[name='itemcatname']").val("")
@@ -60,7 +85,7 @@ $(document).ready(function() {
       {data: 'itemcatcode'},
       {data: 'itemcatdesc'},
       {data: 'category_type'},
-      {data: 'is_default'},
+      {data: 'is_default'}
       ]
     }); 
 
@@ -105,6 +130,7 @@ $(document).ready(function() {
     $("form[aria-label='category_form'] input[name='itemcatdesc']").val("")
     $("form[aria-label='category_form'] .selectpicker").selectpicker('val', 'none');
     $("div[aria-label='add_new_category']").hide()
+        $("div[aria-label='view_item_category']").hide()
     $("a[href='#menu_categories']").click()
     $("div[aria-label='menu_item_content']").show()
           $.notify({
@@ -250,5 +276,17 @@ $(document).ready(function() {
 
 
     })
+
+     $('button[aria-label="dis_item_view"]').click( function () {
+   var cat_id = this.id
+
+        channel2.push("dis_item_view", {cat_id: cat_id, brand_id: window.currentBrand})
+     
+  });
+channel2.on("open_view_discount_item", payload => {
+
+ $("div#br2").html(payload.html)
+})
+
 
 });

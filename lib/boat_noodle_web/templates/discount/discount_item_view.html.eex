@@ -1,0 +1,35 @@
+<b><h3 class="modal-title" id="exampleModalLabel" align="center">List Discount Item in Category <b style="color: red"><%= @discname %></b></h3></b>
+<br>
+<br>
+<table class="table" border="1">
+  <thead>
+    <tr align="center">
+      <th>Discount Item Name</th>
+      <th>Discount Type</th>
+      <th>Is Visable</th>
+       <th>Is Delete</th>
+
+    </tr>
+  </thead>
+  <tbody>
+<%= for item <- @discount_item do %>
+    <tr  align="center">
+      <td><%= item.discitemsname %></td>
+      <td><%= item.disctype %></td>
+      <%= if item.is_visable == 1 do %>
+        <td><b style="color: green">True</b></td>
+     <% else %>
+        <td><b style="color: red">False</b></td>
+      <% end %>
+   
+        <%= if item.is_delete == 1 do %>
+        <td><b style="color: green">True</b></td>
+     <% else %>
+        <td><b style="color: red">False</b></td>
+      <% end %>
+
+     
+    </tr>
+<% end %>
+  </tbody>
+</table>

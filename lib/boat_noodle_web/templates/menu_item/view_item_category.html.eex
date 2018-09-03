@@ -1,0 +1,38 @@
+
+<b><h3 class="modal-title" id="exampleModalLabel" align="center">List Item in Category <b style="color: red">(<%= @itemcatcode %>) <%= @itemcatname %></b></h3></b>
+<br>
+<br>
+<table class="table" border="1">
+  <thead>
+    <tr align="center">
+      <th>Item Code</th>
+      <th>Item Name</th>
+      <th>Price Code</th>
+      <th>Is Activate</th>
+       <th>Is Delete</th>
+
+    </tr>
+  </thead>
+  <tbody>
+<%= for item <- @item_subcat do %>
+    <tr  align="center">
+      <td><%= item.itemcode %></td>
+      <td align="left"><%= item.itemname %></td>
+      <td><%= item.price_code %></td>
+      <%= if item.is_activate == 1 do %>
+        <td><b style="color: green">True</b></td>
+     <% else %>
+        <td><b style="color: red">False</b></td>
+      <% end %>
+   
+        <%= if item.is_delete == 1 do %>
+        <td><b style="color: green">True</b></td>
+     <% else %>
+        <td><b style="color: red">False</b></td>
+      <% end %>
+
+     
+    </tr>
+<% end %>
+  </tbody>
+</table>

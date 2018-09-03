@@ -47,8 +47,41 @@
               <div class="ripple-container"></div>
             </button>
             <% end %>
+             <%=  if Enum.any?(@admin_menus, fn x -> x == @view_url end) do %>
+
+        <div><input type="hidden" name="pop3" value="1"></div>
+
+
+          <% else %>
+           <input type="hidden" name="pop3" value="0">
+           <button type="button" rel="tooltip" title="" class="btn btn-primary btn-round"   data-toggle="modal" aria-label="view_item_category" data-target="#model3" data-original-title="Edit Item"><i class="material-icons">autorenew</i>View Item Category<div class="ripple-container"></div>          
+          </button>
+            <% end %>
         </div>
     </div>
+
+
+    <div class="modal fade" id="model3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="width: 1000px; margin-left: 550px;">
+    <div class="modal-content" style="width: 1000px;">
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal_form3">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input type="hidden" name="popup" value="0">
+      </div>
+    </div>
+  </div>
+</div>
+                   
+
 
     <div class="card-body">
 	  	<div class="row">
@@ -68,6 +101,7 @@
                     <th>Description</th>
                     <th>Type</th>
                     <th>Default</th>
+               
        
      
 
@@ -81,6 +115,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
+
            
                   </tr>
                 </tbody>
@@ -90,6 +125,9 @@
     </div>
   </div>
 </div>
+
+
+
 
 <script type="text/javascript">
   
@@ -119,4 +157,13 @@ if (a == 1) {
 }
 
 })
+
+    $("button[aria-label='view_item_category']").click(function() {
+var a=$("input[name='pop3']").val()
+
+if (a == 1) {
+  swal("Unautorize Access")
+}
+
+})      
 </script>

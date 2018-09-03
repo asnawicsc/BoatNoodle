@@ -922,7 +922,7 @@ defmodule BoatNoodleWeb.DiscountController do
       Repo.get_by(Discount, discountid: params["disc_cat"], brand_id: BN.get_brand_id(conn))
 
     name = disc_cat.discname
-
+    
     for voucher_code <- voucher_codes do
       Voucher.changeset(%Voucher{}, %{code_number: voucher_code, discount_name: name})
       |> Repo.insert()
