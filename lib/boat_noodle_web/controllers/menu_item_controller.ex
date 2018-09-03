@@ -267,10 +267,13 @@ defmodule BoatNoodleWeb.MenuItemController do
     item_subcat_params = Map.put(item_subcat_params, "include_spend", include_spend)
     item_subcat_params = Map.put(item_subcat_params, "brand_id", BN.get_brand_id(conn))
 
-    first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
+
+    numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] |> Enum.map(fn x -> Integer.to_string(x) end)
+    first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) 
+    |> Enum.reject(fn x -> Enum.any?(numbers, fn y -> x == y end) end) |> Enum.join()
 
     if Float.parse(first_letter) == :error do
-      running_no = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> tl()
+      running_no = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end)     |> Enum.filter(fn x -> Enum.any?(numbers, fn y -> x == y end) end) 
 
       if Enum.count(running_no) == 2 do
         part_code =
@@ -342,11 +345,13 @@ defmodule BoatNoodleWeb.MenuItemController do
                 item_cat
 
               {:error, cg2} ->
+             
                 false
             end
           end
 
         if Enum.any?(listings, fn x -> x == false end) do
+    
           conn
           |> put_flash(:error, "Errors in creating items")
           |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
