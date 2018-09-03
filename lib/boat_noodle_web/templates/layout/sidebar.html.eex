@@ -48,6 +48,13 @@
             </a>
           </li>
           <li class="nav-item ">
+            <a class="nav-link" href="/<%= @conn.params["brand"]%>/report">
+         
+                <i class="material-icons">show_chart</i>
+              <p> Insights </p>
+            </a>
+          </li>
+          <li class="nav-item ">
             <a class="nav-link" data-toggle="collapse" href="#sales">
               <i class="material-icons">assignment</i>
               <p> Reports
@@ -117,16 +124,14 @@
                     <span class="sidebar-normal"> Cash In/Out </span>
                   </a>
                 </li>
-                <li class="nav-item ">
-                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/report">
-                    <span class="sidebar-mini"> I </span>
-                    <span class="sidebar-normal"> Insights </span>
-                  </a>
-                </li>
+                
 
               </ul>
             </div>
           </li>
+
+          <% user = Repo.get_by(User, id: current_user, brand_id: @conn.params["brand_id"] %>
+          <%= if user.read_report_only == 0 do %>
           <li class="nav-item ">
             <a class="nav-link" data-toggle="collapse" href="#menus">
               <i class="material-icons">chrome_reader_mode</i>
@@ -219,6 +224,8 @@
               </ul>
             </div>
           </li>
+
+          <% end %>
      
         
         </ul>
