@@ -186,6 +186,15 @@ defmodule BoatNoodleWeb.MenuItemController do
     t = "/"
     delete_url = t <> s
 
+    u = conn.path_info |> List.delete_at(1)
+    v = "categories"
+    w = List.insert_at(u, 2, v)
+    x = "view_item"
+    y = List.insert_at(w, 2, x)
+    z = y |> Enum.join("/")
+    zz = "/"
+    view_url = zz <> z
+
     render(
       conn,
       "index.html",
@@ -195,7 +204,8 @@ defmodule BoatNoodleWeb.MenuItemController do
       admin_menus: admin_menus,
       edit_url: edit_url,
       new_url: new_url,
-      delete_url: delete_url
+      delete_url: delete_url,
+      view_url: view_url
     )
   end
 

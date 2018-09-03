@@ -537,6 +537,8 @@ defmodule BoatNoodleWeb.ApiController do
       }
       |> Poison.encode!()
 
+    
+
     message = List.insert_at(conn.req_headers, 0, {"branch_details", "branch_details"})
     log_error_api(message, "#{branch.branchcode} - API GET - branch_details")
     send_resp(conn, 200, branch_details)

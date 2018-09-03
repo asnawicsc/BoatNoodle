@@ -139,6 +139,7 @@
                             </div>
                       </div>
                       <div class="col-sm-3" id="target_category">
+                         <label >Discount Category</label>
                           <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="select_target_category" name="item[target_category]"  title="Target Category" data-size="7">
                                            
                                             <%= for item <- @categories do %>

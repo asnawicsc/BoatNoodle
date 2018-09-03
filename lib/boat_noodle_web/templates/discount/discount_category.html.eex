@@ -63,7 +63,11 @@
           
           <a href="/<%= @conn.params["brand"]%>/discount_category/<%= discount.discountid %>/edits" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
 
-        </td>
+                    <button type="button" rel="tooltip" title="" class="btn btn-danger btn-primary btn-sm" id="<%= discount.discountid %>" name=""  data-toggle="modal" aria-label="dis_item_view" data-target="#model" data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>View Item                   <div class="ripple-container"></div>                 
+                    </button>
+    
+        
+       </td>
       </tr>
       <% end %>
       </tbody>
@@ -72,20 +76,20 @@
   </div>
 </div>
 
-<div class="modal fade" id="model3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document" >
-    <div class="modal-content" >
+<div class="modal fade" id="model" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="width: 1000px; margin-left: 550px;">
+    <div class="modal-content" style="width: 1000px;">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Upload Voucher</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body" id="modal_form5">
+      <div class="modal-body" id="br2">
 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input type="hidden" name="popup" value="0">
       </div>
     </div>
   </div>

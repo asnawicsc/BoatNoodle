@@ -1318,10 +1318,14 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def show_voucher(conn, _params) do
-    changeset = BN.change_item_subcat(%ItemSubcat{})
+ 
+
+     changeset =
+      BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{},%{},BN.current_user(conn),"New")
+
 
     discount =
-      Repo.all(from(s in Discount, select: %{discountid: s.discountid, discname: s.discname}))
+      Repo.all(from(s in Discount,where: s.brand_id==^BN.get_brand_id(conn) and s.is_delete==0 and s.is_visable==1, select: %{discountid: s.discountid, discname: s.discname}))
 
     render(conn, "show_voucher.html", discount: discount, changeset: changeset)
   end

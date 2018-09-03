@@ -63,6 +63,61 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
+
+    def handle_in("view_item_category", %{"cat_id" => cat_id, "brand_id" => brand_id}, socket) do
+    cat =
+      Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id and i.brand_id == ^brand_id))
+      |> hd()
+
+      cat_id=Integer.to_string(cat.itemcatid)
+
+      item_subcat=Repo.all(from s in ItemSubcat,where: s.itemcatid==^cat_id and s.brand_id == ^brand_id,select: %{itemcode: s.itemcode,itemname: s.itemname,price_code: s.price_code,is_delete: s.is_delete,is_activate: s.is_activate})
+
+
+ html =
+ Phoenix.View.render_to_string(
+            BoatNoodleWeb.MenuItemView,
+            "view_item_category.html",
+            itemcatcode: cat.itemcatcode,
+       itemcatname: cat.itemcatname,
+      itemcatdesc: cat.itemcatdesc,
+      category_type: cat.category_type,
+      itemcatid: cat.itemcatid,
+      item_subcat: item_subcat
+    )
+
+    broadcast(socket, "open_view_item_category", %{
+     html: html
+    })
+
+    {:noreply, socket}
+  end
+
+   def handle_in("dis_item_view", %{"cat_id" => cat_id, "brand_id" => brand_id}, socket) do
+    cat =
+      Repo.all(from(i in BN.Discount, where: i.discountid == ^cat_id and i.brand_id == ^brand_id))
+      |> hd()
+
+
+
+      discount_item=Repo.all(from s in BN.DiscountItem,where: s.discountid==^cat.discountid and s.brand_id == ^brand_id,select: %{discitemsname: s.discitemsname,disctype: s.disctype,is_visable: s.is_visable,is_delete: s.is_delete})
+
+
+ html =
+ Phoenix.View.render_to_string(
+            BoatNoodleWeb.DiscountView,
+            "discount_item_view.html",
+            discount_item: discount_item,
+       discname: cat.discname
+    )
+
+    broadcast(socket, "open_view_discount_item", %{
+     html: html
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_in(
         "delete_item_category",
         %{"user_id" => user_id, "cat_id" => cat_id, "brand_id" => brand_id, "map" => map},
