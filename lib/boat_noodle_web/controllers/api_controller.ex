@@ -421,7 +421,7 @@ defmodule BoatNoodleWeb.ApiController do
 
     IO.inspect(staffs)
 
-    staffs =
+    final_staffs =
       staffs
       |> Enum.map(fn x ->
         %{
@@ -441,7 +441,28 @@ defmodule BoatNoodleWeb.ApiController do
         Enum.any?(x.branch_access, fn y -> y == Integer.to_string(branch_id) end)
       end)
 
-    staff_list = %{staffs: staffs} |> Poison.encode!()
+    super_staffs =
+      staffs
+      |> Enum.map(fn x ->
+        %{
+          brand_id: x.brand_id,
+          staff_id: x.staff_id,
+          branch_access: String.split(x.branch_access, ","),
+          staff_name: x.staff_name,
+          staff_contact: x.staff_contact,
+          staff_email: x.staff_email,
+          staff_pin: x.staff_pin,
+          branchid: x.branchid,
+          staff_type_id: x.staff_type_id,
+          prof_img: x.prof_img
+        }
+      end)
+      |> Enum.filter(fn x ->
+        Enum.any?(x.branch_access, fn y -> y == "0" end)
+      end)
+
+    staff_data = super_staffs ++ final_staffs
+    staff_list = %{staffs: staff_data} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"staffs", "staffs"})
     log_error_api(message, "#{branchcode} - API GET - staffs")

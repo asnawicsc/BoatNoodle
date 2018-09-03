@@ -21,7 +21,8 @@ defmodule BoatNoodleWeb.UserController do
             username: u.username,
             email: u.email,
             roleid: r.role_name,
-            manager_access: u.manager_access
+            manager_access: u.manager_access,
+            read_report_only: u.read_report_only
           },
           order_by: [u.username]
         )
@@ -108,18 +109,19 @@ defmodule BoatNoodleWeb.UserController do
     user = BN.get_user!(id)
     changeset = BoatNoodle.BN.User.changeset(user, %{}, BN.current_user(conn), "edit")
 
-    {gallery,picture}=if user.gall_id == 1 do
-      path = File.cwd!() <> "/media/demo.png"
-      {:ok, bin} = File.read(path)
-      bin = Base.encode64(bin)
-      gallery=Repo.all(Gallery)|>hd
-      picture = %{bin: bin}
-      {gallery,picture}
-    else
-      gallery = Repo.get(Gallery, user.gall_id)
-      picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
-      {gallery,picture}
-    end
+    {gallery, picture} =
+      if user.gall_id == 1 do
+        path = File.cwd!() <> "/media/demo.png"
+        {:ok, bin} = File.read(path)
+        bin = Base.encode64(bin)
+        gallery = Repo.all(Gallery) |> hd
+        picture = %{bin: bin}
+        {gallery, picture}
+      else
+        gallery = Repo.get(Gallery, user.gall_id)
+        picture = Repo.get_by(Picture, file_type: "profile_picture", gallery_id: gallery.id)
+        {gallery, picture}
+      end
 
     branches =
       Repo.all(
@@ -296,11 +298,12 @@ defmodule BoatNoodleWeb.UserController do
     if user != nil do
       roleid = user.roleid
 
-      if roleid == 7 do
+      if user.read_report_only == 1 do
         p2 = String.replace(user.password, "$2y", "$2b")
 
         if Comeonin.Bcrypt.checkpw(password, p2) do
           conn
+          |> put_flash(:info, "You should only read reports!")
           |> put_session(:user_id, user.id)
           |> put_session(:brand, conn.params["brand"])
           |> put_session(:brand_id, BN.brand_id(conn))

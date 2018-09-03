@@ -17,38 +17,44 @@ defmodule BoatNoodle.BN.User do
     field(:last_logout, :utc_datetime)
     field(:gall_id, :integer)
     field(:brand_id, :integer)
+    field(:read_report_only, :integer)
   end
 
   @doc false
-  def changeset(user, attrs,user_id,action) do
-    user=user
-    |> cast(attrs, [
-      :brand_id,
-      :last_logout,
-      :last_login,
-      :created_at,
-      :updated_at,
-      :remember_token,
-      :id,
-      :username,
-      :password,
-      :email,
-      :roleid,
-      :manager_access,
-      :gall_id
-    ])
+  def changeset(user, attrs, user_id, action) do
+    user =
+      user
+      |> cast(attrs, [
+        :read_report_only,
+        :brand_id,
+        :last_logout,
+        :last_login,
+        :created_at,
+        :updated_at,
+        :remember_token,
+        :id,
+        :username,
+        :password,
+        :email,
+        :roleid,
+        :manager_access,
+        :gall_id
+      ])
 
-     if action == "new" or action =="edit" do
-    
-       else
-
-          if action == "Update" do
+    if action == "new" or action == "edit" do
+    else
+      if action == "Update" do
         attrs = Map.put(attrs, "id", user.data.id)
       end
 
-
-       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "user", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
-      end
+      BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
+        name: "user",
+        user_id: user_id,
+        description: Poison.encode!(attrs),
+        action: action
+      })
+      |> BoatNoodle.Repo.insert()
+    end
 
     user
   end

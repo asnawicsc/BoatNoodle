@@ -32,11 +32,17 @@ defmodule BoatNoodleWeb.PageController do
       if Comeonin.Bcrypt.checkpw(password, p2) do
         brand = Repo.get(Brand, user.brand_id)
 
-        conn
-        |> put_session(:user_id, user.id)
-        |> put_session(:brand, brand.domain_name)
-        |> put_session(:brand_id, brand.id)
-        |> redirect(to: page_path(conn, :index2, brand.domain_name))
+        if user.read_report_only == 0 do
+          conn
+          |> put_session(:user_id, user.id)
+          |> put_session(:brand, brand.domain_name)
+          |> put_session(:brand_id, brand.id)
+          |> redirect(to: page_path(conn, :index2, brand.domain_name))
+        else
+          conn
+          |> put_session(:user_id, user.id)
+          |> redirect(to: page_path(conn, :report_index))
+        end
       else
         conn
         |> put_flash(:error, "Wrong password!")
@@ -54,9 +60,19 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def report_index(conn, params) do
-    brands = Repo.all(from(b in Brand, select: %{name: b.domain_name, id: b.id}))
+    branches =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.UserBranchAccess,
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where: s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
+          order_by: g.branchname
+        )
+      )
 
-    render(conn, "index.html", brands: brands)
+    render(conn, "dashboard.html", branches: branches)
   end
 
   def webhook_key(conn, params) do
@@ -97,14 +113,16 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def index2(conn, _params) do
-
     branches =
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )

@@ -242,7 +242,6 @@ defmodule BoatNoodleWeb.Router do
     post("/combos/combo_create_price_update", ItemSubcatController, :combo_create_price_update)
     post("/user_branch_accesss", UserBranchAccessController, :update_branch_access)
 
-
     post(
       "/combos/combo_create_price_unselect",
       ItemSubcatController,
@@ -256,7 +255,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/itemcat", ItemCatController)
     resources("/branch", BranchController)
     resources("/payment_type", PaymentTypeController)
-       post("/create_payment_type", PaymentTypeController, :create_payment_type)
+    post("/create_payment_type", PaymentTypeController, :create_payment_type)
     resources("/sales_master", SalesMasterController)
     resources("/sales", SalesController)
     resources("/tax", TaxController)
