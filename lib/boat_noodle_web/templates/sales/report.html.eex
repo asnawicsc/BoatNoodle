@@ -1,4 +1,4 @@
-
+<% require IEx %>
 <script src="/js/report.js"></script>
   <div class="col-md-12">
             <div class="panel panel-default">
@@ -87,44 +87,59 @@
                 pax visiting trend
               </a>
             </li>
+           
+            <%= if @brand_id == 1  do %>
+           
             <li class="nav-item">
                <a class="nav-link " data-toggle="tab" id="category_trend" href="" role="tablist">
                 category trend
               </a>
             </li>
+
+
+            <% end %>
+                <%= if @brand_id == 1  do %>
               <li class="nav-item">
              <a class="nav-link " data-toggle="tab" id="category_contribute_trend" href="" role="tablist">
                category contribute trend
               </a>
             </li>
+            <% end %>
               <li class="nav-item">
                <a class="nav-link " data-toggle="tab" id="top_10_items_qty" href="" role="tablist">
                 top 10 items
               </a>
             </li>
             </li>
+                <%= if @brand_id == 1  do %>
               <li class="nav-item">
              <a class="nav-link " data-toggle="tab" id="sales_trend_by_qty" href="" role="tablist">
                 Sales Trend By category (RM)
               </a>
             </li>
+            <% end %>
              </li>
+                 <%= if @brand_id == 1  do %>
               <li class="nav-item">
                 <a class="nav-link " data-toggle="tab" id="sales_trend_by_rm" href="" role="tablist">
                 Sales Trend By category (QTY)
               </a>
             </li>
+            <% end %>
+                <%= if @brand_id == 1  do %>
             <li class="nav-item">
                 <a class="nav-link " data-toggle="tab" id="compare_sales_trend_rm" href="" role="tablist">
                Compare Trend (QTY)
               </a>
             </li>
+            <% end %>
+                <%= if @brand_id == 1  do %>
              <li class="nav-item">
                 <a class="nav-link " data-toggle="tab" id="compare_sales_trend_qty" href="" role="tablist">
                  Compare Trend (RM)
               </a>
             </li>
-    
+     <% end %>
           </ul>
                     </div>
                     <div class="col-md-10">
