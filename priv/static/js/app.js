@@ -311,7 +311,7 @@ $("div.jumbotron").html("")
     $("ol#list7").append(this)
   })
 
-     $("ol#dis1").on("click", "li", function(){
+  $("ol#dis1").on("click", "li", function(){
 
     $("ol#dis2").append(this)
     var list_ids = [] 
@@ -319,7 +319,8 @@ $("div.jumbotron").html("")
     var id = $(this).attr("id")
       list_ids.push(id)
     })
-    $("input[name='a[cat]']").val(list_ids)
+    console.log(list_ids)
+    $("input[name='cat']").val(list_ids)
   })
 
   $("ol#dis2").on("click", "li", function(){
@@ -336,7 +337,7 @@ $("div.jumbotron").html("")
     var id = $(this).attr("id")
       list_ids.push(id)
     })
-    $("input[name='a[items]']").val(list_ids)
+    $("input[name='items']").val(list_ids)
   })
 
   $("ol#dis4").on("click", "li", function(){
