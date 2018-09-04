@@ -144,10 +144,10 @@ defmodule BoatNoodleWeb.SalesController do
       |> String.split_at(19)
       |> elem(0)
 
-    gstpercentage = Decimal.to_float(detail.gst_charge) / Decimal.to_float(detail.sub_total) * 100
+    gstpercentage = Decimal.to_float(detail.gst_charge) / Decimal.to_float(detail.after_disc) * 100
 
     servicepercentage =
-      Decimal.to_float(detail.service_charge) / Decimal.to_float(detail.sub_total) * 100
+      Decimal.to_float(detail.service_charge) / Decimal.to_float(detail.after_disc) * 100
 
     detail = %{
       staff_name: detail.staff_name,
