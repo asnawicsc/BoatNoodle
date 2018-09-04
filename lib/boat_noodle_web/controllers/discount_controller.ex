@@ -917,14 +917,14 @@ defmodule BoatNoodleWeb.DiscountController do
 
     {:ok, binary} = File.read(params["item_subcat"]["file"].path)
 
-    Task.start_link(__MODULE__, :upload_voucher, [binary])
+    Task.start_link(__MODULE__, :upload_voucher, [binary, conn, params])
 
     conn
     |> put_flash(:info, "Discount updated successfully.")
     |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
   end
 
-  def upload_voucher(binary) do
+  def upload_voucher(binary, conn, params) do
     voucher_codes = binary |> String.split("\r\n")
 
     disc_cat =
