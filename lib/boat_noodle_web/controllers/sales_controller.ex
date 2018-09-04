@@ -1329,7 +1329,7 @@ defmodule BoatNoodleWeb.SalesController do
           left_join: sp in BoatNoodle.BN.SalesPayment,
           on: sp.salesid == s.salesid,
           where:
-            sd.discountid != "0" and sd.brand_id == ^brand.id and b.brand_id == ^brand.id and
+            sd.discountid != "0" and i.brand_id== ^brand.id and sd.brand_id == ^brand.id and b.brand_id == ^brand.id and
               s.branchid == ^branch_id and s.salesdate >= ^start_date and s.salesdate <= ^end_date,
           select: %{
             salesdate: s.salesdate,
