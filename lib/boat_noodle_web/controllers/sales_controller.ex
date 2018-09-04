@@ -1412,7 +1412,9 @@ defmodule BoatNoodleWeb.SalesController do
         )
       )
 
-    render(conn, "report.html", branches: branches)
+      brand_id=BN.get_brand_id(conn)
+
+    render(conn, "report.html",brand_id: brand_id, branches: branches)
   end
 
   def create(conn, %{"sales" => sales_params}) do
