@@ -1689,7 +1689,8 @@ defmodule BoatNoodleWeb.UserChannel do
             where:
               s.is_void == 0 and sp.discountid != "0" and br.branchid == ^payload["branch_id"] and
                 s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                s.brand_id == ^payload["brand_id"],
+                s.brand_id == ^payload["brand_id"] and  sp.brand_id == ^payload["brand_id"]
+                 and  i.brand_id == ^payload["brand_id"] and  br.brand_id == ^payload["brand_id"],
             select: %{
               salesdatetime: s.salesdatetime,
               grand_total: sum(sp.grand_total),
@@ -1733,7 +1734,8 @@ defmodule BoatNoodleWeb.UserChannel do
             group_by: [s.salesid],
             where:
               s.is_void == 0 and sp.discountid != "0" and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"] and  sp.brand_id == ^payload["brand_id"]
+                 and  i.brand_id == ^payload["brand_id"] ,
             select: %{
               salesdatetime: s.salesdatetime,
               grand_total: sum(sp.grand_total),
@@ -1805,7 +1807,9 @@ defmodule BoatNoodleWeb.UserChannel do
             where:
               s.is_void == 0 and sp.discountid != "0" and br.branchid == ^payload["branch_id"] and
                 s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                s.brand_id == ^payload["brand_id"],
+                s.brand_id == ^payload["brand_id"] and sp.brand_id==^payload["brand_id"] and
+                di.brand_id==^payload["brand_id"] and  d.brand_id==^payload["brand_id"] and 
+                br.brand_id==^payload["brand_id"],
             select: %{
               grand_total: sum(sp.grand_total),
               sub_total: sum(sp.sub_total),
@@ -1842,7 +1846,8 @@ defmodule BoatNoodleWeb.UserChannel do
             group_by: [d.discname],
             where:
               s.is_void == 0 and sp.discountid != "0" and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"] and sp.brand_id==^payload["brand_id"] and
+                di.brand_id==^payload["brand_id"] and  d.brand_id==^payload["brand_id"],
             select: %{
               grand_total: sum(sp.grand_total),
               sub_total: sum(sp.sub_total),
