@@ -50,7 +50,7 @@ defmodule BoatNoodleWeb.MenuItemController do
         from(
           s in ItemSubcat,
           left_join: d in ItemCat,
-          where: s.itemcatid == d.itemcatid and s.brand_id == ^brand.id,
+          where: s.itemcatid == d.itemcatid and s.brand_id == ^brand.id and d.brand_id == ^brand.id,
           select: %{
             subcatid: s.subcatid,
             itemcode: s.itemcode,
