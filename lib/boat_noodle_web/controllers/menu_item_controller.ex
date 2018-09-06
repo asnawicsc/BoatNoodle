@@ -555,10 +555,12 @@ defmodule BoatNoodleWeb.MenuItemController do
     # cat = Repo.all(from(i in BoatNoodle.BN.ItemCat, where: ))
     itemcode = menu_item_params["itemcode"]
 
-    first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> hd()
+    numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] |> Enum.map(fn x -> Integer.to_string(x) end)
+    first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) 
+    |> Enum.reject(fn x -> Enum.any?(numbers, fn y -> x == y end) end) |> Enum.join()
 
     if Float.parse(first_letter) == :error do
-      running_no = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) |> tl()
+      running_no = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end)     |> Enum.filter(fn x -> Enum.any?(numbers, fn y -> x == y end) end) 
 
       if Enum.count(running_no) == 2 do
         part_code =
