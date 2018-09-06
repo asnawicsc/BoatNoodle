@@ -29,10 +29,11 @@
               <input name="menu_item[itemcode]" value="<%= @item_subcat.itemcode %>" class="form-control" type="text" required="">
             </div>
           </div>
-          <div class="col-sm-6">
+ 
+          <div class="col-sm-3">
             <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Description</label>
-              <input name="menu_item[itemdesc]" value="<%= @item_subcat.itemdesc %>" class="form-control" type="text" required="">
+              <label class="bmd-label-floating">Part Code</label>
+              <input name="menu_item[part_code]" value="<%= @item_subcat.part_code %>" class="form-control" type="text" required="">
             </div>
 
           </div>
@@ -52,6 +53,13 @@
                <label class="bmd-label-floating">Pshyical Printer</label>
                <input name="menu_item[printer]" class="form-control" value="<%= @item_subcat.printer %>" type="text" >
             </div>  
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">Description</label>
+              <input name="menu_item[itemdesc]" value="<%= @item_subcat.itemdesc %>" class="form-control" type="text" required="">
+            </div>
+
           </div>
         </div>
         <div class="row">
