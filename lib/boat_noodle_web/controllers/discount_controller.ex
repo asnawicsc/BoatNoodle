@@ -354,7 +354,7 @@ defmodule BoatNoodleWeb.DiscountController do
       Repo.all(
         from(
           m in BoatNoodle.BN.Discount,
-          where: m.brand_id == ^BN.get_brand_id(conn),
+          where: m.brand_id == ^BN.get_brand_id(conn) and m.is_visable == ^1,
           select: %{discountid: m.discountid, discname: m.discname}
         )
       )
@@ -461,6 +461,14 @@ defmodule BoatNoodleWeb.DiscountController do
           end
       end
 
+    count2 = item["prerequisite_items"] |> String.split(",") |> Enum.count()
+
+    if count2 > 1 do
+      pre_req_item = item["prerequisite_items"] |> String.split(",")
+    else
+      pre_req_item = ""
+    end
+
     is_visable =
       if item["status"] == "on" do
         1
@@ -482,7 +490,8 @@ defmodule BoatNoodleWeb.DiscountController do
       is_targetmenuitems: is_targetmenuitems,
       is_visable: is_visable,
       min_spend: min_spend,
-      brand_id: BN.get_brand_id(conn)
+      brand_id: BN.get_brand_id(conn),
+      pre_req_item: pre_req_item
     }
 
     discount_item =
@@ -557,7 +566,7 @@ defmodule BoatNoodleWeb.DiscountController do
       Repo.all(
         from(
           m in BoatNoodle.BN.Discount,
-          where: m.brand_id == ^BN.get_brand_id(conn),
+          where: m.brand_id == ^BN.get_brand_id(conn) and m.is_visable == ^1,
           select: %{discountid: m.discountid, discname: m.discname}
         )
       )
@@ -620,7 +629,8 @@ defmodule BoatNoodleWeb.DiscountController do
             itemcatname: b.itemcatname,
             disctypeid: c.disctypeid,
             discname: e.discname,
-            brand_id: s.brand_id
+            brand_id: s.brand_id,
+            pre_req_item: s.pre_req_item
           }
         )
       )
@@ -787,6 +797,14 @@ defmodule BoatNoodleWeb.DiscountController do
           end
       end
 
+    count2 = params["pre_req_item"] |> Enum.count()
+
+    if count2 > 1 do
+      pre_req_item = params["pre_req_item"] |> Enum.join(",")
+    else
+      pre_req_item = ""
+    end
+
     discount_type = Repo.get_by(BoatNoodle.BN.DiscountType, disctypeid: disctype)
     disctype = discount_type.disctypename
 
@@ -806,7 +824,8 @@ defmodule BoatNoodleWeb.DiscountController do
       target_cat: target_cat,
       multi_item_list: multi_item_list,
       is_visable: is_visable,
-      min_spend: min_spend
+      min_spend: min_spend,
+      pre_req_item: pre_req_item
     }
 
     changeset =
@@ -826,11 +845,10 @@ defmodule BoatNoodleWeb.DiscountController do
         )
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(
-          conn,
-          "discount_item_details.html",
-          discount_item: discount_item,
-          changeset: changeset
+        conn
+        |> put_flash(:error, "Discount Item NOT updated successfully.")
+        |> redirect(
+          to: discount_path(conn, :discount_item_details, BN.get_domain(conn), discountitemsid)
         )
     end
   end
