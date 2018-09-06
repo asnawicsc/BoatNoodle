@@ -69,6 +69,31 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in(
+        "toggle_read_report",
+        %{"brand_id" => brand_id, "admin" => admin, "user_id" => user_id},
+        socket
+      ) do
+    user = Repo.get_by(User, brand_id: brand_id, id: user_id)
+
+    action =
+      if user.read_report_only == 1 do
+        User.changeset(user, %{read_report_only: 0}, admin, "Update") |> Repo.update()
+        "deactivated"
+      else
+        User.changeset(user, %{read_report_only: 1}, admin, "Update") |> Repo.update()
+        "activated"
+      end
+
+    broadcast(socket, "notify_read_report_changed", %{
+      name: user.username,
+      action: action,
+      user_id: user_id
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in(
         "toggle_user_access",
         %{"val" => val, "name" => name, "user_id" => user_id},
         socket
@@ -3558,10 +3583,22 @@ defmodule BoatNoodleWeb.UserChannel do
     id = payload["subcat_id"] |> String.to_integer()
     price_code = payload["price_code"]
     brand_id = payload["brand_id"] |> String.to_integer()
-    subcat = Repo.get_by(BoatNoodle.BN.ItemSubcat, %{subcatid: id, price_code: price_code, brand_id: brand_id })
 
-    combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_id == ^id1 and s.brand_id==^brand_id))|>Enum.sort_by(fn x -> x.menu_cat_id end)
+    subcat =
+      Repo.get_by(BoatNoodle.BN.ItemSubcat, %{
+        subcatid: id,
+        price_code: price_code,
+        brand_id: brand_id
+      })
 
+    combo =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.ComboDetails,
+          where: s.combo_id == ^id1 and s.brand_id == ^brand_id
+        )
+      )
+      |> Enum.sort_by(fn x -> x.menu_cat_id end)
 
     html =
       Phoenix.View.render_to_string(
@@ -3722,8 +3759,6 @@ defmodule BoatNoodleWeb.UserChannel do
         combo =
           Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_item_id == ^id)) |> hd
 
-
-
         a =
           for item <- elem(insert, 1) do
             if item.item == "[cost_price]" do
@@ -3823,41 +3858,35 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
+  def handle_in("insert_into_payment_catalog_branch", payload, socket) do
+    brand = payload["brand_id"]
+    new_payment_id = payload["pid"]
+    branchid = payload["branchid"] |> String.trim() |> String.to_integer()
 
-   def handle_in("insert_into_payment_catalog_branch",payload,socket) do
-    brand =payload["brand_id"]
-    new_payment_id=payload["pid"]
-    branchid=payload["branchid"]|>String.trim|>String.to_integer
+    new = payload["brand_id"] |> String.to_integer()
 
-    new=payload["brand_id"]|>String.to_integer
+    payment_type =
+      Repo.get_by(BoatNoodle.BN.PaymentType, brand_id: brand, payment_type_id: new_payment_id)
 
-    payment_type = Repo.get_by(BoatNoodle.BN.PaymentType, brand_id: brand, payment_type_id: new_payment_id)
+    branch = Repo.get_by(BoatNoodle.BN.Branch, branchid: branchid, brand_id: new)
 
+    catalog = branch.payment_catalog |> String.split(",") |> Enum.uniq()
 
-    branch=Repo.get_by(BoatNoodle.BN.Branch,branchid: branchid ,brand_id: new)
+    all_catalog = List.insert_at(catalog, 0, new_payment_id)
 
-
-        catalog = branch.payment_catalog|> String.split(",")|>Enum.uniq 
-
-        
-
-            all_catalog = List.insert_at(catalog, 0, new_payment_id)
-
-            new = all_catalog |> Enum.join(",")
-
-
-
-
+    new = all_catalog |> Enum.join(",")
 
     changeset =
-      BoatNoodle.BN.Branch.changeset(branch, %{payment_catalog: new}, payload["user_id"], "Update")
+      BoatNoodle.BN.Branch.changeset(
+        branch,
+        %{payment_catalog: new},
+        payload["user_id"],
+        "Update"
+      )
 
     BoatNoodle.Repo.update(changeset)
 
-
-  
-action="Payment Type Succesfully Added"
-      
+    action = "Payment Type Succesfully Added"
 
     broadcast(socket, "notify_payment_catalog_changes", %{
       action: action
@@ -3866,35 +3895,33 @@ action="Payment Type Succesfully Added"
     {:noreply, socket}
   end
 
-     def handle_in("remove_from_payment_catalog_branch",payload,socket) do
-    brand =payload["brand_id"]
-    new_payment_id=payload["pid"]
-    branchid=payload["branchid"]|>String.trim|>String.to_integer
+  def handle_in("remove_from_payment_catalog_branch", payload, socket) do
+    brand = payload["brand_id"]
+    new_payment_id = payload["pid"]
+    branchid = payload["branchid"] |> String.trim() |> String.to_integer()
 
-    new=payload["brand_id"]|>String.to_integer
+    new = payload["brand_id"] |> String.to_integer()
 
-    payment_type = Repo.get_by(BoatNoodle.BN.PaymentType, brand_id: brand, payment_type_id: new_payment_id)
+    payment_type =
+      Repo.get_by(BoatNoodle.BN.PaymentType, brand_id: brand, payment_type_id: new_payment_id)
 
+    branch = Repo.get_by(BoatNoodle.BN.Branch, branchid: branchid, brand_id: new)
 
-    branch=Repo.get_by(BoatNoodle.BN.Branch,branchid: branchid ,brand_id: new)
+    catalog = branch.payment_catalog |> String.split(",") |> Enum.uniq()
 
-
-        catalog = branch.payment_catalog|> String.split(",")|>Enum.uniq 
-
-        new=catalog|>Enum.filter(fn x -> x != new_payment_id end)|>Enum.join(",")
-
-
-
+    new = catalog |> Enum.filter(fn x -> x != new_payment_id end) |> Enum.join(",")
 
     changeset =
-      BoatNoodle.BN.Branch.changeset(branch, %{payment_catalog: new}, payload["user_id"], "Update")
+      BoatNoodle.BN.Branch.changeset(
+        branch,
+        %{payment_catalog: new},
+        payload["user_id"],
+        "Update"
+      )
 
     BoatNoodle.Repo.update(changeset)
 
-
-  
-action="Payment Type Succesfully Removed"
-      
+    action = "Payment Type Succesfully Removed"
 
     broadcast(socket, "notify_payment_deleted", %{
       action: action
@@ -3902,9 +3929,6 @@ action="Payment Type Succesfully Removed"
 
     {:noreply, socket}
   end
-
-
-  
 
   defp authorized?(_payload) do
     true

@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.ApiController do
   require IEx
 
   def webhook_post_operations(conn, params) do
-    IO.inspect(params)
+    # IO.inspect(params)
 
     cond do
       params["scope"] == nil ->
@@ -119,8 +119,8 @@ defmodule BoatNoodleWeb.ApiController do
     params = Map.put(params, "branchcode", params["code"])
 
     cg = BoatNoodle.BN.RPTCASHIEREOD.changeset(%BoatNoodle.BN.RPTCASHIEREOD{}, params)
-    IO.inspect(cg)
-    IO.inspect(params)
+    # IO.inspect(cg)
+    # IO.inspect(params)
 
     case Repo.insert(cg) do
       {:ok, ci} ->
@@ -220,7 +220,7 @@ defmodule BoatNoodleWeb.ApiController do
                 get_scope_payment_types(conn, branch.branchid, branch.brand_id, params["code"])
 
               "discount" ->
-                IO.inspect(branch.branchid)
+                # IO.inspect(branch.branchid)
 
                 get_scope_discount(
                   conn,
@@ -253,9 +253,9 @@ defmodule BoatNoodleWeb.ApiController do
 
   def get_scope_discount(conn, branch_id, brand_id, branchcode, disc_catalog_id) do
     # get the branch discount catalog
-    IO.inspect(branch_id)
+    # IO.inspect(branch_id)
     disc_catalog = Repo.get_by(DiscountCatalog, id: disc_catalog_id, brand_id: brand_id)
-    IO.inspect(disc_catalog)
+    # IO.inspect(disc_catalog)
 
     ids =
       disc_catalog.categories
@@ -264,7 +264,7 @@ defmodule BoatNoodleWeb.ApiController do
       |> Enum.reject(fn x -> x == "" end)
       |> Enum.map(fn x -> String.to_integer(x) end)
 
-    IO.inspect(ids)
+    # IO.inspect(ids)
 
     item_ids =
       disc_catalog.discounts
@@ -273,7 +273,7 @@ defmodule BoatNoodleWeb.ApiController do
       |> Enum.reject(fn x -> x == "" end)
       |> Enum.map(fn x -> String.to_integer(x) end)
 
-    IO.inspect(item_ids)
+    # IO.inspect(item_ids)
     # arrange the discount category
     disc_categories =
       Repo.all(
@@ -297,7 +297,7 @@ defmodule BoatNoodleWeb.ApiController do
         )
       )
 
-    IO.inspect(disc_categories)
+    # IO.inspect(disc_categories)
 
     disc_items =
       Repo.all(
@@ -353,13 +353,13 @@ defmodule BoatNoodleWeb.ApiController do
         }
       end)
 
-    IO.inspect(disc_items)
+    # IO.inspect(disc_items)
     # arrange the discount item
     json_map = %{disc_categories: disc_categories, disc_items: disc_items} |> Poison.encode!()
-    IO.inspect(json_map)
+    # IO.inspect(json_map)
     message = List.insert_at(conn.req_headers, 0, {"discount", "discount"})
     log_error_api(message, "#{branchcode} - API GET - discount")
-    IO.inspect(message)
+    # IO.inspect(message)
     send_resp(conn, 200, json_map)
   end
 
@@ -419,9 +419,9 @@ defmodule BoatNoodleWeb.ApiController do
       )
       |> Enum.reject(fn x -> x.branch_access == nil end)
 
-    IO.inspect(staffs)
+    # IO.inspect(staffs)
 
-    staffs =
+    final_staffs =
       staffs
       |> Enum.map(fn x ->
         %{
@@ -441,7 +441,28 @@ defmodule BoatNoodleWeb.ApiController do
         Enum.any?(x.branch_access, fn y -> y == Integer.to_string(branch_id) end)
       end)
 
-    staff_list = %{staffs: staffs} |> Poison.encode!()
+    super_staffs =
+      staffs
+      |> Enum.map(fn x ->
+        %{
+          brand_id: x.brand_id,
+          staff_id: x.staff_id,
+          branch_access: String.split(x.branch_access, ","),
+          staff_name: x.staff_name,
+          staff_contact: x.staff_contact,
+          staff_email: x.staff_email,
+          staff_pin: x.staff_pin,
+          branchid: x.branchid,
+          staff_type_id: x.staff_type_id,
+          prof_img: x.prof_img
+        }
+      end)
+      |> Enum.filter(fn x ->
+        Enum.any?(x.branch_access, fn y -> y == "0" end)
+      end)
+
+    staff_data = super_staffs ++ final_staffs
+    staff_list = %{staffs: staff_data} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"staffs", "staffs"})
     log_error_api(message, "#{branchcode} - API GET - staffs")
@@ -702,7 +723,7 @@ defmodule BoatNoodleWeb.ApiController do
   def webhook_post(conn, params) do
     IO.puts("incoming api post...")
 
-    IO.inspect(params)
+    # IO.inspect(params)
     a_list = params["details"]
 
     cond do
@@ -800,7 +821,7 @@ defmodule BoatNoodleWeb.ApiController do
               sales_params = Map.put(sales_params, :brand_id, user.brand_id)
 
               sales_params = Map.put(sales_params, :branchid, Integer.to_string(user.branchid))
-              IO.inspect(sales_params)
+              # IO.inspect(sales_params)
 
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->

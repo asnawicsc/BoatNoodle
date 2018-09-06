@@ -1,5 +1,6 @@
 defmodule BoatNoodleWeb.DiscountController do
   use BoatNoodleWeb, :controller
+  use Task
   require IEx
   alias BoatNoodle.BN
   alias BoatNoodle.BN.Discount
@@ -253,7 +254,7 @@ defmodule BoatNoodleWeb.DiscountController do
       id = id |> String.to_integer()
       branch = Repo.get_by(DiscountCatalog, id: id, brand_id: BN.get_brand_id(conn))
       dis_categories = branch.categories
-      disc_cat = dis_categories|> String.split(",")|>Enum.uniq 
+      disc_cat = dis_categories |> String.split(",") |> Enum.uniq()
 
       disc_id = discount.discountid |> Integer.to_string()
       all_discount_categories = List.insert_at(disc_cat, 0, disc_id)
@@ -916,21 +917,25 @@ defmodule BoatNoodleWeb.DiscountController do
 
     {:ok, binary} = File.read(params["item_subcat"]["file"].path)
 
+    Task.start_link(__MODULE__, :upload_voucher, [binary, conn, params])
+
+    conn
+    |> put_flash(:info, "Discount updated successfully.")
+    |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
+  end
+
+  def upload_voucher(binary, conn, params) do
     voucher_codes = binary |> String.split("\r\n")
 
     disc_cat =
       Repo.get_by(Discount, discountid: params["disc_cat"], brand_id: BN.get_brand_id(conn))
 
     name = disc_cat.discname
-    
+
     for voucher_code <- voucher_codes do
       Voucher.changeset(%Voucher{}, %{code_number: voucher_code, discount_name: name})
       |> Repo.insert()
     end
-
-    conn
-    |> put_flash(:info, "Discount updated successfully.")
-    |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
   end
 
   def delete(conn, %{"id" => id}) do
