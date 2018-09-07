@@ -315,7 +315,7 @@ defmodule BoatNoodleWeb.MenuItemController do
 
         item_param = Map.put(item_param, "itemprice", price)
         item_param = Map.put(item_param, "price_code", price_code)
-        IEx.pry()
+
         product_code = cat.itemcatcode <> part_code <> price_code
 
         # item_param = Map.put(item_param, "part_code", part_code)

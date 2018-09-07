@@ -1,25 +1,40 @@
+<table class="table">
+	
+<%= for d <- @data do %>
+<tr>
+	<td><%= d.salesid %></td>
+	<td><%= d.salesdate %></td>
+	<td><%= d.itemname %></td>
 
-<form>
-	
-<textarea id="sql"></textarea>
-<div class="btn btn-primary">check</div>
-</form>
-<div id="text">
-	
-</div>
+		<% code = String.split(d.itemname, "") |> Enum.take(4) |> Enum.join() %>
+	<%= if d.itemcode == "" do %>
+	<td style="background-color: white;">
+		<%= code %>
+	</td>
+		<% else %>
+		<td>
+			
+		<%= d.itemcode %>
+		</td>
+		<% end %>
+	<td><%= d.order_price %></td>
+	<td><%= d.qty %></td>
+	<td><%= d.combo_id %></td>
+	<td class="combo_unit_price" itemcode="<%= code %>" comboid="<%= d.combo_id %>">
+		
+	</td>
+</tr>
+<% end %>
+</table>
+
 <script type="text/javascript">
-	$("div.btn").click(function(){
+	$("td.combo_unit_price").each(function(){
+		var itemcode = $(this).attr("itemcode")
+		var comboid = $(this).attr("comboid")
+		channel.push("show_combo_unit_price", {brand_id: window.currentBrand, itemcode: itemcode, comboid: comboid})
+	})
 
-		var text = $("textarea#sql").val()
-
-		text = text.replace(/<{/g, "");
-		text = text.replace(/}>/g, "");
-		text = text.replace(/:/g, "");
-		text = text.replace(/0/g, "");
-		text = text.replace(/1/g, "");
-		text = text.replace(/CURRENT_TIMESTAMP/g, "");
-
-
-		$("div#text").html(text)
+	channel.on("show_combo_unit_price2", payload => {
+		$("td[itemcode='"+payload.itemcode+"'][comboid='"+payload.comboid+"']").html(payload.price)
 	})
 </script>

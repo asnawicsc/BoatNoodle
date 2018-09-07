@@ -13,7 +13,141 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment(conn, params) do
-    render(conn, "experiment.html")
+    date_range = Date.range(Date.from_iso8601!("2018-08-01"), Date.from_iso8601!("2018-08-31"))
+    s_date = Date.from_iso8601!("2018-08-01")
+    e_date = Date.from_iso8601!("2018-08-31")
+
+    sm =
+      for date <- date_range do
+      end
+
+    data =
+      Repo.all(
+        from(
+          s in Sales,
+          left_join: sm in SalesMaster,
+          on: sm.salesid == s.salesid,
+          where:
+            s.brand_id == ^1 and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
+              s.branchid == ^"31" and sm.combo_id != 0,
+          select: %{
+            salesid: s.salesid,
+            salesdate: s.salesdate,
+            itemname: sm.itemname,
+            itemcode: sm.itemcode,
+            order_price: sm.order_price,
+            qty: sm.qty,
+            combo_id: sm.combo_id
+          }
+        )
+      )
+      |> Enum.map(fn x ->
+        %{
+          salesdate: x.salesdate,
+          itemcode: code_combo(x.itemname),
+          itemname: x.itemname,
+          unit_price: find_combo_unit_price(code_combo(x.itemname), x.combo_id, "1"),
+          qty: x.qty
+        }
+      end)
+
+    dates = data |> Enum.group_by(fn x -> x.salesdate end) |> Map.keys()
+    items = data |> Enum.group_by(fn x -> x.itemcode end) |> Map.keys()
+
+    data2 =
+      for date <- dates do
+        for item <- items do
+          bulk_data =
+            Enum.filter(data, fn x -> x.salesdate == date end)
+            |> Enum.filter(fn x -> x.itemcode == item end)
+
+          if bulk_data != [] do
+            qty = bulk_data |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+
+            total_price =
+              bulk_data |> Enum.map(fn x -> x.unit_price end) |> Enum.sum() |> Decimal.new()
+
+            itemname = bulk_data |> Enum.map(fn x -> x.itemname end) |> Enum.uniq()
+
+            itemname =
+              if itemname != [] do
+                hd(itemname)
+              else
+                "EMPTY"
+              end
+
+            {
+              Date.to_string(date),
+              item,
+              itemname,
+              Integer.to_string(qty),
+              Decimal.to_string(total_price)
+            }
+          end
+        end
+        |> Enum.reject(fn x -> x == nil end)
+      end
+
+    # combo_ids =
+    #   Repo.all(
+    #     from(
+    #       s in Sales,
+    #       left_join: sm in SalesMaster,
+    #       on: sm.salesid == s.salesid,
+    #       where:
+    #         s.brand_id == ^1 and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
+    #           s.branchid == ^"2" and sm.combo_id != 0,
+    #       select: sm.combo_id
+    #     )
+    #   )
+    #   |> Enum.uniq()
+
+    # render(conn, "experiment.html", data: data)
+
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header(
+      "content-disposition",
+      "attachment; filename=\"Combo Item Analysis.csv\""
+    )
+    |> send_resp(200, csv_content(data2, params))
+  end
+
+  defp csv_content(data, params) do
+    csv_header = [
+      'salesdate',
+      'itemcode',
+      'itemname',
+      'qty',
+      'total_price'
+    ]
+
+    data = data |> List.flatten() |> Enum.map(fn x -> Tuple.to_list(x) end)
+
+    List.insert_at(data, 0, csv_header)
+    |> CSV.encode()
+    |> Enum.to_list()
+    |> to_string
+  end
+
+  def code_combo(name) do
+    String.split(name, "") |> Enum.take(4) |> Enum.join()
+  end
+
+  def find_combo_unit_price(itemcode, comboid, brand_id) do
+    cd =
+      Repo.get_by(
+        ComboDetails,
+        brand_id: String.to_integer(brand_id),
+        combo_item_code: itemcode,
+        combo_id: comboid
+      )
+
+    if cd != nil do
+      Decimal.to_float(cd.unit_price)
+    else
+      0
+    end
   end
 
   def logout(conn, _params) do

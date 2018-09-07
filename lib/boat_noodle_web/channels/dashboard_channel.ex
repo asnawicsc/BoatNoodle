@@ -340,20 +340,37 @@ defmodule BoatNoodleWeb.DashboardChannel do
           |> elem(1)
           |> String.reverse()
 
+        # order_query =
+        #   Repo.all(
+        #     from(
+        #       sm in BoatNoodle.BN.SalesMaster,
+        #       left_join: s in BoatNoodle.BN.Sales,
+        #       on: sm.salesid == s.salesid,
+        #       left_join: b in BoatNoodle.BN.Branch,
+        #       on: b.branchid == s.branchid,
+        #       where:
+        #         s.is_void == 0 and s.branchid == ^payload["branch_id"] and
+        #           s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+        #           s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
+        #           sm.brand_id == ^brand_id,
+        #       group_by: [s.salesdate, b.branchname],
+        #       select: %{sales_details: sum(sm.qty)}
+        #     )
+        #   )
+        brand_id_int = String.to_integer(brand_id)
+
         order_query =
           Repo.all(
             from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
+              s in Sales,
+              left_join: sm in SalesMaster,
               on: sm.salesid == s.salesid,
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
                 s.is_void == 0 and s.branchid == ^payload["branch_id"] and
-                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                  s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
-                  sm.brand_id == ^brand_id,
-              group_by: [s.salesdate, b.branchname],
+                  s.brand_id == ^brand_id_int and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"],
               select: %{sales_details: sum(sm.qty)}
             )
           )
@@ -830,8 +847,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Float.round(2)
                     |> Number.Delimit.number_to_delimited()
 
+                  # (sub_total + service_charge + discount + rounding + gst) 
                   total_sales =
-                    (nett_sale + rounding + gst) |> Float.round(2)
+                    grand_total
+                    |> Float.round(2)
                     |> Number.Delimit.number_to_delimited()
 
                   pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
@@ -895,22 +914,35 @@ defmodule BoatNoodleWeb.DashboardChannel do
           |> elem(1)
           |> String.reverse()
 
+        brand_id_int = String.to_integer(brand_id)
+
+        # Repo.all(
+        #   from(
+        #     sm in BoatNoodle.BN.SalesMaster,
+        #     left_join: s in BoatNoodle.BN.Sales,
+        #     on: sm.salesid == s.salesid,
+        #     where:
+        #       s.is_void == 0 and s.salesdate >= ^payload["s_date"] and
+        #         s.salesdate <= ^payload["e_date"] and s.brand_id == ^brand_id_int and
+        #         sm.brand_id == ^brand_id_int,
+        #     group_by: [s.salesdate],
+        #     select: %{sales_details: sum(sm.qty)}
+        #   )
+        # )
         order_query =
           Repo.all(
             from(
-              sm in BoatNoodle.BN.SalesMaster,
-              left_join: s in BoatNoodle.BN.Sales,
+              s in Sales,
+              left_join: sm in SalesMaster,
               on: sm.salesid == s.salesid,
-              left_join: b in BoatNoodle.BN.Branch,
-              on: b.branchid == s.branchid,
               where:
-                s.is_void == 0 and s.salesdate >= ^payload["s_date"] and
-                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"] and
-                  b.brand_id == ^brand_id and sm.brand_id == ^brand_id,
-              group_by: [s.salesdate, b.branchname],
+                s.is_void == 0 and s.brand_id == ^brand_id_int and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
               select: %{sales_details: sum(sm.qty)}
             )
           )
+
+        # IEx.pry()
 
         d_order =
           order_query
