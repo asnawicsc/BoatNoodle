@@ -71,13 +71,16 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def index(conn, _params) do
-        branches =
+    branches =
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )
@@ -104,8 +107,6 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def detail_invoice(conn, %{"branchid" => branchid, "invoiceno" => invoiceno}) do
-
-
     detail =
       Repo.all(
         from(
@@ -116,9 +117,11 @@ defmodule BoatNoodleWeb.SalesController do
           on: sd.salesid == s.salesid,
           left_join: st in BoatNoodle.BN.Staff,
           on: st.staff_id == s.staffid,
-           left_join: f in BoatNoodle.BN.Brand,
-          on: sp.brand_id == f.id ,
-          where: s.invoiceno == ^invoiceno and s.branchid == ^branchid and f.domain_name ==^conn.params["brand"] ,
+          left_join: f in BoatNoodle.BN.Brand,
+          on: sp.brand_id == f.id,
+          where:
+            s.invoiceno == ^invoiceno and s.branchid == ^branchid and
+              f.domain_name == ^conn.params["brand"],
           select: %{
             staff_name: st.staff_name,
             tbl_no: s.tbl_no,
@@ -144,7 +147,8 @@ defmodule BoatNoodleWeb.SalesController do
       |> String.split_at(19)
       |> elem(0)
 
-    gstpercentage = Decimal.to_float(detail.gst_charge) / Decimal.to_float(detail.after_disc) * 100
+    gstpercentage =
+      Decimal.to_float(detail.gst_charge) / Decimal.to_float(detail.after_disc) * 100
 
     servicepercentage =
       Decimal.to_float(detail.service_charge) / Decimal.to_float(detail.after_disc) * 100
@@ -189,9 +193,10 @@ defmodule BoatNoodleWeb.SalesController do
           on: s.branchid == b.branchid,
           left_join: f in BoatNoodle.BN.Brand,
           on: sd.brand_id == f.id,
-          where: s.invoiceno == ^invoiceno
-           and s.branchid == ^branchid and 
-           f.domain_name ==^conn.params["brand"] and is.brand_id== f.id and b.brand_id== f.id,
+          where:
+            s.invoiceno == ^invoiceno and s.branchid == ^branchid and
+              f.domain_name == ^conn.params["brand"] and is.brand_id == f.id and
+              b.brand_id == f.id,
           select: %{
             combo_item_name: c.combo_item_name,
             itemname: is.itemname,
@@ -204,21 +209,19 @@ defmodule BoatNoodleWeb.SalesController do
     render(conn, "detail_invoice.html", detail: detail, detail_item: detail_item)
   end
 
-
-
   def quickbook(conn, params) do
+    brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
 
-      brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
-
-          branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
 
     id = branch.branchid |> Integer.to_string()
 
-
-
     conn
     |> put_resp_content_type("text/csv")
-    |> put_resp_header("content-disposition", "attachment; filename=\"Daily Item Sales"<>branch.branchcode<>".csv\"")
+    |> put_resp_header(
+      "content-disposition",
+      "attachment; filename=\"Daily Item Sales" <> branch.branchcode <> ".csv\""
+    )
     |> send_resp(200, csv_content(conn, params))
   end
 
@@ -363,7 +366,6 @@ defmodule BoatNoodleWeb.SalesController do
         cashin = "CashInDrawer:"
         full = cashin <> name
 
-
         rpt =
           Repo.all(
             from(
@@ -372,15 +374,13 @@ defmodule BoatNoodleWeb.SalesController do
               on: s.salesid == sp.salesid,
               left_join: b in Branch,
               on: b.branchid == s.branchid,
-               left_join: t in Brand, on: t.id == s.brand_id, 
+              left_join: t in Brand,
+              on: t.id == s.brand_id,
               where:
                 s.is_void == 0 and s.salesdate == ^date2 and
-                  b.report_class == ^branch.report_class and
-                  t.id==^brand.id and
-                  s.brand_id==^brand.id
-                  and b.brand_id==^brand.id
-                  and sp.brand_id==^brand.id
-                  and b.branchid==^id ,
+                  b.report_class == ^branch.report_class and t.id == ^brand.id and
+                  s.brand_id == ^brand.id and b.brand_id == ^brand.id and sp.brand_id == ^brand.id and
+                  b.branchid == ^id,
               select: %{
                 grand_total: sum(sp.grand_total),
                 sub_total: sum(sp.sub_total),
@@ -392,233 +392,283 @@ defmodule BoatNoodleWeb.SalesController do
           )
           |> hd
 
-
-
-          grand_total=if rpt.grand_total  != nil  do
-
-              Decimal.to_float(rpt.grand_total)
+        grand_total =
+          if rpt.grand_total != nil do
+            Decimal.to_float(rpt.grand_total)
           else
-
             0
-
-            
           end
 
-
-          sub_total=if rpt.sub_total  != nil  do
-
-             Decimal.to_float(rpt.sub_total)
+        sub_total =
+          if rpt.sub_total != nil do
+            Decimal.to_float(rpt.sub_total)
           else
-
             0
-
-            
           end
 
-
-          service_charge=if rpt.service_charge != nil  do
-
-              Decimal.to_float(rpt.service_charge)
+        service_charge =
+          if rpt.service_charge != nil do
+            Decimal.to_float(rpt.service_charge)
           else
-
             0
-
-            
           end
 
-
-
-
-          gst_charge=if rpt.gst_charge != nil  do
-
-              Decimal.to_float(rpt.gst_charge)
+        gst_charge =
+          if rpt.gst_charge != nil do
+            Decimal.to_float(rpt.gst_charge)
           else
-
             0
-
-            
           end
 
-               rounding=if rpt.rounding != nil  do
-
-              Decimal.to_float(rpt.rounding)
+        rounding =
+          if rpt.rounding != nil do
+            Decimal.to_float(rpt.rounding)
           else
-
             0
-
-            
           end
 
-
-
-
-
-           rounding2=Repo.all(from s in Sales,
-      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
-      left_join: b in Branch,on: b.branchid==s.branchid,
-      left_join: t in Brand, on: t.id == s.brand_id, 
-      where: s.is_void==0 and
-       s.salesdate ==^date2 and
-        b.report_class ==^branch.report_class  and 
-         t.id==^brand.id and
-        s.brand_id==^brand.id
-        and b.brand_id==^brand.id
-        and sp.brand_id==^brand.id
-        and b.branchid==^id ,
-      select: %{
+        rounding2 =
+          Repo.all(
+            from(
+              s in Sales,
+              left_join: sp in SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: b in Branch,
+              on: b.branchid == s.branchid,
+              left_join: t in Brand,
+              on: t.id == s.brand_id,
+              where:
+                s.is_void == 0 and s.salesdate == ^date2 and
+                  b.report_class == ^branch.report_class and t.id == ^brand.id and
+                  s.brand_id == ^brand.id and b.brand_id == ^brand.id and sp.brand_id == ^brand.id and
+                  b.branchid == ^id,
+              select: %{
                 rounding: sum(sp.rounding)
-              })|>hd
+              }
+            )
+          )
+          |> hd
 
-        rounding2=if rounding2.rounding != nil  do
-
-              Decimal.to_float(rounding2.rounding)
+        rounding2 =
+          if rounding2.rounding != nil do
+            Decimal.to_float(rounding2.rounding)
           else
-
             0
-
           end
 
-      
+        disc_amt = 0 - (sub_total + service_charge + gst_charge + rounding)
 
+        tpm = [
+          'Daily Sales',
+          branch.branchname,
+          'Custom Sales Receipt',
+          date2,
+          join,
+          full,
+          "sevc charge",
+          "",
+          "",
+          service_charge,
+          service_charge,
+          branch.branchname,
+          'SR0'
+        ]
 
-  
+        tpf = [
+          'Daily Sales',
+          branch.branchname,
+          'Custom Sales Receipt',
+          date2,
+          join,
+          full,
+          "Total Rounding",
+          "",
+          "",
+          rounding2,
+          rounding2,
+          branch.branchname,
+          'SR0'
+        ]
 
-   
+        tpq = [
+          'Daily Sales',
+          branch.branchname,
+          'Custom Sales Receipt',
+          date2,
+          join,
+          full,
+          "Discount",
+          "",
+          "",
+          disc_amt,
+          disc_amt,
+          branch.branchname,
+          'SR0'
+        ]
 
-      disc_amt=0-(sub_total+service_charge+gst_charge+rounding)
-    
+        paytype1 =
+          Repo.all(
+            from(
+              s in Sales,
+              left_join: sp in SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: p in PaymentType,
+              on: p.payment_type_id == sp.payment_type_id1,
+              left_join: b in Branch,
+              on: b.branchid == s.branchid,
+              left_join: t in Brand,
+              on: t.id == s.brand_id,
+              group_by: p.payment_type_name,
+              where:
+                s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id1 != 1 and
+                  t.id == ^brand.id and s.brand_id == ^brand.id and p.brand_id == ^brand.id and
+                  b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
+              select: %{
+                payment_type_name: p.payment_type_name,
+                pay_amt: sum(sp.payment_type_amt1)
+              }
+            )
+          )
 
+        paytype2 =
+          Repo.all(
+            from(
+              s in Sales,
+              left_join: sp in SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: p in PaymentType,
+              on: p.payment_type_id == sp.payment_type_id2,
+              left_join: b in Branch,
+              on: b.branchid == s.branchid,
+              left_join: t in Brand,
+              on: t.id == s.brand_id,
+              group_by: p.payment_type_name,
+              where:
+                s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id2 != 1 and
+                  t.id == ^brand.id and p.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                  b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
+              select: %{
+                payment_type_name: p.payment_type_name,
+                pay_amt: sum(sp.payment_type_amt2)
+              }
+            )
+          )
 
-          tpm=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"sevc charge","","",service_charge,service_charge,branch.branchname,'SR0'] 
-          tpf=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"Total Rounding","","",rounding2,rounding2,branch.branchname,'SR0'] 
-           tpq=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"Discount","","",disc_amt,disc_amt,branch.branchname,'SR0'] 
+        paytype = (paytype1 ++ paytype2) |> Enum.filter(fn x -> x.payment_type_name != nil end)
 
+        shortextra =
+          Repo.all(
+            from(
+              r in BoatNoodle.BN.RPTCASHIEREOD,
+              left_join: b in Branch,
+              on: b.branchcode == r.branchcode,
+              left_join: t in Brand,
+              on: t.id == r.brand_id,
+              group_by: [r.time_end],
+              where: r.branch_id == ^id and r.brand_id == ^brand.id,
+              select: %{totalextra: sum(r.extra), time_end: r.time_end}
+            )
+          )
 
-             paytype1=Repo.all(from s in Sales,
-      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
-      left_join: p in PaymentType, on: p.payment_type_id==sp.payment_type_id1,
-      left_join: b in Branch,on: b.branchid==s.branchid,
-      left_join: t in Brand, on: t.id == s.brand_id, 
-      group_by: p.payment_type_name,
-       where: s.is_void==0 and 
-       s.salesdate ==^date2 and
-       sp.payment_type_id1 != 1 and 
-        t.id==^brand.id and
-        s.brand_id==^brand.id
-        and p.brand_id==^brand.id
-        and b.brand_id==^brand.id and
-        sp.brand_id==^brand.id
-        and b.branchid==^id ,
-       select: %{ payment_type_name: p.payment_type_name,
-                  pay_amt: sum(sp.payment_type_amt1)})
+        extra =
+          Enum.map(shortextra, fn x ->
+            %{totalextra: x.totalextra, date: DateTime.to_date(x.time_end) |> Date.to_string()}
+          end)
 
-                          paytype2=Repo.all(from s in Sales,
-      left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
-      left_join: p in PaymentType, on: p.payment_type_id==sp.payment_type_id2,
-      left_join: b in Branch,on: b.branchid==s.branchid,
-      left_join: t in Brand, on: t.id == s.brand_id, 
-      group_by: p.payment_type_name,
-       where: s.is_void==0 and 
-       s.salesdate ==^date2 and
-       sp.payment_type_id2 != 1 and 
-        t.id==^brand.id
-        and p.brand_id==^brand.id and
-        s.brand_id==^brand.id
-        and b.brand_id==^brand.id and
-        sp.brand_id==^brand.id
-        and b.branchid==^id ,
-       select: %{ payment_type_name: p.payment_type_name,
-                  pay_amt: sum(sp.payment_type_amt2)})
+        extra = extra |> Enum.filter(fn x -> x.date == date2 end)
 
-                          paytype=(paytype1++paytype2)|>Enum.filter(fn x -> x.payment_type_name != nil end)
+        shortextra =
+          if extra != [] do
+            Enum.map(extra, fn x -> Decimal.to_float(x.totalextra) end) |> Enum.sum()
+          else
+            0
+          end
 
+        tpt = [
+          'Daily Sales',
+          branch.branchname,
+          'Custom Sales Receipt',
+          date2,
+          join,
+          full,
+          "Short/Extra",
+          "",
+          "",
+          shortextra,
+          shortextra,
+          branch.branchname,
+          'SR0'
+        ]
 
+        ccard =
+          Repo.all(
+            from(
+              s in Sales,
+              left_join: sp in SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: b in Branch,
+              on: b.branchid == s.branchid,
+              left_join: t in Brand,
+              on: t.id == s.brand_id,
+              where:
+                s.is_void == 0 and s.salesdate == ^date2 and t.id == ^brand.id and
+                  s.brand_id == ^brand.id and b.brand_id == ^brand.id and sp.brand_id == ^brand.id and
+                  b.branchid == ^id and sp.payment_type == "CREDITCARD",
+              select: sum(sp.grand_total)
+            )
+          )
+          |> hd
 
+        ccard =
+          if ccard != nil do
+            0 - Decimal.to_float(ccard)
+          else
+            0
+          end
 
-                        shortextra=Repo.all(from r in BoatNoodle.BN.RPTCASHIEREOD,
-                        left_join: b in Branch, on: b.branchcode == r.branchcode,
-                          left_join: t in Brand, on: t.id == r.brand_id,
-                        group_by: [r.time_end],
-                        where: r.branch_id==^id and
-                        r.brand_id==^brand.id,
-                         select: %{ totalextra: sum(r.extra),
-                          time_end: r.time_end
-                         })
+        tps = [
+          'Daily Sales',
+          branch.branchname,
+          'Custom Sales Receipt',
+          date2,
+          join,
+          full,
+          "CREDITCARD",
+          "",
+          "",
+          ccard,
+          ccard,
+          branch.branchname,
+          'SR0'
+        ]
 
-               extra=Enum.map(shortextra,fn x -> %{totalextra: x.totalextra, date: DateTime.to_date(x.time_end)|>Date.to_string }end)
+        trm =
+          for item <- paytype do
+            [
+              'Daily Sales',
+              branch.branchname,
+              'Custom Sales Receipt',
+              date2,
+              join,
+              full,
+              item.payment_type_name,
+              "",
+              "",
+              (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
+              (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
+              branch.branchname,
+              'SR0'
+            ]
+          end
 
-
-
-
-              
-               extra=extra|>Enum.filter(fn x -> x.date == date2 end)
-
-             
-                            shortextra=if extra != [] do
-
-                              Enum.map(extra,fn x -> Decimal.to_float(x.totalextra) end)|>Enum.sum
-
-                                    
-                            else
-                              0
-                               
-                             end
-
-  
-
-
-                    
-
-                    tpt=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"Short/Extra","","",shortextra,shortextra,branch.branchname,'SR0'] 
-
-                             ccard=Repo.all(from s in Sales,
-                        left_join: sp in SalesPayment, on: s.salesid==sp.salesid,
-                        left_join: b in Branch,on: b.branchid==s.branchid,
-                        left_join: t in Brand, on: t.id == s.brand_id, 
-                         where: s.is_void==0 and 
-                         s.salesdate ==^date2 and
-                          t.id==^brand.id and
-                          s.brand_id==^brand.id
-                          and b.brand_id==^brand.id and
-                          sp.brand_id==^brand.id
-                          and b.branchid==^id 
-                          and sp.payment_type =="CREDITCARD",
-                         select: sum(sp.grand_total))|>hd 
-
-
-                             ccard=if ccard != nil  do
-
-                              0-Decimal.to_float(ccard)
-                            else
-                              0
-                               
-                             end
-                        
-                           
-                       
-
-              
-                      
-                           tps=['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,"CREDITCARD","","", ccard,ccard,branch.branchname,'SR0']  
-
-
-      
-          
-             trm=for item <- paytype do
-
-
-       ['Daily Sales',branch.branchname,'Custom Sales Receipt',date2,join,full,item.payment_type_name,"","",0-Decimal.to_float(item.pay_amt)|>Float.to_string,0-Decimal.to_float(item.pay_amt)|>Float.to_string,branch.branchname,'SR0'] 
-  
-             end
-
-             tq=List.insert_at(gft,-1,tpm)
-             tq1=List.insert_at(tq,-1,tpf)  
-             tq2=List.insert_at(tq1,-1,tpq)
-             tq3=List.insert_at(tq2,-1,tpt)
-             tq4=List.insert_at(tq3,-1,tps)
-             tq5=tq4++trm
-
-    end|>Enum.flat_map(fn x -> x end)
+        tq = List.insert_at(gft, -1, tpm)
+        tq1 = List.insert_at(tq, -1, tpf)
+        tq2 = List.insert_at(tq1, -1, tpq)
+        tq3 = List.insert_at(tq2, -1, tpt)
+        tq4 = List.insert_at(tq3, -1, tps)
+        tq5 = tq4 ++ trm
+      end
+      |> Enum.flat_map(fn x -> x end)
 
     csv_content =
       List.insert_at(data, 0, csv_content)
@@ -632,9 +682,12 @@ defmodule BoatNoodleWeb.SalesController do
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )
@@ -643,13 +696,16 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def item_sales(conn, _params) do
-     branches =
+    branches =
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )
@@ -658,13 +714,16 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def discounts(conn, _params) do
-      branches =
+    branches =
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )
@@ -677,9 +736,12 @@ defmodule BoatNoodleWeb.SalesController do
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )
@@ -972,62 +1034,58 @@ defmodule BoatNoodleWeb.SalesController do
     start_date = params["start_date"]
     end_date = params["end_date"]
 
-     item_sold_data =if branch_id != "0"  do
-      
-
-      Repo.all(
-        from(
-          sd in BoatNoodle.BN.SalesMaster,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sd.salesid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          group_by: i.itemname,
-          where:
-            sd.afterdisc != 0.00 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
-              s.salesdate <= ^end_date and sd.brand_id == ^brand.id and i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id,
-          select: %{
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            itemcatname: ic.itemcatname,
-            qty: sum(sd.qty),
-            nett_price: sum(sd.afterdisc),
-            gross_price: sum(sd.order_price)
-          }
+    item_sold_data =
+      if branch_id != "0" do
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.itemid == i.subcatid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == i.itemcatid,
+            group_by: i.itemname,
+            where:
+              sd.afterdisc != 0.00 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
+                s.salesdate <= ^end_date and sd.brand_id == ^brand.id and i.brand_id == ^brand.id and
+                s.brand_id == ^brand.id and ic.brand_id == ^brand.id,
+            select: %{
+              itemcode: i.itemcode,
+              itemname: i.itemname,
+              itemcatname: ic.itemcatname,
+              qty: sum(sd.qty),
+              nett_price: sum(sd.afterdisc),
+              gross_price: sum(sd.order_price)
+            }
+          )
         )
-      )
-
-    else
-
-
-      Repo.all(
-        from(
-          sd in BoatNoodle.BN.SalesMaster,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sd.salesid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          group_by: i.itemname,
-          where:
-            sd.afterdisc != 0.00 and s.salesdate >= ^start_date and
-              s.salesdate <= ^end_date and sd.brand_id == ^brand.id and i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id,
-          select: %{
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            itemcatname: ic.itemcatname,
-            qty: sum(sd.qty),
-            nett_price: sum(sd.afterdisc),
-            gross_price: sum(sd.order_price)
-          }
+      else
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.itemid == i.subcatid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == i.itemcatid,
+            group_by: i.itemname,
+            where:
+              sd.afterdisc != 0.00 and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
+                sd.brand_id == ^brand.id and i.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                ic.brand_id == ^brand.id,
+            select: %{
+              itemcode: i.itemcode,
+              itemname: i.itemname,
+              itemcatname: ic.itemcatname,
+              qty: sum(sd.qty),
+              nett_price: sum(sd.afterdisc),
+              gross_price: sum(sd.order_price)
+            }
+          )
         )
-      )
-
-    end
-
+      end
 
     csv_content = ['Item Code ', 'Item Name', 'Category', 'Quantity', 'Net Sales', 'Gross Sales']
 
@@ -1045,21 +1103,43 @@ defmodule BoatNoodleWeb.SalesController do
 
     qty =
       Enum.map(item_sold_data, fn x -> Decimal.to_float(x.qty) end)
+      |> Enum.reject(fn x -> x.qty == 0 end)
       |> Enum.sum()
-      |> Float.round(2)
-      |> Float.to_string()
+
+    qty =
+      if qty == 0 do
+        0
+      else
+        qty
+        |> Float.round(2)
+        |> Float.to_string()
+      end
 
     nett_price =
       Enum.map(item_sold_data, fn x -> Decimal.to_float(x.nett_price) end)
       |> Enum.sum()
-      |> Float.round(2)
-      |> Float.to_string()
+
+    nett_price =
+      if nett_price == 0 do
+        0
+      else
+        nett_price
+        |> Float.round(2)
+        |> Float.to_string()
+      end
 
     gross_price =
       Enum.map(item_sold_data, fn x -> Decimal.to_float(x.gross_price) end)
       |> Enum.sum()
-      |> Float.round(2)
-      |> Float.to_string()
+
+    gross_price =
+      if gross_price == 0 do
+        0
+      else
+        gross_price
+        |> Float.round(2)
+        |> Float.to_string()
+      end
 
     a = "Total"
     b = ""
@@ -1088,99 +1168,82 @@ defmodule BoatNoodleWeb.SalesController do
     start_date = params["start_date"]
     end_date = params["end_date"]
 
-
-     
-    item_sales_outlet = if branch_id != "0" do
-      
-
-      Repo.all(
-        from(
-          sd in BoatNoodle.BN.SalesMaster,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sd.salesid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          left_join: di in BoatNoodle.BN.DiscountItem,
-          on: di.discountitemsid == sd.discountid,
-          left_join: b in BoatNoodle.BN.Branch,
-          on: b.branchid == s.branchid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: st.staff_id == b.manager,
-          group_by: [s.salesdate, i.itemname],
-          where:
-            s.branchid == ^branch_id and
-             s.salesdate >= ^start_date and s.salesdate <= ^end_date 
-             and sd.brand_id==^brand.id
-             and i.brand_id==^brand.id
-             and s.brand_id==^brand.id
-             and ic.brand_id==^brand.id
-             and di.brand_id==^brand.id
-             and b.brand_id==^brand.id,
-          select: %{
-            salesdate: s.salesdate,
-            branchname: b.branchname,
-            hierachy: ic.category_type,
-            category: ic.itemcatname,
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            gross_qty: sum(sd.qty),
-            foc_qty: sum(di.disc_qty),
-            gross_sales: sum(sd.order_price),
-            nett_sales: sum(sd.afterdisc),
-            unit_price: sd.unit_price,
-            store_owner: st.staff_name
-          }
+    item_sales_outlet =
+      if branch_id != "0" do
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.itemid == i.subcatid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == i.itemcatid,
+            left_join: di in BoatNoodle.BN.DiscountItem,
+            on: di.discountitemsid == sd.discountid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid == s.branchid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: st.staff_id == b.manager,
+            group_by: [s.salesdate, i.itemname],
+            where:
+              s.branchid == ^branch_id and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
+                sd.brand_id == ^brand.id and i.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                ic.brand_id == ^brand.id and di.brand_id == ^brand.id and b.brand_id == ^brand.id,
+            select: %{
+              salesdate: s.salesdate,
+              branchname: b.branchname,
+              hierachy: ic.category_type,
+              category: ic.itemcatname,
+              itemcode: i.itemcode,
+              itemname: i.itemname,
+              gross_qty: sum(sd.qty),
+              foc_qty: sum(di.disc_qty),
+              gross_sales: sum(sd.order_price),
+              nett_sales: sum(sd.afterdisc),
+              unit_price: sd.unit_price,
+              store_owner: st.staff_name
+            }
+          )
         )
-      )
-
-    else
-
-       Repo.all(
-        from(
-          sd in BoatNoodle.BN.SalesMaster,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: s in BoatNoodle.BN.Sales,
-          on: s.salesid == sd.salesid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          left_join: di in BoatNoodle.BN.DiscountItem,
-          on: di.discountitemsid == sd.discountid,
-          left_join: b in BoatNoodle.BN.Branch,
-          on: b.branchid == s.branchid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: st.staff_id == b.manager,
-          group_by: [s.salesdate, i.itemname],
-          where:
-             s.salesdate >= ^start_date and s.salesdate <= ^end_date 
-             and sd.brand_id==^brand.id
-             and i.brand_id==^brand.id
-             and s.brand_id==^brand.id
-             and ic.brand_id==^brand.id
-             and di.brand_id==^brand.id
-             and b.brand_id==^brand.id,
-          select: %{
-            salesdate: s.salesdate,
-            branchname: b.branchname,
-            hierachy: ic.category_type,
-            category: ic.itemcatname,
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            gross_qty: sum(sd.qty),
-            foc_qty: sum(di.disc_qty),
-            gross_sales: sum(sd.order_price),
-            nett_sales: sum(sd.afterdisc),
-            unit_price: sd.unit_price,
-            store_owner: st.staff_name
-          }
+      else
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: sd.itemid == i.subcatid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == i.itemcatid,
+            left_join: di in BoatNoodle.BN.DiscountItem,
+            on: di.discountitemsid == sd.discountid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid == s.branchid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: st.staff_id == b.manager,
+            group_by: [s.salesdate, i.itemname],
+            where:
+              s.salesdate >= ^start_date and s.salesdate <= ^end_date and sd.brand_id == ^brand.id and
+                i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id and
+                di.brand_id == ^brand.id and b.brand_id == ^brand.id,
+            select: %{
+              salesdate: s.salesdate,
+              branchname: b.branchname,
+              hierachy: ic.category_type,
+              category: ic.itemcatname,
+              itemcode: i.itemcode,
+              itemname: i.itemname,
+              gross_qty: sum(sd.qty),
+              foc_qty: sum(di.disc_qty),
+              gross_sales: sum(sd.order_price),
+              nett_sales: sum(sd.afterdisc),
+              unit_price: sd.unit_price,
+              store_owner: st.staff_name
+            }
+          )
         )
-      )
-
-
-    end
-
+      end
 
     csv_content = [
       'Date ',
@@ -1200,11 +1263,8 @@ defmodule BoatNoodleWeb.SalesController do
       'Store Owner'
     ]
 
-        
-
     data =
       for item <- item_sales_outlet do
-
         foc_qty =
           if item.foc_qty == nil do
             0
@@ -1216,26 +1276,24 @@ defmodule BoatNoodleWeb.SalesController do
         discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
         service_charge = (Decimal.to_float(item.nett_sales) / 20) |> Float.round(2)
 
-
         [
-      item.salesdate,
-      item.branchname,
-      item.hierachy,
-      item.category,
-      item.itemcode,
-      item.itemname,
-      item.gross_qty,
-      nett_qty,
-      foc_qty,
-      item.gross_sales,
-      item.nett_sales,
-      item.unit_price,
-      discount_value,
-      service_charge,
-      item.store_owner
-    ]
+          item.salesdate,
+          item.branchname,
+          item.hierachy,
+          item.category,
+          item.itemcode,
+          item.itemname,
+          item.gross_qty,
+          nett_qty,
+          foc_qty,
+          item.gross_sales,
+          item.nett_sales,
+          item.unit_price,
+          discount_value,
+          service_charge,
+          item.store_owner
+        ]
       end
-
 
     csv_content2 =
       List.insert_at(data, 0, csv_content)
@@ -1261,116 +1319,90 @@ defmodule BoatNoodleWeb.SalesController do
     start_date = params["start_date"]
     end_date = params["end_date"]
 
-
-     item_sales_outlet =if branch_id != "0"  do
-      
-  
-
-   
-      Repo.all(
-        from(
-          s in BoatNoodle.BN.Sales,
-          left_join: sd in BoatNoodle.BN.SalesMaster,
-          on: s.salesid == sd.salesid,
-          left_join: b in BoatNoodle.BN.Branch,
-          on: b.branchid == s.branchid,
-           left_join: cd in BoatNoodle.BN.ComboDetails,
-          on: cd.combo_item_id == sd.itemid,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: cd.combo_id == i.subcatid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == cd.menu_cat_id,
-          left_join: di in BoatNoodle.BN.DiscountItem,
-          on: di.discountitemsid == sd.discountid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: st.staff_id == b.manager,
-          group_by: [s.salesdate,s.branchid, sd.itemid],
-          where:
-            s.is_void == 0 and
-             s.branchid == ^branch_id
-              and s.salesdate >= ^start_date and
-              s.salesdate <= ^end_date and 
-              s.brand_id ==^brand.id and
-               sd.brand_id ==^brand.id and
-                b.brand_id ==^brand.id and
-                 cd.brand_id ==^brand.id and
-                  i.brand_id ==^brand.id and
-                   ic.brand_id ==^brand.id and
-                    di.brand_id ==^brand.id and
-                    st.brand_id ==^brand.id,
-          select: %{
-            salesdate: s.salesdate,
-            branchname: b.branchname,
-            hierachy: ic.category_type,
-            category: ic.itemcatname,
-            itemcode: i.itemcode,
-            comboname: i.itemname,
-            itemname: cd.combo_item_name,
-            gross_sales: sum(sd.order_price),
-            gross_qty: sum(sd.qty),
-            foc_qty: sum(di.disc_qty),
-             nett_sales: sum(sd.afterdisc),
-            unit_price: cd.unit_price,
-            store_owner: st.staff_name
-          }
+    item_sales_outlet =
+      if branch_id != "0" do
+        Repo.all(
+          from(
+            s in BoatNoodle.BN.Sales,
+            left_join: sd in BoatNoodle.BN.SalesMaster,
+            on: s.salesid == sd.salesid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid == s.branchid,
+            left_join: cd in BoatNoodle.BN.ComboDetails,
+            on: cd.combo_item_id == sd.itemid,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: cd.combo_id == i.subcatid,
+            left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == cd.menu_cat_id,
+            left_join: di in BoatNoodle.BN.DiscountItem,
+            on: di.discountitemsid == sd.discountid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: st.staff_id == b.manager,
+            group_by: [s.salesdate, s.branchid, sd.itemid],
+            where:
+              s.is_void == 0 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
+                s.salesdate <= ^end_date and s.brand_id == ^brand.id and sd.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and cd.brand_id == ^brand.id and i.brand_id == ^brand.id and
+                ic.brand_id == ^brand.id and di.brand_id == ^brand.id and st.brand_id == ^brand.id,
+            select: %{
+              salesdate: s.salesdate,
+              branchname: b.branchname,
+              hierachy: ic.category_type,
+              category: ic.itemcatname,
+              itemcode: i.itemcode,
+              comboname: i.itemname,
+              itemname: cd.combo_item_name,
+              gross_sales: sum(sd.order_price),
+              gross_qty: sum(sd.qty),
+              foc_qty: sum(di.disc_qty),
+              nett_sales: sum(sd.afterdisc),
+              unit_price: cd.unit_price,
+              store_owner: st.staff_name
+            }
+          )
         )
-      )
-
-else
-
-  
-
-   
-      Repo.all(
-        from(
-          s in BoatNoodle.BN.Sales,
-          left_join: sd in BoatNoodle.BN.SalesMaster,
-          on: s.salesid == sd.salesid,
-          left_join: b in BoatNoodle.BN.Branch,
-          on: b.branchid == s.branchid,
-           left_join: cd in BoatNoodle.BN.ComboDetails,
-          on: cd.combo_item_id == sd.itemid,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: cd.combo_id == i.subcatid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == cd.menu_cat_id,
-          left_join: di in BoatNoodle.BN.DiscountItem,
-          on: di.discountitemsid == sd.discountid,
-          left_join: st in BoatNoodle.BN.Staff,
-          on: st.staff_id == b.manager,
-          group_by: [s.salesdate,s.branchid, sd.itemid],
-          where:
-            s.is_void == 0 and
-            s.salesdate >= ^start_date and
-              s.salesdate <= ^end_date and 
-              s.brand_id ==^brand.id and
-               sd.brand_id ==^brand.id and
-                b.brand_id ==^brand.id and
-                 cd.brand_id ==^brand.id and
-                  i.brand_id ==^brand.id and
-                   ic.brand_id ==^brand.id and
-                    di.brand_id ==^brand.id and
-                    st.brand_id ==^brand.id,
-          select: %{
-            salesdate: s.salesdate,
-            branchname: b.branchname,
-            hierachy: ic.category_type,
-            category: ic.itemcatname,
-            itemcode: i.itemcode,
-            comboname: i.itemname,
-            itemname: cd.combo_item_name,
-            gross_sales: sum(sd.order_price),
-            gross_qty: sum(sd.qty),
-            foc_qty: sum(di.disc_qty),
-             nett_sales: sum(sd.afterdisc),
-            unit_price: cd.unit_price,
-            store_owner: st.staff_name
-          }
+      else
+        Repo.all(
+          from(
+            s in BoatNoodle.BN.Sales,
+            left_join: sd in BoatNoodle.BN.SalesMaster,
+            on: s.salesid == sd.salesid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid == s.branchid,
+            left_join: cd in BoatNoodle.BN.ComboDetails,
+            on: cd.combo_item_id == sd.itemid,
+            left_join: i in BoatNoodle.BN.ItemSubcat,
+            on: cd.combo_id == i.subcatid,
+            left_join: ic in BoatNoodle.BN.ItemCat,
+            on: ic.itemcatid == cd.menu_cat_id,
+            left_join: di in BoatNoodle.BN.DiscountItem,
+            on: di.discountitemsid == sd.discountid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: st.staff_id == b.manager,
+            group_by: [s.salesdate, s.branchid, sd.itemid],
+            where:
+              s.is_void == 0 and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
+                s.brand_id == ^brand.id and sd.brand_id == ^brand.id and b.brand_id == ^brand.id and
+                cd.brand_id == ^brand.id and i.brand_id == ^brand.id and ic.brand_id == ^brand.id and
+                di.brand_id == ^brand.id and st.brand_id == ^brand.id,
+            select: %{
+              salesdate: s.salesdate,
+              branchname: b.branchname,
+              hierachy: ic.category_type,
+              category: ic.itemcatname,
+              itemcode: i.itemcode,
+              comboname: i.itemname,
+              itemname: cd.combo_item_name,
+              gross_sales: sum(sd.order_price),
+              gross_qty: sum(sd.qty),
+              foc_qty: sum(di.disc_qty),
+              nett_sales: sum(sd.afterdisc),
+              unit_price: cd.unit_price,
+              store_owner: st.staff_name
+            }
+          )
         )
-      )
-
-end
-
+      end
 
     csv_content = [
       'Date ',
@@ -1401,28 +1433,27 @@ end
           end
 
         nett_qty = Decimal.to_float(item.gross_qty) - foc_qty
-                discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
+        discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
         service_charge = (Decimal.to_float(item.nett_sales) / 20) |> Float.round(2)
 
-
         [
-      item.salesdate,
-      item.branchname,
-      item.hierachy,
-      item.category,
-      item.itemcode,
-      item.comboname,
-      item.itemname,
-      item.gross_qty,
-      nett_qty,
-      foc_qty,
-      item.gross_sales,
-      item.nett_sales,
-      item.unit_price,
-      discount_value,
-      service_charge,
-      item.store_owner
-    ]
+          item.salesdate,
+          item.branchname,
+          item.hierachy,
+          item.category,
+          item.itemcode,
+          item.comboname,
+          item.itemname,
+          item.gross_qty,
+          nett_qty,
+          foc_qty,
+          item.gross_sales,
+          item.nett_sales,
+          item.unit_price,
+          discount_value,
+          service_charge,
+          item.store_owner
+        ]
       end
 
     csv_content2 =
@@ -1535,8 +1566,9 @@ end
           left_join: sp in BoatNoodle.BN.SalesPayment,
           on: sp.salesid == s.salesid,
           where:
-            sd.discountid != "0" and i.brand_id== ^brand.id and sd.brand_id == ^brand.id and b.brand_id == ^brand.id and
-              s.branchid == ^branch_id and s.salesdate >= ^start_date and s.salesdate <= ^end_date,
+            sd.discountid != "0" and i.brand_id == ^brand.id and sd.brand_id == ^brand.id and
+              b.brand_id == ^brand.id and s.branchid == ^branch_id and s.salesdate >= ^start_date and
+              s.salesdate <= ^end_date,
           select: %{
             salesdate: s.salesdate,
             invoiceno: s.invoiceno,
@@ -1607,20 +1639,23 @@ end
   end
 
   def report(conn, params) do
-       branches =
+    branches =
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )
 
-      brand_id=BN.get_brand_id(conn)
+    brand_id = BN.get_brand_id(conn)
 
-    render(conn, "report.html",brand_id: brand_id, branches: branches)
+    render(conn, "report.html", brand_id: brand_id, branches: branches)
   end
 
   def create(conn, %{"sales" => sales_params}) do

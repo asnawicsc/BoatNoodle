@@ -1,31 +1,16 @@
+<a href="/<%= @conn.private.plug_session["brand"] %>/combo/combo_item_qty">Combo Item Qty</a>
+
 <table class="table">
 	
 <%= for d <- @data do %>
 <tr>
-	<td><%= d.salesid %></td>
-	<td><%= d.salesdate %></td>
-	<td><%= d.itemname %></td>
-
-		<% code = String.split(d.itemname, "") |> Enum.take(4) |> Enum.join() %>
-	<%= if d.itemcode == "" do %>
-	<td style="background-color: white;">
-		<%= code %>
-	</td>
-		<% else %>
-		<td>
-			
-		<%= d.itemcode %>
-		</td>
-		<% end %>
-	<td><%= d.order_price %></td>
-	<td><%= d.qty %></td>
-	<td><%= d.combo_id %></td>
-	<td class="combo_unit_price" itemcode="<%= code %>" comboid="<%= d.combo_id %>">
-		
-	</td>
+<td><%= d.combo %></td>
+<td><%= d.qty %></td>
 </tr>
 <% end %>
 </table>
+
+
 
 <script type="text/javascript">
 	$("td.combo_unit_price").each(function(){

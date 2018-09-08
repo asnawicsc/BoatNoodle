@@ -284,8 +284,11 @@ defmodule BoatNoodleWeb.Router do
     resources("/vouchers", VoucherController)
     resources("/modal_logs", ModalLogController)
     get("/advance", PageController, :advance)
+
+    get("/combo/combo_item_qty", PageController, :csv_content)
     get("/experiment", PageController, :experiment)
     get("/experiment2", PageController, :experiment2)
+    get("/experiment3", PageController, :experiment3)
     get("/*path", PageController, :no_page_found)
   end
 end
