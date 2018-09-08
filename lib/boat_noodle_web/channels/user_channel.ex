@@ -14,6 +14,49 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in(
+        "show_combo_units",
+        %{"brand_id" => brand_id, "salesid" => salesid, "subcatid" => subcatid, "qty"=> qty},
+        socket
+      ) do
+brand_id = String.to_integer(brand_id)
+
+    is = Repo.get_by(ItemSubcat, brand_id: brand_id, subcatid: subcatid)
+
+
+#check this combo has any selection?
+
+items = Repo.all(from is in ItemSubcat, where: is.itemcatid == ^Integer.to_string(is.subcatid) and is.brand_id == ^brand_id)
+
+combo_details = Repo.all(from cd in ComboDetails, where: cd.combo_id == ^Integer.to_string(is.subcatid), group_by: [cd.menu_cat_id], select: %{menu_cat_id: cd.menu_cat_id, qty: cd.combo_item_qty}  ) 
+
+total_qty_in_combo=
+if combo_details != [] do
+  Enum.map(combo_details, fn x -> x.qty end) |> Enum.sum()
+  else
+    0
+end
+
+qty = qty |> String.to_integer()
+
+sd = Repo.all(from sm in SalesMaster, where:  sm.salesid == ^salesid and sm.is_void == ^0) 
+|> Enum.filter(fn x -> x.combo_id == String.to_integer(subcatid) end)  
+|> Enum.map(fn x -> x.qty end)
+ |> Enum.sum()
+
+
+res = total_qty_in_combo * qty == sd
+
+data= "combo qty: #{total_qty_in_combo}, combo item in sales: #{sd}, tally: #{res}"
+    broadcast(socket, "show_combo_units2", %{
+      subcatid: subcatid,
+      salesid: salesid,
+      data: data
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in(
         "show_combo_unit_price",
         %{"brand_id" => brand_id, "itemcode" => itemcode, "comboid" => comboid},
         socket

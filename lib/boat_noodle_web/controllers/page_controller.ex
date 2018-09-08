@@ -12,7 +12,134 @@ defmodule BoatNoodleWeb.PageController do
     render(conn, "advance.html", users: users, brands: brands)
   end
 
+  def experiment2(conn, params) do
+    date_range = Date.range(Date.from_iso8601!("2018-08-01"), Date.from_iso8601!("2018-08-31"))
+    s_date = Date.from_iso8601!("2018-08-01")
+    e_date = Date.from_iso8601!("2018-08-31")
+
+    sm =
+      for date <- date_range do
+      end
+
+    data =
+      Repo.all(
+        from(
+          s in Sales,
+          left_join: sm in SalesMaster,
+          on: sm.salesid == s.salesid,
+         left_join: is in ItemSubcat,
+         on: is.subcatid == sm.itemid,
+         left_join: ic in ItemCat,
+         on: is.itemcatid == ic.itemcatid,
+          where:
+      
+            s.brand_id == ^1 and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
+              s.branchid == ^"31" and ic.category_type == ^"COMBO" and is.brand_id == ^1 and ic.brand_id == ^1,
+
+          select: %{
+            salesid: s.salesid,
+            salesdate: s.salesdate,
+            itemname: sm.itemname,
+            itemcode: sm.itemcode,
+            itemid: sm.itemid,
+            catid: is.itemcatid,
+            category_type: ic.category_type,
+            combo_id: sm.combo_id,
+            qty: sm.qty
+          }, limit: 300
+        )
+      )
+
+
+
+    render(conn, "experiment2.html", data: data)
+
+
+  end
+
+
+def combo_qty_checker() do
+  brand_id = String.to_integer(brand_id)
+
+    is = Repo.get_by(ItemSubcat, brand_id: brand_id, subcatid: subcatid)
+
+
+#check this combo has any selection?
+
+items = Repo.all(from is in ItemSubcat, where: is.itemcatid == ^Integer.to_string(is.subcatid) and is.brand_id == ^brand_id)
+
+combo_details = Repo.all(from cd in ComboDetails, where: cd.combo_id == ^Integer.to_string(is.subcatid), group_by: [cd.menu_cat_id], select: %{menu_cat_id: cd.menu_cat_id, qty: cd.combo_item_qty}  ) 
+
+total_qty_in_combo=
+if combo_details != [] do
+  Enum.map(combo_details, fn x -> x.qty end) |> Enum.sum()
+  else
+    0
+end
+
+qty = qty |> String.to_integer()
+
+sd = Repo.all(from sm in SalesMaster, where:  sm.salesid == ^salesid and sm.is_void == ^0) 
+|> Enum.filter(fn x -> x.combo_id == String.to_integer(subcatid) end)  
+|> Enum.map(fn x -> x.qty end)
+ |> Enum.sum()
+
+
+res = total_qty_in_combo * qty == sd
+end
+
   def experiment(conn, params) do
+    date_range = Date.range(Date.from_iso8601!("2018-08-01"), Date.from_iso8601!("2018-08-31"))
+    s_date = Date.from_iso8601!("2018-08-01")
+    e_date = Date.from_iso8601!("2018-08-31")
+
+    sm =
+      for date <- date_range do
+      end
+
+    data =
+      Repo.all(
+        from(
+          s in Sales,
+          left_join: sm in SalesMaster,
+          on: sm.salesid == s.salesid,
+          where:
+            s.brand_id == ^1 and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
+              s.branchid == ^"31" and sm.combo_id != 0,
+          select: %{
+            salesid: s.salesid,
+            salesdate: s.salesdate,
+            itemname: sm.itemname,
+            itemcode: sm.itemcode,
+            order_price: sm.order_price,
+            qty: sm.qty,
+            combo_id: sm.combo_id
+          }, limit: 1000
+        )
+      )
+
+    # combo_ids =
+    #   Repo.all(
+    #     from(
+    #       s in Sales,
+    #       left_join: sm in SalesMaster,
+    #       on: sm.salesid == s.salesid,
+    #       where:
+    #         s.brand_id == ^1 and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
+    #           s.branchid == ^"2" and sm.combo_id != 0,
+    #       select: sm.combo_id
+    #     )
+    #   )
+    #   |> Enum.uniq()
+
+    render(conn, "experiment.html", data: data)
+
+
+  end
+
+  defp csv_content(branchid) do
+
+
     date_range = Date.range(Date.from_iso8601!("2018-08-01"), Date.from_iso8601!("2018-08-31"))
     s_date = Date.from_iso8601!("2018-08-01")
     e_date = Date.from_iso8601!("2018-08-31")
@@ -88,32 +215,7 @@ defmodule BoatNoodleWeb.PageController do
         |> Enum.reject(fn x -> x == nil end)
       end
 
-    # combo_ids =
-    #   Repo.all(
-    #     from(
-    #       s in Sales,
-    #       left_join: sm in SalesMaster,
-    #       on: sm.salesid == s.salesid,
-    #       where:
-    #         s.brand_id == ^1 and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
-    #           s.branchid == ^"2" and sm.combo_id != 0,
-    #       select: sm.combo_id
-    #     )
-    #   )
-    #   |> Enum.uniq()
 
-    # render(conn, "experiment.html", data: data)
-
-    conn
-    |> put_resp_content_type("text/csv")
-    |> put_resp_header(
-      "content-disposition",
-      "attachment; filename=\"Combo Item Analysis.csv\""
-    )
-    |> send_resp(200, csv_content(data2, params))
-  end
-
-  defp csv_content(data, params) do
     csv_header = [
       'salesdate',
       'itemcode',
@@ -124,10 +226,21 @@ defmodule BoatNoodleWeb.PageController do
 
     data = data |> List.flatten() |> Enum.map(fn x -> Tuple.to_list(x) end)
 
+csv =
     List.insert_at(data, 0, csv_header)
     |> CSV.encode()
     |> Enum.to_list()
     |> to_string
+
+
+
+        conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header(
+      "content-disposition",
+      "attachment; filename=\"Combo Item Analysis.csv\""
+    )
+    |> send_resp(200, csv)
   end
 
   def code_combo(name) do

@@ -285,6 +285,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/modal_logs", ModalLogController)
     get("/advance", PageController, :advance)
     get("/experiment", PageController, :experiment)
+    get("/experiment2", PageController, :experiment2)
     get("/*path", PageController, :no_page_found)
   end
 end
