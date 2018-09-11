@@ -123,7 +123,7 @@ defmodule BoatNoodleWeb.PageController do
         })
 
       if sm.remaks != nil do
-        IEx.pry()
+        # IEx.pry()
       end
 
       Repo.update(cg)
@@ -198,7 +198,8 @@ defmodule BoatNoodleWeb.PageController do
             where:
               s.brand_id == ^brand_id_int and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
                 s.branchid == ^branch_id_string and ic.category_type == ^"COMBO" and
-                is.brand_id == ^brand_id_int and ic.brand_id == ^brand_id_int,
+                is.brand_id == ^brand_id_int and ic.brand_id == ^brand_id_int and s.is_void == ^0 and
+                sm.is_void == ^0,
             select: %{
               salesid: s.salesid,
               salesdate: s.salesdate,
@@ -221,7 +222,7 @@ defmodule BoatNoodleWeb.PageController do
             on: sm.salesid == s.salesid,
             where:
               s.brand_id == ^brand_id_int and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
-                s.branchid == ^branch_id_string,
+                s.branchid == ^branch_id_string and s.is_void == ^0 and sm.is_void == ^0,
             select: %{
               comboid: sm.combo_id,
               salesid: s.salesid,
@@ -628,8 +629,8 @@ defmodule BoatNoodleWeb.PageController do
           data_last =
             for item <- data do
               item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
-              IO.puts("changing dates...")
-              item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
+              # IO.puts("changing dates...")
+              # item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
             end
 
           dates =
@@ -712,7 +713,7 @@ defmodule BoatNoodleWeb.PageController do
                       end
 
                     {
-                      Date.to_string(date),
+                      date,
                       branchname,
                       type,
                       cat_name,
@@ -849,6 +850,8 @@ defmodule BoatNoodleWeb.PageController do
             type: cat_type(item_menus, code_combo(x.itemname))
           }
         end)
+
+      # |> Enum.filter(fn x -> String.contains?(x.combo_name, "G40") end)
 
       json = data |> Poison.encode!()
 
