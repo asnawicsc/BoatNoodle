@@ -13,77 +13,6 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment4(conn, params) do
-    salesids = [
-      "BNPB32473",
-      "BNGS19671",
-      "BNGS20898",
-      "BNIO23016",
-      "BNIO23020",
-      "BNIO23024",
-      "SWPT105393",
-      "SWPT105398",
-      "SWPT105402",
-      "SWPT105413"
-    ]
-
-    # check its combo
-    s_date = Date.from_iso8601!("2018-08-01")
-    e_date = Date.from_iso8601!("2018-08-31")
-    brand_id = BN.get_brand_id(conn) |> Integer.to_string()
-    brand_id_int = BN.get_brand_id(conn)
-
-    datas2 =
-      Repo.all(
-        from(
-          s in Sales,
-          left_join: sm in SalesMaster,
-          on: sm.salesid == s.salesid,
-          where: s.brand_id == ^brand_id_int and s.salesdate >= ^s_date and s.salesdate <= ^e_date,
-          select: %{
-            comboid: sm.combo_id,
-            salesid: s.salesid,
-            itemid: sm.itemid,
-            qty: sm.qty,
-            orderid: sm.orderid
-          }
-        )
-      )
-
-    items =
-      Repo.all(
-        from(
-          is in ItemSubcat,
-          where: is.brand_id == ^brand_id_int
-        )
-      )
-
-    combo_details =
-      Repo.all(
-        from(
-          cd in ComboDetails,
-          where: cd.brand_id == ^brand_id_int,
-          select: %{
-            itemid: cd.combo_item_id,
-            menu_cat_id: cd.menu_cat_id,
-            qty: cd.combo_item_qty,
-            combo_id: cd.combo_id
-          }
-        )
-      )
-
-    qty = 1
-    subcatid = 999_074
-
-    for salesid <- salesids do
-      sms =
-        Repo.all(from(sm in SalesMaster, where: sm.salesid == ^salesid))
-        |> Enum.filter(fn x -> String.length(Integer.to_string(x.itemid)) == 6 end)
-
-      for sm <- sms do
-        combo_qty_checker2(brand_id, sm.itemid, sm.qty, salesid, items, combo_details, datas2)
-      end
-    end
-
     conn
     |> put_flash(:info, "Query executed!")
     |> redirect(to: page_path(conn, :index2, BN.get_domain(conn)))
@@ -143,19 +72,19 @@ defmodule BoatNoodleWeb.PageController do
 
     data =
       for branch <- branches do
-        # check_combo_order(
-        #   s_date,
-        #   e_date,
-        #   Integer.to_string(branch.branchid),
-        #   BN.get_brand_id(conn)
-        # )
-
-        Task.start_link(__MODULE__, :check_combo_order, [
+        check_combo_order(
           s_date,
           e_date,
           Integer.to_string(branch.branchid),
           BN.get_brand_id(conn)
-        ])
+        )
+
+        # Task.start_link(__MODULE__, :check_combo_order, [
+        #   s_date,
+        #   e_date,
+        #   Integer.to_string(branch.branchid),
+        #   BN.get_brand_id(conn)
+        # ])
       end
 
     hd =
@@ -227,7 +156,8 @@ defmodule BoatNoodleWeb.PageController do
               comboid: sm.combo_id,
               salesid: s.salesid,
               itemid: sm.itemid,
-              qty: sm.qty
+              qty: sm.qty,
+              order_price: sm.order_price
             }
           )
         )
@@ -245,7 +175,12 @@ defmodule BoatNoodleWeb.PageController do
           from(
             cd in ComboDetails,
             where: cd.brand_id == ^brand_id_int,
-            select: %{menu_cat_id: cd.menu_cat_id, qty: cd.combo_item_qty, combo_id: cd.combo_id}
+            select: %{
+              unit_price: cd.unit_price,
+              menu_cat_id: cd.menu_cat_id,
+              qty: cd.combo_item_qty,
+              combo_id: cd.combo_id
+            }
           )
         )
 
@@ -349,6 +284,17 @@ defmodule BoatNoodleWeb.PageController do
         0
       end
 
+    total_price_in_combo =
+      if combo_details != [] do
+        combo_details
+        |> Enum.filter(fn x -> x.combo_id == subcatid end)
+        |> Enum.uniq()
+        |> Enum.map(fn x -> x.qty * Decimal.to_float(x.unit_price) end)
+        |> Enum.sum()
+      else
+        0
+      end
+
     sd =
       datas
       |> Enum.filter(fn x -> x.salesid == salesid end)
@@ -356,7 +302,25 @@ defmodule BoatNoodleWeb.PageController do
       |> Enum.map(fn x -> x.qty end)
       |> Enum.sum()
 
-    total_qty_in_combo * qty == sd
+    sd_price =
+      datas |> Enum.filter(fn x -> x.salesid == salesid end)
+      |> Enum.filter(fn x -> x.itemid == subcatid end)
+
+    final_price =
+      if sd_price != [] do
+        a = sd_price |> hd()
+        a.order_price |> Decimal.to_float()
+      else
+        0.0
+      end
+
+    if final_price == Float.round(total_price_in_combo * qty, 2) do
+    else
+      IEx.pry()
+    end
+
+    final_price == Float.round(total_price_in_combo * qty, 2)
+    # total_qty_in_combo * qty == sd
   end
 
   def combo_qty_checker2(brand_id, subcatid, qty, salesid, items, combo_details, datas) do
@@ -591,6 +555,8 @@ defmodule BoatNoodleWeb.PageController do
           Repo.all(from(b in Branch, where: b.brand_id == ^BN.get_brand_id(conn)))
           |> Enum.reject(fn x -> x.branchid == 0 end)
 
+        # |> Enum.filter(fn x -> x.branchid == 1 end)
+
         for branch <- branches do
           # per_branch_combo_item(
           #   s_date,
@@ -639,10 +605,10 @@ defmodule BoatNoodleWeb.PageController do
             |> Enum.group_by(fn x -> x.salesdate end)
             |> Map.keys()
 
-          items =
+          itemids =
             data_last
             |> Enum.reject(fn x -> x == %{} end)
-            |> Enum.group_by(fn x -> x.itemcode end)
+            |> Enum.group_by(fn x -> x.itemid end)
             |> Map.keys()
 
           branches =
@@ -653,23 +619,28 @@ defmodule BoatNoodleWeb.PageController do
 
           data2 =
             for date <- dates do
-              for item <- items do
-                for branch <- branches do
+              for branch <- branches do
+                for itemid <- itemids do
                   bulk_data =
                     Enum.filter(data_last, fn x -> x.salesdate == date end)
-                    |> Enum.filter(fn x -> x.itemcode == item end)
                     |> Enum.filter(fn x -> x.branchname == branch end)
+                    |> Enum.filter(fn x -> x.itemid == itemid end)
 
                   if bulk_data != [] do
                     qty = bulk_data |> Enum.map(fn x -> x.qty end) |> Enum.sum()
 
                     total_price =
-                      bulk_data |> Enum.map(fn x -> x.unit_price end) |> Enum.sum()
-                      |> Decimal.new()
+                      bulk_data |> Enum.map(fn x -> x.unit_price * x.qty end) |> Enum.sum()
 
                     branchname = bulk_data |> Enum.map(fn x -> x.branchname end) |> Enum.uniq()
 
                     itemname = bulk_data |> Enum.map(fn x -> x.itemname end) |> Enum.uniq()
+
+                    # x = bulk_data |> hd()
+
+                    # if String.contains?(x.combo_name, "G13") do
+                    #   # IEx.pry()
+                    # end
 
                     itemname =
                       if itemname != [] do
@@ -712,16 +683,28 @@ defmodule BoatNoodleWeb.PageController do
                         "EMPTY"
                       end
 
+                    itemcode = bulk_data |> Enum.map(fn x -> x.itemcode end) |> Enum.uniq()
+
+                    itemcode =
+                      if itemcode != [] do
+                        hd(itemcode)
+                      else
+                        "EMPTY itemcode"
+                      end
+
                     {
                       date,
                       branchname,
                       type,
                       cat_name,
                       combo_name,
-                      item,
+                      itemcode,
+                      itemid,
                       itemname,
                       Integer.to_string(qty),
-                      Decimal.to_string(total_price)
+                      :erlang.float_to_binary(total_price, decimals: 2)
+
+                      # :erlang.float_to_binary(total_price * qty, decimals: 2)
                     }
                   end
                 end
@@ -759,6 +742,7 @@ defmodule BoatNoodleWeb.PageController do
         'category',
         'combo',
         'itemcode',
+        'itemid',
         'itemname',
         'qty',
         'total_price'
@@ -813,7 +797,8 @@ defmodule BoatNoodleWeb.PageController do
           order_price: sm.order_price,
           qty: sm.qty,
           combo_id: sm.combo_id,
-          branchname: b.branchname
+          branchname: b.branchname,
+          itemid: sm.itemid
         }
       )
 
@@ -832,6 +817,7 @@ defmodule BoatNoodleWeb.PageController do
         Repo.all(q)
         |> Enum.map(fn x ->
           %{
+            salesid: x.salesid,
             salesdate: x.salesdate,
             itemcode: code_combo(x.itemname),
             itemname: x.itemname,
@@ -847,7 +833,8 @@ defmodule BoatNoodleWeb.PageController do
             cat_name: cat_name(item_menus, code_combo(x.itemname)),
             qty: x.qty,
             branchname: x.branchname,
-            type: cat_type(item_menus, code_combo(x.itemname))
+            type: cat_type(item_menus, code_combo(x.itemname)),
+            itemid: x.itemid
           }
         end)
 
@@ -976,7 +963,8 @@ defmodule BoatNoodleWeb.PageController do
 
     if cd != [] do
       cd = hd(cd)
-      Decimal.to_float(cd.unit_price)
+
+      Decimal.to_float(cd.unit_price) + Decimal.to_float(cd.top_up)
     else
       image_path = Application.app_dir(:boat_noodle, "priv/static/images")
       # file = File.stream!(image_path <> "/zero_price_salesid.csv")
