@@ -1048,8 +1048,8 @@ defmodule BoatNoodleWeb.SalesController do
             group_by: i.itemname,
             where:
               sd.afterdisc != 0.00 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
-                s.salesdate <= ^end_date and sd.brand_id == ^brand.id and i.brand_id == ^brand.id and
-                s.brand_id == ^brand.id and ic.brand_id == ^brand.id,
+                s.salesdate <= ^end_date and i.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                ic.brand_id == ^brand.id,
             select: %{
               itemcode: i.itemcode,
               itemname: i.itemname,
@@ -1073,8 +1073,7 @@ defmodule BoatNoodleWeb.SalesController do
             group_by: i.itemname,
             where:
               sd.afterdisc != 0.00 and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
-                sd.brand_id == ^brand.id and i.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                ic.brand_id == ^brand.id,
+                i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id,
             select: %{
               itemcode: i.itemcode,
               itemname: i.itemname,
@@ -1188,8 +1187,8 @@ defmodule BoatNoodleWeb.SalesController do
             group_by: [s.salesdate, i.itemname],
             where:
               s.branchid == ^branch_id and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
-                sd.brand_id == ^brand.id and i.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                ic.brand_id == ^brand.id and di.brand_id == ^brand.id and b.brand_id == ^brand.id,
+                i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id and
+                di.brand_id == ^brand.id and b.brand_id == ^brand.id,
             select: %{
               salesdate: s.salesdate,
               branchname: b.branchname,
@@ -1224,9 +1223,9 @@ defmodule BoatNoodleWeb.SalesController do
             on: st.staff_id == b.manager,
             group_by: [s.salesdate, i.itemname],
             where:
-              s.salesdate >= ^start_date and s.salesdate <= ^end_date and sd.brand_id == ^brand.id and
-                i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id and
-                di.brand_id == ^brand.id and b.brand_id == ^brand.id,
+              s.salesdate >= ^start_date and s.salesdate <= ^end_date and i.brand_id == ^brand.id and
+                s.brand_id == ^brand.id and ic.brand_id == ^brand.id and di.brand_id == ^brand.id and
+                b.brand_id == ^brand.id,
             select: %{
               salesdate: s.salesdate,
               branchname: b.branchname,

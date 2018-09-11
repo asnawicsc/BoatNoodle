@@ -83,7 +83,7 @@ config :boat_noodle, BoatNoodle.Repo,
   username: "phoenix_bn",
   password: "123123",
   database: "posgb_boatnoodle",
-  pool_size: 10,
+  pool_size: 200,
   timeout: 1500_000
 
 # @doc """
