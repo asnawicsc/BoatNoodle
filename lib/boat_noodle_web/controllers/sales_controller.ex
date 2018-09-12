@@ -1102,7 +1102,7 @@ defmodule BoatNoodleWeb.SalesController do
 
     qty =
       Enum.map(item_sold_data, fn x -> Decimal.to_float(x.qty) end)
-      |> Enum.reject(fn x -> x.qty == 0 end)
+      |> Enum.reject(fn x -> x == 0 end)
       |> Enum.sum()
 
     qty =

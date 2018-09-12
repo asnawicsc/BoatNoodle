@@ -552,8 +552,14 @@ defmodule BoatNoodleWeb.PageController do
         )
       else
         branches =
-          Repo.all(from(b in Branch, where: b.brand_id == ^BN.get_brand_id(conn)))
-          |> Enum.reject(fn x -> x.branchid == 0 end)
+          Repo.all(
+            from(
+              b in Branch,
+              where: b.brand_id == ^BN.get_brand_id(conn) and b.branchid in ^[2, 17, 51]
+            )
+          )
+
+        # |> Enum.reject(fn x -> x.branchid == 0 end)
 
         # |> Enum.filter(fn x -> x.branchid == 1 end)
 
@@ -882,36 +888,7 @@ defmodule BoatNoodleWeb.PageController do
     res = combo_menus |> Enum.filter(fn x -> x.subcatid == combo_id end)
 
     if res != [] do
-      name = hd(res).combo_name
-
-      # image_path = Application.app_dir(:boat_noodle, "priv/static/images")
-      # # file = File.stream!(image_path <> "/zero_price_salesid.csv")
-      # new_path = image_path <> "/combo_salesid.csv"
-
-      # if File.exists?(new_path) do
-      #   data = File.read!(new_path)
-      #   list = String.split(data, "\r\n")
-
-      #   list =
-      #     List.insert_at(list, 0, "#{salesid},#{combo_id},#{name}")
-      #     |> Enum.map(fn x -> x <> "\r\n" end)
-      #     |> Enum.join()
-
-      #   File.write(new_path, list)
-      #   # Enum.into(list, file)
-      # else
-      #   list = []
-
-      #   list =
-      #     List.insert_at(list, 0, "#{salesid},#{combo_id},#{name}")
-      #     |> Enum.map(fn x -> x <> "\r\n" end)
-      #     |> Enum.join()
-
-      #   File.write(new_path, list)
-      #   # Enum.into(list, file)
-      # end
-
-      name
+      hd(res).combo_name
     else
       image_path = Application.app_dir(:boat_noodle, "priv/static/images")
       # file = File.stream!(image_path <> "/zero_price_salesid.csv")
