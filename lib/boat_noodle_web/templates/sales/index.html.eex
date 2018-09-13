@@ -91,7 +91,7 @@
 
                     </div>
                     <div class="card-body">
-                        <div class="dropdown pull-right" style="padding: 10px;">
+                                              <div class="dropdown pull-right" style="padding: 10px;">
              <form method="get" action='/<%= @conn.params["brand"] %>/quickbook' class="form-horizontal" >
                 <input type="hidden" name="start_date">
                                     <input type="hidden" name="end_date">
@@ -99,6 +99,20 @@
 
            <button class="btn btn-warning btn-round" type="submit">
                 <i class="material-icons">add_box</i> Download QUICKBOOK
+              <div class="ripple-container"></div>
+
+            </button>
+        </form>
+        </div>
+
+                        <div class="dropdown pull-right" style="padding: 10px;">
+             <form method="get" action='/<%= @conn.params["brand"] %>/excel' class="form-horizontal" >
+                <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                     <input type="hidden" name="branch">
+
+           <button class="btn btn-warning btn-round" type="submit">
+                <i class="material-icons">add_box</i> Download EXCEL
               <div class="ripple-container"></div>
 
             </button>

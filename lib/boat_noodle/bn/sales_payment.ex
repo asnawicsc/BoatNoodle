@@ -13,6 +13,8 @@ defmodule BoatNoodle.BN.SalesPayment do
     field(:discountid, :string)
     field(:grand_total, :decimal)
     field(:gst_charge, :decimal)
+     field(:payment_name1, :string)
+    field(:payment_name2, :string)
     field(:payment_code1, :string)
     field(:payment_code2, :string)
     field(:payment_type, :string)
@@ -58,6 +60,8 @@ defmodule BoatNoodle.BN.SalesPayment do
       :payment_type_id2,
       :payment_type_amt2,
       :payment_code2,
+      :payment_name1, 
+      :payment_name2, 
       :updated_at,
       :created_at
     ])
