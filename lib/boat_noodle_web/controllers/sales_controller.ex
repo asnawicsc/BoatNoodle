@@ -280,6 +280,7 @@ defmodule BoatNoodleWeb.SalesController do
             rounding: p.rounding,
             branchcode: b.branchcode,
             branchname: b.branchname,
+            after_disc: p.after_disc,
             payment_name1: p.payment_name1,
             payment_code1: p.payment_code1,
             payment_type_amt1: p.payment_type_amt1,
@@ -525,13 +526,15 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           on: s.salesid == p.salesid,
           left_join: b in Branch,
           on: b.branchid == s.branchid,
-          left_join: t in Brand,
-          on: t.id == p.brand_id,
           where:
-            s.is_void == 0 and p.order_price > 0 and b.branchid == ^id and b.brand_id == ^brand.id and
-              p.brand_id == ^brand.id and s.brand_id == ^brand.id and
-              s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"],
-          group_by: [s.salesdate, p.itemname],
+            s.is_void == 0 and 
+            b.branchid == ^id and 
+            b.brand_id == ^brand.id and
+              p.brand_id == ^brand.id and 
+              s.brand_id == ^brand.id and
+              s.salesdate >= ^params["start_date"] and 
+              s.salesdate <= ^params["end_date"],
+          group_by: [s.salesdate, p.itemid],
           order_by: [s.salesdate, p.itemname],
           select: %{
             date: s.salesdate,
