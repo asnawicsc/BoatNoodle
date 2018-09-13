@@ -200,7 +200,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 %{
                   date: day,
-                  total_sales: total_sales,
+                  total_sales: total_sales-total_taxes,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
@@ -772,7 +772,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 %{
                   date: day,
-                  total_sales: total_sales,
+                  total_sales: total_sales-total_taxes,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
