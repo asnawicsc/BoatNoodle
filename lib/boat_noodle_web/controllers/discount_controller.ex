@@ -463,10 +463,10 @@ defmodule BoatNoodleWeb.DiscountController do
 
     count2 = item["prerequisite_items"] |> String.split(",") |> Enum.count()
 
-    if count2 > 1 do
-      pre_req_item = item["prerequisite_items"] |> String.split(",")
+    pre_req_item = if count2 > 1 do
+      item["prerequisite_items"] |> String.split(",")
     else
-      pre_req_item = ""
+     ""
     end
 
     is_visable =
@@ -799,10 +799,10 @@ defmodule BoatNoodleWeb.DiscountController do
 
     count2 = params["pre_req_item"] |> Enum.count()
 
-    if count2 > 1 do
-      pre_req_item = params["pre_req_item"] |> Enum.join(",")
+    pre_req_item = if count2 > 1 do
+      params["pre_req_item"] |> Enum.join(",")
     else
-      pre_req_item = ""
+      ""
     end
 
     discount_type = Repo.get_by(BoatNoodle.BN.DiscountType, disctypeid: disctype)

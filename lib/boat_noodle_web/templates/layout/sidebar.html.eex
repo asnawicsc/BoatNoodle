@@ -82,12 +82,7 @@
                     <span class="sidebar-normal"> Discounts </span>
                   </a>
                 </li>
-                <li class="nav-item ">
-                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/tables">
-                    <span class="sidebar-mini"> T </span>
-                    <span class="sidebar-normal"> Tables </span>
-                  </a>
-                </li>
+    
                 <li class="nav-item ">
                   <a class="nav-link" href="/<%= @conn.params["brand"]%>/voided">
                     <span class="sidebar-mini"> V </span>
