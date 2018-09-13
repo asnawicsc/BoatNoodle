@@ -277,12 +277,16 @@ $(document).ready(function() {
 
     })
 
-     $('button[aria-label="dis_item_view"]').click( function () {
+     $(document).on('click', 'button[aria-label="dis_item_view"]', function () {
    var cat_id = this.id
+
+
 
         channel2.push("dis_item_view", {cat_id: cat_id, brand_id: window.currentBrand})
      
   });
+
+
 channel2.on("open_view_discount_item", payload => {
 
  $("div#br2").html(payload.html)

@@ -513,6 +513,10 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
 
     id = branch.branchid |> Integer.to_string()
 
+    if params["branch"] != "0" do
+      
+  
+
     all =
       Repo.all(
         from(
@@ -956,6 +960,14 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
       |> CSV.encode()
       |> Enum.to_list()
       |> to_string
+
+    else
+
+       conn
+    |> put_flash(:info, "Please Choose a Branch.")
+    |> redirect(to: sales_path(conn, :index, BN.get_domain(conn)))
+
+    end
   end
 
   def summary(conn, _params) do
