@@ -1305,6 +1305,14 @@ defmodule BoatNoodleWeb.SalesController do
         )
       )
 
+    name =
+      if branch_id != "0" do
+        b = Repo.get_by(Branch, brand_id: brand.id, branchid: branch_id)
+        b.branchname
+      else
+        "ALL"
+      end
+
     item_sales_outlet
     |> Stream.map(fn x ->
       item_sales_outlet_csv_content(x, conn, params, subcat_data, combo_data)
@@ -1316,7 +1324,7 @@ defmodule BoatNoodleWeb.SalesController do
       |> put_resp_content_type("application/csv")
       |> put_resp_header(
         "content-disposition",
-        "attachment; filename=\"Item Outlet Sales Report.csv\""
+        "attachment; filename=\"Item Outlet Sales Report - #{name}.csv\""
       )
       |> send_chunked(200)
     )
