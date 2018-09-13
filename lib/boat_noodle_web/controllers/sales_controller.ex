@@ -507,6 +507,37 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
     |> send_resp(200, csv_content(conn, params))
   end
 
+
+      defp get_item_name(itemid,items,combo) do
+
+
+          item_name= Enum.filter(items,fn x -> x.subcatid==itemid end)
+          if item_name != [] do
+
+            a=item_name|>hd
+            a.itemname
+          else
+
+            b= Enum.filter(combo,fn x -> x.combo_item_id==itemid end)
+
+            if b == [] do
+              "unknown item"
+            else
+
+
+            a=b|>hd
+            a.combo_item_name
+            
+            end
+
+          end
+
+
+    end
+
+
+
+
   defp csv_content(conn, params) do
     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
 
@@ -516,7 +547,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
 
     if params["branch"] != "0" do
       
-  
+
 
     all =
       Repo.all(
@@ -527,18 +558,21 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           left_join: b in Branch,
           on: b.branchid == s.branchid,
           where:
-            s.is_void == 0 and 
+            s.is_void == 0 and
+            p.is_void == 0 and
             b.branchid == ^id and 
             b.brand_id == ^brand.id and
-              p.brand_id == ^brand.id and 
-              s.brand_id == ^brand.id and
-              s.salesdate >= ^params["start_date"] and 
-              s.salesdate <= ^params["end_date"],
-          group_by: [s.salesdate, p.itemid],
+            p.brand_id == ^brand.id and 
+            s.brand_id == ^brand.id and
+            s.salesdate >= ^params["start_date"] and 
+            s.salesdate <= ^params["end_date"],
+          group_by: [s.salesdate, p.itemid,p.itemname,b.branchcode],
           order_by: [s.salesdate, p.itemname],
           select: %{
             date: s.salesdate,
             name: p.itemname,
+            itemid: p.itemid,
+            salesid: p.salesid,
             desc: p.itemname,
             branch: b.branchcode,
             qty: sum(p.qty),
@@ -547,6 +581,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
         )
       )
       |> Enum.group_by(fn x -> x.date end)
+
 
     csv_content = [
       'CustomerRefFullName ',
@@ -564,6 +599,8 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
       'SalesTaxCodeFullName'
     ]
 
+        name_data=Repo.all(from s in ItemSubcat, where: s.brand_id==^brand.id)
+        combo_data=Repo.all(from s in ComboDetails, where: s.brand_id==^brand.id)
     data =
       for item <- all do
         date2 = item |> elem(0) |> Date.to_string()
@@ -573,6 +610,8 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
         gft =
           for item <- item do
             trkh = item.date |> Date.to_string()
+
+                  item_name=get_item_name(item.itemid,name_data,combo_data)
 
             order_price = Decimal.to_float(item.order_price) |> Float.to_string()
             qty = Decimal.to_float(item.qty) |> Float.to_string()
@@ -589,6 +628,8 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
             year = date |> elem(0)
 
             b = date |> elem(1)
+
+        
 
             rate =
               (Decimal.to_float(item.order_price) / Decimal.to_float(item.qty))
@@ -615,8 +656,8 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
               trkh,
               join,
               full,
-              item.name,
-              item.desc,
+              item_name,
+              item_name,
               qty,
               rate,
               order_price,
