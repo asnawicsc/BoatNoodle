@@ -1175,13 +1175,28 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def item_sales_outlet_csv(conn, params) do
-    conn
-    |> put_resp_content_type("text/csv")
-    |> put_resp_header("content-disposition", "attachment; filename=\"Item Sales Report.csv\"")
-    |> send_resp(200, item_sales_outlet_csv_content(conn, params))
-  end
+    csv_header = [
+      [
+        'Date',
+        'Outlet',
+        'Hieracachy',
+        'Category',
+        'Item Code',
+        'Item Name',
+        'Gross Quantity',
+        'FOC Quantity',
+        'Nett Quantity',
+        'Gross Sales',
+        'Nett Sales',
+        'Unit Price',
+        'Discount Value',
+        'Service Charge',
+        'Store Owner',
+        'Combo',
+        'Combo Gross Sales'
+      ]
+    ]
 
-  defp item_sales_outlet_csv_content(conn, params) do
     branch_id = params["branch"]
     brand = params["brand"]
     brand = Repo.get_by(Brand, domain_name: brand)
@@ -1193,36 +1208,29 @@ defmodule BoatNoodleWeb.SalesController do
         Repo.all(
           from(
             sd in BoatNoodle.BN.SalesMaster,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: sd.itemid == i.subcatid,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sd.salesid,
-            left_join: ic in BoatNoodle.BN.ItemCat,
-            on: ic.itemcatid == i.itemcatid,
-            left_join: di in BoatNoodle.BN.DiscountItem,
-            on: di.discountitemsid == sd.discountid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             left_join: st in BoatNoodle.BN.Staff,
             on: st.staff_id == b.manager,
-            group_by: [s.salesdate, i.itemname],
+            group_by: [s.salesdate, b.branchname, sd.itemid],
             where:
-              s.branchid == ^branch_id and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
-                i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id and
-                di.brand_id == ^brand.id and b.brand_id == ^brand.id,
+              s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and st.brand_id == ^brand.id and s.is_void == ^0 and
+                sd.is_void == ^0 and s.branchid == ^branch_id,
             select: %{
               salesdate: s.salesdate,
               branchname: b.branchname,
-              hierachy: ic.category_type,
-              category: ic.itemcatname,
-              itemcode: i.itemcode,
-              itemname: i.itemname,
+              itemcode: sd.itemcode,
+              itemname: sd.itemname,
+              itemid: sd.itemid,
               gross_qty: sum(sd.qty),
-              foc_qty: sum(di.disc_qty),
               gross_sales: sum(sd.order_price),
               nett_sales: sum(sd.afterdisc),
               unit_price: sd.unit_price,
-              store_owner: st.staff_name
+              store_owner: st.staff_name,
+              combo_id: sd.combo_id
             }
           )
         )
@@ -1230,96 +1238,203 @@ defmodule BoatNoodleWeb.SalesController do
         Repo.all(
           from(
             sd in BoatNoodle.BN.SalesMaster,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: sd.itemid == i.subcatid,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sd.salesid,
-            left_join: ic in BoatNoodle.BN.ItemCat,
-            on: ic.itemcatid == i.itemcatid,
-            left_join: di in BoatNoodle.BN.DiscountItem,
-            on: di.discountitemsid == sd.discountid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             left_join: st in BoatNoodle.BN.Staff,
             on: st.staff_id == b.manager,
-            group_by: [s.salesdate, i.itemname],
+            group_by: [s.salesdate, b.branchname, sd.itemid],
             where:
-              s.salesdate >= ^start_date and s.salesdate <= ^end_date and i.brand_id == ^brand.id and
-                s.brand_id == ^brand.id and ic.brand_id == ^brand.id and di.brand_id == ^brand.id and
-                b.brand_id == ^brand.id,
+              s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and st.brand_id == ^brand.id and s.is_void == ^0 and
+                sd.is_void == ^0,
             select: %{
               salesdate: s.salesdate,
               branchname: b.branchname,
-              hierachy: ic.category_type,
-              category: ic.itemcatname,
-              itemcode: i.itemcode,
-              itemname: i.itemname,
+              itemcode: sd.itemcode,
+              itemname: sd.itemname,
+              itemid: sd.itemid,
               gross_qty: sum(sd.qty),
-              foc_qty: sum(di.disc_qty),
               gross_sales: sum(sd.order_price),
               nett_sales: sum(sd.afterdisc),
               unit_price: sd.unit_price,
-              store_owner: st.staff_name
+              store_owner: st.staff_name,
+              combo_id: sd.combo_id
             }
           )
         )
       end
 
-    csv_content = [
-      'Date ',
-      'Outlet',
-      'Hieracachy',
-      'Category',
-      'Item Code',
-      'Item Name',
-      'Gross Quantity',
-      'Nett Quantity',
-      'FOC Quantity',
-      'Gross Sales',
-      'Nett Sales',
-      'Unit Price',
-      'Discount Value',
-      'Service Charge',
-      'Store Owner'
+    subcat_data =
+      Repo.all(
+        from(
+          is in ItemSubcat,
+          left_join: ic in ItemCat,
+          on: ic.itemcatid == is.itemcatid,
+          where: is.brand_id == ^brand.id and ic.brand_id == ^brand.id,
+          select: %{
+            category_type: ic.category_type,
+            subcatid: is.subcatid,
+            category_name: ic.itemcatname,
+            itemcode: is.itemcode,
+            itemname: is.itemname
+          }
+        )
+      )
+
+    combo_data =
+      Repo.all(
+        from(
+          cd in ComboDetails,
+          left_join: is in ItemSubcat,
+          on: is.itemcode == cd.combo_item_code,
+          left_join: ic in ItemCat,
+          on: ic.itemcatid == is.itemcatid,
+          where:
+            cd.brand_id == ^brand.id and is.brand_id == ^brand.id and ic.brand_id == ^brand.id,
+          select: %{
+            combo_id: cd.combo_id,
+            itemid: cd.combo_item_id,
+            itemcode: cd.combo_item_code,
+            category_type: ic.category_type,
+            category_name: ic.itemcatname,
+            unit_price: cd.unit_price,
+            top_up: cd.top_up
+          }
+        )
+      )
+
+    item_sales_outlet
+    |> Stream.map(fn x ->
+      item_sales_outlet_csv_content(x, conn, params, subcat_data, combo_data)
+    end)
+    |> (fn stream -> Stream.concat(csv_header, stream) end).()
+    |> CSV.encode()
+    |> Enum.into(
+      conn
+      |> put_resp_content_type("application/csv")
+      |> put_resp_header(
+        "content-disposition",
+        "attachment; filename=\"Item Outlet Sales Report.csv\""
+      )
+      |> send_chunked(200)
+    )
+  end
+
+  defp item_sales_outlet_csv_content(item, conn, params, subcat_data, combo_data) do
+    discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
+    service_charge = (Decimal.to_float(item.nett_sales) / 10) |> Float.round(2)
+
+    [
+      item.salesdate,
+      item.branchname,
+      hierachy(item.itemid, subcat_data, combo_data),
+      category(item.itemid, subcat_data, combo_data),
+      itemcode(item.itemcode, item.combo_id, subcat_data, combo_data),
+      item.itemname,
+      item.gross_qty,
+      foc_qty(),
+      nett_qty(),
+      item.gross_sales,
+      item.nett_sales,
+      unit_price(item.unit_price, item.itemid, item.combo_id, combo_data),
+      discount_value,
+      service_charge,
+      item.store_owner,
+      combo_name(item.combo_id, subcat_data),
+      combo_gross_sales(item.gross_qty, item.itemid, subcat_data, combo_data)
     ]
+  end
 
-    data =
-      for item <- item_sales_outlet do
-        foc_qty =
-          if item.foc_qty == nil do
-            0
-          else
-            Decimal.to_float(item.foc_qty)
-          end
+  def combo_name(combo_id, subcat_data) do
+    a = subcat_data |> Enum.filter(fn x -> x.subcatid == combo_id end)
 
-        nett_qty = Decimal.to_float(item.gross_qty) - foc_qty
-        discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
-        service_charge = (Decimal.to_float(item.nett_sales) / 20) |> Float.round(2)
+    if a != [] do
+      hd(a).itemname
+    else
+      "Ala Carte"
+    end
+  end
 
-        [
-          item.salesdate,
-          item.branchname,
-          item.hierachy,
-          item.category,
-          item.itemcode,
-          item.itemname,
-          item.gross_qty,
-          nett_qty,
-          foc_qty,
-          item.gross_sales,
-          item.nett_sales,
-          item.unit_price,
-          discount_value,
-          service_charge,
-          item.store_owner
-        ]
+  def hierachy(itemid, subcat_data, combo_data) do
+    if String.length(Integer.to_string(itemid)) > 5 do
+      a = combo_data |> Enum.filter(fn x -> x.itemid == itemid end)
+
+      if a != [] do
+        hd(a).category_type
+      else
+        "Empty"
       end
+    else
+      a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end)
 
-    csv_content2 =
-      List.insert_at(data, 0, csv_content)
-      |> CSV.encode()
-      |> Enum.to_list()
-      |> to_string
+      if a != [] do
+        hd(a).category_type
+      else
+        "Empty"
+      end
+    end
+  end
+
+  def category(itemid, subcat_data, combo_data) do
+    if String.length(Integer.to_string(itemid)) > 5 do
+      a = combo_data |> Enum.filter(fn x -> x.itemid == itemid end)
+
+      if a != [] do
+        hd(a).category_name
+      else
+        "Empty"
+      end
+    else
+      a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end)
+
+      if a != [] do
+        hd(a).category_name
+      else
+        "Empty"
+      end
+    end
+  end
+
+  def itemcode(itemcode, combo_id, subcat_data, combo_data) do
+    itemcode
+  end
+
+  def foc_qty() do
+    0
+  end
+
+  def nett_qty() do
+    0
+  end
+
+  def combo_gross_sales(qty, itemid, subcat_data, combo_data) do
+    if String.length(Integer.to_string(itemid)) > 6 do
+      data = combo_data |> Enum.filter(fn x -> x.itemid == itemid end) |> Enum.uniq()
+
+      if data != [] do
+        unit_price = hd(data).unit_price |> Decimal.to_float()
+        top_up = hd(data).top_up |> Decimal.to_float()
+
+        res = Decimal.to_float(qty) * (unit_price + top_up)
+        :erlang.float_to_binary(res, decimals: 2)
+      else
+        0
+      end
+    else
+      0
+    end
+  end
+
+  def unit_price(unit_price, item_id, combo_id, combo_data) do
+    if unit_price > 0 do
+      unit_price
+    else
+      if String.length(Integer.to_string(item_id)) > 5 do
+        IEx.pry()
+      end
+    end
   end
 
   def combo_item_sales_csv(conn, params) do
