@@ -13,122 +13,7 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment4(conn, params) do
-    salesids = [
-      "BNGS19823",
-      "BNGS19884",
-      "BNGS20201",
-      "BNGS20427",
-      "BNGS20456",
-      "BNGS20733",
-      "BNGS20829",
-      "BNGS19641",
-      "BNGS19647",
-      "BNGS19648",
-      "BNGS19663",
-      "BNGS19665",
-      "BNGS19673",
-      "BNGS19704",
-      "BNGS19706",
-      "BNGS19709",
-      "BNGS19731",
-      "BNGS19739",
-      "BNGS19748",
-      "BNGS19750",
-      "BNGS19754",
-      "BNGS19758",
-      "BNGS19759",
-      "BNGS19761",
-      "BNGS19781",
-      "BNGS19808",
-      "BNGS19819",
-      "BNGS19829",
-      "BNGS19830",
-      "BNGS19839",
-      "BNGS19848",
-      "BNGS19858",
-      "BNGS19891",
-      "BNGS19893",
-      "BNGS19902",
-      "BNGS19910",
-      "BNGS19911",
-      "BNGS19944",
-      "BNGS19955",
-      "BNGS19961",
-      "BNGS19988",
-      "BNGS19989",
-      "BNGS19999",
-      "BNGS20010",
-      "BNGS20014",
-      "BNGS20022",
-      "BNGS20030",
-      "BNGS20034",
-      "BNGS20036",
-      "BNGS20043",
-      "BNGS20045",
-      "BNGS20063",
-      "BNGS20067",
-      "BNGS20070",
-      "BNGS20076",
-      "BNGS20090",
-      "BNGS20093",
-      "BNGS20099",
-      "BNGS20107",
-      "BNGS20143",
-      "BNGS20149",
-      "BNGS20170",
-      "BNGS20173",
-      "BNGS20174",
-      "BNGS20192",
-      "BNGS20194",
-      "BNGS20211",
-      "BNGS20212",
-      "BNGS20220",
-      "BNGS20225",
-      "BNGS20235",
-      "BNGS20237",
-      "BNGS20247",
-      "BNGS20253",
-      "BNGS20254",
-      "BNGS20255",
-      "BNGS20265",
-      "BNGS20267",
-      "BNGS20268",
-      "BNGS20315",
-      "BNGS20347",
-      "BNGS20383",
-      "BNGS20397",
-      "BNGS20398",
-      "BNGS20404",
-      "BNGS20443",
-      "BNGS20445",
-      "BNGS20447",
-      "BNGS20459",
-      "BNGS20491",
-      "BNGS20534",
-      "BNGS20548",
-      "BNGS20560",
-      "BNGS20561",
-      "BNGS20572",
-      "BNGS20601",
-      "BNGS20624",
-      "BNGS20659",
-      "BNGS20685",
-      "BNGS20688",
-      "BNGS20691",
-      "BNGS20692",
-      "BNGS20698",
-      "BNGS20702",
-      "BNGS20712",
-      "BNGS20725",
-      "BNGS20736",
-      "BNGS20744",
-      "BNGS20751",
-      "BNGS20773",
-      "BNGS20774",
-      "BNGS20777",
-      "BNGS20807",
-      "BNGS20835"
-    ]
+    salesids = []
 
     # check its combo
     s_date = Date.from_iso8601!("2018-08-01")
@@ -247,19 +132,19 @@ defmodule BoatNoodleWeb.PageController do
 
     data =
       for branch <- branches do
-        # check_combo_order(
-        #   s_date,
-        #   e_date,
-        #   Integer.to_string(branch.branchid),
-        #   BN.get_brand_id(conn)
-        # )
-
-        Task.start_link(__MODULE__, :check_combo_order, [
+        check_combo_order(
           s_date,
           e_date,
           Integer.to_string(branch.branchid),
           BN.get_brand_id(conn)
-        ])
+        )
+
+        # Task.start_link(__MODULE__, :check_combo_order, [
+        #   s_date,
+        #   e_date,
+        #   Integer.to_string(branch.branchid),
+        #   BN.get_brand_id(conn)
+        # ])
       end
 
     hd =
@@ -295,28 +180,21 @@ defmodule BoatNoodleWeb.PageController do
             s in Sales,
             left_join: sm in SalesMaster,
             on: sm.salesid == s.salesid,
-            left_join: is in ItemSubcat,
-            on: is.subcatid == sm.itemid,
-            left_join: ic in ItemCat,
-            on: is.itemcatid == ic.itemcatid,
             where:
               s.brand_id == ^brand_id_int and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
-                s.branchid == ^branch_id_string and ic.category_type == ^"COMBO" and
-                is.brand_id == ^brand_id_int and ic.brand_id == ^brand_id_int and s.is_void == ^0 and
-                sm.is_void == ^0,
+                s.branchid == ^branch_id_string and s.is_void == ^0 and sm.is_void == ^0,
             select: %{
               salesid: s.salesid,
               salesdate: s.salesdate,
               itemname: sm.itemname,
               itemcode: sm.itemcode,
               itemid: sm.itemid,
-              catid: is.itemcatid,
-              category_type: ic.category_type,
               combo_id: sm.combo_id,
               qty: sm.qty
             }
           )
         )
+        |> Enum.filter(fn x -> String.length(Integer.to_string(x.itemid)) == 6 end)
 
       datas2 =
         Repo.all(
@@ -352,6 +230,7 @@ defmodule BoatNoodleWeb.PageController do
             where: cd.brand_id == ^brand_id_int,
             select: %{
               unit_price: cd.unit_price,
+              topup: cd.top_up,
               menu_cat_id: cd.menu_cat_id,
               qty: cd.combo_item_qty,
               combo_id: cd.combo_id
@@ -491,11 +370,10 @@ defmodule BoatNoodleWeb.PageController do
 
     if final_price == Float.round(total_price_in_combo * qty, 2) do
     else
-      IEx.pry()
     end
 
-    # final_price == Float.round(total_price_in_combo * qty, 2)
-    total_qty_in_combo * qty == sd
+    final_price == Float.round(total_price_in_combo * qty, 2)
+    # total_qty_in_combo * qty == sd
   end
 
   def combo_qty_checker2(brand_id, subcatid, qty, salesid, items, combo_details, datas) do
