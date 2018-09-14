@@ -253,196 +253,174 @@ defmodule BoatNoodleWeb.SalesController do
     start_date = params["start_date"]
     end_date = params["end_date"]
 
-       
-     all =if branch_id != "0" do
-
-
-      Repo.all(
-        from(
-          s in Sales,
-          left_join: p in SalesPayment,
-          on: s.salesid == p.salesid,
-          left_join: b in Branch,
-          on: b.branchid == s.branchid,
-          where:
-            s.is_void == 0 and 
-            b.branchid == ^branch_id and 
-            s.brand_id == ^brand.id and
-            p.brand_id == ^brand.id and
-            b.brand_id == ^brand.id and
-            s.salesdate >= ^params["start_date"] and 
-            s.salesdate <= ^params["end_date"],
-          order_by: [s.salesdatetime],
-          select: %{
-            date: s.salesdate,
-            time: s.salesdatetime,
-            invoiceno: s.invoiceno,
-            tbl_no: s.tbl_no,
-            pax: s.pax,
-            staff_id: s.staffid,
-            sub_total: p.sub_total,
-            service_charge: p.service_charge,
-            gst_charge: p.gst_charge,
-            grand_total: p.grand_total,
-            payment_type: p.payment_type,
-            is_void: s.is_void,
-            rounding: p.rounding,
-            branchcode: b.branchcode,
-            branchname: b.branchname,
-            after_disc: p.after_disc,
-            payment_name1: p.payment_name1,
-            payment_code1: p.payment_code1,
-            payment_type_amt1: p.payment_type_amt1,
-            payment_name2: p.payment_name2,
-            payment_code2: p.payment_code2,
-            payment_type_amt2: p.payment_type_amt2
-
-
-          }
+    all =
+      if branch_id != "0" do
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesPayment,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and b.branchid == ^branch_id and s.brand_id == ^brand.id and
+                p.brand_id == ^brand.id and b.brand_id == ^brand.id and
+                s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"],
+            order_by: [s.salesdatetime],
+            select: %{
+              date: s.salesdate,
+              time: s.salesdatetime,
+              invoiceno: s.invoiceno,
+              tbl_no: s.tbl_no,
+              pax: s.pax,
+              staff_id: s.staffid,
+              sub_total: p.sub_total,
+              service_charge: p.service_charge,
+              gst_charge: p.gst_charge,
+              grand_total: p.grand_total,
+              payment_type: p.payment_type,
+              is_void: s.is_void,
+              rounding: p.rounding,
+              branchcode: b.branchcode,
+              branchname: b.branchname,
+              after_disc: p.after_disc,
+              payment_name1: p.payment_name1,
+              payment_code1: p.payment_code1,
+              payment_type_amt1: p.payment_type_amt1,
+              payment_name2: p.payment_name2,
+              payment_code2: p.payment_code2,
+              payment_type_amt2: p.payment_type_amt2
+            }
+          )
         )
-      )|>Enum.with_index
-
-
-    else
-      
-
-      Repo.all(
-        from(
-          s in Sales,
-          left_join: p in SalesPayment,
-          on: s.salesid == p.salesid,
-          left_join: b in Branch,
-          on: b.branchid == s.branchid,
-          where:
-            s.is_void == 0 and 
-            s.brand_id == ^brand.id and
-            p.brand_id == ^brand.id and
-            b.brand_id == ^brand.id and
-            s.salesdate >= ^params["start_date"] and 
-            s.salesdate <= ^params["end_date"],
-          order_by: [desc: s.salesdatetime],
-          select: %{
-            date: s.salesdate,
-            time: s.salesdatetime,
-            invoiceno: s.invoiceno,
-            tbl_no: s.tbl_no,
-            pax: s.pax,
-            staff_id: s.staffid,
-            sub_total: p.sub_total,
-            service_charge: p.service_charge,
-            gst_charge: p.gst_charge,
-            grand_total: p.grand_total,
-            payment_type: p.payment_type,
-            is_void: s.is_void,
-            rounding: p.rounding,
-            branchcode: b.branchcode,
-            branchname: b.branchname,
-            after_disc: p.after_disc,
-            payment_name1: p.payment_name1,
-            payment_code1: p.payment_code1,
-            payment_type_amt1: p.payment_type_amt1,
-            payment_name2: p.payment_name2,
-            payment_code2: p.payment_code2,
-            payment_type_amt2: p.payment_type_amt2
-
-
-          }
+        |> Enum.with_index()
+      else
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesPayment,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and s.brand_id == ^brand.id and p.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
+                s.salesdate <= ^params["end_date"],
+            order_by: [desc: s.salesdatetime],
+            select: %{
+              date: s.salesdate,
+              time: s.salesdatetime,
+              invoiceno: s.invoiceno,
+              tbl_no: s.tbl_no,
+              pax: s.pax,
+              staff_id: s.staffid,
+              sub_total: p.sub_total,
+              service_charge: p.service_charge,
+              gst_charge: p.gst_charge,
+              grand_total: p.grand_total,
+              payment_type: p.payment_type,
+              is_void: s.is_void,
+              rounding: p.rounding,
+              branchcode: b.branchcode,
+              branchname: b.branchname,
+              after_disc: p.after_disc,
+              payment_name1: p.payment_name1,
+              payment_code1: p.payment_code1,
+              payment_type_amt1: p.payment_type_amt1,
+              payment_name2: p.payment_name2,
+              payment_code2: p.payment_code2,
+              payment_type_amt2: p.payment_type_amt2
+            }
+          )
         )
-      )|>Enum.with_index
-
-
-          end
-
-    
-staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
-
-
-
-      data=for item <- all do
-
-
- 
-
-                seq_no= item|>elem(1)
-
-                item=item|>elem(0)
-
-
-                staff_name=get_staff_name(item.staff_id,staff_data)
-         
- 
-          
-              time=DateTime.from_naive!(item.time, "Etc/UTC")|>DateTime.to_time|>Time.to_string|>String.split_at(5)|>elem(0)
-           
-            afterdisc=Decimal.to_float(item.after_disc)|>Float.round(2)
-            sub_total=Decimal.to_float(item.sub_total)|>Float.round(2)
-            service_charge=Decimal.to_float(item.service_charge)|>Float.round(2)
-            gst_charge=Decimal.to_float(item.gst_charge)|>Float.round(2)
-            rounding=Decimal.to_float(item.rounding)|>Float.round(2)
-
-        disc_amt=Decimal.to_float(item.grand_total)-( Decimal.to_float(item.sub_total)+ Decimal.to_float(item.service_charge) + Decimal.to_float(item.gst_charge) + Decimal.to_float(item.rounding))
-
-          grand_total= Decimal.to_float(item.grand_total)|>Float.round(2)
-
-          after_disc=(sub_total-(disc_amt))|>Float.round(2)
-
-          beforedisc= Decimal.to_float(item.sub_total)+ Decimal.to_float(item.service_charge) + Decimal.to_float(item.gst_charge) + Decimal.to_float(item.rounding)
-
-              disc_percent=if  beforedisc == 0  do
-                100
-              else
-
-                  disc_percent=
-                        if after_disc == 0  do
-                          0
-                        else
-                          ((beforedisc-Decimal.to_float(item.grand_total))/beforedisc)*100
-                        end
-               
-              end|>Float.round(2)
-
-                  salesstatus=if item.is_void == 0 do
-                    "C"
-
-                  else
-                    "V"
-                  end
-
-
-
-   csv_content = [
-      item.date,
-      time,
-      seq_no+1,
-      item.invoiceno,
-      staff_name,
-      item.tbl_no,
-      item.pax,
-      sub_total,
-      disc_amt|>Float.round(2),
-      disc_percent,
-      afterdisc,
-      service_charge,
-      gst_charge,
-      rounding,
-      grand_total,
-      item.payment_type,
-      item.payment_name1,
-      item.payment_code1,
-      item.payment_type_amt1,
-      item.payment_name2,
-      item.payment_code2,
-      item.payment_type_amt2,
-      salesstatus,
-      item.branchname]
-
-
-   
+        |> Enum.with_index()
       end
 
+    staff_data = Repo.all(from(s in Staff, where: s.brand_id == ^brand.id))
 
+    data =
+      for item <- all do
+        seq_no = item |> elem(1)
+
+        item = item |> elem(0)
+
+        staff_name = get_staff_name(item.staff_id, staff_data)
+
+        time =
+          DateTime.from_naive!(item.time, "Etc/UTC")
+          |> DateTime.to_time()
+          |> Time.to_string()
+          |> String.split_at(5)
+          |> elem(0)
+
+        afterdisc = Decimal.to_float(item.after_disc) |> Float.round(2)
+        sub_total = Decimal.to_float(item.sub_total) |> Float.round(2)
+        service_charge = Decimal.to_float(item.service_charge) |> Float.round(2)
+        gst_charge = Decimal.to_float(item.gst_charge) |> Float.round(2)
+        rounding = Decimal.to_float(item.rounding) |> Float.round(2)
+
+        disc_amt =
+          Decimal.to_float(item.grand_total) -
+            (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+               Decimal.to_float(item.gst_charge) + Decimal.to_float(item.rounding))
+
+        grand_total = Decimal.to_float(item.grand_total) |> Float.round(2)
+
+        after_disc = (sub_total - disc_amt) |> Float.round(2)
+
+        beforedisc =
+          Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+            Decimal.to_float(item.gst_charge) + Decimal.to_float(item.rounding)
+
+        disc_percent =
+          if beforedisc == 0 do
+            100
+          else
+            disc_percent =
+              if after_disc == 0 do
+                0
+              else
+                (beforedisc - Decimal.to_float(item.grand_total)) / beforedisc * 100
+              end
+          end
+          |> Float.round(2)
+
+        salesstatus =
+          if item.is_void == 0 do
+            "C"
+          else
+            "V"
+          end
 
         csv_content = [
+          item.date,
+          time,
+          seq_no + 1,
+          item.invoiceno,
+          staff_name,
+          item.tbl_no,
+          item.pax,
+          sub_total,
+          disc_amt |> Float.round(2),
+          disc_percent,
+          afterdisc,
+          service_charge,
+          gst_charge,
+          rounding,
+          grand_total,
+          item.payment_type,
+          item.payment_name1,
+          item.payment_code1,
+          item.payment_type_amt1,
+          item.payment_name2,
+          item.payment_code2,
+          item.payment_type_amt2,
+          salesstatus,
+          item.branchname
+        ]
+      end
+
+    csv_content = [
       'DATE ',
       'TIME',
       'SEQNO',
@@ -466,39 +444,26 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
       'PAYMENT CODE 2',
       'PAYMENT AMT 2',
       'SALES_STATUS',
-      'BRANCH']
+      'BRANCH'
+    ]
 
-
-  csv_content =
+    csv_content =
       List.insert_at(data, 0, csv_content)
       |> CSV.encode()
       |> Enum.to_list()
       |> to_string
-
-
   end
 
+  defp get_staff_name(staff_id, staffs) do
+    staff_name = Enum.filter(staffs, fn x -> x.staff_id == String.to_integer(staff_id) end)
 
-
-    defp get_staff_name(staff_id,staffs) do
-
-
-
-          staff_name= Enum.filter(staffs,fn x -> x.staff_id==String.to_integer(staff_id) end)
-
-          if staff_name != [] do
-
-            a=staff_name|>hd
-            a.staff_name
-          else
-
-            "unknown cashier"
-
-            
-          end
-
-
+    if staff_name != [] do
+      a = staff_name |> hd
+      a.staff_name
+    else
+      "unknown cashier"
     end
+  end
 
   def quickbook(conn, params) do
     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
@@ -516,36 +481,23 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
     |> send_resp(200, csv_content(conn, params))
   end
 
+  defp get_item_name(itemid, items, combo) do
+    item_name = Enum.filter(items, fn x -> x.subcatid == itemid end)
 
-      defp get_item_name(itemid,items,combo) do
+    if item_name != [] do
+      a = item_name |> hd
+      a.itemname
+    else
+      b = Enum.filter(combo, fn x -> x.combo_item_id == itemid end)
 
-
-          item_name= Enum.filter(items,fn x -> x.subcatid==itemid end)
-          if item_name != [] do
-
-            a=item_name|>hd
-            a.itemname
-          else
-
-            b= Enum.filter(combo,fn x -> x.combo_item_id==itemid end)
-
-            if b == [] do
-              "unknown item"
-            else
-
-
-            a=b|>hd
-            a.combo_item_name
-            
-            end
-
-          end
-
-
+      if b == [] do
+        "unknown item"
+      else
+        a = b |> hd
+        a.combo_item_name
+      end
     end
-
-
-
+  end
 
   defp csv_content(conn, params) do
     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
@@ -555,471 +507,459 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
     id = branch.branchid |> Integer.to_string()
 
     if params["branch"] != "0" do
-      
-
-
-    all =
-      Repo.all(
-        from(
-          s in Sales,
-          left_join: p in SalesMaster,
-          on: s.salesid == p.salesid,
-          left_join: b in Branch,
-          on: b.branchid == s.branchid,
-          where:
-            s.is_void == 0 and
-            p.is_void == 0 and
-            b.branchid == ^id and 
-            b.brand_id == ^brand.id and
-            p.brand_id == ^brand.id and 
-            s.brand_id == ^brand.id and
-            s.salesdate >= ^params["start_date"] and 
-            s.salesdate <= ^params["end_date"],
-          group_by: [s.salesdate, p.itemid,p.itemname,b.branchcode],
-          order_by: [s.salesdate, p.itemname],
-          select: %{
-            date: s.salesdate,
-            name: p.itemname,
-            itemid: p.itemid,
-            salesid: p.salesid,
-            desc: p.itemname,
-            branch: b.branchcode,
-            qty: sum(p.qty),
-            order_price: sum(p.order_price)
-          }
+      all =
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesMaster,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and p.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
+                p.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"],
+            group_by: [s.salesdate, p.itemid, p.itemname, b.branchcode],
+            order_by: [s.salesdate, p.itemname],
+            select: %{
+              date: s.salesdate,
+              name: p.itemname,
+              itemid: p.itemid,
+              salesid: p.salesid,
+              desc: p.itemname,
+              branch: b.branchcode,
+              qty: sum(p.qty),
+              order_price: sum(p.order_price)
+            }
+          )
         )
-      )
-      |> Enum.group_by(fn x -> x.date end)
+        |> Enum.group_by(fn x -> x.date end)
 
+      csv_content = [
+        'CustomerRefFullName ',
+        'ClassRefFullName',
+        'TempleteRefFullName',
+        'TxnDate',
+        'RefNumber',
+        'DepositToAccountRefFullName',
+        'ItemRefFullName',
+        'Desc',
+        'Quantity',
+        'Rate',
+        'Amount',
+        'LineClassRefFullName',
+        'SalesTaxCodeFullName'
+      ]
 
-    csv_content = [
-      'CustomerRefFullName ',
-      'ClassRefFullName',
-      'TempleteRefFullName',
-      'TxnDate',
-      'RefNumber',
-      'DepositToAccountRefFullName',
-      'ItemRefFullName',
-      'Desc',
-      'Quantity',
-      'Rate',
-      'Amount',
-      'LineClassRefFullName',
-      'SalesTaxCodeFullName'
-    ]
+      name_data = Repo.all(from(s in ItemSubcat, where: s.brand_id == ^brand.id))
+      combo_data = Repo.all(from(s in ComboDetails, where: s.brand_id == ^brand.id))
 
-        name_data=Repo.all(from s in ItemSubcat, where: s.brand_id==^brand.id)
-        combo_data=Repo.all(from s in ComboDetails, where: s.brand_id==^brand.id)
-    data =
-      for item <- all do
-        date2 = item |> elem(0) |> Date.to_string()
-        date = item |> elem(0)
-        item = item |> elem(1)
+      data =
+        for item <- all do
+          date2 = item |> elem(0) |> Date.to_string()
+          date = item |> elem(0)
+          item = item |> elem(1)
 
-        gft =
-          for item <- item do
-            trkh = item.date |> Date.to_string()
+          gft =
+            for item <- item do
+              trkh = item.date |> Date.to_string()
 
-                  item_name=get_item_name(item.itemid,name_data,combo_data)
+              item_name = get_item_name(item.itemid, name_data, combo_data)
 
-            order_price = Decimal.to_float(item.order_price) |> Float.to_string()
-            qty = Decimal.to_float(item.qty) |> Float.to_string()
+              order_price = Decimal.to_float(item.order_price) |> Float.to_string()
+              qty = Decimal.to_float(item.qty) |> Float.to_string()
 
-            date =
-              item.date
-              |> Date.to_string()
-              |> String.split_at(2)
-              |> elem(1)
-              |> String.split("-")
-              |> Enum.join()
-              |> String.split_at(2)
+              date =
+                item.date
+                |> Date.to_string()
+                |> String.split_at(2)
+                |> elem(1)
+                |> String.split("-")
+                |> Enum.join()
+                |> String.split_at(2)
 
-            year = date |> elem(0)
+              year = date |> elem(0)
 
-            b = date |> elem(1)
+              b = date |> elem(1)
 
-        
+              rate =
+                (Decimal.to_float(item.order_price) / Decimal.to_float(item.qty))
+                |> Float.to_string()
 
-            rate =
-              (Decimal.to_float(item.order_price) / Decimal.to_float(item.qty))
-              |> Float.to_string()
+              c = b |> String.split_at(2)
 
-            c = b |> String.split_at(2)
+              month = c |> elem(0)
 
-            month = c |> elem(0)
+              day = c |> elem(1)
 
-            day = c |> elem(1)
+              string = item.branch
 
-            string = item.branch
+              join = day <> month <> year <> string
 
-            join = day <> month <> year <> string
+              name = branch.branchname
+              cashin = "CashInDrawer:"
+              full = cashin <> name
 
-            name = branch.branchname
-            cashin = "CashInDrawer:"
-            full = cashin <> name
+              [
+                'Daily Sales',
+                branch.report_class,
+                'Custom Sales Receipt',
+                trkh,
+                join,
+                full,
+                item_name,
+                item_name,
+                qty,
+                rate,
+                order_price,
+                branch.report_class,
+                'SR0'
+              ]
+            end
 
-            [
-              'Daily Sales',
-              branch.report_class,
-              'Custom Sales Receipt',
-              trkh,
-              join,
-              full,
-              item_name,
-              item_name,
-              qty,
-              rate,
-              order_price,
-              branch.report_class,
-              'SR0'
-            ]
-          end
+          date =
+            date
+            |> Date.to_string()
+            |> String.split_at(2)
+            |> elem(1)
+            |> String.split("-")
+            |> Enum.join()
+            |> String.split_at(2)
 
-        date =
-          date
-          |> Date.to_string()
-          |> String.split_at(2)
-          |> elem(1)
-          |> String.split("-")
-          |> Enum.join()
-          |> String.split_at(2)
+          code = item |> hd
 
-        code = item |> hd
+          year = date |> elem(0)
 
-        year = date |> elem(0)
+          b = date |> elem(1)
 
-        b = date |> elem(1)
+          c = b |> String.split_at(2)
 
-        c = b |> String.split_at(2)
+          month = c |> elem(0)
 
-        month = c |> elem(0)
+          day = c |> elem(1)
 
-        day = c |> elem(1)
+          string = code.branch
 
-        string = code.branch
+          join = day <> month <> year <> string
 
-        join = day <> month <> year <> string
+          name = branch.branchname
+          cashin = "CashInDrawer:"
+          full = cashin <> name
 
-        name = branch.branchname
-        cashin = "CashInDrawer:"
-        full = cashin <> name
-
-        rpt =
-          Repo.all(
-            from(
-              s in Sales,
-              left_join: sp in SalesPayment,
-              on: s.salesid == sp.salesid,
-              left_join: b in Branch,
-              on: b.branchid == s.branchid,
-              left_join: t in Brand,
-              on: t.id == s.brand_id,
-              where:
-                s.is_void == 0 and s.salesdate == ^date2 and
-                  b.report_class == ^branch.report_class and t.id == ^brand.id and
-                  s.brand_id == ^brand.id and b.brand_id == ^brand.id and sp.brand_id == ^brand.id and
-                  b.branchid == ^id,
-              select: %{
-                grand_total: sum(sp.grand_total),
-                sub_total: sum(sp.sub_total),
-                service_charge: sum(sp.service_charge),
-                gst_charge: sum(sp.gst_charge),
-                rounding: sum(sp.rounding)
-              }
+          rpt =
+            Repo.all(
+              from(
+                s in Sales,
+                left_join: sp in SalesPayment,
+                on: s.salesid == sp.salesid,
+                left_join: b in Branch,
+                on: b.branchid == s.branchid,
+                left_join: t in Brand,
+                on: t.id == s.brand_id,
+                where:
+                  s.is_void == 0 and s.salesdate == ^date2 and
+                    b.report_class == ^branch.report_class and t.id == ^brand.id and
+                    s.brand_id == ^brand.id and b.brand_id == ^brand.id and
+                    sp.brand_id == ^brand.id and b.branchid == ^id,
+                select: %{
+                  grand_total: sum(sp.grand_total),
+                  sub_total: sum(sp.sub_total),
+                  service_charge: sum(sp.service_charge),
+                  gst_charge: sum(sp.gst_charge),
+                  rounding: sum(sp.rounding)
+                }
+              )
             )
-          )
-          |> hd
+            |> hd
 
-        grand_total =
-          if rpt.grand_total != nil do
-            Decimal.to_float(rpt.grand_total)
-          else
-            0
-          end
+          grand_total =
+            if rpt.grand_total != nil do
+              Decimal.to_float(rpt.grand_total)
+            else
+              0
+            end
 
-        sub_total =
-          if rpt.sub_total != nil do
-            Decimal.to_float(rpt.sub_total)
-          else
-            0
-          end
+          sub_total =
+            if rpt.sub_total != nil do
+              Decimal.to_float(rpt.sub_total)
+            else
+              0
+            end
 
-        service_charge =
-          if rpt.service_charge != nil do
-            Decimal.to_float(rpt.service_charge)
-          else
-            0
-          end
+          service_charge =
+            if rpt.service_charge != nil do
+              Decimal.to_float(rpt.service_charge)
+            else
+              0
+            end
 
-        gst_charge =
-          if rpt.gst_charge != nil do
-            Decimal.to_float(rpt.gst_charge)
-          else
-            0
-          end
+          gst_charge =
+            if rpt.gst_charge != nil do
+              Decimal.to_float(rpt.gst_charge)
+            else
+              0
+            end
 
-        rounding =
-          if rpt.rounding != nil do
-            Decimal.to_float(rpt.rounding)
-          else
-            0
-          end
+          rounding =
+            if rpt.rounding != nil do
+              Decimal.to_float(rpt.rounding)
+            else
+              0
+            end
 
-        rounding2 =
-          Repo.all(
-            from(
-              s in Sales,
-              left_join: sp in SalesPayment,
-              on: s.salesid == sp.salesid,
-              left_join: b in Branch,
-              on: b.branchid == s.branchid,
-              left_join: t in Brand,
-              on: t.id == s.brand_id,
-              where:
-                s.is_void == 0 and s.salesdate == ^date2 and
-                  b.report_class == ^branch.report_class and t.id == ^brand.id and
-                  s.brand_id == ^brand.id and b.brand_id == ^brand.id and sp.brand_id == ^brand.id and
-                  b.branchid == ^id,
-              select: %{
-                rounding: sum(sp.rounding)
-              }
+          rounding2 =
+            Repo.all(
+              from(
+                s in Sales,
+                left_join: sp in SalesPayment,
+                on: s.salesid == sp.salesid,
+                left_join: b in Branch,
+                on: b.branchid == s.branchid,
+                left_join: t in Brand,
+                on: t.id == s.brand_id,
+                where:
+                  s.is_void == 0 and s.salesdate == ^date2 and
+                    b.report_class == ^branch.report_class and t.id == ^brand.id and
+                    s.brand_id == ^brand.id and b.brand_id == ^brand.id and
+                    sp.brand_id == ^brand.id and b.branchid == ^id,
+                select: %{
+                  rounding: sum(sp.rounding)
+                }
+              )
             )
-          )
-          |> hd
+            |> hd
 
-        rounding2 =
-          if rounding2.rounding != nil do
-            Decimal.to_float(rounding2.rounding)
-          else
-            0
-          end
+          rounding2 =
+            if rounding2.rounding != nil do
+              Decimal.to_float(rounding2.rounding)
+            else
+              0
+            end
 
-        disc_amt = 0 - (sub_total + service_charge + gst_charge + rounding)
+          disc_amt = 0 - (sub_total + service_charge + gst_charge + rounding)
 
-        tpm = [
-          'Daily Sales',
-          branch.report_class,
-          'Custom Sales Receipt',
-          date2,
-          join,
-          full,
-          "sevc charge",
-          "",
-          "",
-          service_charge,
-          service_charge,
-          branch.report_class,
-          'SR0'
-        ]
+          tpm = [
+            'Daily Sales',
+            branch.report_class,
+            'Custom Sales Receipt',
+            date2,
+            join,
+            full,
+            "sevc charge",
+            "",
+            "",
+            service_charge,
+            service_charge,
+            branch.report_class,
+            'SR0'
+          ]
 
-        tpf = [
-          'Daily Sales',
-          branch.report_class,
-          'Custom Sales Receipt',
-          date2,
-          join,
-          full,
-          "Total Rounding",
-          "",
-          "",
-          rounding2,
-          rounding2,
-          branch.report_class,
-          'SR0'
-        ]
+          tpf = [
+            'Daily Sales',
+            branch.report_class,
+            'Custom Sales Receipt',
+            date2,
+            join,
+            full,
+            "Total Rounding",
+            "",
+            "",
+            rounding2,
+            rounding2,
+            branch.report_class,
+            'SR0'
+          ]
 
-        tpq = [
-          'Daily Sales',
-          branch.report_class,
-          'Custom Sales Receipt',
-          date2,
-          join,
-          full,
-          "Discount",
-          "",
-          "",
-          disc_amt,
-          disc_amt,
-          branch.report_class,
-          'SR0'
-        ]
+          tpq = [
+            'Daily Sales',
+            branch.report_class,
+            'Custom Sales Receipt',
+            date2,
+            join,
+            full,
+            "Discount",
+            "",
+            "",
+            disc_amt,
+            disc_amt,
+            branch.report_class,
+            'SR0'
+          ]
 
-        paytype1 =
-          Repo.all(
-            from(
-              s in Sales,
-              left_join: sp in SalesPayment,
-              on: s.salesid == sp.salesid,
-              left_join: p in PaymentType,
-              on: p.payment_type_id == sp.payment_type_id1,
-              left_join: b in Branch,
-              on: b.branchid == s.branchid,
-              left_join: t in Brand,
-              on: t.id == s.brand_id,
-              group_by: p.payment_type_name,
-              where:
-                s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id1 != 1 and
-                  t.id == ^brand.id and s.brand_id == ^brand.id and p.brand_id == ^brand.id and
-                  b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
-              select: %{
-                payment_type_name: p.payment_type_name,
-                pay_amt: sum(sp.payment_type_amt1)
-              }
+          paytype1 =
+            Repo.all(
+              from(
+                s in Sales,
+                left_join: sp in SalesPayment,
+                on: s.salesid == sp.salesid,
+                left_join: p in PaymentType,
+                on: p.payment_type_id == sp.payment_type_id1,
+                left_join: b in Branch,
+                on: b.branchid == s.branchid,
+                left_join: t in Brand,
+                on: t.id == s.brand_id,
+                group_by: p.payment_type_name,
+                where:
+                  s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id1 != 1 and
+                    t.id == ^brand.id and s.brand_id == ^brand.id and p.brand_id == ^brand.id and
+                    b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
+                select: %{
+                  payment_type_name: p.payment_type_name,
+                  pay_amt: sum(sp.payment_type_amt1)
+                }
+              )
             )
-          )
 
-        paytype2 =
-          Repo.all(
-            from(
-              s in Sales,
-              left_join: sp in SalesPayment,
-              on: s.salesid == sp.salesid,
-              left_join: p in PaymentType,
-              on: p.payment_type_id == sp.payment_type_id2,
-              left_join: b in Branch,
-              on: b.branchid == s.branchid,
-              left_join: t in Brand,
-              on: t.id == s.brand_id,
-              group_by: p.payment_type_name,
-              where:
-                s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id2 != 1 and
-                  t.id == ^brand.id and p.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                  b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
-              select: %{
-                payment_type_name: p.payment_type_name,
-                pay_amt: sum(sp.payment_type_amt2)
-              }
+          paytype2 =
+            Repo.all(
+              from(
+                s in Sales,
+                left_join: sp in SalesPayment,
+                on: s.salesid == sp.salesid,
+                left_join: p in PaymentType,
+                on: p.payment_type_id == sp.payment_type_id2,
+                left_join: b in Branch,
+                on: b.branchid == s.branchid,
+                left_join: t in Brand,
+                on: t.id == s.brand_id,
+                group_by: p.payment_type_name,
+                where:
+                  s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id2 != 1 and
+                    t.id == ^brand.id and p.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                    b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
+                select: %{
+                  payment_type_name: p.payment_type_name,
+                  pay_amt: sum(sp.payment_type_amt2)
+                }
+              )
             )
-          )
 
-        paytype = (paytype1 ++ paytype2) |> Enum.filter(fn x -> x.payment_type_name != nil end)
+          paytype = (paytype1 ++ paytype2) |> Enum.filter(fn x -> x.payment_type_name != nil end)
 
-        shortextra =
-          Repo.all(
-            from(
-              r in BoatNoodle.BN.RPTCASHIEREOD,
-              left_join: b in Branch,
-              on: b.branchcode == r.branchcode,
-              left_join: t in Brand,
-              on: t.id == r.brand_id,
-              group_by: [r.time_end],
-              where: r.branch_id == ^id and r.brand_id == ^brand.id,
-              select: %{totalextra: sum(r.extra), time_end: r.time_end}
+          shortextra =
+            Repo.all(
+              from(
+                r in BoatNoodle.BN.RPTCASHIEREOD,
+                left_join: b in Branch,
+                on: b.branchcode == r.branchcode,
+                left_join: t in Brand,
+                on: t.id == r.brand_id,
+                group_by: [r.time_end],
+                where: r.branch_id == ^id and r.brand_id == ^brand.id,
+                select: %{totalextra: sum(r.extra), time_end: r.time_end}
+              )
             )
-          )
 
-        extra =
-          Enum.map(shortextra, fn x ->
-            %{totalextra: x.totalextra, date: DateTime.to_date(x.time_end) |> Date.to_string()}
-          end)
+          extra =
+            Enum.map(shortextra, fn x ->
+              %{totalextra: x.totalextra, date: DateTime.to_date(x.time_end) |> Date.to_string()}
+            end)
 
-        extra = extra |> Enum.filter(fn x -> x.date == date2 end)
+          extra = extra |> Enum.filter(fn x -> x.date == date2 end)
 
-        shortextra =
-          if extra != [] do
-            Enum.map(extra, fn x -> Decimal.to_float(x.totalextra) end) |> Enum.sum()
-          else
-            0
-          end
+          shortextra =
+            if extra != [] do
+              Enum.map(extra, fn x -> Decimal.to_float(x.totalextra) end) |> Enum.sum()
+            else
+              0
+            end
 
-        tpt = [
-          'Daily Sales',
-          branch.report_class,
-          'Custom Sales Receipt',
-          date2,
-          join,
-          full,
-          "Short/Extra",
-          "",
-          "",
-          shortextra,
-          shortextra,
-          branch.report_class,
-          'SR0'
-        ]
+          tpt = [
+            'Daily Sales',
+            branch.report_class,
+            'Custom Sales Receipt',
+            date2,
+            join,
+            full,
+            "Short/Extra",
+            "",
+            "",
+            shortextra,
+            shortextra,
+            branch.report_class,
+            'SR0'
+          ]
 
-        ccard =
-          Repo.all(
-            from(
-              s in Sales,
-              left_join: sp in SalesPayment,
-              on: s.salesid == sp.salesid,
-              left_join: b in Branch,
-              on: b.branchid == s.branchid,
-              left_join: t in Brand,
-              on: t.id == s.brand_id,
-              where:
-                s.is_void == 0 and s.salesdate == ^date2 and t.id == ^brand.id and
-                  s.brand_id == ^brand.id and b.brand_id == ^brand.id and sp.brand_id == ^brand.id and
-                  b.branchid == ^id and sp.payment_type == "CREDITCARD",
-              select: sum(sp.grand_total)
+          ccard =
+            Repo.all(
+              from(
+                s in Sales,
+                left_join: sp in SalesPayment,
+                on: s.salesid == sp.salesid,
+                left_join: b in Branch,
+                on: b.branchid == s.branchid,
+                left_join: t in Brand,
+                on: t.id == s.brand_id,
+                where:
+                  s.is_void == 0 and s.salesdate == ^date2 and t.id == ^brand.id and
+                    s.brand_id == ^brand.id and b.brand_id == ^brand.id and
+                    sp.brand_id == ^brand.id and b.branchid == ^id and
+                    sp.payment_type == "CREDITCARD",
+                select: sum(sp.grand_total)
+              )
             )
-          )
-          |> hd
+            |> hd
 
-        ccard =
-          if ccard != nil do
-            0 - Decimal.to_float(ccard)
-          else
-            0
-          end
+          ccard =
+            if ccard != nil do
+              0 - Decimal.to_float(ccard)
+            else
+              0
+            end
 
-        tps = [
-          'Daily Sales',
-          branch.report_class,
-          'Custom Sales Receipt',
-          date2,
-          join,
-          full,
-          "CREDITCARD",
-          "",
-          "",
-          ccard,
-          ccard,
-          branch.report_class,
-          'SR0'
-        ]
+          tps = [
+            'Daily Sales',
+            branch.report_class,
+            'Custom Sales Receipt',
+            date2,
+            join,
+            full,
+            "CREDITCARD",
+            "",
+            "",
+            ccard,
+            ccard,
+            branch.report_class,
+            'SR0'
+          ]
 
-        trm =
-          for item <- paytype do
-            [
-              'Daily Sales',
-              branch.report_class,
-              'Custom Sales Receipt',
-              date2,
-              join,
-              full,
-              item.payment_type_name,
-              "",
-              "",
-              (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
-              (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
-              branch.report_class,
-              'SR0'
-            ]
-          end
+          trm =
+            for item <- paytype do
+              [
+                'Daily Sales',
+                branch.report_class,
+                'Custom Sales Receipt',
+                date2,
+                join,
+                full,
+                item.payment_type_name,
+                "",
+                "",
+                (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
+                (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
+                branch.report_class,
+                'SR0'
+              ]
+            end
 
-        tq = List.insert_at(gft, -1, tpm)
-        tq1 = List.insert_at(tq, -1, tpf)
-        tq2 = List.insert_at(tq1, -1, tpq)
-        tq3 = List.insert_at(tq2, -1, tpt)
-        tq4 = List.insert_at(tq3, -1, tps)
-        tq5 = tq4 ++ trm
-      end
-      |> Enum.flat_map(fn x -> x end)
+          tq = List.insert_at(gft, -1, tpm)
+          tq1 = List.insert_at(tq, -1, tpf)
+          tq2 = List.insert_at(tq1, -1, tpq)
+          tq3 = List.insert_at(tq2, -1, tpt)
+          tq4 = List.insert_at(tq3, -1, tps)
+          tq5 = tq4 ++ trm
+        end
+        |> Enum.flat_map(fn x -> x end)
 
-    csv_content =
-      List.insert_at(data, 0, csv_content)
-      |> CSV.encode()
-      |> Enum.to_list()
-      |> to_string
-
+      csv_content =
+        List.insert_at(data, 0, csv_content)
+        |> CSV.encode()
+        |> Enum.to_list()
+        |> to_string
     else
-
-       conn
-    |> put_flash(:info, "Please Choose a Branch.")
-    |> redirect(to: sales_path(conn, :index, BN.get_domain(conn)))
-
+      conn
+      |> put_flash(:info, "Please Choose a Branch.")
+      |> redirect(to: sales_path(conn, :index, BN.get_domain(conn)))
     end
   end
 
@@ -1515,10 +1455,11 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
         'Gross Sales',
         'Nett Sales',
         'Unit Price',
+        'Topup Price',
         'Discount Value',
         'Service Charge',
         'Store Owner',
-        'Combo'
+        'AwesomeCombo'
       ]
     ]
 
@@ -1700,6 +1641,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
         discount_value
       ),
       unit_price(item.unit_price, item.itemid, item.combo_id, combo_data_price),
+      topup_price(item.unit_price, item.itemid, item.combo_id, combo_data_price),
       discount_value,
       :erlang.float_to_binary(
         nett_sales(
@@ -1821,13 +1763,31 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
         unit_price = hd(data).unit_price |> Decimal.to_float()
         top_up = hd(data).top_up |> Decimal.to_float()
 
-        res = unit_price + top_up
+        res = unit_price
         :erlang.float_to_binary(res, decimals: 2)
       else
         0
       end
     else
       unit_price
+    end
+  end
+
+  def topup_price(unit_price, item_id, combo_id, combo_data) do
+    if String.length(Integer.to_string(item_id)) == 9 do
+      data = combo_data |> Enum.filter(fn x -> x.itemid == item_id end) |> Enum.uniq()
+
+      if data != [] do
+        unit_price = hd(data).unit_price |> Decimal.to_float()
+        top_up = hd(data).top_up |> Decimal.to_float()
+
+        res = top_up
+        :erlang.float_to_binary(res, decimals: 2)
+      else
+        0
+      end
+    else
+      0
     end
   end
 

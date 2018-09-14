@@ -13,6 +13,181 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment4(conn, params) do
+    salesids = [
+      "BNGS19823",
+      "BNGS19884",
+      "BNGS20201",
+      "BNGS20427",
+      "BNGS20456",
+      "BNGS20733",
+      "BNGS20829",
+      "BNGS19641",
+      "BNGS19647",
+      "BNGS19648",
+      "BNGS19663",
+      "BNGS19665",
+      "BNGS19673",
+      "BNGS19704",
+      "BNGS19706",
+      "BNGS19709",
+      "BNGS19731",
+      "BNGS19739",
+      "BNGS19748",
+      "BNGS19750",
+      "BNGS19754",
+      "BNGS19758",
+      "BNGS19759",
+      "BNGS19761",
+      "BNGS19781",
+      "BNGS19808",
+      "BNGS19819",
+      "BNGS19829",
+      "BNGS19830",
+      "BNGS19839",
+      "BNGS19848",
+      "BNGS19858",
+      "BNGS19891",
+      "BNGS19893",
+      "BNGS19902",
+      "BNGS19910",
+      "BNGS19911",
+      "BNGS19944",
+      "BNGS19955",
+      "BNGS19961",
+      "BNGS19988",
+      "BNGS19989",
+      "BNGS19999",
+      "BNGS20010",
+      "BNGS20014",
+      "BNGS20022",
+      "BNGS20030",
+      "BNGS20034",
+      "BNGS20036",
+      "BNGS20043",
+      "BNGS20045",
+      "BNGS20063",
+      "BNGS20067",
+      "BNGS20070",
+      "BNGS20076",
+      "BNGS20090",
+      "BNGS20093",
+      "BNGS20099",
+      "BNGS20107",
+      "BNGS20143",
+      "BNGS20149",
+      "BNGS20170",
+      "BNGS20173",
+      "BNGS20174",
+      "BNGS20192",
+      "BNGS20194",
+      "BNGS20211",
+      "BNGS20212",
+      "BNGS20220",
+      "BNGS20225",
+      "BNGS20235",
+      "BNGS20237",
+      "BNGS20247",
+      "BNGS20253",
+      "BNGS20254",
+      "BNGS20255",
+      "BNGS20265",
+      "BNGS20267",
+      "BNGS20268",
+      "BNGS20315",
+      "BNGS20347",
+      "BNGS20383",
+      "BNGS20397",
+      "BNGS20398",
+      "BNGS20404",
+      "BNGS20443",
+      "BNGS20445",
+      "BNGS20447",
+      "BNGS20459",
+      "BNGS20491",
+      "BNGS20534",
+      "BNGS20548",
+      "BNGS20560",
+      "BNGS20561",
+      "BNGS20572",
+      "BNGS20601",
+      "BNGS20624",
+      "BNGS20659",
+      "BNGS20685",
+      "BNGS20688",
+      "BNGS20691",
+      "BNGS20692",
+      "BNGS20698",
+      "BNGS20702",
+      "BNGS20712",
+      "BNGS20725",
+      "BNGS20736",
+      "BNGS20744",
+      "BNGS20751",
+      "BNGS20773",
+      "BNGS20774",
+      "BNGS20777",
+      "BNGS20807",
+      "BNGS20835"
+    ]
+
+    # check its combo
+    s_date = Date.from_iso8601!("2018-08-01")
+    e_date = Date.from_iso8601!("2018-08-31")
+    brand_id = BN.get_brand_id(conn) |> Integer.to_string()
+    brand_id_int = BN.get_brand_id(conn)
+
+    datas2 =
+      Repo.all(
+        from(
+          s in Sales,
+          left_join: sm in SalesMaster,
+          on: sm.salesid == s.salesid,
+          where: s.brand_id == ^brand_id_int and s.salesdate >= ^s_date and s.salesdate <= ^e_date,
+          select: %{
+            comboid: sm.combo_id,
+            salesid: s.salesid,
+            itemid: sm.itemid,
+            qty: sm.qty,
+            orderid: sm.orderid
+          }
+        )
+      )
+
+    items =
+      Repo.all(
+        from(
+          is in ItemSubcat,
+          where: is.brand_id == ^brand_id_int
+        )
+      )
+
+    combo_details =
+      Repo.all(
+        from(
+          cd in ComboDetails,
+          where: cd.brand_id == ^brand_id_int,
+          select: %{
+            itemid: cd.combo_item_id,
+            menu_cat_id: cd.menu_cat_id,
+            qty: cd.combo_item_qty,
+            combo_id: cd.combo_id
+          }
+        )
+      )
+
+    qty = 1
+    subcatid = 999_074
+
+    for salesid <- salesids do
+      sms =
+        Repo.all(from(sm in SalesMaster, where: sm.salesid == ^salesid))
+        |> Enum.filter(fn x -> String.length(Integer.to_string(x.itemid)) == 6 end)
+
+      for sm <- sms do
+        combo_qty_checker2(brand_id, sm.itemid, sm.qty, salesid, items, combo_details, datas2)
+      end
+    end
+
     conn
     |> put_flash(:info, "Query executed!")
     |> redirect(to: page_path(conn, :index2, BN.get_domain(conn)))
@@ -410,7 +585,8 @@ defmodule BoatNoodleWeb.PageController do
             remaks: "damien insert"
           })
 
-        Repo.insert(cg)
+        IEx.pry()
+        # Repo.insert(cg)
       else
       end
     end
