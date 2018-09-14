@@ -72,19 +72,19 @@ defmodule BoatNoodleWeb.PageController do
 
     data =
       for branch <- branches do
-        check_combo_order(
-          s_date,
-          e_date,
-          Integer.to_string(branch.branchid),
-          BN.get_brand_id(conn)
-        )
-
-        # Task.start_link(__MODULE__, :check_combo_order, [
+        # check_combo_order(
         #   s_date,
         #   e_date,
         #   Integer.to_string(branch.branchid),
         #   BN.get_brand_id(conn)
-        # ])
+        # )
+
+        Task.start_link(__MODULE__, :check_combo_order, [
+          s_date,
+          e_date,
+          Integer.to_string(branch.branchid),
+          BN.get_brand_id(conn)
+        ])
       end
 
     hd =
@@ -319,8 +319,8 @@ defmodule BoatNoodleWeb.PageController do
       IEx.pry()
     end
 
-    final_price == Float.round(total_price_in_combo * qty, 2)
-    # total_qty_in_combo * qty == sd
+    # final_price == Float.round(total_price_in_combo * qty, 2)
+    total_qty_in_combo * qty == sd
   end
 
   def combo_qty_checker2(brand_id, subcatid, qty, salesid, items, combo_details, datas) do
