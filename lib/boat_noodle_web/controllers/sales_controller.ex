@@ -660,7 +660,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
 
             [
               'Daily Sales',
-              branch.branchname,
+              branch.report_class,
               'Custom Sales Receipt',
               trkh,
               join,
@@ -670,7 +670,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
               qty,
               rate,
               order_price,
-              branch.branchname,
+              branch.report_class,
               'SR0'
             ]
           end
@@ -798,7 +798,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
 
         tpm = [
           'Daily Sales',
-          branch.branchname,
+          branch.report_class,
           'Custom Sales Receipt',
           date2,
           join,
@@ -808,13 +808,13 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           "",
           service_charge,
           service_charge,
-          branch.branchname,
+          branch.report_class,
           'SR0'
         ]
 
         tpf = [
           'Daily Sales',
-          branch.branchname,
+          branch.report_class,
           'Custom Sales Receipt',
           date2,
           join,
@@ -824,13 +824,13 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           "",
           rounding2,
           rounding2,
-          branch.branchname,
+          branch.report_class,
           'SR0'
         ]
 
         tpq = [
           'Daily Sales',
-          branch.branchname,
+          branch.report_class,
           'Custom Sales Receipt',
           date2,
           join,
@@ -840,7 +840,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           "",
           disc_amt,
           disc_amt,
-          branch.branchname,
+          branch.report_class,
           'SR0'
         ]
 
@@ -924,7 +924,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
 
         tpt = [
           'Daily Sales',
-          branch.branchname,
+          branch.report_class,
           'Custom Sales Receipt',
           date2,
           join,
@@ -934,7 +934,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           "",
           shortextra,
           shortextra,
-          branch.branchname,
+          branch.report_class,
           'SR0'
         ]
 
@@ -966,7 +966,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
 
         tps = [
           'Daily Sales',
-          branch.branchname,
+          branch.report_class,
           'Custom Sales Receipt',
           date2,
           join,
@@ -976,7 +976,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           "",
           ccard,
           ccard,
-          branch.branchname,
+          branch.report_class,
           'SR0'
         ]
 
@@ -984,7 +984,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
           for item <- paytype do
             [
               'Daily Sales',
-              branch.branchname,
+              branch.report_class,
               'Custom Sales Receipt',
               date2,
               join,
@@ -994,7 +994,7 @@ staff_data=Repo.all(from s in Staff, where: s.brand_id==^brand.id)
               "",
               (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
               (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
-              branch.branchname,
+              branch.report_class,
               'SR0'
             ]
           end
