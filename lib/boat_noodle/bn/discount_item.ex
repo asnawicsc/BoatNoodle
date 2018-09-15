@@ -59,11 +59,22 @@ defmodule BoatNoodle.BN.DiscountItem do
         attrs = Map.put(attrs, "discountitemsid", discount_item.data.discountitemsid)
       end
 
+
+                  date=Timex.now
+
+      date_time=DateTime.to_string(date)|>String.split_at(19)|>elem(0)
+
+
+
+
+
       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
         name: "discount_item",
         user_id: user_id,
         description: Poison.encode!(attrs),
-        action: action
+        action: action,
+        inserted_at: date_time,
+        updated_at: date_time
       })
       |> BoatNoodle.Repo.insert()
     end

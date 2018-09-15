@@ -1,6 +1,7 @@
 defmodule BoatNoodle.BN.Tag do
   use Ecto.Schema
   import Ecto.Changeset
+  require IEx
 
   @primary_key false
   schema "tag_tbl" do
@@ -41,11 +42,18 @@ defmodule BoatNoodle.BN.Tag do
         attrs = Map.put(attrs, "tagid", tag.data.tagid)
       end
 
+      date=Timex.now
+
+      date_time=DateTime.to_string(date)|>String.split_at(19)|>elem(0)
+
+
       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
         name: "tag",
         user_id: user_id,
         description: Poison.encode!(attrs),
-        action: action
+        action: action,
+        inserted_at: date_time,
+        updated_at: date_time
       })
       |> BoatNoodle.Repo.insert()
     end

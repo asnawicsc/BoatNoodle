@@ -8,8 +8,8 @@ defmodule BoatNoodle.BN.ModalLog do
     field :description, :binary
     field :name, :string
     field :user_id, :integer
-    field :inserted_at, :string
-    field :updated_at, :string
+    field :inserted_at, :utc_datetime
+    field :updated_at, :utc_datetime
 
 
   end

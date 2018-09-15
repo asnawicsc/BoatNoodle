@@ -3466,6 +3466,7 @@ defmodule BoatNoodleWeb.SalesController do
         'Gross Sales',
         'Nett Sales',
         'Unit Price',
+        'Topup',
         'Discount Value',
         'Service Charge',
         'Store Owner',
@@ -3651,6 +3652,7 @@ defmodule BoatNoodleWeb.SalesController do
         discount_value
       ),
       unit_price(item.unit_price, item.itemid, item.combo_id, combo_data_price),
+      topup_price(item.unit_price, item.itemid, item.combo_id, combo_data_price),
       discount_value,
       :erlang.float_to_binary(
         nett_sales(
@@ -3765,6 +3767,26 @@ defmodule BoatNoodleWeb.SalesController do
     end
   end
 
+
+  def topup_price(unit_price, item_id, combo_id, combo_data) do
+    if String.length(Integer.to_string(item_id)) == 9 do
+      data = combo_data |> Enum.filter(fn x -> x.itemid == item_id end) |> Enum.uniq()
+
+      if data != [] do
+        unit_price = hd(data).unit_price |> Decimal.to_float()
+        top_up = hd(data).top_up |> Decimal.to_float()
+
+        res =top_up
+
+        res
+      else
+        0
+      end
+    else
+      0
+    end
+  end
+
   def unit_price(unit_price, item_id, combo_id, combo_data) do
     if String.length(Integer.to_string(item_id)) == 9 do
       data = combo_data |> Enum.filter(fn x -> x.itemid == item_id end) |> Enum.uniq()
@@ -3773,7 +3795,7 @@ defmodule BoatNoodleWeb.SalesController do
         unit_price = hd(data).unit_price |> Decimal.to_float()
         top_up = hd(data).top_up |> Decimal.to_float()
 
-        res = unit_price + top_up
+        res = unit_price 
 
         res
       else
