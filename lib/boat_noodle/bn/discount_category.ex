@@ -27,7 +27,19 @@ defmodule BoatNoodle.BN.DiscountCategory do
           if action == "Update" do
         attrs = Map.put(attrs, "name", discount_category.data.name)
       end
-          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount_category", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+
+                  date=Timex.now
+
+      date_time=DateTime.to_string(date)|>String.split_at(19)|>elem(0)
+
+
+          BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "discount_category", 
+            user_id: user_id,
+            description: Poison.encode!(attrs),
+            action: action,
+            inserted_at: date_time,
+        updated_at: date_time
+        })|>BoatNoodle.Repo.insert()
       end
 
   discount_category

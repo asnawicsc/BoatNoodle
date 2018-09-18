@@ -30,7 +30,17 @@ defmodule BoatNoodle.BN.Organization do
         attrs = Map.put(attrs, "organisationid", organization.data.organisationid)
       end
 
-       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{name: "organization", user_id: user_id,description: Poison.encode!(attrs),action: action})|>BoatNoodle.Repo.insert()
+                        date=Timex.now
+
+      date_time=DateTime.to_string(date)|>String.split_at(19)|>elem(0)
+
+       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{
+        name: "organization",
+        user_id: user_id,
+        inserted_at: date_time,
+        updated_at: date_time,
+        description: Poison.encode!(attrs),
+        action: action})|>BoatNoodle.Repo.insert()
     end
 
     
