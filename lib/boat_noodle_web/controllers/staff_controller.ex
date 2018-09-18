@@ -30,7 +30,7 @@ defmodule BoatNoodleWeb.StaffController do
     changeset = Staff.changeset(%BoatNoodle.BN.Staff{}, %{}, BN.current_user(conn), "new")
     roles = BN.list_staff_type()
     roles = Enum.map(roles, fn x -> {x.name, x.id} end)
-    branch_access = BN.list_branch()
+    branch_access = BN.list_branch()|>Enum.filter(fn x-> x.brand_id == BN.get_brand_id(conn) end)
 
     branch_access =
       Enum.map(branch_access, fn x -> {x.branchname, x.branchid} end)
@@ -53,6 +53,7 @@ defmodule BoatNoodleWeb.StaffController do
           s in Staff,
           left_join: r in BoatNoodle.BN.StaffType,
           on: s.staff_type_id == r.id,
+          where: s.brand_id == ^BN.get_brand_id(conn),
           select: %{
             id: s.staff_id,
             staff_name: s.staff_name,
@@ -65,6 +66,7 @@ defmodule BoatNoodleWeb.StaffController do
 
     staff_params = Map.put(staff_params, "branch_access", branch_access)
     staff_params = Map.put(staff_params, "staff_pin", "0000")
+    staff_params = Map.put(staff_params, "brand_id", BN.get_brand_id(conn))
     staff_params = Map.put(staff_params, "branchid", "2")
 
     latest_staff_id =
@@ -78,6 +80,8 @@ defmodule BoatNoodleWeb.StaffController do
 
     staff_params = Map.put(staff_params, "staff_id", latest_staff_id)
 
+
+  
     changeset =
       BoatNoodle.BN.Staff.changeset(
         %BoatNoodle.BN.Staff{},

@@ -176,6 +176,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
       }) do
+
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
     items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
     branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
