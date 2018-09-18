@@ -132,19 +132,19 @@ defmodule BoatNoodleWeb.PageController do
 
     data =
       for branch <- branches do
-        check_combo_order(
-          s_date,
-          e_date,
-          Integer.to_string(branch.branchid),
-          BN.get_brand_id(conn)
-        )
-
-        # Task.start_link(__MODULE__, :check_combo_order, [
+        # check_combo_order(
         #   s_date,
         #   e_date,
         #   Integer.to_string(branch.branchid),
         #   BN.get_brand_id(conn)
-        # ])
+        # )
+
+        Task.start_link(__MODULE__, :check_combo_order, [
+          s_date,
+          e_date,
+          Integer.to_string(branch.branchid),
+          BN.get_brand_id(conn)
+        ])
       end
 
     hd =
@@ -233,7 +233,8 @@ defmodule BoatNoodleWeb.PageController do
               topup: cd.top_up,
               menu_cat_id: cd.menu_cat_id,
               qty: cd.combo_item_qty,
-              combo_id: cd.combo_id
+              combo_id: cd.combo_id,
+              combo_item_id: cd.combo_item_id
             }
           )
         )
@@ -338,12 +339,43 @@ defmodule BoatNoodleWeb.PageController do
         0
       end
 
+    item_ids =
+      datas |> Enum.filter(fn x -> x.salesid == salesid end) |> Enum.map(fn x -> x.itemid end)
+
+    # combo_details
+    # |> Enum.filter(fn x -> x.combo_id == subcatid end)
+    # |> Enum.filter(fn x -> Enum.any?(item_ids, fn y -> x.combo_item_id == y end) end)
+    # |> Enum.map(fn x -> Map.delete(x, :combo_item_id) end)
+    # |> Enum.uniq()
+    # |> Enum.map(fn x -> x.qty * Decimal.to_float(x.unit_price) end)
+    # |> Enum.sum()
+
     total_price_in_combo =
       if combo_details != [] do
         combo_details
         |> Enum.filter(fn x -> x.combo_id == subcatid end)
+        |> Enum.filter(fn x -> Enum.any?(item_ids, fn y -> x.combo_item_id == y end) end)
+        |> Enum.map(fn x -> Map.delete(x, :combo_item_id) end)
+        |> Enum.map(fn x -> Map.delete(x, :topup) end)
         |> Enum.uniq()
-        |> Enum.map(fn x -> x.qty * Decimal.to_float(x.unit_price) end)
+        |> Enum.map(fn x ->
+          x.qty * Decimal.to_float(x.unit_price)
+        end)
+        |> Enum.sum()
+      else
+        0
+      end
+
+    total_price_in_combo_addon =
+      if combo_details != [] do
+        combo_details
+        |> Enum.filter(fn x -> x.combo_id == subcatid end)
+        |> Enum.filter(fn x -> Enum.any?(item_ids, fn y -> x.combo_item_id == y end) end)
+        |> Enum.map(fn x -> Map.delete(x, :combo_item_id) end)
+        |> Enum.uniq()
+        |> Enum.map(fn x ->
+          Decimal.to_float(x.topup)
+        end)
         |> Enum.sum()
       else
         0
@@ -368,11 +400,37 @@ defmodule BoatNoodleWeb.PageController do
         0.0
       end
 
-    if final_price == Float.round(total_price_in_combo * qty, 2) do
+    if final_price == Float.round(total_price_in_combo * qty + total_price_in_combo_addon, 2) do
+      true
     else
+      internal_add_on =
+        datas
+        |> Enum.filter(fn x -> x.salesid == salesid end)
+        |> Enum.reject(fn x -> x.comboid == 0 end)
+        |> Enum.filter(fn x -> x.comboid == subcatid end)
+        |> Enum.map(fn x -> Decimal.to_float(x.order_price) end)
+        |> Enum.sum()
+
+      # if salesid == "BNGS18901" do
+      #   IEx.pry()
+      # end
+
+      add_qty =
+        if internal_add_on == 0 do
+          0
+        else
+          internal_add_on / total_price_in_combo_addon
+        end
+
+      if final_price + internal_add_on ==
+           Float.round(total_price_in_combo * qty + total_price_in_combo_addon * add_qty, 2) do
+        true
+      else
+        false
+      end
     end
 
-    final_price == Float.round(total_price_in_combo * qty, 2)
+    # final_price == Float.round(total_price_in_combo * qty, 2)
     # total_qty_in_combo * qty == sd
   end
 
