@@ -442,11 +442,13 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
 
-    if latest_branch_id == [] do
-      latest_branch_id = 0
+    latest_branch_id=if latest_branch_id == [] do
+      0
     else
-      latest_branch_id = hd(latest_branch_id)
+      hd(latest_branch_id)
     end
+
+
 
     branch_params = Map.put(branch_params, "branchid", latest_branch_id + 1)
     branch_params = Map.put(branch_params, "brand_id", BN.get_brand_id(conn))

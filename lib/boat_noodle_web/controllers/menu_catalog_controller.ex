@@ -115,12 +115,12 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         "tag_id" => catalog_id
       }) do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-    items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+    items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)|>Enum.uniq
     branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
 
     cata =
       if Enum.any?(items, fn x -> x == subcat_id end) do
-        items = List.delete(items, subcat_id) |> Enum.join(",") |> String.trim_trailing(",")
+        items = List.delete(items, subcat_id)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
 
         {:ok, cata} =
           MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn), "Update")
@@ -153,16 +153,16 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       )
 
     for tag <- tags do
-      existing_combo_ids = tag.combo_item_ids |> String.split(",")
+      existing_combo_ids = tag.combo_item_ids |> String.split(",")|>Enum.uniq
 
       new_combo_item_ids =
-        (existing_combo_ids -- combo_item_ids) |> Enum.join(",") |> String.trim_trailing(",")
+        (existing_combo_ids -- combo_item_ids)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
 
       Tag.changeset(tag, %{combo_item_ids: new_combo_item_ids}, BN.current_user(conn), "update")
       |> Repo.update()
     end
 
-    new_ids = (existing_combo_ids -- combo_ids) |> Enum.join(",") |> String.trim_trailing(",")
+    new_ids = (existing_combo_ids -- combo_ids)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
 
     {:ok, cata} =
       MenuCatalog.changeset(cata, %{combo_items: new_ids}, BN.current_user(conn), "Update")
@@ -178,14 +178,14 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       }) do
 
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-    items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+    items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)|>Enum.uniq
     branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
 
     cata =
       if Enum.any?(items, fn x -> x == subcat_id end) do
         cata
       else
-        items = List.insert_at(items, 0, subcat_id) |> Enum.join(",") |> String.trim_trailing(",")
+        items = List.insert_at(items, 0, subcat_id)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
 
         {:ok, cata} =
           MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn), "Update")
