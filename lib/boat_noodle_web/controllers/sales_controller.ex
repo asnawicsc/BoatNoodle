@@ -499,6 +499,24 @@ defmodule BoatNoodleWeb.SalesController do
     end
   end
 
+  defp get_item_desc(itemid, items, combo) do
+    item_name = Enum.filter(items, fn x -> x.subcatid == itemid end)
+
+    if item_name != [] do
+      a = item_name |> hd
+      a.itemdesc
+    else
+      b = Enum.filter(combo, fn x -> x.combo_item_id == itemid end)
+
+      if b == [] do
+        "unknown item"
+      else
+        a = b |> hd
+        a.combo_item_name
+      end
+    end
+  end
+
   defp csv_content(conn, params) do
     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
 
@@ -565,6 +583,7 @@ defmodule BoatNoodleWeb.SalesController do
               trkh = item.date |> Date.to_string()
 
               item_name = get_item_name(item.itemid, name_data, combo_data)
+              item_desc = get_item_desc(item.itemid, name_data, combo_data)
 
               order_price = Decimal.to_float(item.order_price) |> Float.to_string()
               qty = Decimal.to_float(item.qty) |> Float.to_string()
@@ -608,7 +627,7 @@ defmodule BoatNoodleWeb.SalesController do
                 join,
                 full,
                 item_name,
-                item_name,
+                item_desc,
                 qty,
                 rate,
                 order_price,
@@ -642,7 +661,7 @@ defmodule BoatNoodleWeb.SalesController do
 
           join = day <> month <> year <> string
 
-          name = branch.branchname
+          name = branch.report_class
           cashin = "CashInDrawer:"
           full = cashin <> name
 
