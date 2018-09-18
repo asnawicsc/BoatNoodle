@@ -89,9 +89,9 @@
                                 <li>
                                     <a href="/discount_item">Discount</a>
                                 </li>
-                                <li>
+                            <%#     <li>
                                     <a href="/tag">Tags</a>
-                                </li>
+                                </li> %>
                             </ul>
                         </li>
                  

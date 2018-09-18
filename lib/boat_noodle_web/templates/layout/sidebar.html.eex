@@ -163,12 +163,7 @@
                   </a>
                 </li>
                
-                <li class="nav-item ">
-                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/tag">
-                    <span class="sidebar-mini"> T </span>
-                    <span class="sidebar-normal"> Tags </span>
-                  </a>
-                </li>
+        <%#  %>
 
               </ul>
             </div>
