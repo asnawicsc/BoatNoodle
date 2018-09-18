@@ -817,6 +817,142 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     )
   end
 
+  defp get_item_cat_name(cat_name,brand_id) do
+
+if cat_name != nil do
+  
+
+    item_cat=Repo.get_by(ItemCat,itemcatname: cat_name,brand_id: brand_id)
+
+
+    cat=if item_cat != nil do
+      item_cat.itemcatid
+
+    else
+      0
+    end
+
+    cat
+
+  else
+
+    0
+
+  end
+    
+
+    
+   
+  end
+
+
+  defp get_item_subcat(brand_id) do
+
+      item_subcat = BN.list_item_subcat()|>Enum.filter(fn x -> x.brand_id ==brand_id end)|>Enum.filter(fn x -> x.subcatid < 10000 end)
+
+
+
+     subcat =if item_subcat != [] do
+
+        Enum.map(item_subcat,fn x -> x.subcatid end)|>List.last
+
+      else
+
+        1
+        
+      end
+
+
+
+   
+  end
+
+
+    def upload_menu_item(conn, params) do
+  
+    
+    file = params["menu_item"]["file"]
+
+
+    {:ok, binary} = File.read(file.path)
+
+    data = binary |> String.split("\n") |> Enum.map(fn x -> String.split(x, ",") end)
+    headers = hd(data) |> Enum.map(fn x -> String.trim(x, " ") end)
+    contents = tl(data)|>Enum.reject(fn x -> x == [""] end)
+
+  g=for content <- contents do
+
+    item_cat=content|>Enum.at(3)
+
+
+
+      subcatid=get_item_subcat(BN.get_brand_id(conn))+1
+
+      itemcatid=get_item_cat_name(item_cat,BN.get_brand_id(conn))
+      itemcatid=itemcatid|>Integer.to_string
+
+      itemname=content|>Enum.at(2)
+
+      itemcode=content|>Enum.at(1)
+      a=if itemcode == "" do
+
+
+        "UK"
+
+      else
+        itemcode
+        
+      end
+
+      product_code=""
+
+      price_code=content|>Enum.at(10)
+
+      part_code=content|>Enum.at(9)
+
+      itemdesc=content|>Enum.at(4)
+
+      itemprice=content|>Enum.at(5)
+
+      brand_id=BN.get_brand_id(conn)
+
+      is_activate=1
+
+
+      params=%{is_activate: is_activate, subcatid: subcatid, itemcatid: itemcatid, itemname: itemname, itemcode: a,
+       product_code: product_code, price_code: price_code, part_code: part_code,itemdesc: itemdesc, itemprice: itemprice, brand_id: brand_id}
+
+cg2 =
+      BoatNoodle.BN.ItemSubcat.changeset(
+        %BoatNoodle.BN.ItemSubcat{},
+        params,
+        BN.current_user(conn),
+        "Upload ItemSubcat"
+      )
+
+      if cg2.valid? == false do
+        IEx.pry
+      end
+
+
+    case Repo.insert(cg2) do
+      {:ok, itemsubcat} ->
+        true
+
+      {:error, changeset} ->
+        true
+    end
+
+
+  end
+
+    conn
+    |> put_flash(:info, "Menu Item Successfully Upload")
+    |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
+  end
+
+
+
   def post_add_item(conn, params) do
     user = BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
     subcatid = params["subcatid"]

@@ -17,7 +17,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:item_end_hour, :integer, default: 0)
     field(:is_print, :integer, default: 0)
     field(:itemcatid, :string)
-    field(:itemcode, :string)
+    field(:itemcode, :string, default: "UK")
     field(:itemdesc, :string)
     field(:itemimage, :binary, default: "")
 

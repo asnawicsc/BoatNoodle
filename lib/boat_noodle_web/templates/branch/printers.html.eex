@@ -268,7 +268,7 @@
 
            <div class="form-group bmd-form-group">
               <%= label f, :printer_ip, class: "bmd-label-floating" %>
-              <%= text_input f, :printer_ip, class: "form-control"%>
+              <%= text_input f, :printer_ip, class: "form-control", required: true%>
               <%= error_tag f, :printer_ip %>
             </div>
           </div>
