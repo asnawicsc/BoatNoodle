@@ -536,7 +536,8 @@ defmodule BoatNoodleWeb.SalesController do
             where:
               s.is_void == 0 and p.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
                 p.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"],
+                s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"] and
+                p.combo_id == ^0,
             group_by: [s.salesdate, p.itemid, p.itemname, b.branchcode],
             order_by: [s.salesdate, p.itemname],
             select: %{
@@ -755,7 +756,7 @@ defmodule BoatNoodleWeb.SalesController do
               0
             end
 
-          disc_amt = 0 - (sub_total + service_charge + gst_charge + rounding)
+          disc_amt = grand_total - (sub_total + service_charge + gst_charge + rounding)
 
           tpm = [
             'Daily Sales',

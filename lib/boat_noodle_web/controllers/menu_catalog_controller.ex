@@ -38,10 +38,29 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       item_details = Repo.all(from(i in ItemSubcat, where: i.itemcatid == ^subcat_id))
     else
       unless Enum.any?(items, fn x -> x == subcat_id end) do
+        is = Repo.get_by(ItemSubcat, brand_id: BN.get_brand_id(conn), subcatid: subcat_id)
+
+        cata_categories = cata.categories |> String.split(",")
+
+        new_cata_categories =
+          if Enum.any?(cata_categories, fn x -> x == is.itemcatid end) do
+            cata_categories |> Enum.uniq() |> Enum.join(",") |> String.trim_trailing(",")
+          else
+            List.insert_at(cata_categories, 0, is.itemcatid) |> Enum.uniq() |> Enum.join(",")
+            |> String.trim_trailing(",")
+          end
+
         items = List.insert_at(items, 0, subcat_id) |> Enum.sort() |> Enum.join(",")
 
-        MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn), "Insert")
-        |> Repo.update()
+        cg =
+          MenuCatalog.changeset(
+            cata,
+            %{items: items, categories: new_cata_categories},
+            BN.current_user(conn),
+            "Insert"
+          )
+
+        Repo.update(cg)
       end
     end
 
@@ -115,12 +134,18 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         "tag_id" => catalog_id
       }) do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-    items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)|>Enum.uniq
+
+    items =
+      cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+      |> Enum.uniq()
+
     branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
 
     cata =
       if Enum.any?(items, fn x -> x == subcat_id end) do
-        items = List.delete(items, subcat_id)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
+        items =
+          List.delete(items, subcat_id) |> Enum.uniq() |> Enum.join(",")
+          |> String.trim_trailing(",")
 
         {:ok, cata} =
           MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn), "Update")
@@ -153,16 +178,19 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       )
 
     for tag <- tags do
-      existing_combo_ids = tag.combo_item_ids |> String.split(",")|>Enum.uniq
+      existing_combo_ids = tag.combo_item_ids |> String.split(",") |> Enum.uniq()
 
       new_combo_item_ids =
-        (existing_combo_ids -- combo_item_ids)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
+        (existing_combo_ids -- combo_item_ids) |> Enum.uniq() |> Enum.join(",")
+        |> String.trim_trailing(",")
 
       Tag.changeset(tag, %{combo_item_ids: new_combo_item_ids}, BN.current_user(conn), "update")
       |> Repo.update()
     end
 
-    new_ids = (existing_combo_ids -- combo_ids)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
+    new_ids =
+      (existing_combo_ids -- combo_ids) |> Enum.uniq() |> Enum.join(",")
+      |> String.trim_trailing(",")
 
     {:ok, cata} =
       MenuCatalog.changeset(cata, %{combo_items: new_ids}, BN.current_user(conn), "Update")
@@ -176,16 +204,21 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         "subcat_id" => subcat_id,
         "tag_id" => catalog_id
       }) do
-
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
-    items = cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)|>Enum.uniq
+
+    items =
+      cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+      |> Enum.uniq()
+
     branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
 
     cata =
       if Enum.any?(items, fn x -> x == subcat_id end) do
         cata
       else
-        items = List.insert_at(items, 0, subcat_id)|>Enum.uniq |> Enum.join(",") |> String.trim_trailing(",")
+        items =
+          List.insert_at(items, 0, subcat_id) |> Enum.uniq() |> Enum.join(",")
+          |> String.trim_trailing(",")
 
         {:ok, cata} =
           MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn), "Update")
@@ -292,7 +325,8 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         from(
           s in ItemSubcat,
           where:
-            s.is_delete == ^0 and s.is_comboitem == ^0 and s.is_activate==^1 and s.brand_id == ^BN.get_brand_id(conn),
+            s.is_delete == ^0 and s.is_comboitem == ^0 and s.is_activate == ^1 and
+              s.brand_id == ^BN.get_brand_id(conn),
           select: %{
             subcatid: s.subcatid,
             item_code: s.itemcode,

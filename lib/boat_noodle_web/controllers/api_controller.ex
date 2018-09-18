@@ -558,8 +558,6 @@ defmodule BoatNoodleWeb.ApiController do
       }
       |> Poison.encode!()
 
-    
-
     message = List.insert_at(conn.req_headers, 0, {"branch_details", "branch_details"})
     log_error_api(message, "#{branch.branchcode} - API GET - branch_details")
     send_resp(conn, 200, branch_details)
@@ -822,6 +820,8 @@ defmodule BoatNoodleWeb.ApiController do
 
               sales_params = Map.put(sales_params, :branchid, Integer.to_string(user.branchid))
               # IO.inspect(sales_params)
+              sd_count = 0
+              sd_count = Enum.count(sales_master_params_list)
 
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->
@@ -847,7 +847,7 @@ defmodule BoatNoodleWeb.ApiController do
                           model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                           type = changeset.errors |> hd() |> elem(1) |> elem(0)
                           message = List.insert_at(conn.req_headers, 0, {model, type})
-                          log_error_api(message, "API POST - sales details")
+                          log_error_api(message, params["code"] <> " API POST - sales details")
                           :error
                       end
                     end
@@ -886,28 +886,41 @@ defmodule BoatNoodleWeb.ApiController do
                           sales.created_at
                         ])
 
-                        map =
-                          %{message: "Sales #{sales.salesid} create successfully.", status: "ok"}
-                          |> Poison.encode!()
-
-                        send_resp(conn, 200, map)
-
                       {:error, %Ecto.Changeset{} = changeset} ->
                         model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                         type = changeset.errors |> hd() |> elem(1) |> elem(0)
                         message = List.insert_at(conn.req_headers, 0, {model, type})
                         log_error_api(message, "API POST - sales payment")
+                    end
 
-                        Repo.delete_all(
-                          from(
-                            s in SalesMaster,
-                            where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
-                          )
+                    sp =
+                      Repo.get_by(SalesPayment, brand_id: user.brand_id, salesid: sales.salesid)
+
+                    sds =
+                      Repo.all(
+                        from(
+                          sd in SalesMaster,
+                          where: sd.brand_id == ^user.brand_id and sd.salesid == ^sales.salesid
                         )
+                      )
 
-                        Repo.delete(sales)
+                    if sp != nil and Enum.count(sds) == sd_count do
+                      map =
+                        %{message: "Sales #{sales.salesid} create successfully.", status: "ok"}
+                        |> Poison.encode!()
 
-                        send_resp(conn, 500, "Sales payment failed to create.")
+                      send_resp(conn, 200, map)
+                    else
+                      Repo.delete_all(
+                        from(
+                          s in SalesMaster,
+                          where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
+                        )
+                      )
+
+                      Repo.delete(sales)
+
+                      send_resp(conn, 500, "Sales payment failed to create.")
                     end
                   end
 

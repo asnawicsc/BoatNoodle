@@ -77,16 +77,18 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 )
               )
 
-            {:ok, history_data} =
-              HistoryData.changeset(%HistoryData{}, %{
-                start_date: start_d,
-                end_date: end_d,
-                json_map: Poison.encode!(b),
-                branch_id: branchid,
-                brand_id: brand_id,
-                name: "summary"
-              })
-              |> Repo.insert()
+            unless start_d == end_d and end_d == Date.utc_today() do
+              {:ok, history_data} =
+                HistoryData.changeset(%HistoryData{}, %{
+                  start_date: start_d,
+                  end_date: end_d,
+                  json_map: Poison.encode!(b),
+                  branch_id: branchid,
+                  brand_id: brand_id,
+                  name: "summary"
+                })
+                |> Repo.insert()
+            end
 
             b
           else
@@ -200,7 +202,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 %{
                   date: day,
-                  total_sales: total_sales-total_taxes,
+                  total_sales: total_sales - total_taxes,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
@@ -772,7 +774,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 %{
                   date: day,
-                  total_sales: total_sales-total_taxes,
+                  total_sales: total_sales - total_taxes,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
