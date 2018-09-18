@@ -285,6 +285,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/vouchers", VoucherController)
     resources("/modal_logs", ModalLogController)
     get("/advance", PageController, :advance)
+    post("/upload_menu_item", ItemSubcatController, :upload_menu_item)
 
     get("/combo/combo_item_qty", PageController, :csv_content)
     get("/experiment", PageController, :experiment)

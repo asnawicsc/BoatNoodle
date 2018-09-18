@@ -128,6 +128,8 @@ defmodule BoatNoodleWeb.MenuItemController do
         )
       )
 
+ 
+
     remark =
       Repo.all(
         from(
@@ -196,6 +198,8 @@ defmodule BoatNoodleWeb.MenuItemController do
     zz = "/"
     view_url = zz <> z
 
+      changeset = BN.change_menu_item(%MenuItem{})
+
     render(
       conn,
       "index.html",
@@ -206,7 +210,8 @@ defmodule BoatNoodleWeb.MenuItemController do
       edit_url: edit_url,
       new_url: new_url,
       delete_url: delete_url,
-      view_url: view_url
+      view_url: view_url,
+      changeset: changeset
     )
   end
 
