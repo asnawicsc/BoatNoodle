@@ -279,8 +279,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       id = branch |> String.to_integer()
       item = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
       com_items = item.items
-      comb = com_items|>Enum.uniq |> String.split(",")
-      comb_id = subcatid|>Enum.uniq |> Integer.to_string()
+      comb = com_items |> Enum.uniq() |> String.split(",")
+      comb_id = subcatid |> Enum.uniq() |> Integer.to_string()
       all_items = List.insert_at(comb, 0, subcatid)
       new_items = all_items |> Enum.join(",")
 
@@ -347,12 +347,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       for printer <- printers do
         subcatids = printer.subcat_ids
-        all = subcatids|>Enum.uniq |> String.split(",")
+        all = subcatids |> Enum.uniq() |> String.split(",")
 
         if Enum.any?(all, fn x -> x == subcatid2 end) do
           combo_id = combo_item_id |> Integer.to_string()
           comboitemids = printer.combo_item_ids
-          comb = comboitemids|>Enum.uniq |> String.split(",")
+          comb = comboitemids |> Enum.uniq() |> String.split(",")
           all_items = List.insert_at(comb, 0, combo_id)
           new_items = all_items |> Enum.join(",")
 
@@ -412,7 +412,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
             catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
 
             combo_items = catalog.combo_items
-            comb = combo_items|>Enum.uniq |> String.split(",")
+            comb = combo_items |> Enum.uniq() |> String.split(",")
 
             combo_id = combo_details.id |> Integer.to_string()
 
@@ -547,7 +547,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       id = branch |> String.to_integer()
       item = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
       com_items = item.items
-      comb = com_items|> String.split(",")|>Enum.uniq
+      comb = com_items |> String.split(",") |> Enum.uniq()
       comb_id = subcatid |> Integer.to_string()
       all_items = List.insert_at(comb, 0, subcatid)
       new_items = all_items |> Enum.join(",")
@@ -616,12 +616,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         subcatids = printer.subcat_ids
 
         if subcatids != nil do
-          all = subcatids|> String.split(",")|>Enum.uniq 
+          all = subcatids |> String.split(",") |> Enum.uniq()
 
           if Enum.any?(all, fn x -> x == subcatid2 end) do
             combo_id = combo_item_id |> Integer.to_string()
             comboitemids = printer.combo_item_ids
-            comb = comboitemids|> String.split(",")|>Enum.uniq 
+            comb = comboitemids |> String.split(",") |> Enum.uniq()
             all_items = List.insert_at(comb, 0, combo_id)
             new_items = all_items |> Enum.join(",")
 
@@ -687,7 +687,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
             catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
 
             combo_items = catalog.combo_items
-            comb = combo_items|> String.split(",")|>Enum.uniq 
+            comb = combo_items |> String.split(",") |> Enum.uniq()
 
             combo_id = combo_details.id |> Integer.to_string()
 
@@ -829,7 +829,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           c in ComboDetails,
           where:
             c.combo_id == ^subcatid and c.menu_cat_id == ^itemcatid and
-              c.brand_id == ^BN.get_brand_id(conn)
+              c.brand_id == ^BN.get_brand_id(conn) and c.is_delete == ^0
         )
       )
 
@@ -840,6 +840,20 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         combo_detail_param = params[itemcatid][id]
         subcat = Repo.get_by(ItemSubcat, brand_id: BN.get_brand_id(conn), subcatid: id)
 
+        id_int =
+          if String.length(id) == 3 do
+            id
+          else
+            (String.to_integer(id) + 1000)
+            |> Integer.to_string()
+            |> String.split("")
+            |> Enum.reject(fn x -> x == "" end)
+            |> List.delete_at(0)
+            |> Enum.join("")
+          end
+
+        # IEx.pry()
+
         if combo_detail_param["unit_price"] != "" do
           {:ok, combo_item} =
             ComboDetails.changeset(
@@ -848,7 +862,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
                 menu_cat_id: itemcatid,
                 combo_id: subcatid,
                 combo_qty: combo_qty,
-                combo_item_id: subcatid <> id,
+                combo_item_id: String.to_integer(subcatid <> id_int),
                 combo_item_name: subcat.itemname,
                 combo_item_code: subcat.itemcode,
                 combo_item_qty: combo_qty,
@@ -915,14 +929,9 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       old_combo_items
     ])
 
-    old_list = Enum.map(old_combo_items, fn x -> x.id end)
-
-    Repo.delete_all(
-      from(
-        c in ComboDetails,
-        where: c.id in ^old_list
-      )
-    )
+    for item <- old_combo_items do
+      ComboDetails.changeset(item, %{is_delete: 1}, user.id, "delete") |> Repo.update()
+    end
 
     conn
     |> put_flash(:info, "Combo item added!")
@@ -988,7 +997,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     for printer <- printers do
       combo_item_ids = printer.combo_item_ids
-      all = combo_item_ids|>Enum.uniq |> String.split(",")
+      all = combo_item_ids |> Enum.uniq() |> String.split(",")
       old_current_list = Enum.map(old_combo_items, fn x -> x.combo_item_id end)
       new_list = all -- old_current_list
 
@@ -1266,7 +1275,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     branch_selected =
       for branch <- branchs do
-        gp = branch.items|>Enum.uniq |> String.split(",") |> Enum.reject(fn x -> x == "" end)
+        gp = branch.items |> Enum.uniq() |> String.split(",") |> Enum.reject(fn x -> x == "" end)
 
         if Enum.any?(gp, fn x -> x == id end) do
           branch_selected = branch.id
@@ -1318,14 +1327,22 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def show_voucher(conn, _params) do
- 
-
-     changeset =
-      BoatNoodle.BN.ItemSubcat.changeset(%BoatNoodle.BN.ItemSubcat{},%{},BN.current_user(conn),"New")
-
+    changeset =
+      BoatNoodle.BN.ItemSubcat.changeset(
+        %BoatNoodle.BN.ItemSubcat{},
+        %{},
+        BN.current_user(conn),
+        "New"
+      )
 
     discount =
-      Repo.all(from(s in Discount,where: s.brand_id==^BN.get_brand_id(conn) and s.is_delete==0 and s.is_visable==1, select: %{discountid: s.discountid, discname: s.discname}))
+      Repo.all(
+        from(
+          s in Discount,
+          where: s.brand_id == ^BN.get_brand_id(conn) and s.is_delete == 0 and s.is_visable == 1,
+          select: %{discountid: s.discountid, discname: s.discname}
+        )
+      )
 
     render(conn, "show_voucher.html", discount: discount, changeset: changeset)
   end
