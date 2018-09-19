@@ -880,10 +880,13 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
         price_code = content |> Enum.at(10)
 
+    
+
         price_code =
           if price_code == "" do
             "A"
           end
+
 
         part_code = content |> Enum.at(9)
 

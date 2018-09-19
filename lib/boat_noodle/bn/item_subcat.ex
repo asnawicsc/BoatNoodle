@@ -20,11 +20,10 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:itemcode, :string, default: "UK")
     field(:itemdesc, :string)
     field(:itemimage, :binary, default: "")
-
     field(:itemname, :string)
     field(:itemprice, :decimal, default: 0)
     field(:part_code, :string)
-    field(:price_code, :string)
+    field(:price_code, :string, default: "A")
     field(:product_code, :string)
     field(:updated_at, :utc_datetime)
     field(:brand_id, :integer, primary_key: true)

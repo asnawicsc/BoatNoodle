@@ -17,25 +17,25 @@
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Code</label>
-                  <input name="itemcatcode" class="form-control" type="text">
+                  <input name="itemcatcode" class="form-control" type="text" required="required">
                  
                 </div>
               </div>
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Name</label>
-                  <input name="itemcatname" class="form-control" type="text">
+                  <input name="itemcatname" class="form-control" type="text" required="required">
                 </div>
               </div>
               <div class="col-sm-3">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Description</label>
-                  <input name="itemcatdesc" class="form-control" type="text">
+                  <input name="itemcatdesc" class="form-control" type="text" required="required">
                 </div>
               </div>
               <div class="col-sm-3">
               
-                  <select class="selectpicker" data-style="btn select-with-transition" name="category_type" title="Choose Category" data-size="10">
+                  <select class="selectpicker" data-style="btn select-with-transition" required="required" name="category_type" title="Choose Category" data-size="10">
                          <option value="FOOD">FOOD</option>
                          <option value="DRINKS">DRINKS</option>
                          <option value="COMBO">COMBO</option>
