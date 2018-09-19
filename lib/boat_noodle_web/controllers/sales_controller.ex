@@ -392,6 +392,7 @@ defmodule BoatNoodleWeb.SalesController do
             "V"
           end
 
+  
         csv_content = [
           item.date,
           time,
@@ -400,14 +401,14 @@ defmodule BoatNoodleWeb.SalesController do
           staff_name,
           item.tbl_no,
           item.pax,
-          sub_total,
-          disc_amt |> Float.round(2),
-          disc_percent,
-          afterdisc,
-          service_charge,
-          gst_charge,
-          rounding,
-          grand_total,
+          sub_total|>Float.to_string,
+          disc_amt |> Float.round(2)|>Float.to_string,
+          disc_percent|>Float.to_string,          
+          afterdisc|>Float.to_string,
+          service_charge|>Float.to_string,
+          gst_charge|>Float.to_string,
+          rounding|>Float.to_string,
+          grand_total|>Float.to_string,
           item.payment_type,
           item.payment_name1,
           item.payment_code1,
@@ -1351,14 +1352,15 @@ defmodule BoatNoodleWeb.SalesController do
             on: s.salesid == sd.salesid,
             left_join: ic in BoatNoodle.BN.ItemCat,
             on: ic.itemcatid == i.itemcatid,
-            group_by: i.itemname,
+            group_by: sd.itemid,
             where:
-              sd.afterdisc != 0.00 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
+             sd.order_price > 0 and  s.is_void == 0 and sd.is_void == 0 and s.branchid == ^branch_id and s.salesdate >= ^start_date and
                 s.salesdate <= ^end_date and i.brand_id == ^brand.id and s.brand_id == ^brand.id and
                 ic.brand_id == ^brand.id,
             select: %{
               itemcode: i.itemcode,
-              itemname: i.itemname,
+              itemname: sd.itemname,
+              itemid: sd.itemid,
               itemcatname: ic.itemcatname,
               qty: sum(sd.qty),
               nett_price: sum(sd.afterdisc),
@@ -1376,13 +1378,14 @@ defmodule BoatNoodleWeb.SalesController do
             on: s.salesid == sd.salesid,
             left_join: ic in BoatNoodle.BN.ItemCat,
             on: ic.itemcatid == i.itemcatid,
-            group_by: i.itemname,
+            group_by: sd.itemid,
             where:
-              sd.afterdisc != 0.00 and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
+              sd.order_price > 0  and  s.is_void == 0 and sd.is_void == 0 and s.salesdate >= ^start_date and s.salesdate <= ^end_date and
                 i.brand_id == ^brand.id and s.brand_id == ^brand.id and ic.brand_id == ^brand.id,
             select: %{
               itemcode: i.itemcode,
-              itemname: i.itemname,
+              itemname: sd.itemname,
+              itemid: sd.itemid,
               itemcatname: ic.itemcatname,
               qty: sum(sd.qty),
               nett_price: sum(sd.afterdisc),
