@@ -18,48 +18,39 @@ defmodule BoatNoodle.BN.Staff do
 
   @doc false
   def changeset(staffs, attrs, user_id, action) do
-    staffs=staffs
-    |> cast(attrs, [
-      :brand_id,
-      :staff_id,
-      :branch_access,
-      :staff_name,
-      :staff_contact,
-      :staff_email,
-      :staff_pin,
-      :branchid,
-      :staff_type_id,
-      :prof_img
-    ]) |> unique_constraint(:staff_id, name: "PRIMARY")
+    staffs =
+      staffs
+      |> cast(attrs, [
+        :brand_id,
+        :staff_id,
+        :branch_access,
+        :staff_name,
+        :staff_contact,
+        :staff_email,
+        :staff_pin,
+        :branchid,
+        :staff_type_id,
+        :prof_img
+      ])
+      |> unique_constraint(:staff_id, name: "PRIMARY")
 
+    if action == "new" or action == "edit" do
+    else
+      attrs =
+        if action == "Update" do
+          Map.put(attrs, "staff_id", staffs.data.staff_id)
+        else
+        end
 
-        if action == "new" or action =="edit" do
-
-      
-         else
-            attrs = if action == "Update" do
-
-                    Map.put(attrs, "staff_id", staffs.data.staff_id)
-
-                 else
-
-                end
-
-
-                              date=Timex.now
-
-      date_time=DateTime.to_string(date)|>String.split_at(19)|>elem(0)
-
-       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{},%{
-        inserted_at: date_time,
-        updated_at: date_time,
+      BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
         name: "staffs",
-         user_id: user_id,
-         description: Poison.encode!(attrs),
-         action: action})|>BoatNoodle.Repo.insert()
+        user_id: user_id,
+        description: Poison.encode!(attrs),
+        action: action
+      })
+      |> BoatNoodle.Repo.insert()
     end
 
     staffs
-
   end
 end

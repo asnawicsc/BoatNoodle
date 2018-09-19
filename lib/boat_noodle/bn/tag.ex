@@ -42,18 +42,11 @@ defmodule BoatNoodle.BN.Tag do
         attrs = Map.put(attrs, "tagid", tag.data.tagid)
       end
 
-      date=Timex.now
-
-      date_time=DateTime.to_string(date)|>String.split_at(19)|>elem(0)
-
-
       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
         name: "tag",
         user_id: user_id,
         description: Poison.encode!(attrs),
-        action: action,
-        inserted_at: date_time,
-        updated_at: date_time
+        action: action
       })
       |> BoatNoodle.Repo.insert()
     end

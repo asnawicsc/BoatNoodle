@@ -18,4 +18,8 @@ defmodule BoatNoodleWeb.LayoutView do
       %{name: user.username, bin: ""}
     end
   end
+
+  def my_time(time) when time != nil do
+    Timex.format!(Timex.shift(time, hours: 8), "%Y-%m-%d %I:%M %P", :strftime)
+  end
 end

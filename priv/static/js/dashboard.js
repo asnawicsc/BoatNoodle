@@ -1,6 +1,6 @@
 
 // Now that you are connected, you can join channels with a topic:
-var topic = "dashboard_channel:" + window.currentUser
+var topic = "dashboard_channel:" + window.currentBrand
 // Join the topic
 let dashboard_channel = socket.channel(topic, {})
 dashboard_channel.join()

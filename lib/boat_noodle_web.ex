@@ -65,7 +65,8 @@ defmodule BoatNoodleWeb do
         Brand,
         ApiLog,
         Voucher,
-        HistoryData
+        HistoryData,
+        ModalLog
       }
     end
   end

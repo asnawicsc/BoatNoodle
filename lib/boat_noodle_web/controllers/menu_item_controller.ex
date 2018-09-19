@@ -128,8 +128,6 @@ defmodule BoatNoodleWeb.MenuItemController do
         )
       )
 
- 
-
     remark =
       Repo.all(
         from(
@@ -198,7 +196,7 @@ defmodule BoatNoodleWeb.MenuItemController do
     zz = "/"
     view_url = zz <> z
 
-      changeset = BN.change_menu_item(%MenuItem{})
+    changeset = BN.change_menu_item(%MenuItem{})
 
     render(
       conn,
@@ -297,9 +295,9 @@ defmodule BoatNoodleWeb.MenuItemController do
     # itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
     part_code = item_subcat_params["part_code"]
 
-    itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
+    # itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
     # product_code = item_subcat_params["product_code"]
-    extension_params = %{"itemname" => itemname, "part_code" => part_code}
+    extension_params = %{"part_code" => part_code}
     item_param = Map.merge(item_subcat_params, extension_params)
 
     # cg =
@@ -581,9 +579,9 @@ defmodule BoatNoodleWeb.MenuItemController do
     #   part_code =
     #     List.insert_at(running_no, 0, "0") |> List.insert_at(0, first_letter) |> Enum.join()
     part_code = menu_item_params["part_code"]
-    itemname = itemcode <> " " <> menu_item_params["itemdesc"]
+    # itemname = itemcode <> " " <> menu_item_params["itemdesc"]
 
-    extension_params = %{"itemname" => itemname, "part_code" => part_code}
+    extension_params = %{"part_code" => part_code}
     item_param = Map.merge(menu_item_params, extension_params)
 
     price_codes = menu_item_params["price_code"] |> Map.keys()

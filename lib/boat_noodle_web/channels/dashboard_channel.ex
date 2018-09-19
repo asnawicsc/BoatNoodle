@@ -342,23 +342,6 @@ defmodule BoatNoodleWeb.DashboardChannel do
           |> elem(1)
           |> String.reverse()
 
-        # order_query =
-        #   Repo.all(
-        #     from(
-        #       sm in BoatNoodle.BN.SalesMaster,
-        #       left_join: s in BoatNoodle.BN.Sales,
-        #       on: sm.salesid == s.salesid,
-        #       left_join: b in BoatNoodle.BN.Branch,
-        #       on: b.branchid == s.branchid,
-        #       where:
-        #         s.is_void == 0 and s.branchid == ^payload["branch_id"] and
-        #           s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-        #           s.brand_id == ^payload["brand_id"] and b.brand_id == ^brand_id and
-        #           sm.brand_id == ^brand_id,
-        #       group_by: [s.salesdate, b.branchname],
-        #       select: %{sales_details: sum(sm.qty)}
-        #     )
-        #   )
         brand_id_int = String.to_integer(brand_id)
 
         order_query =
@@ -704,16 +687,18 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 )
               )
 
-            {:ok, history_data} =
-              HistoryData.changeset(%HistoryData{}, %{
-                start_date: start_d,
-                end_date: end_d,
-                json_map: Poison.encode!(b),
-                branch_id: branchid,
-                brand_id: brand_id,
-                name: "summary"
-              })
-              |> Repo.insert()
+            unless start_d == end_d and end_d == Date.utc_today() do
+              {:ok, history_data} =
+                HistoryData.changeset(%HistoryData{}, %{
+                  start_date: start_d,
+                  end_date: end_d,
+                  json_map: Poison.encode!(b),
+                  branch_id: branchid,
+                  brand_id: brand_id,
+                  name: "summary"
+                })
+                |> Repo.insert()
+            end
 
             b
           else
@@ -920,19 +905,6 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
         brand_id_int = String.to_integer(brand_id)
 
-        # Repo.all(
-        #   from(
-        #     sm in BoatNoodle.BN.SalesMaster,
-        #     left_join: s in BoatNoodle.BN.Sales,
-        #     on: sm.salesid == s.salesid,
-        #     where:
-        #       s.is_void == 0 and s.salesdate >= ^payload["s_date"] and
-        #         s.salesdate <= ^payload["e_date"] and s.brand_id == ^brand_id_int and
-        #         sm.brand_id == ^brand_id_int,
-        #     group_by: [s.salesdate],
-        #     select: %{sales_details: sum(sm.qty)}
-        #   )
-        # )
         order_query =
           Repo.all(
             from(
@@ -945,8 +917,6 @@ defmodule BoatNoodleWeb.DashboardChannel do
               select: %{sales_details: sum(sm.qty)}
             )
           )
-
-        # IEx.pry()
 
         d_order =
           order_query
@@ -1004,16 +974,18 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 )
               )
 
-            {:ok, top_10_items_qty_history_data} =
-              HistoryData.changeset(%HistoryData{}, %{
-                start_date: start_d,
-                end_date: end_d,
-                json_map: Poison.encode!(b),
-                branch_id: branchid,
-                brand_id: brand_id,
-                name: "top_10_items_qty"
-              })
-              |> Repo.insert()
+            unless start_d == end_d and end_d == Date.utc_today() do
+              {:ok, top_10_items_qty_history_data} =
+                HistoryData.changeset(%HistoryData{}, %{
+                  start_date: start_d,
+                  end_date: end_d,
+                  json_map: Poison.encode!(b),
+                  branch_id: branchid,
+                  brand_id: brand_id,
+                  name: "top_10_items_qty"
+                })
+                |> Repo.insert()
+            end
 
             b
           else
@@ -1061,16 +1033,18 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 )
               )
 
-            {:ok, top_10_items_value_history_data} =
-              HistoryData.changeset(%HistoryData{}, %{
-                start_date: start_d,
-                end_date: end_d,
-                json_map: Poison.encode!(b),
-                branch_id: branchid,
-                brand_id: brand_id,
-                name: "top_10_items_value"
-              })
-              |> Repo.insert()
+            unless start_d == end_d and end_d == Date.utc_today() do
+              {:ok, top_10_items_value_history_data} =
+                HistoryData.changeset(%HistoryData{}, %{
+                  start_date: start_d,
+                  end_date: end_d,
+                  json_map: Poison.encode!(b),
+                  branch_id: branchid,
+                  brand_id: brand_id,
+                  name: "top_10_items_value"
+                })
+                |> Repo.insert()
+            end
 
             b
           else
@@ -1135,16 +1109,18 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 )
               )
 
-            {:ok, all_history_data} =
-              HistoryData.changeset(%HistoryData{}, %{
-                start_date: start_d,
-                end_date: end_d,
-                json_map: Poison.encode!(b),
-                branch_id: branchid,
-                brand_id: brand_id,
-                name: "all_history_data"
-              })
-              |> Repo.insert()
+            unless start_d == end_d and end_d == Date.utc_today() do
+              {:ok, all_history_data} =
+                HistoryData.changeset(%HistoryData{}, %{
+                  start_date: start_d,
+                  end_date: end_d,
+                  json_map: Poison.encode!(b),
+                  branch_id: branchid,
+                  brand_id: brand_id,
+                  name: "all_history_data"
+                })
+                |> Repo.insert()
+            end
 
             b
           else
@@ -1192,16 +1168,18 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 )
               )
 
-            {:ok, all_history_data} =
-              HistoryData.changeset(%HistoryData{}, %{
-                start_date: start_d,
-                end_date: end_d,
-                json_map: Poison.encode!(b),
-                branch_id: branchid,
-                brand_id: brand_id,
-                name: "combo_detail"
-              })
-              |> Repo.insert()
+            unless start_d == end_d and end_d == Date.utc_today() do
+              {:ok, all_history_data} =
+                HistoryData.changeset(%HistoryData{}, %{
+                  start_date: start_d,
+                  end_date: end_d,
+                  json_map: Poison.encode!(b),
+                  branch_id: branchid,
+                  brand_id: brand_id,
+                  name: "combo_detail"
+                })
+                |> Repo.insert()
+            end
 
             b
           else

@@ -817,141 +817,123 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     )
   end
 
-  defp get_item_cat_name(cat_name,brand_id) do
+  defp get_item_cat_name(cat_name, brand_id) do
+    if cat_name != nil do
+      item_cat = Repo.get_by(ItemCat, itemcatname: cat_name, brand_id: brand_id)
 
-if cat_name != nil do
-  
+      cat =
+        if item_cat != nil do
+          item_cat.itemcatid
+        else
+          0
+        end
 
-    item_cat=Repo.get_by(ItemCat,itemcatname: cat_name,brand_id: brand_id)
-
-
-    cat=if item_cat != nil do
-      item_cat.itemcatid
-
+      cat
     else
       0
     end
-
-    cat
-
-  else
-
-    0
-
   end
-    
-
-    
-   
-  end
-
 
   defp get_item_subcat(brand_id) do
+    item_subcat =
+      BN.list_item_subcat() |> Enum.filter(fn x -> x.brand_id == brand_id end)
+      |> Enum.filter(fn x -> x.subcatid < 10000 end)
 
-      item_subcat = BN.list_item_subcat()|>Enum.filter(fn x -> x.brand_id ==brand_id end)|>Enum.filter(fn x -> x.subcatid < 10000 end)
-
-
-
-     subcat =if item_subcat != [] do
-
-        Enum.map(item_subcat,fn x -> x.subcatid end)|>List.last
-
+    subcat =
+      if item_subcat != [] do
+        Enum.map(item_subcat, fn x -> x.subcatid end) |> List.last()
       else
-
         1
-        
       end
-
-
-
-   
   end
 
-
-    def upload_menu_item(conn, params) do
-  
-    
+  def upload_menu_item(conn, params) do
     file = params["menu_item"]["file"]
-
 
     {:ok, binary} = File.read(file.path)
 
     data = binary |> String.split("\n") |> Enum.map(fn x -> String.split(x, ",") end)
     headers = hd(data) |> Enum.map(fn x -> String.trim(x, " ") end)
-    contents = tl(data)|>Enum.reject(fn x -> x == [""] end)
+    contents = tl(data) |> Enum.reject(fn x -> x == [""] end)
 
-  g=for content <- contents do
+    g =
+      for content <- contents do
+        item_cat = content |> Enum.at(3)
 
-    item_cat=content|>Enum.at(3)
+        subcatid = get_item_subcat(BN.get_brand_id(conn)) + 1
 
+        itemcatid = get_item_cat_name(item_cat, BN.get_brand_id(conn))
+        itemcatid = itemcatid |> Integer.to_string()
 
+        itemname = content |> Enum.at(2)
 
-      subcatid=get_item_subcat(BN.get_brand_id(conn))+1
+        itemcode = content |> Enum.at(1)
 
-      itemcatid=get_item_cat_name(item_cat,BN.get_brand_id(conn))
-      itemcatid=itemcatid|>Integer.to_string
+        a =
+          if itemcode == "" do
+            "UK"
+          else
+            itemcode
+          end
 
-      itemname=content|>Enum.at(2)
+        product_code = ""
 
-      itemcode=content|>Enum.at(1)
-      a=if itemcode == "" do
+        price_code = content |> Enum.at(10)
 
+        price_code =
+          if price_code == "" do
+            "A"
+          end
 
-        "UK"
+        part_code = content |> Enum.at(9)
 
-      else
-        itemcode
-        
+        itemdesc = content |> Enum.at(4)
+
+        itemprice = content |> Enum.at(5)
+
+        brand_id = BN.get_brand_id(conn)
+
+        is_activate = 1
+
+        params = %{
+          is_activate: is_activate,
+          subcatid: subcatid,
+          itemcatid: itemcatid,
+          itemname: itemname,
+          itemcode: a,
+          product_code: product_code,
+          price_code: price_code,
+          part_code: part_code,
+          itemdesc: itemdesc,
+          itemprice: itemprice,
+          brand_id: brand_id
+        }
+
+        cg2 =
+          BoatNoodle.BN.ItemSubcat.changeset(
+            %BoatNoodle.BN.ItemSubcat{},
+            params,
+            BN.current_user(conn),
+            "Upload ItemSubcat"
+          )
+
+        if cg2.valid? == false do
+          IEx.pry()
+        end
+
+        case Repo.insert(cg2) do
+          {:ok, itemsubcat} ->
+            true
+
+          {:error, changeset} ->
+            true
+        end
       end
-
-      product_code=""
-
-      price_code=content|>Enum.at(10)
-
-      part_code=content|>Enum.at(9)
-
-      itemdesc=content|>Enum.at(4)
-
-      itemprice=content|>Enum.at(5)
-
-      brand_id=BN.get_brand_id(conn)
-
-      is_activate=1
-
-
-      params=%{is_activate: is_activate, subcatid: subcatid, itemcatid: itemcatid, itemname: itemname, itemcode: a,
-       product_code: product_code, price_code: price_code, part_code: part_code,itemdesc: itemdesc, itemprice: itemprice, brand_id: brand_id}
-
-cg2 =
-      BoatNoodle.BN.ItemSubcat.changeset(
-        %BoatNoodle.BN.ItemSubcat{},
-        params,
-        BN.current_user(conn),
-        "Upload ItemSubcat"
-      )
-
-      if cg2.valid? == false do
-        IEx.pry
-      end
-
-
-    case Repo.insert(cg2) do
-      {:ok, itemsubcat} ->
-        true
-
-      {:error, changeset} ->
-        true
-    end
-
-
-  end
 
     conn
     |> put_flash(:info, "Menu Item Successfully Upload")
     |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
   end
-
-
 
   def post_add_item(conn, params) do
     user = BoatNoodle.Repo.get_by(BoatNoodle.BN.User, id: conn.private.plug_session["user_id"])
@@ -1287,6 +1269,25 @@ cg2 =
   def item_edit(conn, %{"subcatid" => id}) do
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
+    changes =
+      Repo.all(
+        from(
+          m in ModalLog,
+          left_join: u in User,
+          on: u.id == m.user_id,
+          where: m.name == ^"item_subcat",
+          select: %{
+            description: m.description,
+            user_id: u.username,
+            inserted_at: m.inserted_at,
+            action: m.action
+          },
+          order_by: [desc: m.inserted_at, desc: m.id]
+        )
+      )
+      |> Enum.map(fn x -> {Poison.decode!(x.description), x.user_id, x.inserted_at, x.action} end)
+      |> Enum.filter(fn x -> elem(x, 0)["subcatid"] == String.to_integer(id) end)
+
     same_items =
       Repo.all(
         from(
@@ -1313,8 +1314,15 @@ cg2 =
           select: %{code: s.itemcode, name: s.itemname}
         )
       )
+
+    itemcodes =
+      itemcodes
       |> Enum.map(fn x ->
-        %{name: x.name, code: x.code, group: hd(String.split(x.code, ""))}
+        %{
+          name: x.name,
+          code: x.code,
+          group: hd(Enum.reject(String.split(x.code, ""), fn x -> x == "" end))
+        }
       end)
       |> Enum.group_by(fn x -> x.group end)
 
@@ -1365,7 +1373,8 @@ cg2 =
       itemcodes: itemcodes,
       item_cat: item_cat,
       price_codes: price_codes,
-      printers: printers
+      printers: printers,
+      changes: changes
     )
   end
 

@@ -301,7 +301,7 @@ $('select[name="year"]').selectpicker('val',localStorage.getItem("year"));
 
        
         dashboard_channel.push("dashboard", {
-            user_id: window.currentUser,
+       
             branch_id: b_id,
             s_date: s_date,
             e_date: e_date,
@@ -311,7 +311,7 @@ $('select[name="year"]').selectpicker('val',localStorage.getItem("year"));
          var b_id = $("select#branch_list").val()
          var year = $("select#year").val()
         dashboard_channel.push("year", {
-            user_id: window.currentUser,
+     
             branch_id: b_id,
             year: year,
             brand_id: window.currentBrand

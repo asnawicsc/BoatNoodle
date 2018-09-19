@@ -73,18 +73,11 @@ defmodule BoatNoodle.BN.Branch do
         attrs = Map.put(attrs, "brand_id", branch.data.brand_id)
       end
 
-            date=Timex.now
-
-      date_time=DateTime.to_string(date)|>String.split_at(19)|>elem(0)
-
-
       BoatNoodle.BN.ModalLog.changeset(%BoatNoodle.BN.ModalLog{}, %{
         name: "branch",
         user_id: user_id,
         description: Poison.encode!(attrs),
-        action: action,
-         inserted_at: date_time,
-        updated_at: date_time
+        action: action
       })
       |> BoatNoodle.Repo.insert()
     end
