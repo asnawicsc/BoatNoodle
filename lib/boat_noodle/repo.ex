@@ -10,7 +10,7 @@ defmodule BoatNoodle.Repo do
   end
 end
 
-defmodule BoatNoodle.RepoChillChill do
+defmodule BoatNoodle.RepoGeop do
   use Ecto.Repo, otp_app: :boat_noodle
 
   @doc """

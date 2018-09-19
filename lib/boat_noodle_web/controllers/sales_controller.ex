@@ -787,7 +787,7 @@ defmodule BoatNoodleWeb.SalesController do
             rounding2,
             rounding2,
             branch.report_class,
-            'SR0'
+            ""
           ]
 
           tpq = [
@@ -897,7 +897,7 @@ defmodule BoatNoodleWeb.SalesController do
             shortextra,
             shortextra,
             branch.report_class,
-            'SR0'
+            ""
           ]
 
           ccard =
@@ -940,7 +940,7 @@ defmodule BoatNoodleWeb.SalesController do
             ccard,
             ccard,
             branch.report_class,
-            'SR0'
+            ""
           ]
 
           trm =
@@ -958,7 +958,7 @@ defmodule BoatNoodleWeb.SalesController do
                 (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
                 (0 - Decimal.to_float(item.pay_amt)) |> Float.to_string(),
                 branch.report_class,
-                'SR0'
+                ""
               ]
             end
 
