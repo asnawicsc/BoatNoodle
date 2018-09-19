@@ -80,7 +80,7 @@ defmodule BoatNoodleWeb.DiscountController do
         from(
           s in DiscountItem,
           left_join: d in Discount,
-          where: d.discountid == s.discountid and s.brand_id == ^brand.id and d.brand_id==^brand.id,
+          where: d.discountid == s.discountid and s.brand_id == ^brand.id and d.brand_id==^brand.id and d.is_visable==1 and s.is_visable==1 and d.is_delete == 0 and s.is_delete ==0 ,
           select: %{
             discitemsname: s.discitemsname,
             target_cat: s.target_cat,
