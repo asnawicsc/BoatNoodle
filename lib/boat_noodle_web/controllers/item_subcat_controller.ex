@@ -313,8 +313,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       sub = subcatid2 |> String.to_integer()
 
-      if sub < 100 do
-        sub =
+       sub =if sub < 100 do
+       
           (1000 + sub)
           |> Integer.to_string()
           |> String.split("")
@@ -322,8 +322,10 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           |> List.delete_at(0)
           |> Enum.join()
       else
-        sub = sub |> Integer.to_string()
+       sub |> Integer.to_string()
       end
+
+   
 
       p = (comboid2 <> sub) |> String.to_integer()
 
@@ -581,8 +583,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       sub = subcatid2 |> String.to_integer()
 
-      if sub < 100 do
-        sub =
+        sub =if sub < 100 do
+      
           (1000 + sub)
           |> Integer.to_string()
           |> String.split("")
@@ -590,7 +592,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           |> List.delete_at(0)
           |> Enum.join()
       else
-        sub = sub |> Integer.to_string()
+       sub |> Integer.to_string()
       end
 
       p = (comboid2 <> sub) |> String.to_integer()
@@ -880,7 +882,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
         price_code = content |> Enum.at(10)
 
-    
+
 
         price_code =
           if price_code == "" do
