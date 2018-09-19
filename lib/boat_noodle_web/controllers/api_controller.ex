@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.ApiController do
   require IEx
 
   def webhook_post_operations(conn, params) do
-    # IO.inspect(params)
+    IO.inspect(params)
 
     cond do
       params["scope"] == nil ->
