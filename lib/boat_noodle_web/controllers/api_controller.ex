@@ -40,6 +40,9 @@ defmodule BoatNoodleWeb.ApiController do
             "void_receipt" ->
               push_scope_void_receipt(conn, params, user)
 
+            "void_sales" ->
+              push_scope_void_sales(conn, params, user)
+
             _ ->
               send_resp(conn, 500, "requested scope not available. \n")
           end
@@ -97,6 +100,36 @@ defmodule BoatNoodleWeb.ApiController do
     cg = BoatNoodle.BN.VoidItems.changeset(%BoatNoodle.BN.VoidItems{}, params)
 
     case Repo.insert(cg) do
+      {:ok, ci} ->
+        Task.start_link(__MODULE__, :log_api, [
+          IO.inspect(ci),
+          params["code"] <> " API POST -" <> params["scope"]
+        ])
+
+        map = %{status: "ok"} |> Poison.encode!()
+        send_resp(conn, 200, map)
+
+      {:error, changeset} ->
+        model_insert_error(conn, changeset, params)
+        send_resp(conn, 500, "not ok")
+    end
+  end
+
+  def push_scope_void_sales(conn, params, user) do
+    params = Map.put(params, "branch_id", user.branchid)
+    params = Map.put(params, "brand_id", user.brand_id)
+    IO.inspect(params)
+
+    sales = Repo.get_by(Sales, brand_id: user.brand_id, salesid: params["salesid"])
+
+    cg =
+      Sales.changeset(sales, %{
+        is_void: 1,
+        void_by: params["staff_id"],
+        voidreason: params["void_reason"]
+      })
+
+    case Repo.update(cg) do
       {:ok, ci} ->
         Task.start_link(__MODULE__, :log_api, [
           IO.inspect(ci),

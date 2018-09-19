@@ -3,6 +3,70 @@ defmodule BoatNoodle.UltiMigrator do
   require IEx
   import Ecto.Query
 
+  def redo_insert_sd(v1sd) do
+    sales_details =
+      BoatNoodle.Repo.all(
+        from(
+          sd in BoatNoodle.BN.SalesMaster,
+          select: sd.sales_details,
+          limit: 1,
+          order_by: [desc: sd.sales_details]
+        )
+      )
+      |> hd()
+
+    new_sd_id = sales_details + 1
+
+    itemname =
+      if v1sd.itemname == "" or v1sd.itemname == nil do
+        is =
+          BoatNoodle.Repo.get_by(
+            BoatNoodle.BN.ItemSubcat,
+            brand_id: 1,
+            subcatid: v1sd.itemid
+          )
+
+        if is != nil do
+          is.itemname
+        else
+          if v1sd.itemid |> Integer.to_string() |> String.length() == 9 do
+            cd =
+              BoatNoodle.RepoGeop.get_by(
+                BoatNoodle.BN.ComboDetails_v1,
+                combo_item_id: v1sd.itemid
+              )
+
+            cd.combo_item_name
+          else
+            IEx.pry()
+          end
+        end
+      else
+        v1sd.itemname
+      end
+
+    cg =
+      BoatNoodle.BN.SalesMaster.changeset(v1sd, %{
+        itemname: itemname,
+        remaks: "damien insert",
+        sales_details: new_sd_id
+      })
+
+    a = BoatNoodle.Repo.insert(cg)
+
+    case a do
+      {:ok, v2sd} ->
+        true
+
+      {:error, cg} ->
+        if cg.errors == [sales_details: {"has already been taken", []}] do
+          redo_insert_sd(v1sd)
+        else
+          IEx.pry()
+        end
+    end
+  end
+
   def compare_sales_data() do
     branches =
       BoatNoodle.Repo.all(
@@ -87,61 +151,19 @@ defmodule BoatNoodle.UltiMigrator do
     new_path = image_path <> "/not_tally_sp_BN2.csv"
     bin = File.read!(new_path)
 
-    salesids = bin |> String.split("\r\n")
+    salesids = bin |> String.split("\n")
 
     for salesid <- salesids do
-      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
-
-      if v2sp == nil do
-        # create sales payment ...
-        v1sp =
-          BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
-
-        cg = BoatNoodle.BN.SalesPayment.changeset(v1sp, %{updated_at: Timex.now()})
-
-        case BoatNoodle.Repo.insert(cg) do
-          {:ok, v2sp} ->
-            true
-
-          {:error, cg} ->
-            if cg.errors == [salespay_id: {"has already been taken", []}] do
-              salespay_id =
-                BoatNoodle.Repo.all(
-                  from(
-                    sd in BoatNoodle.BN.SalesPayment,
-                    select: sd.salespay_id,
-                    limit: 1,
-                    order_by: [desc: sd.salespay_id]
-                  )
-                )
-                |> hd()
-
-              new_salespay_id = salespay_id + 1
-
-              new_cg =
-                BoatNoodle.BN.SalesPayment.changeset(v1sp, %{
-                  salespay_id: new_salespay_id,
-                  updated_at: Timex.now()
-                })
-
-              case BoatNoodle.Repo.insert(new_cg) do
-                {:ok, v2sp} ->
-                  true
-
-                {:error, new_cg} ->
-                  IEx.pry()
-              end
-            else
-              IEx.pry()
-            end
-        end
-      end
-
       # check sales exist
       v2s = BoatNoodle.Repo.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
 
       if v2s == nil do
         v1s = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
+
+        if v1s == nil do
+          IEx.pry()
+        end
+
         cg = BoatNoodle.BN.Sales.changeset(v1s, %{remark: "damien insert"})
 
         a = BoatNoodle.Repo.insert(cg)
@@ -192,13 +214,20 @@ defmodule BoatNoodle.UltiMigrator do
                 is.itemname
               else
                 if v1sd.itemid |> Integer.to_string() |> String.length() == 9 do
-                  BoatNoodle.RepoGeop.get_by(
-                    BoatNoodle.BN.ComboDetails,
-                    combo_item_id: v1sd.itemid
-                  )
-                end
+                  cd =
+                    BoatNoodle.RepoGeop.get_by(
+                      BoatNoodle.BN.ComboDetails_v1,
+                      combo_item_id: v1sd.itemid
+                    )
 
-                IEx.pry()
+                  if cd == nil do
+                    IEx.pry()
+                  end
+
+                  cd.combo_item_name
+                else
+                  IEx.pry()
+                end
               end
 
             cg =
@@ -231,7 +260,11 @@ defmodule BoatNoodle.UltiMigrator do
                 true
 
               {:error, cg} ->
-                IEx.pry()
+                if cg.errors == [sales_details: {"has already been taken", []}] do
+                  redo_insert_sd(v1sd)
+                else
+                  IEx.pry()
+                end
             end
           end
 
@@ -299,7 +332,7 @@ defmodule BoatNoodle.UltiMigrator do
           for dif <- diff do
             v1sd = Enum.filter(v1sds, fn x -> x.itemid == dif end) |> hd()
 
-            if v1sd.itemname == "" do
+            if v1sd.itemname == "" or v1sd.itemname == nil do
               is =
                 BoatNoodle.Repo.get_by(
                   BoatNoodle.BN.ItemSubcat,
@@ -311,7 +344,21 @@ defmodule BoatNoodle.UltiMigrator do
                 if is != nil do
                   is.itemname
                 else
-                  IEx.pry()
+                  if v1sd.itemid |> Integer.to_string() |> String.length() == 9 do
+                    cd =
+                      BoatNoodle.RepoGeop.get_by(
+                        BoatNoodle.BN.ComboDetails_v1,
+                        combo_item_id: v1sd.itemid
+                      )
+
+                    if cd == nil do
+                      IEx.pry()
+                    end
+
+                    cd.combo_item_name
+                  else
+                    IEx.pry()
+                  end
                 end
 
               cg =
@@ -364,7 +411,7 @@ defmodule BoatNoodle.UltiMigrator do
                             true
 
                           {:error, new_new_cg} ->
-                            IEx.pry()
+                            redo_insert_sd(v1sd)
                         end
                     end
                   else
@@ -373,6 +420,74 @@ defmodule BoatNoodle.UltiMigrator do
               end
             end
           end
+        end
+      end
+
+      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+
+      if v2sp == nil do
+        # create sales payment ...
+        v1sp =
+          BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+
+        if v1sp == nil do
+          IEx.pry()
+        end
+
+        salespay_id =
+          BoatNoodle.Repo.all(
+            from(
+              sd in BoatNoodle.BN.SalesPayment,
+              select: sd.salespay_id,
+              limit: 1,
+              order_by: [desc: sd.salespay_id]
+            )
+          )
+          |> hd()
+
+        new_salespay_id = salespay_id + 1
+
+        cg =
+          BoatNoodle.BN.SalesPayment.changeset(v1sp, %{
+            salespay_id: new_salespay_id,
+            updated_at: Timex.now()
+          })
+
+        case BoatNoodle.Repo.insert(cg) do
+          {:ok, v2sp} ->
+            true
+
+          {:error, cg} ->
+            if cg.errors == [salespay_id: {"has already been taken", []}] do
+              salespay_id =
+                BoatNoodle.Repo.all(
+                  from(
+                    sd in BoatNoodle.BN.SalesPayment,
+                    select: sd.salespay_id,
+                    limit: 1,
+                    order_by: [desc: sd.salespay_id]
+                  )
+                )
+                |> hd()
+
+              new_salespay_id = salespay_id + 1
+
+              new_cg =
+                BoatNoodle.BN.SalesPayment.changeset(v1sp, %{
+                  salespay_id: new_salespay_id,
+                  updated_at: Timex.now()
+                })
+
+              case BoatNoodle.Repo.insert(new_cg) do
+                {:ok, v2sp} ->
+                  true
+
+                {:error, new_cg} ->
+                  IEx.pry()
+              end
+            else
+              IEx.pry()
+            end
         end
       end
     end
