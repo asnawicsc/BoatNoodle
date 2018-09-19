@@ -47,6 +47,7 @@ defmodule BoatNoodleWeb.BranchController do
       subcats_data
       |> Enum.reject(fn x -> String.length(Integer.to_string(x.id)) >= 6 end)
 
+
     changeset = Tag.changeset(%BoatNoodle.BN.Tag{}, %{}, BN.current_user(conn), "new")
 
     html =

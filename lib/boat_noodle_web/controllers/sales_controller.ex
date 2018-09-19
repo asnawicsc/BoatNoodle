@@ -392,6 +392,7 @@ defmodule BoatNoodleWeb.SalesController do
             "V"
           end
 
+    
         csv_content = [
           item.date,
           time,
@@ -400,14 +401,14 @@ defmodule BoatNoodleWeb.SalesController do
           staff_name,
           item.tbl_no,
           item.pax,
-          sub_total,
-          disc_amt |> Float.round(2),
-          disc_percent,
-          afterdisc,
-          service_charge,
-          gst_charge,
-          rounding,
-          grand_total,
+          sub_total|>Float.to_string,
+          disc_amt |> Float.round(2)|>Float.to_string,
+          disc_percent|>Float.to_string,          
+          afterdisc|>Float.to_string,
+          service_charge|>Float.to_string,
+          gst_charge|>Float.to_string,
+          rounding|>Float.to_string,
+          grand_total|>Float.to_string,
           item.payment_type,
           item.payment_name1,
           item.payment_code1,
