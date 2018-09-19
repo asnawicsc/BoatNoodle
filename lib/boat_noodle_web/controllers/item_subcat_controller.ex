@@ -1104,7 +1104,7 @@ cg2 =
             )
 
           if printer != nil do
-            list = printer.combo_item_ids |> String.split(",")
+            list = printer.combo_item_ids |> String.split(",")|>Enum.uniq
 
             new_list =
               List.insert_at(list, 0, combo_item.combo_item_id) |> Enum.join(",") |> Enum.sort()
