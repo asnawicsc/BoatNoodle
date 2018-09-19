@@ -90,7 +90,7 @@
 								<%= for item <- @all|>Enum.with_index do %>
 								 <% data=elem(item,0) %>
 								 <% data2=elem(item,1) %>
-								
+
 
 
 									 <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
@@ -111,6 +111,10 @@
 								  <% data=elem(item,0) %>
 									<% data2=elem(item,1) %>
 									<% id= data.itemcatid %>
+
+
+
+
 
 								<input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemname]" value='<%= @params["itemname"] %>'>
 								<input type="hidden" class="form-control" name="a[<%= data.itemcatname %>][itemcode]" value='<%= @params["itemcode"] %>' >
@@ -146,10 +150,22 @@
 															</div>
 														</div>
 														<div class="card-body ">
-
-															<%ala_carte = Repo.all(from s in BoatNoodle.BN.ItemSubcat,left_join: i in BoatNoodle.BN.ItemCat,  on: i.itemcatid == s.itemcatid,where: i.itemcatid == ^data.itemcatid and s.brand_id ==^@brand, select: %{itemname: s.itemname,itemdesc: s.itemdesc,subcatid: s.subcatid,price_code: s.price_code,itemcode: s.itemcode}, order_by: [asc: s.itemcode])|>Enum.filter(fn x -> x.price_code != "" end)|>Enum.uniq %>
-
 														
+													<% ala_carte = Repo.all(from s in BoatNoodle.BN.ItemSubcat,
+														left_join: i in BoatNoodle.BN.ItemCat,  on: i.itemcatid == s.itemcatid,
+														where: i.itemcatid == ^data.itemcatid 
+														and s.brand_id ==^@brand, 
+														select: %{
+														itemname: s.itemname,
+														itemdesc: s.itemdesc,
+														subcatid: s.subcatid,
+														price_code: s.price_code,
+														itemcode: s.itemcode}, 
+														order_by: [asc: s.itemcode])|>Enum.filter(fn x -> x.price_code != "" end)|>Enum.uniq %>
+
+
+								
+
 
 																<div class="row">
 

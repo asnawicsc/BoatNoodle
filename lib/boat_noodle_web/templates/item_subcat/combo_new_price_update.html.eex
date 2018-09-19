@@ -144,8 +144,10 @@
 									    <td >
 										<%= for item <- c do %>
 
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										
 
+										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										
 											<p name="item[subcat_item]">
 											    <%= prev_subcatid.itemname %> (<%= prev_subcatid.price_code %>)
 											</p>
