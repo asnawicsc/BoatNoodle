@@ -220,8 +220,24 @@ defmodule BoatNoodleWeb.MenuCatalogController do
           List.insert_at(items, 0, subcat_id) |> Enum.uniq() |> Enum.join(",")
           |> String.trim_trailing(",")
 
+        is = Repo.get_by(ItemSubcat, brand_id: BN.get_brand_id(conn), subcatid: subcat_id)
+        cata_categories = cata.categories |> String.split(",")
+
+        new_cata_categories =
+          if Enum.any?(cata_categories, fn x -> x == is.itemcatid end) do
+            cata_categories |> Enum.uniq() |> Enum.join(",") |> String.trim_trailing(",")
+          else
+            List.insert_at(cata_categories, 0, is.itemcatid) |> Enum.uniq() |> Enum.join(",")
+            |> String.trim_trailing(",")
+          end
+
         {:ok, cata} =
-          MenuCatalog.changeset(cata, %{items: items}, BN.current_user(conn), "Update")
+          MenuCatalog.changeset(
+            cata,
+            %{items: items, categories: new_cata_categories},
+            BN.current_user(conn),
+            "Update"
+          )
           |> Repo.update()
 
         cata

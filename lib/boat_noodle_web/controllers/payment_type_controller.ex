@@ -3,69 +3,77 @@ defmodule BoatNoodleWeb.PaymentTypeController do
 
   alias BoatNoodle.BN
   alias BoatNoodle.BN.PaymentType
-require IEx
+  require IEx
+
   def index(conn, _params) do
-       branches =
+    branches =
       Repo.all(
         from(
           s in BoatNoodle.BN.UserBranchAccess,
-          left_join: g in BoatNoodle.BN.Branch, on: s.branchid==g.branchid,
-          where: s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and s.userid==^conn.private.plug_session["user_id"],
-          select: %{branchid: s.branchid,branchname: g.branchname},
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
           order_by: g.branchname
         )
       )
 
-      brand_id=BN.get_brand_id(conn)
-    render(conn, "index.html", branches: branches,brand_id: brand_id)
+    brand_id = BN.get_brand_id(conn)
+    render(conn, "index.html", branches: branches, brand_id: brand_id)
   end
 
-  def create_payment_type(conn,params)  do
+  def create_payment_type(conn, params) do
+    brand_id = params["brand_id"]
 
-    brand_id=params["brand_id"]
+    is_delivery =
+      if params["is_delivery"] == nil do
+        0
+      else
+        1
+      end
 
+    is_card_no =
+      if params["is_card_no"] == nil do
+        0
+      else
+        1
+      end
 
-  is_delivery=if params["is_delivery"]== nil do
+    is_payment_code =
+      if params["is_payment_code"] == nil do
+        0
+      else
+        1
+      end
 
-    0
-  else
-    1
-    
-  end
+    is_default =
+      if params["is_default"] == nil do
+        0
+      else
+        1
+      end
 
-    is_card_no=if params["is_card_no"]== nil do
+    is_visible =
+      if params["is_visible"] == nil do
+        0
+      else
+        1
+      end
 
-    0
-  else
-    1
-    
-  end
-    is_payment_code=if params["is_payment_code"]== nil do
+    payment_type_params = %{
+      payment_type_name: params["payment_type_name"],
+      payment_type_code: params["payment_type_code"],
+      is_delivery: is_delivery,
+      is_card_no: is_card_no,
+      is_payment_code: is_payment_code,
+      is_default: is_default,
+      is_visible: is_visible,
+      brand_id: params["brand_id"]
+    }
 
-    0
-  else
-    1
-    
-  end
-    is_default=if params["is_default"]== nil do
-
-    0
-  else
-    1
-    
-  end
-    is_visible=if params["is_visible"]== nil do
-
-    0
-  else
-    1
-    
-  end
-
-  payment_type_params=%{payment_type_name: params["payment_type_name"],
-  payment_type_code: params["payment_type_code"],is_delivery: is_delivery,is_card_no: is_card_no,is_payment_code: is_payment_code,is_default: is_default,is_visible: is_visible}
-
-case BN.create_payment_type(payment_type_params) do
+    case BN.create_payment_type(payment_type_params) do
       {:ok, payment_type} ->
         conn
         |> put_flash(:info, "Payment type created successfully.")
@@ -74,11 +82,7 @@ case BN.create_payment_type(payment_type_params) do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
-
-  
   end
-
-  
 
   def new(conn, _params) do
     changeset = BN.change_payment_type(%PaymentType{})

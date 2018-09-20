@@ -1,3 +1,4 @@
+<% require IEx%>
 <style type="text/css">
   .hidding {
     display: none;
@@ -125,7 +126,8 @@
                           </tr>
                         </thead>
                         <tbody>
-                     
+
+               <%= if  ci[same_item.subcatid] != nil do %>
                           <%= for combo_item <- ci[same_item.subcatid] |> Enum.sort_by(fn x -> x.combo_item_code end)  do %>
 
                             <tr id="<%= same_item.subcatid %>">
@@ -155,7 +157,9 @@
                           </td>
 
                             </tr>
-                            <% end %>
+                          <% end %>
+
+                <% end %>
                         </tbody>
                       </table>
 

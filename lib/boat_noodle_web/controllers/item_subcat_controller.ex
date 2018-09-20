@@ -288,8 +288,15 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       id = branch |> String.to_integer()
       item = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
       com_items = item.items
-      comb = com_items |> Enum.uniq() |> String.split(",")
-      comb_id = subcatid |> Enum.uniq() |> Integer.to_string()
+
+      comb =
+        if com_items == "" do
+          []
+        else
+          com_items |> String.split(",") |> Enum.uniq()
+        end
+
+      comb_id = subcatid |> Integer.to_string()
       all_items = List.insert_at(comb, 0, subcatid)
       new_items = all_items |> Enum.join(",")
 
@@ -421,7 +428,13 @@ defmodule BoatNoodleWeb.ItemSubcatController do
             catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
 
             combo_items = catalog.combo_items
-            comb = combo_items |> Enum.uniq() |> String.split(",")
+
+            comb =
+              if combo_items == "" do
+                []
+              else
+                combo_items |> String.split(",") |> Enum.uniq()
+              end
 
             combo_id = combo_details.id |> Integer.to_string()
 
@@ -734,15 +747,23 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   def combo_new(conn, _params) do
     brand = BN.get_brand_id(conn)
 
-    menu_item = Repo.all(from(i in MenuItem, where: i.category_type == ^"COMBO"))
+    menu_item =
+      Repo.all(
+        from(
+          i in ItemCat,
+          where: i.category_type == ^"COMBO" and i.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
 
     ala_carte1 =
       Repo.all(
         from(
           s in ItemSubcat,
-          left_join: i in MenuItem,
+          left_join: i in ItemCat,
           on: i.itemcatid == s.itemcatid,
-          where: i.category_type == ^"COMBO" and i.brand_id == ^BN.get_brand_id(conn),
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and i.category_type == ^"COMBO" and
+              i.brand_id == ^BN.get_brand_id(conn),
           group_by: [s.itemcode],
           select: %{
             itemcatcode: i.itemcatcode,
@@ -784,7 +805,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       price_code: price_code,
       menu_item: menu_item,
       ala_carte: ala_carte,
-      ala_carte1: ala_carte1
+      ala_carte1: menu_item
     )
   end
 

@@ -995,15 +995,7 @@ defmodule BoatNoodleWeb.ApiController do
   def webhook_post_v2(conn, params) do
     a_list = params["details"]
     b_list = params["payments"]
-    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
-
-    new_path = image_path <> "/v2_sales.txt"
-
-    if File.exists?(new_path) do
-      File.write(new_path, IO.inspect(b_list))
-    else
-      File.write(new_path, IO.inspect(b_list))
-    end
+    IO.inspect(params)
 
     cond do
       params["key"] == nil ->
