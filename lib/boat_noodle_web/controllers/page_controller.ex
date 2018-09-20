@@ -124,9 +124,8 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment2(conn, params) do
-    date_range = Date.range(Date.from_iso8601!("2018-08-01"), Date.from_iso8601!("2018-08-31"))
-    s_date = Date.from_iso8601!("2018-08-01")
-    e_date = Date.from_iso8601!("2018-08-31")
+    s_date = Date.from_iso8601!("2018-09-01")
+    e_date = Date.from_iso8601!("2018-09-14")
 
     branches = Repo.all(from(b in Branch, where: b.brand_id == ^BN.get_brand_id(conn)))
 

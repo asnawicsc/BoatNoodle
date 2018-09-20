@@ -313,19 +313,17 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       sub = subcatid2 |> String.to_integer()
 
-       sub =if sub < 100 do
-       
+      sub =
+        if sub < 100 do
           (1000 + sub)
           |> Integer.to_string()
           |> String.split("")
           |> Enum.reject(fn x -> x == "" end)
           |> List.delete_at(0)
           |> Enum.join()
-      else
-       sub |> Integer.to_string()
-      end
-
-   
+        else
+          sub |> Integer.to_string()
+        end
 
       p = (comboid2 <> sub) |> String.to_integer()
 
@@ -583,17 +581,17 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       sub = subcatid2 |> String.to_integer()
 
-        sub =if sub < 100 do
-      
+      sub =
+        if sub < 100 do
           (1000 + sub)
           |> Integer.to_string()
           |> String.split("")
           |> Enum.reject(fn x -> x == "" end)
           |> List.delete_at(0)
           |> Enum.join()
-      else
-       sub |> Integer.to_string()
-      end
+        else
+          sub |> Integer.to_string()
+        end
 
       p = (comboid2 <> sub) |> String.to_integer()
 
@@ -882,13 +880,10 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
         price_code = content |> Enum.at(10)
 
-
-
         price_code =
           if price_code == "" do
             "A"
           end
-
 
         part_code = content |> Enum.at(9)
 
@@ -1091,7 +1086,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
             )
 
           if printer != nil do
-            list = printer.combo_item_ids |> String.split(",")|>Enum.uniq
+            list = printer.combo_item_ids |> String.split(",") |> Enum.uniq()
 
             new_list =
               List.insert_at(list, 0, combo_item.combo_item_id) |> Enum.join(",") |> Enum.sort()
@@ -1322,6 +1317,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     itemcodes =
       itemcodes
+      |> Enum.reject(fn x -> x.code == "" end)
       |> Enum.map(fn x ->
         %{
           name: x.name,

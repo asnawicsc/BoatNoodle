@@ -80,7 +80,9 @@ defmodule BoatNoodleWeb.DiscountController do
         from(
           s in DiscountItem,
           left_join: d in Discount,
-          where: d.discountid == s.discountid and s.brand_id == ^brand.id and d.brand_id==^brand.id and d.is_visable==1 and s.is_visable==1 and d.is_delete == 0 and s.is_delete ==0 ,
+          where:
+            d.discountid == s.discountid and s.brand_id == ^brand.id and d.brand_id == ^brand.id and
+              d.is_visable == 1 and s.is_visable == 1 and d.is_delete == 0 and s.is_delete == 0,
           select: %{
             discitemsname: s.discitemsname,
             target_cat: s.target_cat,
@@ -463,11 +465,12 @@ defmodule BoatNoodleWeb.DiscountController do
 
     count2 = item["prerequisite_items"] |> String.split(",") |> Enum.count()
 
-    pre_req_item = if count2 > 1 do
-      item["prerequisite_items"] |> String.split(",")
-    else
-     ""
-    end
+    pre_req_item =
+      if count2 > 1 do
+        item["prerequisite_items"] |> String.split(",")
+      else
+        ""
+      end
 
     is_visable =
       if item["status"] == "on" do
@@ -797,19 +800,34 @@ defmodule BoatNoodleWeb.DiscountController do
           end
       end
 
-    count2 = params["pre_req_item"] |> Enum.count()
+    count2 =
+      if params["pre_req_item"] != nil do
+        params["pre_req_item"] |> Enum.count()
+      else
+        0
+      end
 
-    pre_req_item = if count2 > 1 do
-      params["pre_req_item"] |> Enum.join(",")
-    else
-      ""
-    end
+    pre_req_item =
+      if count2 > 1 do
+        params["pre_req_item"] |> Enum.join(",")
+      else
+        ""
+      end
 
     discount_type = Repo.get_by(BoatNoodle.BN.DiscountType, disctypeid: disctype)
     disctype = discount_type.disctypename
 
     discount_item =
       Repo.get_by(BoatNoodle.BN.DiscountItem, discountitemsid: discountitemsid, brand_id: brand)
+
+    discamtpercentage =
+      cond do
+        disctype == "VOUCHER" ->
+          voucher_amount
+
+        true ->
+          params["discamtpercentage"]
+      end
 
     discount_item_params = %{
       descriptions: descriptions,

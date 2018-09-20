@@ -32,6 +32,7 @@ defmodule BoatNoodleWeb.Router do
     get("/:code/get_api2", BranchController, :get_api2)
     get("/sales", ApiController, :webhook_get)
     post("/sales", ApiController, :webhook_post)
+    post("/sales_v2", ApiController, :webhook_post_v2)
     post("/operations", ApiController, :webhook_post_operations)
   end
 

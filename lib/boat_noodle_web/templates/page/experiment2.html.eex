@@ -7,8 +7,8 @@ find the combo orders and check of those combo items are tally..
 		<td>item name</td>
 		<td>item code</td>
 		<td>item id</td>
-		<td>category</td>
-		<td>cat id</td>
+
+	
 		<td>Order QTY</td>
 		<td></td>
 	</tr>
@@ -19,8 +19,8 @@ find the combo orders and check of those combo items are tally..
 	<td><%= d.itemname %></td>
 	<td><%= d.itemcode %></td>
 	<td><%= d.itemid %></td>
-	<td><%= d.category_type %></td>
-	<td><%= d.catid %></td>
+
+
 	<td><%= d.qty %></td>
 	<td class="count_combo_items" qty="<%= d.qty %>" subcatid="<%= d.itemid %>" salesid="<%= d.salesid %>"></td>
 </tr>

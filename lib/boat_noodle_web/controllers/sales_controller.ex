@@ -2009,8 +2009,7 @@ defmodule BoatNoodleWeb.SalesController do
     discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
     service_charge = (Decimal.to_float(item.nett_sales) / 10) |> Float.round(2)
 
-    up = unit_price(item.unit_price, item.itemid, item.combo_id, combo_data_price)
-    foc = foc_qty(discount_value, up)
+    foc = foc_qty(discount_value, item.unit_price)
 
     [
       item.salesdate,
@@ -2024,7 +2023,7 @@ defmodule BoatNoodleWeb.SalesController do
       foc,
       item.gross_sales,
       item.nett_sales,
-      unit_price(item.unit_price, item.itemid, item.combo_id, combo_data),
+      item.unit_price,
       discount_value,
       service_charge,
       item.store_owner,

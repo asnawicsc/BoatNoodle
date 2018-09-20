@@ -28,17 +28,28 @@
               <input name="menu_item[itemcode]" class="form-control" type="text" required="">
             </div>
           </div>
-          <div class="col-sm-6">
-            <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Description</label>
-              <input name="menu_item[itemdesc]" class="form-control" type="text" required="">
-            </div>
-
-          </div>
+    
           <div class="col-sm-3">
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Part Code</label>
               <input name="menu_item[part_code]"  class="form-control" type="text" required="">
+            </div>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">Name</label>
+              <input name="menu_item[itemname]" value="" class="form-control" type="text" required="">
+            </div>
+
+          </div>
+ 
+          <div class="col-sm-6">
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">Description</label>
+              <input name="menu_item[itemdesc]" value="" class="form-control" type="text" required="">
             </div>
 
           </div>
@@ -72,15 +83,27 @@
               <input disabled name="menu_item[price_code][F]" class="form-control" type="text" >
             </div>
           </div>
+                             <div class="col-sm-3">
           
+            <div class="form-group bmd-form-group">
+               <label class="bmd-label-floating">Logical Printer</label>
+              <input name="menu_item[tagdesc]" class="form-control" value="" type="text" >
+            </div>
+       
+           <div class="form-group bmd-form-group">
+
+               <label class="bmd-label-floating">Pshyical Printer</label>
+               <input name="menu_item[printer]" class="form-control" value="" type="text" >
+            </div> 
+  
+   </div>
           <div class="col-sm-3">
           
             <div class="form-group bmd-form-group">
                <label class="bmd-label-floating">Start Time</label>
               <input name="menu_item[item_start_hour]" class="form-control" type="number" >
             </div>
-          </div>
-          <div class="col-sm-3">
+       
 
             <div class="form-group bmd-form-group">
 

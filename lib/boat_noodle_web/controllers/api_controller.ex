@@ -992,6 +992,310 @@ defmodule BoatNoodleWeb.ApiController do
     end
   end
 
+  def webhook_post_v2(conn, params) do
+    a_list = params["details"]
+    b_list = params["payments"]
+    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+
+    new_path = image_path <> "/v2_sales.txt"
+
+    if File.exists?(new_path) do
+      File.write(new_path, IO.inspect(b_list))
+    else
+      File.write(new_path, IO.inspect(b_list))
+    end
+
+    cond do
+      params["key"] == nil ->
+        message = List.insert_at(conn.req_headers, 0, {"api key", "key value is empty"})
+        log_error_api(message, "API POST")
+        send_resp(conn, 400, "please include key .")
+
+      params["code"] == nil ->
+        message = List.insert_at(conn.req_headers, 0, {"branch code", "code value is empty"})
+        log_error_api(message, "API POST")
+        send_resp(conn, 400, "please include code .")
+
+      true ->
+        user = Repo.get_by(Branch, branchcode: params["code"], api_key: params["key"])
+
+        if user != nil do
+          sales_params =
+            for {key, val} <- params["sales"], into: %{}, do: {String.to_atom(key), val}
+
+          sales_master_params_list =
+            for a <- a_list do
+              sales_master_params = for {key, val} <- a, into: %{}, do: {String.to_atom(key), val}
+            end
+
+          sales_payment_params_list =
+            for b <- b_list do
+              sales_payment_params =
+                for {key, val} <- b, into: %{}, do: {String.to_atom(key), val}
+            end
+
+          if Map.get(sales_params, :salesid) == nil do
+            invoiceno =
+              Repo.all(
+                from(
+                  s in Sales,
+                  where: s.branchid == ^sales_params.branchid and s.brand_id == ^user.brand_id,
+                  select: %{
+                    invoiceno: s.invoiceno
+                  },
+                  order_by: [s.invoiceno]
+                )
+              )
+              |> Enum.map(fn x -> x.invoiceno end)
+              |> Enum.map(fn x -> String.to_integer(x) end)
+              |> Enum.max()
+
+            brach_name =
+              Repo.all(
+                from(
+                  b in Branch,
+                  where: b.branchid == ^sales_params.branchid and b.brand_id == ^user.brand_id,
+                  select: %{
+                    branchcode: b.branchcode
+                  }
+                )
+              )
+              |> hd()
+
+            id =
+              (invoiceno + 1)
+              |> Integer.to_string()
+
+            salesid = brach_name.branchcode <> "" <> id
+
+            sales_params = Map.put(sales_params, :salesid, salesid)
+            # sales_params = Map.put(sales_params, :invoiceno, id)
+          end
+
+          sales_exist = Repo.get_by(Sales, salesid: sales_params.salesid)
+
+          cond do
+            sales_exist != nil ->
+              message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
+              log_error_api(message, "API POST - sales")
+
+              map =
+                %{message: "Sales #{sales_exist.salesid} already exist.", status: "existed"}
+                |> Poison.encode!()
+
+              send_resp(conn, 200, map)
+
+            sales_exist == nil ->
+              salesdate =
+                NaiveDateTime.from_iso8601!(sales_params.salesdatetime) |> NaiveDateTime.to_date()
+
+              sales_params = Map.put(sales_params, :salesdate, salesdate)
+
+              sales_params =
+                Map.put(sales_params, :tbl_no, Integer.to_string(sales_params.tbl_no))
+
+              sales_params =
+                Map.put(sales_params, :staffid, Integer.to_string(sales_params.staffid))
+
+              sales_params =
+                Map.put(sales_params, :invoiceno, Integer.to_string(sales_params.invoiceno))
+
+              sales_params = Map.put(sales_params, :brand_id, user.brand_id)
+
+              sales_params = Map.put(sales_params, :branchid, Integer.to_string(user.branchid))
+              # IO.inspect(sales_params)
+              sd_count = 0
+              sd_count = Enum.count(sales_master_params_list)
+              sp_count = 0
+              sp_count = Enum.count(sales_payment_params_list)
+
+              case BN.create_sales(sales_params) do
+                {:ok, sales} ->
+                  Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
+
+                  sd =
+                    for sales_master_params <- sales_master_params_list do
+                      sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
+                      sales_master_params = Map.put(sales_master_params, :brand_id, user.brand_id)
+
+                      case BN.create_sales_master(sales_master_params) do
+                        {:ok, sales_master} ->
+                          Task.start_link(__MODULE__, :log_api, [
+                            IO.inspect(sales_master),
+                            params["code"]
+                          ])
+
+                          :ok
+
+                        {:error, %Ecto.Changeset{} = changeset} ->
+                          model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
+                          type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                          message = List.insert_at(conn.req_headers, 0, {model, type})
+                          log_error_api(message, params["code"] <> " API POST - sales details")
+                          :error
+                      end
+                    end
+
+                  if sd |> Enum.any?(fn x -> x == :error end) do
+                    Repo.delete_all(
+                      from(
+                        s in SalesMaster,
+                        where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
+                      )
+                    )
+
+                    Repo.delete(sales)
+
+                    message =
+                      List.insert_at(
+                        conn.req_headers,
+                        0,
+                        {"sales details",
+                         "one of it has issues, the created sales and other sales details will be deleted."}
+                      )
+
+                    log_error_api(message, params["code"] <> "API POST - sales details")
+                    send_resp(conn, 500, "Sales master failed to create.")
+                  else
+                    sps =
+                      for sales_payment_params <- sales_payment_params_list do
+                        sales_payment_params =
+                          Map.put(sales_payment_params, :salesid, sales.salesid)
+
+                        sales_payment_params =
+                          Map.put(sales_payment_params, :brand_id, user.brand_id)
+
+                        case BN.create_sales_payment(sales_payment_params) do
+                          {:ok, sales_payment} ->
+                            Task.start_link(__MODULE__, :log_api, [
+                              IO.inspect(sales_payment),
+                              params["code"]
+                            ])
+
+                            Task.start_link(__MODULE__, :inform_sales_update, [
+                              sales.brand_id,
+                              sales.branchid,
+                              sales.created_at
+                            ])
+
+                            :ok
+
+                          {:error, %Ecto.Changeset{} = changeset} ->
+                            model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
+                            type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                            message = List.insert_at(conn.req_headers, 0, {model, type})
+                            log_error_api(message, params["code"] <> "API POST - sales payment")
+                            :error
+                        end
+                      end
+
+                    if sps |> Enum.any?(fn x -> x == :error end) do
+                      Repo.delete_all(
+                        from(
+                          s in SalesPayment,
+                          where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
+                        )
+                      )
+
+                      Repo.delete_all(
+                        from(
+                          s in SalesMaster,
+                          where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
+                        )
+                      )
+
+                      Repo.delete(sales)
+
+                      message =
+                        List.insert_at(
+                          conn.req_headers,
+                          0,
+                          {"sales details",
+                           "one of it has issues, the created sales and other sales details will be deleted."}
+                        )
+
+                      log_error_api(message, "API POST - sales details")
+                      send_resp(conn, 500, "Sales master failed to create.")
+                    else
+                      sps =
+                        Repo.all(
+                          from(
+                            s in SalesPayment,
+                            where: s.brand_id == ^user.brand_id and s.salesid == ^sales.salesid
+                          )
+                        )
+
+                      sds =
+                        Repo.all(
+                          from(
+                            sd in SalesMaster,
+                            where: sd.brand_id == ^user.brand_id and sd.salesid == ^sales.salesid
+                          )
+                        )
+
+                      if Enum.count(sps) == sp_count and Enum.count(sds) == sd_count do
+                        map =
+                          %{message: "Sales #{sales.salesid} create successfully.", status: "ok"}
+                          |> Poison.encode!()
+
+                        Task.start_link(__MODULE__, :update_dashboard_1, [
+                          user.brand_id
+                        ])
+
+                        send_resp(conn, 200, map)
+                      else
+                        Repo.delete_all(
+                          from(
+                            s in SalesPayment,
+                            where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
+                          )
+                        )
+
+                        Repo.delete_all(
+                          from(
+                            s in SalesMaster,
+                            where: s.salesid == ^sales.salesid and s.brand_id == ^user.brand_id
+                          )
+                        )
+
+                        Repo.delete(sales)
+
+                        send_resp(conn, 500, "Sales payment failed to create.")
+                      end
+                    end
+                  end
+
+                {:error, %Ecto.Changeset{} = changeset} ->
+                  model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
+                  type = changeset.errors |> hd() |> elem(1) |> elem(0)
+                  message = List.insert_at(conn.req_headers, 0, {model, type})
+                  log_error_api(message, params["code"] <> "API POST - sales")
+
+                  send_resp(conn, 500, "Sales to create. Please use the latest sales ID")
+              end
+          end
+        else
+          cond do
+            user == nil ->
+              message =
+                List.insert_at(
+                  conn.req_headers,
+                  0,
+                  {"authentication", "code and key doesnt match"}
+                )
+
+              log_error_api(message, "API POST")
+              send_resp(conn, 400, "User not found.")
+
+            true ->
+              message = List.insert_at(conn.req_headers, 0, {"authentication", "unknown"})
+              log_error_api(message, "API POST")
+              send_resp(conn, 400, "user credentials are incorrect.")
+          end
+        end
+    end
+  end
+
   def update_dashboard_1(brand_id) do
     start_d = Date.utc_today()
     end_d = Date.utc_today()
