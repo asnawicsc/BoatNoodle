@@ -123,7 +123,7 @@
                 <input type="hidden" name="end_date">
             <input type="hidden" name="branch">
              <button class="btn btn-success btn-round" data-toggle="modal" id="combo_item_sales_csv" data-target="#exampleModal2">
-                <i class="material-icons">add_box</i> Combo Item Sales Report
+                <i class="material-icons">add_box</i> Item Sales Outlet Report
               <div class="ripple-container"></div>
             </button>
         </form>

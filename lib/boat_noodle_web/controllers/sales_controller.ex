@@ -525,7 +525,7 @@ defmodule BoatNoodleWeb.SalesController do
     id = branch.branchid |> Integer.to_string()
 
     if params["branch"] != "0" do
-      all =
+      a1 =
         Repo.all(
           from(
             s in Sales,
@@ -535,10 +535,9 @@ defmodule BoatNoodleWeb.SalesController do
             on: b.branchid == s.branchid,
             where:
               s.is_void == 0 and p.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
-                p.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"] and
-                p.combo_id == ^0,
-            group_by: [s.salesdate, p.itemid, p.itemname, b.branchcode],
+                s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
+                s.salesdate <= ^params["end_date"] and p.combo_id == ^0,
+            group_by: [s.salesdate, p.itemid, b.branchcode],
             order_by: [s.salesdate, p.itemname],
             select: %{
               date: s.salesdate,
@@ -552,6 +551,36 @@ defmodule BoatNoodleWeb.SalesController do
             }
           )
         )
+
+      a2 =
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesMaster,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and p.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
+                s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
+                s.salesdate <= ^params["end_date"] and p.combo_id != ^0,
+            group_by: [s.salesdate, p.itemid, b.branchcode],
+            order_by: [s.salesdate, p.itemname],
+            select: %{
+              date: s.salesdate,
+              name: p.itemname,
+              itemid: p.itemid,
+              salesid: p.salesid,
+              desc: p.itemname,
+              branch: b.branchcode,
+              qty: sum(p.qty),
+              order_price: sum(p.order_price)
+            }
+          )
+        )
+        |> Enum.reject(fn x -> String.length(Integer.to_string(x.itemid)) == 6 end)
+
+      all = (a1 ++ a2) |> List.flatten()
 
       all =
         all
@@ -677,13 +706,10 @@ defmodule BoatNoodleWeb.SalesController do
                 on: s.salesid == sp.salesid,
                 left_join: b in Branch,
                 on: b.branchid == s.branchid,
-                left_join: t in Brand,
-                on: t.id == s.brand_id,
                 where:
                   s.is_void == 0 and s.salesdate == ^date2 and
-                    b.report_class == ^branch.report_class and t.id == ^brand.id and
-                    s.brand_id == ^brand.id and b.brand_id == ^brand.id and
-                    sp.brand_id == ^brand.id and b.branchid == ^id,
+                    b.report_class == ^branch.report_class and s.brand_id == ^brand.id and
+                    b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
                 select: %{
                   grand_total: sum(sp.grand_total),
                   sub_total: sum(sp.sub_total),
@@ -693,6 +719,13 @@ defmodule BoatNoodleWeb.SalesController do
                 }
               )
             )
+
+          if Enum.count(rpt) > 1 do
+            IEx.pry()
+          end
+
+          rpt =
+            rpt
             |> hd
 
           grand_total =
@@ -1729,7 +1762,12 @@ defmodule BoatNoodleWeb.SalesController do
 
   def foc_qty(discount_value, up) do
     cond do
+      up == Decimal.new("0.00") ->
+        0
+
       Decimal.decimal?(up) ->
+        # IO.inspect(discount_value)
+        # IO.inspect(up)
         Float.round(discount_value / Decimal.to_float(up))
 
       up = "0.00" ->
