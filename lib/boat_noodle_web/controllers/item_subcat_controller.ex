@@ -6,6 +6,18 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   require IEx
 
   def combo_create(conn, params) do
+
+    item_code=Repo.get_by(ItemSubcat, %{itemcode: params["itemcode"],brand_id: BN.get_brand_id(conn) })
+
+    if item_code != nil do
+
+        conn
+        |> put_flash(:info, "Item Code already exist.")
+        |> redirect(to: item_subcat_path(conn, :combo_new,  BN.get_domain(conn) ))
+
+    end
+
+   
     ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
     itemname = params["itemcode"] <> " " <> params["itemdesc"]
     params = Map.put(params, "itemname", itemname)
@@ -325,7 +337,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
        sub |> Integer.to_string()
       end
 
-   
+
 
       p = (comboid2 <> sub) |> String.to_integer()
 
@@ -725,6 +737,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_new(conn, _params) do
+
     brand = BN.get_brand_id(conn)
 
     menu_item = Repo.all(from(i in MenuItem, where: i.category_type == ^"COMBO"))
@@ -771,6 +784,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       )
       |> Enum.uniq()
 
+
     render(
       conn,
       "combo_new.html",
@@ -782,6 +796,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def add_item(conn, %{"subcatid" => id}) do
+
+
     id = String.to_integer(id)
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 

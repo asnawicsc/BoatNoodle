@@ -230,6 +230,618 @@ defmodule BoatNoodleWeb.SalesController do
     render(conn, "detail_invoice.html", detail: detail, detail_item: detail_item)
   end
 
+  def monthly_sales_csv(conn,params) do
+
+
+     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
+
+    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+
+    id = branch.branchid |> Integer.to_string()
+
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header(
+      "content-disposition",
+      "attachment; filename=\"Monthly Sales" <> branch.branchcode <> ".csv\""
+    )
+    |> send_resp(200, csv_monthly_sales(conn, params))
+    
+
+  end
+
+    defp csv_monthly_sales(conn, params) do
+
+    branch_id = params["branch"]
+    brand = params["brand"]
+    brand = Repo.get_by(Brand, domain_name: brand)
+    brand_id=brand.id
+    start_d = params["start_date"]
+    end_d = params["end_date"]
+
+ 
+
+    all=if branch_id != "0"  do
+
+       Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and 
+                    s.branchid == ^params["branch"] and
+                      s.brand_id == ^brand_id and 
+                      b.brand_id == ^brand_id and
+                      sp.brand_id == ^brand_id,
+                  select: %{
+                    salesdate: s.salesdate,
+                     id: s.invoiceno,
+                    pax: s.pax,
+                    grand_total: sp.grand_total,
+                    service_charge: sp.service_charge,
+                    gst: sp.gst_charge,
+                    after_disc: sp.after_disc,
+                    transaction: s.salesid,
+                    sub_total: sp.sub_total,
+                    rounding: sp.rounding
+                  }
+                )
+              )
+
+     else
+
+                 Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and 
+                      sp.brand_id == ^brand_id and
+                      s.brand_id == ^brand_id and
+                      b.brand_id == ^brand_id,
+                  select: %{
+                    id: s.invoiceno,
+                    salesdate: s.salesdate,
+                    pax: s.pax,
+                    grand_total: sp.grand_total,
+                    service_charge: sp.service_charge,
+                    gst: sp.gst_charge,
+                    after_disc: sp.after_disc,
+                    transaction: s.salesid,
+                    sub_total: sp.sub_total,
+                    rounding: sp.rounding
+                  }
+                )
+              )
+
+      
+    end
+
+        a = Date.from_iso8601!(start_d)
+    year = a.year
+
+
+
+
+    total =
+      all
+      |> Enum.reject(fn x -> x.salesdate == nil end)
+      |> Enum.filter(fn x -> x.salesdate.year == year end)
+
+
+
+    ranges = 1..12
+
+    data =
+      for range <- ranges do
+        bulan = range |> Timex.month_name()
+
+        pax =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> x.pax end)
+          |> Enum.sum()
+
+        receipt =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> x.id end)
+          |> Enum.count()
+
+        service_charge =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> Decimal.to_float(x.service_charge) end)
+          |> Enum.sum()
+
+        after_disc =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> Decimal.to_float(x.after_disc) end)
+          |> Enum.sum()
+
+
+        sub_total =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> Decimal.to_float(x.sub_total) end)
+          |> Enum.sum()
+
+        grand_total =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+          |> Enum.sum()
+
+
+        gst =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> Decimal.to_float(x.gst) end)
+          |> Enum.sum()
+
+
+        rounding =
+          total
+          |> List.flatten()
+          |> Enum.filter(fn x -> x.salesdate.month == range end)
+          |> Enum.map(fn x -> Decimal.to_float(x.rounding) end)
+          |> Enum.sum()
+
+
+           disc_amt =grand_total -(sub_total + service_charge + gst + rounding)
+
+          service_charge=if service_charge != 0 do
+
+            service_charge|>:erlang.float_to_binary(decimals: 2)
+
+          else
+
+            0
+            
+          end
+
+          after_disc=if after_disc != 0 do
+
+            after_disc|>:erlang.float_to_binary(decimals: 2)
+
+          else
+
+            0
+            
+          end
+
+          sub_total=if sub_total != 0 do
+
+            sub_total|>:erlang.float_to_binary(decimals: 2)
+
+          else
+
+            0
+            
+          end
+
+          grand_total=if grand_total != 0 do
+
+            grand_total|>:erlang.float_to_binary(decimals: 2)
+
+          else
+
+            0
+            
+          end
+
+
+          gst=if gst != 0 do
+
+            gst|>:erlang.float_to_binary(decimals: 2)
+
+          else
+
+            0
+            
+          end
+
+
+          rounding=if rounding != 0 do
+
+            rounding|>:erlang.float_to_binary(decimals: 2)
+
+          else
+
+            0
+            
+          end
+
+
+
+
+          disc_amt=if disc_amt != 0 do
+
+            disc_amt|>:erlang.float_to_binary(decimals: 2)
+
+          else
+
+            0
+            
+          end
+
+
+        [bulan, 
+        pax,
+        receipt, 
+        sub_total,
+        after_disc,
+        disc_amt,
+         service_charge,
+         gst,
+         rounding,
+         grand_total
+       ]
+      end
+
+
+
+
+    csv_content = [
+      'Month ',
+      'Pax',
+      'Total Receipts',
+      'SubTotal',
+      'After Discount',
+      'Discount Amount',
+      'GST',
+      'Service Charge',
+      'Roundings',
+      'Total'
+    ]
+
+    csv_content =
+      List.insert_at(data, 0, csv_content)
+      |> CSV.encode()
+      |> Enum.to_list()
+      |> to_string
+ 
+  end
+
+
+
+    def export_to_csv_summary(conn,params) do
+
+
+     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
+
+    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+
+    id = branch.branchid |> Integer.to_string()
+
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header(
+      "content-disposition",
+      "attachment; filename=\"Daily Sales Summary" <> branch.branchcode <> ".csv\""
+    )
+    |> send_resp(200, csv_summary(conn, params))
+    
+
+  end
+
+  defp csv_summary(conn, params) do
+
+    branch_id = params["branch"]
+    brand = params["brand"]
+    brand = Repo.get_by(Brand, domain_name: brand)
+    brand_id=brand.id
+    start_d = params["start_date"]
+    end_d = params["end_date"]
+
+ 
+
+    all=if branch_id != "0"  do
+
+       Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and 
+                    s.branchid == ^params["branch"] and
+                      s.salesdate >= ^start_d and 
+                      s.salesdate <= ^end_d and
+                      s.brand_id == ^brand_id and 
+                      b.brand_id == ^brand_id and
+                      sp.brand_id == ^brand_id,
+                  group_by: [s.salesdate],
+                     order_by: [desc: s.salesdate],
+                  select: %{
+                    salesdate: s.salesdate,
+                     id: count(s.invoiceno),
+                    pax: sum(s.pax),
+                    branchname: b.branchname,
+                    grand_total: sum(sp.grand_total),
+                    service_charge: sum(sp.service_charge),
+                    gst: sum(sp.gst_charge),
+                    after_disc: sum(sp.after_disc),
+                    transaction: count(s.salesid),
+                    sub_total: sum(sp.sub_total),
+                    rounding: sum(sp.rounding)
+                  }
+                )
+              )
+
+     else
+
+                 Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and 
+                    s.salesdate >= ^params["start_date"] and
+                      s.salesdate <= ^params["end_date"] and 
+                      sp.brand_id == ^brand_id and
+                      s.brand_id == ^brand_id and
+                      b.brand_id == ^brand_id,
+                  group_by: [s.salesdate],
+                  order_by: [desc: s.salesdate],
+                  select: %{
+                    id: count(s.invoiceno),
+                    salesdate: s.salesdate,
+                    pax: sum(s.pax),
+                    branchname: b.branchname,
+                    grand_total: sum(sp.grand_total),
+                    service_charge: sum(sp.service_charge),
+                    gst: sum(sp.gst_charge),
+                    after_disc: sum(sp.after_disc),
+                    transaction: count(s.salesid),
+                    sub_total: sum(sp.sub_total),
+                    rounding: sum(sp.rounding)
+                  }
+                )
+              )
+
+      
+    end
+
+     data =
+      for item <- all do
+
+
+        afterdisc = Decimal.to_float(item.after_disc) |> Float.round(2)
+        sub_total = Decimal.to_float(item.sub_total) |> Float.round(2)
+        service_charge = Decimal.to_float(item.service_charge) |> Float.round(2)
+        gst_charge = Decimal.to_float(item.gst) |> Float.round(2)
+        rounding = Decimal.to_float(item.rounding) |> Float.round(2)
+
+        disc_amt =
+          Decimal.to_float(item.grand_total) -
+            (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+               Decimal.to_float(item.gst) + Decimal.to_float(item.rounding))
+
+        grand_total = Decimal.to_float(item.grand_total) |> Float.round(2)
+
+        after_disc = (sub_total - disc_amt) |> Float.round(2)
+
+        beforedisc =
+          Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+            Decimal.to_float(item.gst) + Decimal.to_float(item.rounding)
+
+
+        csv_content = [
+          item.salesdate,
+          item.pax,
+          item.id,
+          sub_total |>:erlang.float_to_binary(decimals: 2),
+          afterdisc |>:erlang.float_to_binary(decimals: 2),
+          disc_amt |>:erlang.float_to_binary(decimals: 2),
+           gst_charge |>:erlang.float_to_binary(decimals: 2),
+          service_charge |>:erlang.float_to_binary(decimals: 2),
+          rounding |>:erlang.float_to_binary(decimals: 2),
+          grand_total |>:erlang.float_to_binary(decimals: 2)
+        ]
+      end
+
+    csv_content = [
+      'Day ',
+      'Pax',
+      'Total Receipts',
+      'SubTotal',
+      'After Discount',
+      'Discount Amount',
+      'GST',
+      'Service Charge',
+      'Roundings',
+      'Total'
+    ]
+
+    csv_content =
+      List.insert_at(data, 0, csv_content)
+      |> CSV.encode()
+      |> Enum.to_list()
+      |> to_string
+ 
+  end
+
+
+  def export_to_csv_group_by_branch(conn,params) do
+
+
+     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
+
+    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+
+    id = branch.branchid |> Integer.to_string()
+
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header(
+      "content-disposition",
+      "attachment; filename=\"Daily Sales" <> branch.branchcode <> ".csv\""
+    )
+    |> send_resp(200, csv_group_by_branch(conn, params))
+    
+
+  end
+
+  defp csv_group_by_branch(conn, params) do
+
+    branch_id = params["branch"]
+    brand = params["brand"]
+    brand = Repo.get_by(Brand, domain_name: brand)
+    brand_id=brand.id
+    start_d = params["start_date"]
+    end_d = params["end_date"]
+
+ 
+
+    all=if branch_id != "0"  do
+
+       Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and s.branchid == ^params["branch"] and
+                      s.salesdate >= ^start_d and s.salesdate <= ^end_d and
+                      s.brand_id == ^brand_id and b.brand_id == ^brand_id and
+                      sp.brand_id == ^brand_id,
+                  group_by: [s.salesdate, b.branchname],
+                  select: %{
+                    id: count(s.salesid),
+                    salesdate: s.salesdate,
+                    pax: sum(s.pax),
+                    branchname: b.branchname,
+                    grand_total: sum(sp.grand_total),
+                    service_charge: sum(sp.service_charge),
+                    gst: sum(sp.gst_charge),
+                    after_disc: sum(sp.after_disc),
+                    transaction: count(s.salesid),
+                    sub_total: sum(sp.sub_total),
+                    rounding: sum(sp.rounding)
+                  }
+                )
+              )
+
+     else
+
+                 Repo.all(
+                from(
+                  sp in BoatNoodle.BN.SalesPayment,
+                  left_join: s in BoatNoodle.BN.Sales,
+                  on: sp.salesid == s.salesid,
+                  left_join: b in BoatNoodle.BN.Branch,
+                  on: b.branchid == s.branchid,
+                  where:
+                    s.is_void == 0 and s.salesdate >= ^params["start_date"] and
+                      s.salesdate <= ^params["end_date"] and sp.brand_id == ^brand_id and
+                      b.brand_id == ^brand_id,
+                  group_by: [s.salesdate, b.branchname],
+                  select: %{
+                    id: count(s.salesid),
+                    salesdate: s.salesdate,
+                    pax: sum(s.pax),
+                    branchname: b.branchname,
+                    grand_total: sum(sp.grand_total),
+                    service_charge: sum(sp.service_charge),
+                    gst: sum(sp.gst_charge),
+                    after_disc: sum(sp.after_disc),
+                    transaction: count(s.salesid),
+                    sub_total: sum(sp.sub_total),
+                    rounding: sum(sp.rounding)
+                  }
+                )
+              )
+
+      
+    end
+
+     data =
+      for item <- all do
+
+
+        afterdisc = Decimal.to_float(item.after_disc) |> Float.round(2)
+        sub_total = Decimal.to_float(item.sub_total) |> Float.round(2)
+        service_charge = Decimal.to_float(item.service_charge) |> Float.round(2)
+        gst_charge = Decimal.to_float(item.gst) |> Float.round(2)
+        rounding = Decimal.to_float(item.rounding) |> Float.round(2)
+
+        disc_amt =
+          Decimal.to_float(item.grand_total) -
+            (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+               Decimal.to_float(item.gst) + Decimal.to_float(item.rounding))
+
+        grand_total = Decimal.to_float(item.grand_total) |> Float.round(2)
+
+        after_disc = (sub_total - disc_amt) |> Float.round(2)
+
+        beforedisc =
+          Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+            Decimal.to_float(item.gst) + Decimal.to_float(item.rounding)
+
+
+        csv_content = [
+          item.salesdate,
+          item.pax,
+          item.id,
+          sub_total |>:erlang.float_to_binary(decimals: 2),
+          afterdisc |>:erlang.float_to_binary(decimals: 2),
+          disc_amt |>:erlang.float_to_binary(decimals: 2),
+           gst_charge |>:erlang.float_to_binary(decimals: 2),
+          service_charge |>:erlang.float_to_binary(decimals: 2),
+          rounding |>:erlang.float_to_binary(decimals: 2),
+          grand_total |>:erlang.float_to_binary(decimals: 2),
+          item.branchname
+        ]
+      end
+
+    csv_content = [
+      'Day ',
+      'Pax',
+      'Total Receipts',
+      'SubTotal',
+      'After Discount',
+      'Discount Amount',
+      'GST',
+      'Service Charge',
+      'Roundings',
+      'Total',
+      'Branch Name'
+    ]
+
+    csv_content =
+      List.insert_at(data, 0, csv_content)
+      |> CSV.encode()
+      |> Enum.to_list()
+      |> to_string
+
+
+
+
+    
+  end
+
   def excel(conn, params) do
     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
 
@@ -400,14 +1012,14 @@ defmodule BoatNoodleWeb.SalesController do
           staff_name,
           item.tbl_no,
           item.pax,
-          sub_total |> Float.to_string(),
-          disc_amt |> Float.round(2) |> Float.to_string(),
-          disc_percent |> Float.to_string(),
-          afterdisc |> Float.to_string(),
-          service_charge |> Float.to_string(),
-          gst_charge |> Float.to_string(),
-          rounding |> Float.to_string(),
-          grand_total |> Float.to_string(),
+          sub_total |>:erlang.float_to_binary(decimals: 2),
+          disc_amt |>:erlang.float_to_binary(decimals: 2),
+          disc_percent |>:erlang.float_to_binary(decimals: 2),
+          afterdisc |>:erlang.float_to_binary(decimals: 2),
+          service_charge |>:erlang.float_to_binary(decimals: 2),
+          gst_charge |>:erlang.float_to_binary(decimals: 2),
+          rounding |>:erlang.float_to_binary(decimals: 2),
+          grand_total |>:erlang.float_to_binary(decimals: 2),
           item.payment_type,
           item.payment_name1,
           item.payment_code1,
@@ -419,6 +1031,7 @@ defmodule BoatNoodleWeb.SalesController do
           item.branchname
         ]
       end
+
 
     csv_content = [
       'DATE ',
@@ -787,8 +1400,8 @@ defmodule BoatNoodleWeb.SalesController do
             "Total Rounding",
             "",
             "",
-            rounding2,
-            rounding2,
+            rounding2|>:erlang.float_to_binary(decimals: 2),
+            rounding2|>:erlang.float_to_binary(decimals: 2),
             branch.report_class,
             ""
           ]
@@ -803,8 +1416,8 @@ defmodule BoatNoodleWeb.SalesController do
             "Discount",
             "",
             "",
-            disc_amt,
-            disc_amt,
+            disc_amt|>:erlang.float_to_binary(decimals: 2),
+            disc_amt|>:erlang.float_to_binary(decimals: 2),
             branch.report_class,
             'SR0'
           ]
@@ -2243,7 +2856,12 @@ defmodule BoatNoodleWeb.SalesController do
       for item <- discount_item_report_csv_content do
         discount_amount = Decimal.to_float(item.order_price) - Decimal.to_float(item.after_disc)
 
-        [item.salesdate, item.discname, item.discitemsname, item.qty, discount_amount]
+        [item.salesdate,
+         item.discname,
+          item.discitemsname,
+           item.qty,
+            discount_amount|>:erlang.float_to_binary(decimals: 2)
+          ]
       end
 
     csv_content2 =
@@ -2387,8 +3005,8 @@ defmodule BoatNoodleWeb.SalesController do
           item.itemname,
           item.qty,
           item.itemprice,
-          price_before_discount,
-          discount_amount,
+          price_before_discount|>:erlang.float_to_binary(decimals: 2),
+          discount_amount|>:erlang.float_to_binary(decimals: 2),
           item.discname,
           item.discitemsname,
           item.tbl_no,

@@ -49,6 +49,7 @@
 
         <div class="row">
             <div class="col-md-12">
+
                 <div class="card">
                     <div class="card-header card-header-icon card-header-rose">
                         <div class="card-icon">
@@ -56,8 +57,24 @@
                         </div>
                         <h4 class="card-title">Branch Month Comparison Chart
                         </h4>
+
+                                                                                    <div class="dropdown pull-right" style="padding: 10px;">
+             <form method="get" action='/<%= @conn.params["brand"] %>/monthly_sales_csv' class="form-horizontal" >
+                <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                     <input type="hidden" name="branch">
+
+           <button class="btn btn-warning btn-round" type="submit">
+                <i class="material-icons">add_box</i> Monthly Sales CSV
+              <div class="ripple-container"></div>
+
+            </button>
+        </form>
+        </div>
                     </div>
+
                     <div class="card-body">
+
                         <div id="chart2" class="ct-chart" style="height: 400px;"></div>
                     </div>
                 </div>
@@ -131,7 +148,9 @@
 $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
 
  
-
+  var bra=localStorage.getItem("new_brand");
+ 
+ $("input[name='branch']").val(bra)
 
 
         var b_id = $("select#branch_list").val()
