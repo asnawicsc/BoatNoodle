@@ -125,6 +125,7 @@
                           </tr>
                         </thead>
                         <tbody>
+                     
                           <%= for combo_item <- ci[same_item.subcatid] |> Enum.sort_by(fn x -> x.combo_item_code end)  do %>
 
                             <tr id="<%= same_item.subcatid %>">

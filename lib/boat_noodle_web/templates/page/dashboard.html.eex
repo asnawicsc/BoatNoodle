@@ -147,6 +147,36 @@
                     </div>
                     <div class="card-body">
 
+
+                        <div class="dropdown pull-right" style="padding: 10px;">
+             <form method="get" action='/<%= @conn.params["brand"] %>/export_to_csv_group_by_branch' class="form-horizontal" >
+                <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                     <input type="hidden" name="branch">
+
+           <button class="btn btn-warning btn-round" type="submit">
+                <i class="material-icons">add_box</i> Export To CSV (Group By Branch)
+              <div class="ripple-container"></div>
+
+            </button>
+        </form>
+        </div>
+
+                        <div class="dropdown pull-right" style="padding: 10px;">
+             <form method="get" action='/<%= @conn.params["brand"] %>/export_to_csv_summary' class="form-horizontal" >
+                <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                     <input type="hidden" name="branch">
+
+           <button class="btn btn-warning btn-round" type="submit">
+                <i class="material-icons">add_box</i> Export To CSV (Summary)
+              <div class="ripple-container"></div>
+
+            </button>
+        </form>
+        </div>
+
+
                       
                         <table id="outlet_sales_information" class="table">
                             <thead >
@@ -287,6 +317,10 @@
 
 $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"));
 
+
+   var bra=localStorage.getItem("new_brand");
+ 
+ $("input[name='branch']").val(bra)
 
 
 $('select[name="year"]').selectpicker('val',localStorage.getItem("year"));

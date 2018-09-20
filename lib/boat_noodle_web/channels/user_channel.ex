@@ -2027,9 +2027,14 @@ defmodule BoatNoodleWeb.UserChannel do
             left_join: g in BoatNoodle.BN.Brand,
             on: g.id == ^brand.id,
             where:
-              s.is_void == 1 and br.branchid == ^payload["branch_id"] and
-                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                s.brand_id == ^payload["brand_id"],
+              s.is_void == 1 and 
+              br.branchid == ^payload["branch_id"] and
+                s.salesdate >= ^payload["s_date"] and 
+                s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"] and
+                 sp.brand_id == ^payload["brand_id"] and
+                  br.brand_id == ^payload["brand_id"] and
+                   f.brand_id == ^payload["brand_id"],
             select: %{
               salesdatetime: s.salesdatetime,
               salesdate: s.salesdate,
@@ -2054,8 +2059,12 @@ defmodule BoatNoodleWeb.UserChannel do
             left_join: g in BoatNoodle.BN.Brand,
             on: g.id == ^brand.id,
             where:
-              s.is_void == 1 and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              s.is_void == 1 and 
+              s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and 
+                s.brand_id == ^payload["brand_id"] and
+                 sp.brand_id == ^payload["brand_id"] and
+                   f.brand_id == ^payload["brand_id"],
             select: %{
               salesdatetime: s.salesdatetime,
               salesdate: s.salesdate,
@@ -2131,8 +2140,14 @@ defmodule BoatNoodleWeb.UserChannel do
             left_join: r in BoatNoodle.BN.Brand,
             on: r.id == v.brand_id,
             where:
-              br.branchid == ^payload["branch_id"] and v.brand_id == ^payload["brand_id"] and
-                v.void_datetime >= ^start_n and v.void_datetime <= ^end_n,
+              br.branchid == ^payload["branch_id"] and 
+                v.void_datetime >= ^start_n and 
+                v.void_datetime <= ^end_n and
+                v.brand_id == ^payload["brand_id"] and
+                br.brand_id ==^payload["brand_id"] and
+                 f.brand_id ==^payload["brand_id"] and 
+                  i.brand_id ==^payload["brand_id"] and
+                   r.id ==^payload["brand_id"],
             select: %{
               void_datetime: v.void_datetime,
               itemname: v.itemname,
@@ -2162,19 +2177,25 @@ defmodule BoatNoodleWeb.UserChannel do
             left_join: r in BoatNoodle.BN.Brand,
             on: r.id == v.brand_id,
             where:
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-                v.brand_id == ^payload["brand_id"],
+                v.void_datetime >= ^start_n and 
+                v.void_datetime <= ^end_n and
+                v.brand_id == ^payload["brand_id"] and
+                sp.brand_id ==^payload["brand_id"] and
+                 f.brand_id ==^payload["brand_id"] and 
+                  i.brand_id ==^payload["brand_id"] and
+                   r.id ==^payload["brand_id"],
             select: %{
-              salesdatetime: s.salesdatetime,
+              void_datetime: v.void_datetime,
               salesdate: s.salesdate,
               itemname: v.itemname,
-              invoiceno: s.invoiceno,
-              unit_price: i.itemprice,
+              invoiceno: v.orderid,
+              unit_price: v.priceafterdiscount,
               quantity: v.quantity,
               totalprice: v.price,
               staff: f.staff_name,
-              branchid: s.branchid,
-              domainname: r.domain_name
+               branchid: v.branch_id,
+              domainname: r.domain_name,
+              voidreason: v.voidreason
             }
           )
         )
@@ -3101,11 +3122,13 @@ defmodule BoatNoodleWeb.UserChannel do
     s_date = payload["s_date"]
     e_date = payload["e_date"]
     branches = payload["branch_id"]
+    brand_id = payload["brand_id"]
 
-    map0 = bar_chart_sales_data(branches, s_date)
-    map = chart_data(branches, s_date, e_date)
-    map2 = hourly_sales_chart_data(branches, s_date)
-    map3 = hourly_pax_chart_data(branches, s_date)
+    map0 = bar_chart_sales_data(branches, s_date,brand_id)
+
+    map = chart_data(branches, s_date, e_date,brand_id)
+    map2 = hourly_sales_chart_data(branches, s_date,brand_id)
+    map3 = hourly_pax_chart_data(branches, s_date,brand_id)
 
     broadcast(socket, "populate_chart", %{
       map0: Poison.encode!(map0),
@@ -3117,7 +3140,7 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  defp bar_chart_sales_data(branches, s_date) do
+  defp bar_chart_sales_data(branches, s_date,brand_id) do
     a = Date.from_iso8601!(s_date)
     year = a.year
 
@@ -3128,7 +3151,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: sp.salesid == s.salesid,
-            where: s.branchid == ^branches,
+            where: s.branchid == ^branches and sp.brand_id==^brand_id and s.brand_id==^brand_id,
             select: %{
               salesdate: s.salesdate,
               grand_total: sp.grand_total,
@@ -3138,11 +3161,14 @@ defmodule BoatNoodleWeb.UserChannel do
           )
         )
       else
-        Repo.all(
+
+
+       Repo.all(
           from(
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: sp.salesid == s.salesid,
+            where: sp.brand_id==^brand_id and s.brand_id==^brand_id,
             select: %{
               salesdate: s.salesdate,
               grand_total: sp.grand_total,
@@ -3151,7 +3177,10 @@ defmodule BoatNoodleWeb.UserChannel do
             }
           )
         )
+
       end
+
+
 
     total =
       total_transaction
@@ -3207,7 +3236,7 @@ defmodule BoatNoodleWeb.UserChannel do
       end
   end
 
-  defp chart_data(branches, s_date, e_date) do
+  defp chart_data(branches, s_date, e_date,brand_id) do
     a = Date.from_iso8601!(s_date)
     b = Date.from_iso8601!(e_date)
 
@@ -3221,7 +3250,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: sp.salesid == s.salesid,
-              where: s.branchid == ^branches and s.salesdate == ^item,
+              where: s.branchid == ^branches and s.salesdate == ^item and sp.brand_id==^brand_id and s.brand_id==^brand_id,
               select: %{
                 salesdate: s.salesdate,
                 grand_total: sp.grand_total,
@@ -3236,7 +3265,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: sp.salesid == s.salesid,
-              where: s.salesdate == ^item,
+              where: s.salesdate == ^item and sp.brand_id==^brand_id and s.brand_id==^brand_id,
               select: %{
                 salesdate: s.salesdate,
                 grand_total: sp.grand_total,
@@ -3279,7 +3308,7 @@ defmodule BoatNoodleWeb.UserChannel do
     end
   end
 
-  defp hourly_sales_chart_data(branches, s_date) do
+  defp hourly_sales_chart_data(branches, s_date,brand_id) do
     date = s_date
 
     test =
@@ -3289,7 +3318,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sp.salesid,
-            where: s.branchid == ^branches and s.salesdate == ^date,
+            where: s.branchid == ^branches and s.salesdate == ^date and sp.brand_id==^brand_id and s.brand_id==^brand_id,
             group_by: [s.salesdatetime, s.salesdate],
             select: %{
               salesdatetime: s.salesdatetime,
@@ -3306,7 +3335,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sp.salesid,
-            where: s.salesdate == ^date,
+            where: s.salesdate == ^date and sp.brand_id==^brand_id and s.brand_id==^brand_id,
             group_by: [s.salesdatetime, s.salesdate],
             select: %{
               salesdatetime: s.salesdatetime,
@@ -3486,7 +3515,7 @@ defmodule BoatNoodleWeb.UserChannel do
       end
   end
 
-  defp hourly_pax_chart_data(branches, s_date) do
+  defp hourly_pax_chart_data(branches, s_date,brand_id) do
     date = s_date
 
     test =
@@ -3496,7 +3525,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sp.salesid,
-            where: s.branchid == ^branches and s.salesdate == ^date,
+            where: s.branchid == ^branches and s.salesdate == ^date and sp.brand_id==^brand_id and s.brand_id==^brand_id,
             group_by: [s.salesdatetime, s.salesdate],
             select: %{
               salesdatetime: s.salesdatetime,
@@ -3512,7 +3541,7 @@ defmodule BoatNoodleWeb.UserChannel do
             sp in BoatNoodle.BN.SalesPayment,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sp.salesid,
-            where: s.salesdate == ^date,
+            where: s.salesdate == ^date and sp.brand_id==^brand_id and s.brand_id==^brand_id,
             group_by: [s.salesdatetime, s.salesdate],
             select: %{
               salesdatetime: s.salesdatetime,

@@ -6,6 +6,15 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   require IEx
 
   def combo_create(conn, params) do
+    item_code =
+      Repo.get_by(ItemSubcat, %{itemcode: params["itemcode"], brand_id: BN.get_brand_id(conn)})
+
+    if item_code != nil do
+      conn
+      |> put_flash(:info, "Item Code already exist.")
+      |> redirect(to: item_subcat_path(conn, :combo_new, BN.get_domain(conn)))
+    end
+
     ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
     itemname = params["itemcode"] <> " " <> params["itemdesc"]
     params = Map.put(params, "itemname", itemname)
