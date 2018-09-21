@@ -2301,7 +2301,7 @@ defmodule BoatNoodleWeb.SalesController do
       item.branchname,
       hierachy(item.itemid, subcat_data, combo_data),
       category(item.itemid, subcat_data, combo_data),
-      itemcode(item.itemcode, item.combo_id, subcat_data, combo_data),
+      itemcode(item.itemid,item.itemcode, item.combo_id, subcat_data, combo_data),
       item.itemname,
       item.itemid,
       item.gross_qty,
@@ -2394,8 +2394,35 @@ defmodule BoatNoodleWeb.SalesController do
     end
   end
 
-  def itemcode(itemcode, combo_id, subcat_data, combo_data) do
-    itemcode
+  def itemcode(itemid,itemcode, combo_id, subcat_data, combo_data) do
+ if String.length(Integer.to_string(itemid)) > 5 do
+ 
+        a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end)
+      if a != [] do
+        hd(a).itemcode
+      else
+                  b = combo_data |> Enum.filter(fn x -> x.itemid == itemid end)
+
+          c=if b != [] do
+            hd(b).itemcode
+
+          else
+
+          "Empty"
+
+          end
+
+          c
+      end
+    else
+      a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end)
+
+      if a != [] do
+        hd(a).itemcode
+      else
+        "Empty"
+      end
+    end
   end
 
   def foc_qty(discount_value, up) do
@@ -2656,7 +2683,7 @@ defmodule BoatNoodleWeb.SalesController do
       item.branchname,
       hierachy(item.itemid, subcat_data, combo_data),
       category(item.itemid, subcat_data, combo_data),
-      itemcode(item.itemcode, item.combo_id, subcat_data, combo_data),
+      itemcode(item.itemid,item.itemcode, item.combo_id, subcat_data, combo_data),
       item.itemname,
       item.gross_qty,
       nett_qty(item.gross_qty, foc),
