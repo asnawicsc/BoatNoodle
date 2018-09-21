@@ -2150,12 +2150,10 @@ defmodule BoatNoodleWeb.SalesController do
             on: s.salesid == sd.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: st.staff_id == b.manager,
             group_by: [s.salesdate, b.branchname, sd.itemid],
             where:
               s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and st.brand_id == ^brand.id and s.is_void == ^0 and
+                b.brand_id == ^brand.id and s.is_void == ^0 and
                 sd.is_void == ^0 and s.branchid == ^branch_id,
             select: %{
               salesdate: s.salesdate,
@@ -2167,7 +2165,7 @@ defmodule BoatNoodleWeb.SalesController do
               gross_sales: sum(sd.order_price),
               nett_sales: sum(sd.afterdisc),
               unit_price: sd.unit_price,
-              store_owner: st.staff_name,
+              store_owner: b.manager,
               combo_id: sd.combo_id
             }
           )
@@ -2185,7 +2183,7 @@ defmodule BoatNoodleWeb.SalesController do
             group_by: [s.salesdate, b.branchname, sd.itemid],
             where:
               s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and st.brand_id == ^brand.id and s.is_void == ^0 and
+                b.brand_id == ^brand.id and s.is_void == ^0 and
                 sd.is_void == ^0,
             select: %{
               salesdate: s.salesdate,
@@ -2197,7 +2195,7 @@ defmodule BoatNoodleWeb.SalesController do
               gross_sales: sum(sd.order_price),
               nett_sales: sum(sd.afterdisc),
               unit_price: sd.unit_price,
-              store_owner: st.staff_name,
+              store_owner: b.manager,
               combo_id: sd.combo_id
             }
           )
@@ -2245,6 +2243,19 @@ defmodule BoatNoodleWeb.SalesController do
       )
 
 
+          staffs =
+      Repo.all(
+        from(
+          cd in Staff,
+          where: cd.brand_id == ^brand.id,
+          select: %{
+            staff_id: cd.staff_id,
+            staff_name: cd.staff_name
+          }
+        )
+      )
+
+
     combo_data_price =
       Repo.all(
         from(
@@ -2268,7 +2279,7 @@ defmodule BoatNoodleWeb.SalesController do
 
     item_sales_outlet
     |> Stream.map(fn x ->
-      item_sales_outlet_csv_content(x, conn, params, subcat_data, combo_data, combo_data_price)
+      item_sales_outlet_csv_content(x, conn, params,staffs, subcat_data, combo_data, combo_data_price)
     end)
     |> (fn stream -> Stream.concat(csv_header, stream) end).()
     |> CSV.encode()
@@ -2287,6 +2298,7 @@ defmodule BoatNoodleWeb.SalesController do
          item,
          conn,
          params,
+         staffs,
          subcat_data,
          combo_data,
          combo_data_price
@@ -2315,7 +2327,7 @@ defmodule BoatNoodleWeb.SalesController do
         nett_sales(gs, discount_value) * 0.1,
         decimals: 2
       ),
-      item.store_owner,
+      manager(item.store_owner,staffs),
       combo_name(item.combo_id, subcat_data)
     ]
   end
@@ -2327,6 +2339,17 @@ defmodule BoatNoodleWeb.SalesController do
       hd(a).itemname
     else
       "Ala Carte"
+    end
+  end
+
+
+  def manager(store_owner,staffs) do
+    a = staffs |> Enum.filter(fn x -> x.staff_id == store_owner end)
+
+    if a != [] do
+      hd(a).staff_name
+    else
+      "Unknown Manager"
     end
   end
 
@@ -2532,13 +2555,15 @@ defmodule BoatNoodleWeb.SalesController do
             on: s.salesid == sd.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: st.staff_id == b.manager,
             group_by: [s.salesdate, b.branchname, sd.itemid],
             where:
-              s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and st.brand_id == ^brand.id and s.is_void == ^0 and
-                sd.is_void == ^0 and s.branchid == ^branch_id,
+              s.salesdate >= ^start_date and
+               s.salesdate <= ^end_date and 
+               s.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and 
+                 s.is_void == ^0 and
+                sd.is_void == ^0 and
+                 s.branchid == ^branch_id,
             select: %{
               salesdate: s.salesdate,
               branchname: b.branchname,
@@ -2549,7 +2574,7 @@ defmodule BoatNoodleWeb.SalesController do
               gross_sales: sum(sd.order_price),
               nett_sales: sum(sd.afterdisc),
               unit_price: sd.unit_price,
-              store_owner: st.staff_name,
+              store_owner: b.manager,
               combo_id: sd.combo_id
             }
           )
@@ -2562,12 +2587,13 @@ defmodule BoatNoodleWeb.SalesController do
             on: s.salesid == sd.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: st.staff_id == b.manager,
             group_by: [s.salesdate, b.branchname, sd.itemid],
             where:
-              s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and st.brand_id == ^brand.id and s.is_void == ^0 and
+              s.salesdate >= ^start_date and
+               s.salesdate <= ^end_date and
+                s.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and
+                 s.is_void == ^0 and
                 sd.is_void == ^0,
             select: %{
               salesdate: s.salesdate,
@@ -2579,7 +2605,7 @@ defmodule BoatNoodleWeb.SalesController do
               gross_sales: sum(sd.order_price),
               nett_sales: sum(sd.afterdisc),
               unit_price: sd.unit_price,
-              store_owner: st.staff_name,
+              store_owner: b.manager,
               combo_id: sd.combo_id
             }
           )
@@ -2625,6 +2651,18 @@ defmodule BoatNoodleWeb.SalesController do
         )
       )
 
+          staffs =
+      Repo.all(
+        from(
+          cd in Staff,
+          where: cd.brand_id == ^brand.id,
+          select: %{
+            staff_id: cd.staff_id,
+            staff_name: cd.staff_name
+          }
+        )
+      )
+
 
 
     combo_data_price =
@@ -2650,7 +2688,7 @@ defmodule BoatNoodleWeb.SalesController do
 
     item_sales_outlet
     |> Stream.map(fn x ->
-      item_sales_outlet_csv_content2(x, conn, params, subcat_data, combo_data, combo_data_price)
+      item_sales_outlet_csv_content2(x, conn, params,staffs, subcat_data, combo_data, combo_data_price)
     end)
     |> (fn stream -> Stream.concat(csv_header, stream) end).()
     |> CSV.encode()
@@ -2669,6 +2707,7 @@ defmodule BoatNoodleWeb.SalesController do
          item,
          conn,
          params,
+         staffs,
          subcat_data,
          combo_data,
          combo_data_price
@@ -2693,7 +2732,7 @@ defmodule BoatNoodleWeb.SalesController do
       item.unit_price,
       discount_value,
       service_charge,
-      item.store_owner,
+      manager(item.store_owner,staffs),
       combo_name(item.combo_id, subcat_data)
     ]
   end
