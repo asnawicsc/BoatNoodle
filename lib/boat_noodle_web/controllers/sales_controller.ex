@@ -2328,18 +2328,45 @@ defmodule BoatNoodleWeb.SalesController do
         decimals: 2
       ),
       manager(item.store_owner,staffs),
-      combo_name(item.combo_id, subcat_data)
+      combo_name(item.itemid,item.combo_id, subcat_data,combo_data)
     ]
   end
 
-  def combo_name(combo_id, subcat_data) do
-    a = subcat_data |> Enum.filter(fn x -> x.subcatid == combo_id end)
+  def combo_name(itemid,combo_id, subcat_data,combo_data) do
 
-    if a != [] do
-      hd(a).itemname
+        # a = subcat_data |> Enum.filter(fn x -> x.subcatid == combo_id end)
+    # if a != [] do
+    #   hd(a).itemname
+    # else
+    #   IEx.pry
+    #   "Ala Carte"
+    # end
+
+     if String.length(Integer.to_string(itemid)) > 5 do
+     
+         a = subcat_data |> Enum.filter(fn x -> x.subcatid == combo_id end) 
+   
+      if a != [] do
+        hd(a).itemname
+      else
+          b = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end) 
+          c=if b != [] do
+            hd(b).category_type
+
+          else
+
+          "Empty"
+
+          end
+
+          c
+
+      end
     else
       "Ala Carte"
     end
+
+
   end
 
 
@@ -2733,7 +2760,7 @@ defmodule BoatNoodleWeb.SalesController do
       discount_value,
       service_charge,
       manager(item.store_owner,staffs),
-      combo_name(item.combo_id, subcat_data)
+      combo_name(item.itemid,item.combo_id, subcat_data,combo_data)
     ]
   end
 
