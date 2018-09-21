@@ -2244,6 +2244,7 @@ defmodule BoatNoodleWeb.SalesController do
         )
       )
 
+
     combo_data_price =
       Repo.all(
         from(
@@ -2331,12 +2332,25 @@ defmodule BoatNoodleWeb.SalesController do
 
   def hierachy(itemid, subcat_data, combo_data) do
     if String.length(Integer.to_string(itemid)) > 5 do
-      a = combo_data |> Enum.filter(fn x -> x.itemid == itemid end)
-
+     
+         a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end) 
+   
       if a != [] do
         hd(a).category_type
       else
-        "Empty"
+          b = combo_data |> Enum.filter(fn x -> x.itemid == itemid end)
+
+          c=if b != [] do
+            hd(b).category_type
+
+          else
+
+          "Empty"
+
+          end
+
+          c
+
       end
     else
       a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end)
@@ -2351,12 +2365,23 @@ defmodule BoatNoodleWeb.SalesController do
 
   def category(itemid, subcat_data, combo_data) do
     if String.length(Integer.to_string(itemid)) > 5 do
-      a = combo_data |> Enum.filter(fn x -> x.itemid == itemid end)
-
+ 
+        a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end)
       if a != [] do
         hd(a).category_name
       else
-        "Empty"
+                  b = combo_data |> Enum.filter(fn x -> x.itemid == itemid end)
+
+          c=if b != [] do
+            hd(b).category_name
+
+          else
+
+          "Empty"
+
+          end
+
+          c
       end
     else
       a = subcat_data |> Enum.filter(fn x -> x.subcatid == itemid end)
@@ -2572,6 +2597,8 @@ defmodule BoatNoodleWeb.SalesController do
           }
         )
       )
+
+
 
     combo_data_price =
       Repo.all(
