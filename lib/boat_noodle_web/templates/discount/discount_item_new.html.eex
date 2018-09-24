@@ -58,6 +58,16 @@
                     <td>Amount Percentage discount on total bill</td>
                     <td>30.00 (30%)</td>
                   </tr>
+                  <tr>
+                    <td>Multi Percent</td>
+                    <td>Discount Amount Percentage on Selected Item</td>
+                    <td>30.00 (30%)</td>
+                  </tr>
+                  <tr>
+                    <td>Multi Value</td>
+                    <td>Discount Exact Amount on Selected Item</td>
+                    <td>50.00</td>
+                  </tr>
                 </tbody>
               </table>
             </li>
@@ -92,6 +102,10 @@
                                              <option value="6" >Single Item -Percent
                                             </option>
                                              <option value="1" >Single Item -Cash
+                                            </option>
+                                            <option value="7" >Multi Percent
+                                            </option>
+                                            <option value="8" >Multi Value
                                             </option>
                                           
                                         </select>
@@ -362,6 +376,27 @@
       $("#minimum_spend").hide();
       $("#voucher_amount").hide();
       $("#discount_amount").hide();
+    }
+
+        if (selectedValue == 7) {
+      $("#discount_category").hide();
+      $("#discount_percentage").show();
+      $("#discount_quantity").hide();
+      $("#target_category").hide();
+      $("#target_item").show();
+      $("#minimum_spend").hide();
+      $("#voucher_amount").hide();
+      $("#discount_amount").hide();
+    }
+        if (selectedValue == 8) {
+      $("#discount_category").hide();
+      $("#discount_percentage").hide();
+      $("#discount_quantity").hide();
+      $("#target_category").hide();
+      $("#target_item").show();
+      $("#minimum_spend").hide();
+      $("#voucher_amount").hide();
+      $("#discount_amount").show();
     }
   }
 </script>
