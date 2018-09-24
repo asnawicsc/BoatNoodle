@@ -12,6 +12,12 @@
   </div>
 
   <div class="form-group">
+    <%= label f, :tax_code, class: "control-label" %>
+    <%= text_input f, :tax_code, class: "form-control" %>
+    <%= error_tag f, :tax_code %>
+  </div>
+
+  <div class="form-group">
     <%= label f, :domain_name, class: "control-label" %>
     <%= text_input f, :domain_name, class: "form-control" %>
     <%= error_tag f, :domain_name %>

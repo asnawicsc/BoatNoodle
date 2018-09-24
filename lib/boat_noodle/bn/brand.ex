@@ -7,13 +7,14 @@ defmodule BoatNoodle.BN.Brand do
     field(:domain_name, :string)
     field(:name, :string)
     field(:file_name, :string)
+    field(:tax_code, :string)
   end
 
   @doc false
   def changeset(brand, attrs, user_id, action) do
     brand =
       brand
-      |> cast(attrs, [:name, :domain_name, :bin, :file_name])
+      |> cast(attrs, [:tax_code, :name, :domain_name, :bin, :file_name])
 
     if action == "new" or action == "edit" do
     else

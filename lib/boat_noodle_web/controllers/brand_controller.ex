@@ -72,7 +72,12 @@ defmodule BoatNoodleWeb.BrandController do
 
   def update_brand(conn, params) do
     brand = Repo.get(Brand, BN.get_brand_id(conn))
-    brand_params = %{domain_name: params["domain_name"], name: params["name"]}
+
+    brand_params = %{
+      domain_name: params["domain_name"],
+      name: params["name"],
+      tax_code: params["tax_code"]
+    }
 
     changeset =
       BoatNoodle.BN.Brand.changeset(brand, brand_params, BN.current_user(conn), "Update")

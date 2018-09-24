@@ -946,6 +946,10 @@ defmodule BoatNoodleWeb.ApiController do
                         user.brand_id
                       ])
 
+                      Task.start_link(__MODULE__, :update_voucher_code, [
+                        sales.salesid
+                      ])
+
                       send_resp(conn, 200, map)
                     else
                       Repo.delete_all(
@@ -990,6 +994,9 @@ defmodule BoatNoodleWeb.ApiController do
           end
         end
     end
+  end
+
+  def update_voucher_code(salesid) do
   end
 
   def webhook_post_v2(conn, params) do
