@@ -85,13 +85,13 @@
         <div class="dropdown pull-right" style="padding: 10px;">
             <div class="row">
 
-<form method="get" action='/<%= @conn.params["brand"] %>/combo/combo_item_qty'>
+<form method="get" action='/<%= @conn.params["brand"] %>/combo/combo_item_report_csv'>
              <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
               <input type="hidden" name="start_date">
                 <input type="hidden" name="end_date">
             <input type="hidden" name="branch">
             <button class="btn btn-rose btn-round" id="item_sales_report_csv" >
-                <i class="material-icons">add_box</i> Combo Item Report
+                <i class="material-icons">add_box</i> Combo Item Sales Report
               <div class="ripple-container"></div>
             </button>
         </form>

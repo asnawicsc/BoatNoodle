@@ -379,7 +379,7 @@
     }
 
         if (selectedValue == 7) {
-      $("#discount_category").hide();
+      $("#discount_category").show();
       $("#discount_percentage").show();
       $("#discount_quantity").hide();
       $("#target_category").hide();
@@ -389,7 +389,7 @@
       $("#discount_amount").hide();
     }
         if (selectedValue == 8) {
-      $("#discount_category").hide();
+      $("#discount_category").show();
       $("#discount_percentage").hide();
       $("#discount_quantity").hide();
       $("#target_category").hide();

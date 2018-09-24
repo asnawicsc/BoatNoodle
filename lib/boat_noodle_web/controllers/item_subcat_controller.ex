@@ -1172,7 +1172,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_show(conn, %{"subcatid" => id}) do
- 
+
     id = String.to_integer(id)
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
