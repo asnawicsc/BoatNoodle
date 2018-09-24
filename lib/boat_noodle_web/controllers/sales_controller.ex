@@ -1123,6 +1123,33 @@ defmodule BoatNoodleWeb.SalesController do
           date = item |> elem(0)
           item = item |> elem(1)
 
+          rpt =
+            Repo.all(
+              from(
+                s in Sales,
+                left_join: sp in SalesPayment,
+                on: s.salesid == sp.salesid,
+                left_join: b in Branch,
+                on: b.branchid == s.branchid,
+                where:
+                  s.is_void == 0 and s.salesdate == ^date2 and
+                    b.report_class == ^branch.report_class and s.brand_id == ^brand.id and
+                    b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
+                select: %{
+                  grand_total: sum(sp.grand_total),
+                  sub_total: sum(sp.sub_total),
+                  service_charge: sum(sp.service_charge),
+                  gst_charge: sum(sp.gst_charge),
+                  rounding: sum(sp.rounding),
+                  taxcode: sp.taxcode
+                }
+              )
+            )
+
+          rpt =
+            rpt
+            |> hd
+
           gft =
             for item <- item do
               trkh = item.date |> Date.to_string()
@@ -1177,7 +1204,7 @@ defmodule BoatNoodleWeb.SalesController do
                 rate,
                 order_price,
                 branch.report_class,
-                brand.tax_code
+                rpt.taxcode
               ]
             end
 
@@ -1209,32 +1236,6 @@ defmodule BoatNoodleWeb.SalesController do
           name = branch.report_class
           cashin = "CashInDrawer:"
           full = cashin <> name
-
-          rpt =
-            Repo.all(
-              from(
-                s in Sales,
-                left_join: sp in SalesPayment,
-                on: s.salesid == sp.salesid,
-                left_join: b in Branch,
-                on: b.branchid == s.branchid,
-                where:
-                  s.is_void == 0 and s.salesdate == ^date2 and
-                    b.report_class == ^branch.report_class and s.brand_id == ^brand.id and
-                    b.brand_id == ^brand.id and sp.brand_id == ^brand.id and b.branchid == ^id,
-                select: %{
-                  grand_total: sum(sp.grand_total),
-                  sub_total: sum(sp.sub_total),
-                  service_charge: sum(sp.service_charge),
-                  gst_charge: sum(sp.gst_charge),
-                  rounding: sum(sp.rounding)
-                }
-              )
-            )
-
-          rpt =
-            rpt
-            |> hd
 
           grand_total =
             if rpt.grand_total != nil do
@@ -1302,6 +1303,13 @@ defmodule BoatNoodleWeb.SalesController do
 
           disc_amt = grand_total - (sub_total + service_charge + gst_charge + rounding)
 
+          serv =
+            if rpt.taxcode == "SER" do
+              ""
+            else
+              "SR0"
+            end
+
           tpm = [
             'Daily Sales',
             branch.report_class,
@@ -1315,7 +1323,7 @@ defmodule BoatNoodleWeb.SalesController do
             service_charge,
             service_charge,
             branch.report_class,
-            ""
+            serv
           ]
 
           tpf = [
@@ -1347,7 +1355,7 @@ defmodule BoatNoodleWeb.SalesController do
             disc_amt |> :erlang.float_to_binary(decimals: 2),
             disc_amt |> :erlang.float_to_binary(decimals: 2),
             branch.report_class,
-            brand.tax_code
+            rpt.taxcode
           ]
 
           paytype1 =
