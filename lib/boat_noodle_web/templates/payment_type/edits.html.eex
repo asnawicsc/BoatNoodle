@@ -1,0 +1,109 @@
+<div class="tab-pane active" id="menu_item" >
+  <div class="card">
+      <div class="card-header card-header-text card-header-warning">
+      <div class="card-text">
+        <h4 class="card-title">Payment Type</h4>
+      </div>
+
+        
+        
+
+    </div>
+ 
+    <div class="card-body" >
+                                    
+                                       
+
+                                                    <form method="post" action="/<%= @conn.params["brand"] %>/edit_payment_type">
+                                                   
+                                                        <input type="hidden" name="brand_id" value="<%= @brand_id %>">
+                                                        <input type="hidden" name="id" value="<%= @payment_type.payment_type_id %>">
+                                                        <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                                                             <div class="row">
+                                                      <div class="col-sm-3">
+                                                        <div class="form-group bmd-form-group">
+                                                          <label class="bmd-label-floating">Payment Type Name</label>
+                                                          <input name="payment_type_code" value="<%= @payment_type.payment_type_code %>" class="form-control" type="text"  required="">
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-sm-3">
+                                                        <div class="form-group bmd-form-group">
+                                                          <label class="bmd-label-floating">Payment Type Code</label>
+                                                          <input name="payment_type_name" value="<%= @payment_type.payment_type_name %>" class="form-control" type="text" required="">
+                                                        </div>
+                                                        
+                                                      </div>
+                                                  </div>
+                                                  <br>
+                                                            <div class="row">
+
+                                                               
+                                                                        <div class="col-sm-3">
+                                                                            <div class="form-check form-check-inline">
+                                                                          <label class="form-check-label">
+                                                                        <%= if  @payment_type.is_card_no == 0  do   %>
+                   
+                                                                              <input class="form-check-input" type="checkbox" name="is_card_no" > 4 Digits Card Number?
+                                                                          <% else %>
+                                                                        
+                                                                             <input class="form-check-input" type="checkbox" checked="checked" name="is_card_no" > 4 Digits Card Number?
+
+                                                                          <% end %> 
+                                                                            <span class="form-check-sign">
+                                                                              <span class="check"></span>
+                                                                            </span>
+                                                                          </label>
+                                                                        </div>
+                                                                        </div>
+
+
+
+                                                                    
+                                                              <div class="col-sm-3">
+                                                                            <div class="form-check form-check-inline">
+                                                                          <label class="form-check-label">
+                                                                                    <%= if  @payment_type.is_visible == 0  do   %>
+                   
+                                                                             <input class="form-check-input" type="checkbox" name="is_visible" > Visible?
+                                                                          <% else %>
+                                                                        
+                                                                             <input class="form-check-input" type="checkbox" checked="checked" name="is_visible" > Visible?
+
+                                                                          <% end %>
+                                                                            <span class="form-check-sign">
+                                                                              <span class="check"></span>
+                                                                            </span>
+                                                                          </label>
+                                                                        </div>
+                                                                        </div>
+
+
+                                                              <div class="col-sm-3">
+                                                                            <div class="form-check form-check-inline">
+                                                                          <label class="form-check-label">
+                                                                                     <%= if  @payment_type.is_delivery == 0  do   %>
+                   
+                                                                              <input class="form-check-input" type="checkbox" name="is_delivery" > Only Appear in Take Away?
+                                                                          <% else %>
+                                                                        
+                                                                              <input class="form-check-input" type="checkbox" checked="checked" name="is_delivery" > Only Appear in Take Away?
+
+                                                                          <% end %>
+ 
+                                                                            <span class="form-check-sign">
+                                                                              <span class="check"></span>
+                                                                            </span>
+                                                                          </label>
+                                                                        </div>
+                                                                        </div>
+                                                            </div>
+
+                                                         <br><br>
+                                                        <input class="btn btn-primary" name="" value="Submit" type="submit">
+                                                    </form>
+
+                                                </div>
+                                              </div>
+                                            </div>
+                                              
+                                   

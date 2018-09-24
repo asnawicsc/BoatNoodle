@@ -196,12 +196,14 @@ defmodule BoatNoodleWeb.Router do
     resources("/payment_type", PaymentTypeController)
     resources("/sales_master", SalesMasterController)
     resources("/sales", SalesController)
-
+    get("/payment_types", PaymentTypeController, :payment_types)
     get("/summary", SalesController, :summary)
     get("/item_sales", SalesController, :item_sales)
     get("/discounts", SalesController, :discounts)
     get("/voided", SalesController, :voided)
     get("/sales_chart", SalesController, :sales_chart)
+    get("/payment_type/:id/edits", PaymentTypeController, :edits)
+    post("/edit_payment_type",PaymentTypeController, :edit_payment_type)
 
     get("/detail_invoice/:branchid/:invoiceno", SalesController, :detail_invoice)
     get("/report", SalesController, :report)

@@ -90,7 +90,7 @@
                               <input class="form-check-input" type="checkbox" id="is_visable" name="is_visable" > Activate?
                           <% else %>
                         
-                             <input class="form-check-input" type="checkbox" id="is_visable" name="is_visable"   checked > Activate?
+                             <input class="form-check-input" type="checkbox" id="is_visable" name="is_visable" checked > Activate?
 
                           <% end %> 
 

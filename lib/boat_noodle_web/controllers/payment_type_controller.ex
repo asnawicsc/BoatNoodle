@@ -23,6 +23,84 @@ defmodule BoatNoodleWeb.PaymentTypeController do
     brand_id = BN.get_brand_id(conn)
     render(conn, "index.html", branches: branches, brand_id: brand_id)
   end
+  def payment_types(conn, params) do
+
+      payment_type = BN.list_payment_type()|>Enum.filter(fn x -> x.brand_id ==BN.get_brand_id(conn) end)
+
+   render(conn, "payment_types.html", brand_id: BN.get_brand_id(conn), payment_type: payment_type)
+  end
+
+   def edits(conn, %{"id" => id}) do
+    payment_type = Repo.get_by(PaymentType,payment_type_id: id, brand_id: BN.get_brand_id(conn))
+    changeset = BN.change_payment_type(payment_type)
+    render(conn, "edits.html",brand_id: BN.get_brand_id(conn), payment_type: payment_type, changeset: changeset)
+  end
+
+  def edit_payment_type(conn,params)  do
+  
+      brand_id = params["brand_id"]
+
+      id=params["id"]
+
+    is_delivery =
+      if params["is_delivery"] == nil do
+        0
+      else
+        1
+      end
+
+    is_card_no =
+      if params["is_card_no"] == nil do
+        0
+      else
+        1
+      end
+
+    is_payment_code =
+      if params["is_payment_code"] == nil do
+        0
+      else
+        1
+      end
+
+    is_default =
+      if params["is_default"] == nil do
+        0
+      else
+        1
+      end
+
+    is_visible =
+      if params["is_visible"] == nil do
+        0
+      else
+        1
+      end
+
+    payment_type_params = %{
+      payment_type_name: params["payment_type_name"],
+      payment_type_code: params["payment_type_code"],
+      is_delivery: is_delivery,
+      is_card_no: is_card_no,
+      is_payment_code: is_payment_code,
+      is_default: is_default,
+      is_visible: is_visible,
+      brand_id: params["brand_id"]
+    }
+
+       payment_type = Repo.get_by(PaymentType,payment_type_id: id, brand_id: BN.get_brand_id(conn))
+
+    case BN.update_payment_type(payment_type, payment_type_params) do
+      {:ok, payment_type} ->
+        conn
+        |> put_flash(:info, "Payment type updated successfully.")
+        |> redirect(to: payment_type_path(conn, :payment_types, BN.get_domain(conn)))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "edits.html", payment_type: payment_type, changeset: changeset)
+    end
+
+  end  
 
   def create_payment_type(conn, params) do
     brand_id = params["brand_id"]
@@ -107,7 +185,7 @@ defmodule BoatNoodleWeb.PaymentTypeController do
   end
 
   def edit(conn, %{"id" => id}) do
-    payment_type = BN.get_payment_type!(id)
+    payment_type = Repo.get_by(PaymentType,payment_type_id: id, brand_id: BN.get_brand_id(conn))
     changeset = BN.change_payment_type(payment_type)
     render(conn, "edit.html", payment_type: payment_type, changeset: changeset)
   end
