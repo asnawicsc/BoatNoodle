@@ -443,6 +443,10 @@ defmodule BoatNoodleWeb.DiscountController do
 
         6 ->
           item["discount_percentage"]
+        7 ->
+          item["discount_percentage"]
+        8 ->
+          item["discount_amount"]
       end
 
     {is_targetmenuitems, multi_item_list} =
