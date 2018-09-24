@@ -2166,10 +2166,8 @@ defmodule BoatNoodleWeb.UserChannel do
         Repo.all(
           from(
             v in BoatNoodle.BN.VoidItems,
-            left_join: sp in BoatNoodle.BN.SalesPayment,
-            on: sp.salesid == v.orderid,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == sp.salesid,
+            left_join: br in BoatNoodle.BN.Branch,
+            on: br.branchid == v.branch_id,
             left_join: f in BoatNoodle.BN.Staff,
             on: v.void_by == f.staff_id,
             left_join: i in BoatNoodle.BN.ItemSubcat,
@@ -2180,13 +2178,11 @@ defmodule BoatNoodleWeb.UserChannel do
                 v.void_datetime >= ^start_n and 
                 v.void_datetime <= ^end_n and
                 v.brand_id == ^payload["brand_id"] and
-                sp.brand_id ==^payload["brand_id"] and
                  f.brand_id ==^payload["brand_id"] and 
                   i.brand_id ==^payload["brand_id"] and
                    r.id ==^payload["brand_id"],
             select: %{
               void_datetime: v.void_datetime,
-              salesdate: s.salesdate,
               itemname: v.itemname,
               invoiceno: v.orderid,
               unit_price: v.priceafterdiscount,

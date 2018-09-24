@@ -146,7 +146,7 @@
 
 										
 
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d and c.brand_id ==^BN.get_brand_id(@conn), select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 										
 											<p name="item[subcat_item]">
 											    <%= prev_subcatid.itemname %> (<%= prev_subcatid.price_code %>)
@@ -158,7 +158,7 @@
 
 										<%= for item <- c do %>
 
-										     <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										     <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d and c.brand_id ==^BN.get_brand_id(@conn), select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 
 											<p><input type="number" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cost_price]" required></p>
 
@@ -179,7 +179,7 @@
 									    <td>
 										<%= for item <- c do %>
 
-										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d, select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
+										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item and c.itemcatid==^d and c.brand_id ==^BN.get_brand_id(@conn), select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 
 											<p><input type="number" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][top_up]" required></p>
 

@@ -792,12 +792,14 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       Repo.all(
         from(
           c in ItemSubcat,
+          where: c.brand_id==^BN.get_brand_id(conn),
           select: %{
             price_code: c.price_code
           }
         )
       )
       |> Enum.uniq()
+
 
     render(
       conn,
@@ -1170,6 +1172,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_show(conn, %{"subcatid" => id}) do
+    IEx.pry
     id = String.to_integer(id)
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 
