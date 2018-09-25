@@ -47,7 +47,6 @@ defmodule BoatNoodleWeb.BranchController do
       subcats_data
       |> Enum.reject(fn x -> String.length(Integer.to_string(x.id)) >= 6 end)
 
-
     changeset = Tag.changeset(%BoatNoodle.BN.Tag{}, %{}, BN.current_user(conn), "new")
 
     html =
@@ -443,13 +442,12 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
 
-    latest_branch_id=if latest_branch_id == [] do
-      0
-    else
-      hd(latest_branch_id)
-    end
-
-
+    latest_branch_id =
+      if latest_branch_id == [] do
+        0
+      else
+        hd(latest_branch_id)
+      end
 
     branch_params = Map.put(branch_params, "branchid", latest_branch_id + 1)
     branch_params = Map.put(branch_params, "brand_id", BN.get_brand_id(conn))
@@ -566,6 +564,34 @@ defmodule BoatNoodleWeb.BranchController do
         )
       )
 
+    current_menu_catalog =
+      Repo.get_by(MenuCatalog, id: branch.menu_catalog, brand_id: BN.get_brand_id(conn))
+
+    combo_items =
+      current_menu_catalog.items |> String.split(",")
+      |> Enum.filter(fn x -> String.length(x) == 6 end)
+
+    combos =
+      Repo.all(
+        from(
+          i in ItemSubcat,
+          where: i.subcatid in ^combo_items and i.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+
+    combo_details =
+      for combo <- combos do
+        Repo.all(
+          from(
+            c in ComboDetails,
+            where:
+              c.combo_id == ^combo.subcatid and c.brand_id == ^BN.get_brand_id(conn) and
+                c.is_delete == ^0
+          )
+        )
+      end
+      |> List.flatten()
+
     render(
       conn,
       "edit.html",
@@ -576,7 +602,8 @@ defmodule BoatNoodleWeb.BranchController do
       menu_catalog: menu_catalog,
       disc_catalog: disc_catalog,
       selected: selected,
-      unselected: unselected
+      unselected: unselected,
+      combo_details: combo_details
     )
   end
 

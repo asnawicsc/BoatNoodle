@@ -3291,7 +3291,7 @@ defmodule BoatNoodleWeb.SalesController do
 
         discount_amount =
           if item.disctype == "VOUCHER" do
-            Decimal.to_float(item.discamtpercentage)
+            Decimal.to_float(item.disamtpercentage)
           else
             Decimal.to_float(item.itemprice) - after_disc
           end

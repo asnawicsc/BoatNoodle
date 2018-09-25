@@ -660,29 +660,68 @@ defmodule BoatNoodleWeb.ApiController do
         }
       end)
 
-    combos =
+    combo_items =
+      subcat_ids
+      |> Enum.filter(fn x -> String.length(x) == 6 end)
+
+    combos2 =
       Repo.all(
         from(
-          c in ComboDetails,
-          where: c.id in ^combo_ids and c.brand_id == ^brand_id and c.is_delete == 0,
-          select: %{
-            # brand_id: c.brand_id,
-            id: c.id,
-            menu_cat_id: c.menu_cat_id,
-            combo_id: c.combo_id,
-            combo_qty: c.combo_qty,
-            combo_item_id: c.combo_item_id,
-            combo_item_name: c.combo_item_name,
-            combo_item_code: c.combo_item_code,
-            # combo_item_qty: c.combo_item_qty,
-            # update_qty: c.update_qty,
-            top_up: c.top_up,
-            unit_price: c.unit_price,
-            is_default: c.is_default,
-            is_delete: c.is_delete
-          }
+          i in ItemSubcat,
+          where: i.subcatid in ^combo_items and i.brand_id == ^brand_id
         )
       )
+
+    combos =
+      for combo <- combos2 do
+        Repo.all(
+          from(
+            c in ComboDetails,
+            where: c.combo_id == ^combo.subcatid and c.brand_id == ^brand_id and c.is_delete == ^0,
+            select: %{
+              # brand_id: c.brand_id,
+              id: c.id,
+              menu_cat_id: c.menu_cat_id,
+              combo_id: c.combo_id,
+              combo_qty: c.combo_qty,
+              combo_item_id: c.combo_item_id,
+              combo_item_name: c.combo_item_name,
+              combo_item_code: c.combo_item_code,
+              # combo_item_qty: c.combo_item_qty,
+              # update_qty: c.update_qty,
+              top_up: c.top_up,
+              unit_price: c.unit_price,
+              is_default: c.is_default,
+              is_delete: c.is_delete
+            }
+          )
+        )
+      end
+      |> List.flatten()
+
+    # combos =
+    #   Repo.all(
+    #     from(
+    #       c in ComboDetails,
+    #       where: c.id in ^combo_ids and c.brand_id == ^brand_id and c.is_delete == 0,
+    #       select: %{
+    #         # brand_id: c.brand_id,
+    #         id: c.id,
+    #         menu_cat_id: c.menu_cat_id,
+    #         combo_id: c.combo_id,
+    #         combo_qty: c.combo_qty,
+    #         combo_item_id: c.combo_item_id,
+    #         combo_item_name: c.combo_item_name,
+    #         combo_item_code: c.combo_item_code,
+    #         # combo_item_qty: c.combo_item_qty,
+    #         # update_qty: c.update_qty,
+    #         top_up: c.top_up,
+    #         unit_price: c.unit_price,
+    #         is_default: c.is_default,
+    #         is_delete: c.is_delete
+    #       }
+    #     )
+    #   )
 
     json_map =
       %{combo_details: combos, menuitems: subcats, menucategories: item_cats} |> Poison.encode!()
