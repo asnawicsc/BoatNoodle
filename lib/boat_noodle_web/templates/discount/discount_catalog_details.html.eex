@@ -354,12 +354,12 @@
             }).done(function(j) {
                 var selected = j.selected;
                 $(selected).each(function() {
-                    var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
+                    var li = "<li id='" + this.id + "'>" + this.name +"("+this.discount_name+")" +"<i style='margin-left: 5px;' class='fa fa-minus-circle'></i></li>";
                     $("ol.selected_catalog_item").append(li);
                 });
                 var not_selected = j.not_selected;
                 $(not_selected).each(function() {
-                    var li = "<li id='" + this.id + "'>" + this.name + "<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
+                    var li = "<li id='" + this.id + "'>" + this.name + "(" +this.discount_name +")" +"<i style='margin-left: 5px;' class='fa fa-plus-circle'></i></li>";
                     $("ol.not_selected_catalog_item").append(li);
                 });
             });

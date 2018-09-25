@@ -398,6 +398,8 @@ defmodule BoatNoodleWeb.DiscountController do
   end
 
   def create_discount_item_new(conn, params) do
+
+
     item = params["item"]
 
     discountid =
@@ -467,6 +469,7 @@ defmodule BoatNoodleWeb.DiscountController do
           end
       end
 
+
     count2 = item["prerequisite_items"] |> String.split(",") |> Enum.count()
 
     pre_req_item =
@@ -526,7 +529,6 @@ defmodule BoatNoodleWeb.DiscountController do
       branch = Repo.get_by(DiscountCatalog, id: id, brand_id: BN.get_brand_id(conn))
       dis_discount = branch.discounts
       disc_discount = dis_discount |> String.split(",")
-
       disc_id = discountitem.discountitemsid |> Integer.to_string()
       all_discount_discounts = List.insert_at(disc_discount, 0, disc_id)
       new_discounts = all_discount_discounts |> Enum.join(",")
