@@ -294,12 +294,14 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     discounts =
       disc_cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
+
     all_cata =
       Repo.all(
         from(
           d in DiscountItem,
+          left_join: s in Discount, on: d.discountid == s.discountid,
           where: d.brand_id == ^BN.get_brand_id(conn),
-          select: %{id: d.discountitemsid, name: d.discitemsname}
+          select: %{discount_name: s.discname,id: d.discountitemsid, name: d.discitemsname}
         )
       )
 
@@ -307,10 +309,13 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
       Repo.all(
         from(
           d in DiscountItem,
+          left_join: s in Discount, on: d.discountid == s.discountid,
           where: d.discountitemsid in ^discounts and d.brand_id == ^BN.get_brand_id(conn),
-          select: %{id: d.discountitemsid, name: d.discitemsname}
+          select: %{discount_name: s.discname,id: d.discountitemsid, name: d.discitemsname}
         )
       )
+
+  
 
     not_selected = all_cata -- disc_cat
 
