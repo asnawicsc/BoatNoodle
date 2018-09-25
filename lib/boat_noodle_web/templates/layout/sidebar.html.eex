@@ -162,6 +162,12 @@
                     <span class="sidebar-normal"> Discount </span>
                   </a>
                 </li>
+                 <li class="nav-item ">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/payment_types">
+                    <span class="sidebar-mini"> P </span>
+                    <span class="sidebar-normal"> Payment Type </span>
+                  </a>
+                </li>
                
         <%#  %>
 
