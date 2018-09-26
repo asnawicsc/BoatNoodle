@@ -264,8 +264,11 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and s.branchid == ^params["branch"] and s.brand_id == ^brand_id and
-                b.brand_id == ^brand_id and sp.brand_id == ^brand_id,
+              s.is_void == 0 and 
+              s.branchid == ^params["branch"] and 
+              s.brand_id == ^brand_id and
+                b.brand_id == ^brand_id and 
+                sp.brand_id == ^brand_id,
             select: %{
               salesdate: s.salesdate,
               id: s.invoiceno,
@@ -289,7 +292,9 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and sp.brand_id == ^brand_id and s.brand_id == ^brand_id and
+              s.is_void == 0 and 
+              sp.brand_id == ^brand_id and 
+              s.brand_id == ^brand_id and
                 b.brand_id == ^brand_id,
             select: %{
               id: s.invoiceno,
@@ -379,6 +384,8 @@ defmodule BoatNoodleWeb.SalesController do
 
         disc_amt = grand_total - (sub_total + service_charge + gst + rounding)
 
+
+
         service_charge =
           if service_charge != 0 do
             service_charge |> :erlang.float_to_binary(decimals: 2)
@@ -435,8 +442,8 @@ defmodule BoatNoodleWeb.SalesController do
           sub_total,
           after_disc,
           disc_amt,
-          service_charge,
           gst,
+          service_charge,
           rounding,
           grand_total
         ]
@@ -2230,8 +2237,8 @@ defmodule BoatNoodleWeb.SalesController do
       item.gross_qty,
       nett_qty(item.gross_qty, foc),
       foc,
-      gs|>:erlang.float_to_binary(decimals: 2),
-     nett_sales|>:erlang.float_to_binary(decimals: 2),
+      gs,
+     nett_sales,
       up,
       discount_value|>:erlang.float_to_binary(decimals: 2),
       :erlang.float_to_binary(
@@ -2454,8 +2461,8 @@ defmodule BoatNoodleWeb.SalesController do
       item.gross_qty,
       nett_qty(item.gross_qty, foc),
       foc,
-      gs|>:erlang.float_to_binary(decimals: 2),
-      nett_sales(gs, discount_value)|>:erlang.float_to_binary(decimals: 2),
+      gs,
+      nett_sales(gs, discount_value),
       up,
       discount_value|>:erlang.float_to_binary(decimals: 2),
       :erlang.float_to_binary(
