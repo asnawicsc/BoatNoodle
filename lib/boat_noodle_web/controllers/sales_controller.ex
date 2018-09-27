@@ -503,8 +503,11 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and s.branchid == ^params["branch"] and s.salesdate >= ^start_d and
-                s.salesdate <= ^end_d and s.brand_id == ^brand_id and b.brand_id == ^brand_id and
+              s.is_void == 0 and s.branchid == ^params["branch"] and 
+              s.salesdate >= ^start_d and
+                s.salesdate <= ^end_d and 
+                s.brand_id == ^brand_id and 
+                b.brand_id == ^brand_id and
                 sp.brand_id == ^brand_id,
             group_by: [s.salesdate],
             order_by: [desc: s.salesdate],
@@ -567,9 +570,12 @@ defmodule BoatNoodleWeb.SalesController do
             (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
                Decimal.to_float(item.gst) + Decimal.to_float(item.rounding))
 
+            dis=  (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+               Decimal.to_float(item.gst) + Decimal.to_float(item.rounding)) -   Decimal.to_float(item.grand_total)
+
         grand_total = Decimal.to_float(item.grand_total) |> Float.round(2)
 
-        after_disc = (sub_total - disc_amt) |> Float.round(2)
+        after_disc = (sub_total - dis) |> Float.round(2)
 
         beforedisc =
           Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
@@ -580,7 +586,7 @@ defmodule BoatNoodleWeb.SalesController do
           item.pax,
           item.id,
           sub_total |> :erlang.float_to_binary(decimals: 2),
-          afterdisc |> :erlang.float_to_binary(decimals: 2),
+          after_disc |> :erlang.float_to_binary(decimals: 2),
           disc_amt |> :erlang.float_to_binary(decimals: 2),
           gst_charge |> :erlang.float_to_binary(decimals: 2),
           service_charge |> :erlang.float_to_binary(decimals: 2),
@@ -707,7 +713,10 @@ defmodule BoatNoodleWeb.SalesController do
 
         grand_total = Decimal.to_float(item.grand_total) |> Float.round(2)
 
-        after_disc = (sub_total - disc_amt) |> Float.round(2)
+                 dis=  (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+               Decimal.to_float(item.gst) + Decimal.to_float(item.rounding)) -   Decimal.to_float(item.grand_total)
+
+        after_disc = (sub_total - dis) |> Float.round(2)
 
         beforedisc =
           Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
@@ -718,7 +727,7 @@ defmodule BoatNoodleWeb.SalesController do
           item.pax,
           item.id,
           sub_total |> :erlang.float_to_binary(decimals: 2),
-          afterdisc |> :erlang.float_to_binary(decimals: 2),
+          after_disc |> :erlang.float_to_binary(decimals: 2),
           disc_amt |> :erlang.float_to_binary(decimals: 2),
           gst_charge |> :erlang.float_to_binary(decimals: 2),
           service_charge |> :erlang.float_to_binary(decimals: 2),
