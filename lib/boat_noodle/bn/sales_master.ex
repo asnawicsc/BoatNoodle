@@ -25,12 +25,39 @@ defmodule BoatNoodle.BN.SalesMaster do
     field(:remaks, :string)
     field(:created_at, :utc_datetime)
     field(:updated_at, :utc_datetime)
+
+    field(:cat_type, :string)
+    field(:cat_name, :string)
+    field(:combo_name, :string)
+    field(:final_nett_sales, :decimal)
+    field(:total_combo_sub_item_qty, :integer)
+    field(:combo_total_topup_qty, :decimal)
+    field(:foc_qty, :integer)
+    field(:discount_value, :decimal)
+    field(:service_charge, :decimal)
+    field(:salesdate, :date)
+    field(:salesdatetime, :naive_datetime)
+    field(:branchname, :string)
+    field(:staffname, :string)
   end
 
   @doc false
   def changeset(sales_master, attrs) do
     sales_master
     |> cast(attrs, [
+      :cat_type,
+      :cat_name,
+      :combo_name,
+      :final_nett_sales,
+      :total_combo_sub_item_qty,
+      :combo_total_topup_qty,
+      :foc_qty,
+      :discount_value,
+      :service_charge,
+      :salesdate,
+      :salesdatetime,
+      :branchname,
+      :staffname,
       :brand_id,
       :itemcode,
       :itemname,

@@ -264,11 +264,8 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and 
-              s.branchid == ^params["branch"] and 
-              s.brand_id == ^brand_id and
-                b.brand_id == ^brand_id and 
-                sp.brand_id == ^brand_id,
+              s.is_void == 0 and s.branchid == ^params["branch"] and s.brand_id == ^brand_id and
+                b.brand_id == ^brand_id and sp.brand_id == ^brand_id,
             select: %{
               salesdate: s.salesdate,
               id: s.invoiceno,
@@ -292,9 +289,7 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and 
-              sp.brand_id == ^brand_id and 
-              s.brand_id == ^brand_id and
+              s.is_void == 0 and sp.brand_id == ^brand_id and s.brand_id == ^brand_id and
                 b.brand_id == ^brand_id,
             select: %{
               id: s.invoiceno,
@@ -383,8 +378,6 @@ defmodule BoatNoodleWeb.SalesController do
           |> Enum.sum()
 
         disc_amt = grand_total - (sub_total + service_charge + gst + rounding)
-
-
 
         service_charge =
           if service_charge != 0 do
@@ -2223,7 +2216,7 @@ defmodule BoatNoodleWeb.SalesController do
     up = unit_price(item.unit_price, item.itemid, item.combo_id, combo_data_price)
     foc = foc_qty(discount_value, up)
     gs = gross_sales(item.gross_sales, item.gross_qty, item.itemid, subcat_data, combo_data_price)
-     nett_sales= nett_sales(gs, discount_value)
+    nett_sales = nett_sales(gs, discount_value)
 
     [
       item.salesdate,
@@ -2238,9 +2231,9 @@ defmodule BoatNoodleWeb.SalesController do
       nett_qty(item.gross_qty, foc),
       foc,
       gs,
-     nett_sales,
+      nett_sales,
       up,
-      discount_value|>:erlang.float_to_binary(decimals: 2),
+      discount_value |> :erlang.float_to_binary(decimals: 2),
       :erlang.float_to_binary(
         nett_sales(gs, discount_value) * 0.1,
         decimals: 2
@@ -2464,7 +2457,7 @@ defmodule BoatNoodleWeb.SalesController do
       gs,
       nett_sales(gs, discount_value),
       up,
-      discount_value|>:erlang.float_to_binary(decimals: 2),
+      discount_value |> :erlang.float_to_binary(decimals: 2),
       :erlang.float_to_binary(
         nett_sales(gs, discount_value) * 0.1,
         decimals: 2
@@ -2645,14 +2638,12 @@ defmodule BoatNoodleWeb.SalesController do
           Decimal.to_float(gross_sales) + Decimal.to_float(qty) * unit_price
         else
           res = Decimal.to_float(qty) * (unit_price + top_up)
-      
         end
       else
         0
       end
     else
       Decimal.to_float(gross_sales)
-
     end
   end
 
@@ -2881,19 +2872,15 @@ defmodule BoatNoodleWeb.SalesController do
       item.gross_qty,
       nett_qty(item.gross_qty, foc),
       foc,
-      Decimal.to_float(item.gross_sales)|>:erlang.float_to_binary(decimals: 2),
-      Decimal.to_float(item.nett_sales)|>:erlang.float_to_binary(decimals: 2),
-      Decimal.to_float(item.unit_price)|>:erlang.float_to_binary(decimals: 2),
-      discount_value|>:erlang.float_to_binary(decimals: 2),
-      service_charge|>:erlang.float_to_binary(decimals: 2),
+      Decimal.to_float(item.gross_sales) |> :erlang.float_to_binary(decimals: 2),
+      Decimal.to_float(item.nett_sales) |> :erlang.float_to_binary(decimals: 2),
+      Decimal.to_float(item.unit_price) |> :erlang.float_to_binary(decimals: 2),
+      discount_value |> :erlang.float_to_binary(decimals: 2),
+      service_charge |> :erlang.float_to_binary(decimals: 2),
       manager(item.store_owner, staffs),
       combo_name(item.itemid, item.combo_id, subcat_data, combo_data)
     ]
-
-
   end
-
-
 
   def combo_item_sales_csv(conn, params) do
     conn
