@@ -4,6 +4,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
   require IEx
   @primary_key false
   schema "item_subcat" do
+  
     field(:subcatid, :integer, primary_key: true)
     field(:created_at, :utc_datetime)
     field(:enable_disc, :integer, default: 0)

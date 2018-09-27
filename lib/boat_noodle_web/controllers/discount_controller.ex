@@ -975,7 +975,7 @@ defmodule BoatNoodleWeb.DiscountController do
     name = disc_cat.discname
 
     for voucher_code <- voucher_codes do
-      Voucher.changeset(%Voucher{}, %{code_number: voucher_code, discount_name: name})
+      Voucher.changeset(%Voucher{}, %{code_number: voucher_code, discount_name: name,brand_id: BN.get_brand_id(conn)})
       |> Repo.insert()
     end
   end

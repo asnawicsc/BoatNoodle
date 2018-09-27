@@ -353,8 +353,12 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
               where:
-                s.is_void == 0 and s.branchid == ^payload["branch_id"] and
-                  s.brand_id == ^brand_id_int and s.salesdate >= ^payload["s_date"] and
+                s.is_void == 0 and 
+                s.branchid == ^payload["branch_id"] and
+                  s.brand_id == ^brand_id_int and 
+                   sm.brand_id == ^brand_id_int and 
+                    b.brand_id == ^brand_id_int and 
+                  s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"],
               select: %{sales_details: sum(sm.qty)}
             )
@@ -912,8 +916,11 @@ defmodule BoatNoodleWeb.DashboardChannel do
               left_join: sm in SalesMaster,
               on: sm.salesid == s.salesid,
               where:
-                s.is_void == 0 and s.brand_id == ^brand_id_int and
-                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+                s.is_void == 0 and 
+               s.brand_id == ^brand_id_int and 
+                   sm.brand_id == ^brand_id_int and 
+                  s.salesdate >= ^payload["s_date"] and
+                   s.salesdate <= ^payload["e_date"],
               select: %{sales_details: sum(sm.qty)}
             )
           )
