@@ -456,7 +456,7 @@ defmodule BoatNoodleWeb.SalesController do
       'SubTotal',
       'After Discount',
       'Discount Amount',
-      'GST',
+      'Tax',
       'Service Charge',
       'Roundings',
       'Total'

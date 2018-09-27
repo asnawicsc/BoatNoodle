@@ -1,9 +1,8 @@
- <%= form_for @changeset, discount_path(@conn, :upload_voucher,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
-                    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
+ 
       <div class="content">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <div class="card ">
                 <div class="card-header card-header-rose card-header-icon">
                   <div class="card-icon">
@@ -14,6 +13,8 @@
                 <div class="card-body ">
  <div class="row">
                  <div class="col-lg-5 col-md-6 col-sm-3">
+                  <%= form_for @changeset, discount_path(@conn, :upload_voucher,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
+                    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
                     <label class="bmd-label-floating">Discount Category</label>
                           <select class="selectpicker" data-style="btn select-with-transition" name="disc_cat"   data-size="7">
                            <%= for a <- @discount do %>
@@ -39,9 +40,11 @@
                 <div class="card-footer ">
                   <button type="submit" class="btn btn-fill btn-rose">Submit</button>
                 </div>
+                    <% end %>
               </div>
             </div>   
           </div>
         </div>
       </div>
-    <% end %>
+    </div>
+
