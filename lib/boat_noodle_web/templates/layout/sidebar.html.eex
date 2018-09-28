@@ -113,6 +113,12 @@
                     <span class="sidebar-normal"> Payments </span>
                   </a>
                 </li>
+                    <li class="nav-item ">
+                  <a class="nav-link" href="/<%= @conn.params["brand"]%>/payment_type_v2">
+                    <span class="sidebar-mini"> P </span>
+                    <span class="sidebar-normal"> Payments V2 </span>
+                  </a>
+                </li>
                 <li class="nav-item ">
                   <a class="nav-link" href="/<%= @conn.params["brand"]%>/cash_in_out">
                     <span class="sidebar-mini"> C </span>

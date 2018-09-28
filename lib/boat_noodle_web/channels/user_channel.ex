@@ -2630,8 +2630,13 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("payment_type", payload, socket) do
-    {payment_type_cash, payment_type_others, payment} =
+
+  
+
+    {payment_type_cash, payment_type_creditcard, others,payment} =
       if payload["branch_id"] != "0" do
+
+
         payment_type_cash =
           Repo.all(
             from(
@@ -2643,13 +2648,14 @@ defmodule BoatNoodleWeb.UserChannel do
                   s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
               select: %{
-                cash: sum(sp.grand_total)
+                grand_total: sum(sp.grand_total),
+                payment_type: "CASH"
               }
             )
           )
-          |> hd()
 
-        payment_type_others =
+
+        payment_type_creditcard =
           Repo.all(
             from(
               sp in BoatNoodle.BN.SalesPayment,
@@ -2660,11 +2666,36 @@ defmodule BoatNoodleWeb.UserChannel do
                   s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"],
               select: %{
-                card: sum(sp.grand_total)
+                grand_total: sum(sp.grand_total),
+                payment_type: "CREDITCARD"
               }
             )
           )
-          |> hd()
+    
+
+
+            others=Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              left_join: g in BoatNoodle.BN.PaymentType,
+              on: sp.payment_type_id1 == g.payment_type_id,
+              where:
+                s.is_void == 0  and
+                  s.branchid == ^payload["branch_id"] and 
+                  s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and 
+                  s.brand_id == ^payload["brand_id"] and
+                  sp.brand_id == ^payload["brand_id"] and
+                   g.brand_id == ^payload["brand_id"],
+                  group_by: [sp.payment_type_id1],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                payment_type: g.payment_type_name
+              }
+            )
+          )
 
         payment =
           Repo.all(
@@ -2679,12 +2710,12 @@ defmodule BoatNoodleWeb.UserChannel do
                   s.brand_id == ^payload["brand_id"],
               select: %{
                 payment_type: sp.payment_type,
-                total: sum(sp.grand_total)
+                grand_total: sum(sp.grand_total)
               }
             )
           )
 
-        {payment_type_cash, payment_type_others, payment}
+        {payment_type_cash, payment_type_creditcard,others, payment}
       else
         payment_type_cash =
           Repo.all(
@@ -2696,13 +2727,14 @@ defmodule BoatNoodleWeb.UserChannel do
                 s.is_void == 0 and sp.payment_type == "CASH" and s.salesdate >= ^payload["s_date"] and
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
               select: %{
-                cash: sum(sp.grand_total)
+                  grand_total: sum(sp.grand_total),
+                payment_type: "CASH"
               }
             )
           )
-          |> hd()
+         
 
-        payment_type_others =
+        payment_type_creditcard =
           Repo.all(
             from(
               sp in BoatNoodle.BN.SalesPayment,
@@ -2712,11 +2744,35 @@ defmodule BoatNoodleWeb.UserChannel do
                 s.is_void == 0 and sp.payment_type == "CREDITCARD" and
                   s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
               select: %{
-                card: sum(sp.grand_total)
+                  grand_total: sum(sp.grand_total),
+                payment_type: "CREDITCARD"
               }
             )
           )
-          |> hd()
+         
+
+
+           others=Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              left_join: g in BoatNoodle.BN.PaymentType,
+              on: sp.payment_type_id1 == g.payment_type_id,
+              where:
+                s.is_void == 0  and
+                  s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and 
+                  s.brand_id == ^payload["brand_id"] and
+                  sp.brand_id == ^payload["brand_id"] and
+                   g.brand_id == ^payload["brand_id"],
+                  group_by: [sp.payment_type_id1],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                payment_type: g.payment_type_name
+              }
+            )
+          )
 
         payment =
           Repo.all(
@@ -2730,13 +2786,18 @@ defmodule BoatNoodleWeb.UserChannel do
                   s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
               select: %{
                 payment_type: sp.payment_type,
-                total: sum(sp.grand_total)
+                grand_total: sum(sp.grand_total)
               }
             )
           )
 
-        {payment_type_cash, payment_type_others, payment}
+        {payment_type_cash, payment_type_creditcard,others, payment}
       end
+
+      all=payment_type_cash++ payment_type_creditcard++others
+
+    payment_type_cash=payment_type_cash|>hd
+    payment_type_creditcard=payment_type_creditcard|>hd
 
     branches = payload["branch_id"]
     s_date = payload["s_date"]
@@ -2746,26 +2807,27 @@ defmodule BoatNoodleWeb.UserChannel do
     map = payment_data(branches, s_date, e_date, brand_id)
 
     a =
-      if payment_type_others.card == nil do
+      if payment_type_creditcard.grand_total == nil do
         "0.00"
       else
-        payment_type_others.card
+        payment_type_creditcard.grand_total
       end
 
     b =
-      if payment_type_cash.cash == nil do
+      if payment_type_cash.grand_total == nil do
         "0.00"
       else
-        payment_type_cash.cash
+        payment_type_cash.grand_total
       end
 
     payment = payment
     map = Poison.encode!(map)
 
+
     broadcast(socket, "populate_payment", %{
       payment_type_cash: b,
       payment_type_others: a,
-      payment: payment,
+      payment: all,
       map: map
     })
 
@@ -2811,6 +2873,341 @@ defmodule BoatNoodleWeb.UserChannel do
             )
           )
         end
+
+
+      {cash, card} =
+        if total_transaction != [] do
+          cash =
+            Enum.filter(total_transaction, fn x -> x.payment_type == "CASH" end)
+            |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+            |> Enum.sum()
+
+          card =
+            Enum.filter(total_transaction, fn x -> x.payment_type == "CREDITCARD" end)
+            |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+            |> Enum.sum()
+
+          {cash, card}
+        else
+          cash = 0
+          card = 0
+          {cash, card}
+        end
+
+      cash =
+        if cash == 0 do
+          0.00
+        else
+          cash |> Float.round(2)
+        end
+
+      if card == 0 do
+        0.00
+      else
+        card |> Float.round(2)
+      end
+
+      %{salesdate: item, cash: cash, card: card}
+    end
+  end
+
+   def handle_in("payment_type_v2", payload, socket) do
+
+
+
+    {payment_type_cash, payment_type_creditcard, ac , others,payment} =
+      if payload["branch_id"] != "0" do
+
+
+                ac =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              where:
+                s.is_void == 0 and
+                  s.branchid == ^payload["branch_id"] and
+                   s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and 
+                  s.brand_id == ^payload["brand_id"]and
+                    sp.brand_id == ^payload["brand_id"],
+                  group_by: [sp.payment_type],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                grand_total: sum(sp.cash),
+                grand_total: sum(sp.changes),
+                payment_type: sp.payment_type
+              }
+            )
+          )
+
+
+
+
+        payment_type_cash =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              where:
+                s.is_void == 0 and sp.payment_type == "CASH" and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                payment_type: "CASH"
+              }
+            )
+          )
+
+
+        payment_type_creditcard =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              where:
+                s.is_void == 0 and sp.payment_type == "CREDITCARD" and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                payment_type: "CREDITCARD"
+              }
+            )
+          )
+    
+
+
+            others=Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              left_join: g in BoatNoodle.BN.PaymentType,
+              on: sp.payment_type_id1 == g.payment_type_id,
+              where:
+                s.is_void == 0  and
+                  s.branchid == ^payload["branch_id"] and 
+                  s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and 
+                  s.brand_id == ^payload["brand_id"] and
+                  sp.brand_id == ^payload["brand_id"] and
+                   g.brand_id == ^payload["brand_id"],
+                  group_by: [sp.payment_type_id1],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                payment_type: g.payment_type_name
+              }
+            )
+          )
+
+        payment =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              group_by: sp.payment_type,
+              where:
+                s.is_void == 0 and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                payment_type: sp.payment_type,
+                grand_total: sum(sp.grand_total)
+              }
+            )
+          )
+
+        {payment_type_cash, payment_type_creditcard,ac,others, payment}
+      else
+
+        ac =
+          Repo.all(
+            from(
+              s in BoatNoodle.BN.Sales,
+              left_join: sp in BoatNoodle.BN.SalesPayment,
+              on: s.salesid == sp.salesid,
+              where:
+                s.is_void == 0 and
+                 s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and 
+                  s.brand_id == ^payload["brand_id"] and
+                   sp.brand_id == ^payload["brand_id"],
+                  group_by: [sp.payment_type],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                grand_total: sum(sp.cash),
+                grand_total: sum(sp.changes),
+                payment_type: sp.payment_type
+              }
+            )
+          )
+
+ 
+
+        payment_type_cash =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              where:
+                s.is_void == 0 and sp.payment_type == "CASH" and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                  grand_total: sum(sp.grand_total),
+                payment_type: "CASH"
+              }
+            )
+          )
+         
+
+        payment_type_creditcard =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              where:
+                s.is_void == 0 and sp.payment_type == "CREDITCARD" and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"],
+              select: %{
+                  grand_total: sum(sp.grand_total),
+                payment_type: "CREDITCARD"
+              }
+            )
+          )
+         
+
+
+           others=Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              left_join: g in BoatNoodle.BN.PaymentType,
+              on: sp.payment_type_id1 == g.payment_type_id,
+              where:
+                s.is_void == 0  and
+                  s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and 
+                  s.brand_id == ^payload["brand_id"] and
+                  sp.brand_id == ^payload["brand_id"] and
+                   g.brand_id == ^payload["brand_id"],
+                  group_by: [sp.payment_type_id1],
+              select: %{
+                grand_total: sum(sp.grand_total),
+                payment_type: g.payment_type_name
+              }
+            )
+          )
+
+        payment =
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sp.salesid,
+              group_by: sp.payment_type,
+              where:
+                s.is_void == 0 and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                payment_type: sp.payment_type,
+                grand_total: sum(sp.grand_total)
+              }
+            )
+          )
+
+        {payment_type_cash, payment_type_creditcard,ac,others, payment}
+      end
+
+    
+      all=payment_type_cash++ payment_type_creditcard++others
+
+    payment_type_cash=payment_type_cash|>hd
+    payment_type_creditcard=payment_type_creditcard|>hd
+
+    branches = payload["branch_id"]
+    s_date = payload["s_date"]
+    e_date = payload["e_date"]
+    brand_id = payload["brand_id"]
+
+    map = payment_data_v2(branches, s_date, e_date, brand_id)
+
+    a =
+      if payment_type_creditcard.grand_total == nil do
+        "0.00"
+      else
+        payment_type_creditcard.grand_total
+      end
+
+    b =
+      if payment_type_cash.grand_total == nil do
+        "0.00"
+      else
+        payment_type_cash.grand_total
+      end
+
+    payment = payment
+    map = Poison.encode!(map)
+
+
+    broadcast(socket, "populate_payment_v2", %{
+      payment_type_cash: b,
+      payment_type_others: a,
+      payment: all,
+      map: map
+    })
+
+    {:noreply, socket}
+  end
+
+  defp payment_data_v2(branches, s_date, e_date, brand_id) do
+    a = Date.from_iso8601!(s_date)
+    b = Date.from_iso8601!(e_date)
+
+    date_data = Date.range(a, b) |> Enum.map(fn x -> Date.to_string(x) end)
+
+    for item <- date_data do
+      total_transaction =
+        if branches != "0" do
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sp.salesid == s.salesid,
+              where:
+                s.is_void == 0 and s.branchid == ^branches and s.salesdate == ^item and
+                  s.brand_id == ^brand_id,
+              select: %{
+                salesdate: s.salesdate,
+                grand_total: sp.grand_total,
+                payment_type: sp.payment_type
+              }
+            )
+          )
+        else
+          Repo.all(
+            from(
+              sp in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sp.salesid == s.salesid,
+              where: s.is_void == 0 and s.salesdate == ^item and s.brand_id == ^brand_id,
+              select: %{
+                salesdate: s.salesdate,
+                grand_total: sp.grand_total,
+                payment_type: sp.payment_type
+              }
+            )
+          )
+        end
+
 
       {cash, card} =
         if total_transaction != [] do
