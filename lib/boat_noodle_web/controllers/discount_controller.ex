@@ -957,17 +957,11 @@ defmodule BoatNoodleWeb.DiscountController do
     discountid = params["disc_cat"] |> String.to_integer()
     file = params["item_subcat"]["file"]
 
-    {:ok, binary} = File.read(params["item_subcat"]["file"].path)
+    {:ok,binary} = File.read(params["item_subcat"]["file"].path)
 
-    Task.start_link(__MODULE__, :upload_voucher, [binary, conn, params])
+    # Task.start_link(__MODULE__, :upload_voucher, [binary, conn, params])
 
-    conn
-    |> put_flash(:info, "Discount updated successfully.")
-    |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
-  end
-
-  def upload_voucher(binary, conn, params) do
-    voucher_codes = binary |> String.split("\r\n")
+    voucher_codes = binary |> String.split("\n")
 
     disc_cat =
       Repo.get_by(Discount, discountid: params["disc_cat"], brand_id: BN.get_brand_id(conn))
@@ -975,10 +969,18 @@ defmodule BoatNoodleWeb.DiscountController do
     name = disc_cat.discname
 
     for voucher_code <- voucher_codes do
-      Voucher.changeset(%Voucher{}, %{code_number: voucher_code, discount_name: name,brand_id: BN.get_brand_id(conn)})
-      |> Repo.insert()
+
+      Voucher.changeset(%Voucher{}, %{code_number: voucher_code, discount_name: name,brand_id: BN.get_brand_id(conn)})|> Repo.insert()
     end
+
+    conn
+    |> put_flash(:info, "Discount updated successfully.")
+    |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
   end
+
+  # def upload_voucher(binary, conn, params) do
+    
+  # end
 
   def delete(conn, %{"id" => id}) do
     discount = BN.get_discount!(id)

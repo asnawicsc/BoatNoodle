@@ -2104,47 +2104,7 @@ defmodule BoatNoodleWeb.UserChannel do
     {:noreply, socket}
   end
 
-  defp get_void_date(sales,orderid) do
-
-
- 
-      a=for item <- orderid do
-
-      a=Enum.filter(sales,fn x -> x.orderid==item.invoiceno end)
-
-
-      if a != [] do
-
-
-        a=a|>hd()
-
-        date=a.salesdatetime
-      date = date |> NaiveDateTime.to_string() |> String.split_at(19) |> elem(0)
-        %{
-          invoiceno: item.invoiceno,
-          void_datetime: date,
-          itemname: item.itemname,
-          unit_price: item.unit_price,
-          quantity: item.quantity,
-          totalprice: item.totalprice,
-          staff: item.staff,
-          domainname: item.domainname,
-          branchid: item.branchid,
-          voidreason: item.voidreason
-        }
-
-
-        
-      end
-
-
-
-        
-      end|>Enum.filter(fn x -> x != nil end)
-
-
-   
-  end
+  
 
   def handle_in("voided_order", payload, socket) do
     branchid = payload["branch_id"]
@@ -2168,25 +2128,23 @@ defmodule BoatNoodleWeb.UserChannel do
         0
       )
 
+
+
     voided_order_data =
       if branchid != "0" do
         Repo.all(
           from(
             v in BoatNoodle.BN.VoidItems,
-            left_join: br in BoatNoodle.BN.Branch,
-            on: br.branchid == v.branch_id,
             left_join: f in BoatNoodle.BN.Staff,
             on: v.void_by == f.staff_id,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: i.subcatid == v.itemid,
             left_join: r in BoatNoodle.BN.Brand,
             on: r.id == v.brand_id,
             where:
-              br.branchid == ^payload["branch_id"] and 
+             v.void_datetime >= ^start_n and
+            v.void_datetime <= ^end_n and 
+              v.branch_id == ^payload["branch_id"] and 
                 v.brand_id == ^payload["brand_id"] and
-                br.brand_id ==^payload["brand_id"] and
                  f.brand_id ==^payload["brand_id"] and 
-                  i.brand_id ==^payload["brand_id"] and
                    r.id ==^payload["brand_id"],
             select: %{
               itemname: v.itemname,
@@ -2197,7 +2155,8 @@ defmodule BoatNoodleWeb.UserChannel do
               staff: f.staff_name,
               branchid: v.branch_id,
               domainname: r.domain_name,
-              voidreason: v.voidreason
+              voidreason: v.voidreason,
+              void_datetime: v.void_datetime
             }
           )
         )
@@ -2205,18 +2164,15 @@ defmodule BoatNoodleWeb.UserChannel do
         Repo.all(
           from(
             v in BoatNoodle.BN.VoidItems,
-            left_join: br in BoatNoodle.BN.Branch,
-            on: br.branchid == v.branch_id,
             left_join: f in BoatNoodle.BN.Staff,
             on: v.void_by == f.staff_id,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: i.subcatid == v.itemid,
             left_join: r in BoatNoodle.BN.Brand,
             on: r.id == v.brand_id,
             where:
+                v.void_datetime >= ^start_n and
+            v.void_datetime <= ^end_n and 
                 v.brand_id == ^payload["brand_id"] and
                  f.brand_id ==^payload["brand_id"] and 
-                  i.brand_id ==^payload["brand_id"] and
                    r.id ==^payload["brand_id"],
             select: %{
               itemname: v.itemname,
@@ -2227,21 +2183,34 @@ defmodule BoatNoodleWeb.UserChannel do
               staff: f.staff_name,
                branchid: v.branch_id,
               domainname: r.domain_name,
-              voidreason: v.voidreason
+              voidreason: v.voidreason,
+               void_datetime: v.void_datetime
             }
           )
         )
       end
 
-      sales=Repo.all(from s in BoatNoodle.BN.Sales,left_join: g in BoatNoodle.BN.SalesMaster, 
-        where: s.salesid==g.salesid and
-         s.salesdate >= ^payload["s_date"] and
-        s.salesdate <= ^payload["e_date"] and 
-        s.brand_id ==^payload["brand_id"] and
-        g.brand_id==^payload["brand_id"],
-        select: %{orderid: g.orderid,salesdatetime: s.salesdatetime})
 
-    voided_order_data=get_void_date(sales,voided_order_data)
+      voided_order_data=for item <- voided_order_data do
+
+          date = item.void_datetime |> NaiveDateTime.to_string() |> String.split_at(19) |> elem(0)
+
+         %{
+              itemname: item.itemname,
+              invoiceno: item.invoiceno,
+              unit_price: item.unit_price,
+              quantity: item.quantity,
+              totalprice: item.totalprice,
+              staff: item.staff,
+               branchid: item.branchid,
+              domainname: item.domainname,
+              voidreason: item.voidreason,
+               void_datetime: date
+            }
+
+        
+        
+      end
 
     broadcast(socket, "populate_table_voided_order_data", %{voided_order_data: voided_order_data})
     {:noreply, socket}
