@@ -2,8 +2,50 @@ defmodule BoatNoodle.UltiMigrator do
   use Task
   require IEx
   import Ecto.Query
+  alias BoatNoodle.Repo
+  alias BoatNoodle.BN.{SalesMaster, Sales, SalesPayment, VoidItems}
 
-  def init() do
+  def patch_void() do
+    voids = Repo.all(from(v in VoidItems, where: v.brand_id == ^8 and is_nil(v.void_datetime)))
+
+    for void <- voids do
+      s = Repo.get_by(Sales, brand_id: 8, salesid: void.orderid)
+
+      # Task.start_link(__MODULE__, :patch_void, [
+      #   s,
+      #   void
+      # ])
+      patch_void(s, void)
+    end
+  end
+
+  def patch_void(s, void) do
+    if s != nil do
+      VoidItems.changeset(void, %{void_datetime: s.salesdatetime}) |> Repo.update()
+    else
+      find_next(void.orderid, void)
+    end
+  end
+
+  def find_next(salesid, void) do
+    bcode = salesid |> String.split("") |> Enum.reject(fn x -> x == "" end) |> Enum.take(4)
+    whole = salesid |> String.split("") |> Enum.reject(fn x -> x == "" end)
+    rem = (whole -- bcode) |> Enum.join() |> String.to_integer()
+    new_id = (rem + 1) |> Integer.to_string()
+
+    branchcode = bcode |> Enum.join()
+    salesid = branchcode <> new_id
+
+    s = Repo.get_by(Sales, brand_id: 8, salesid: salesid)
+
+    if s != nil do
+      VoidItems.changeset(void, %{void_datetime: s.salesdatetime}) |> Repo.update()
+    else
+      find_next(salesid, void)
+    end
+  end
+
+  def init2() do
     start_date = Date.new(2018, 9, 24) |> elem(1)
     end_date = Date.new(2018, 9, 26) |> elem(1)
 
