@@ -2212,6 +2212,7 @@ defmodule BoatNoodleWeb.SalesController do
     )
   end
 
+
   defp combo_item_report_csv_content(
          item,
          conn,
@@ -2438,6 +2439,179 @@ defmodule BoatNoodleWeb.SalesController do
     )
   end
 
+   def item_sales_outlet_csv_v2(conn, params) do
+    csv_header = [
+      [
+        'Date',
+        'Outlet',
+        'Hieracachy',
+        'Category',
+        'Item Code',
+        'Item Name',
+        'Item ID',
+        'Gross Quantity',
+        'Nett Quantity',
+        'FOC Quantity',
+        'Gross Sales',
+        'Nett Sales',
+        'Unit Price',
+        'Discount Value',
+        'Service Charge',
+        'Store Owner',
+        'Combo'
+      ]
+    ]
+
+    branch_id = params["branch"]
+    brand = params["brand"]
+    brand = Repo.get_by(Brand, domain_name: brand)
+    start_date = params["start_date"]
+    end_date = params["end_date"]
+
+    branch=Repo.get_by(Branch, branchid: branch_id,brand_id: brand.id)
+
+    item_sales_outlet =
+      if branch_id != "0" do
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            group_by: [sd.salesdate, sd.branchname, sd.itemid],
+            where:
+              sd.salesdate >= ^start_date and sd.salesdate <= ^end_date and sd.brand_id == ^brand.id and
+                sd.is_void == ^0 and
+                sd.branchid == ^branch.id,
+            select: %{
+              salesdate: sd.salesdate,
+              branchname: sd.branchname,
+              itemcode: sd.itemcode,
+              hierachy: sd.cat_type,
+              category: sd.cat_name,
+              itemcode: sd.itemcode,
+              itemname: sd.itemname,
+              itemid: sd.itemid,
+              qty: sum(sd.qty),
+              order_price: sum(sd.order_price),
+              final_nett_sales: sum(sd.final_nett_sales),
+              combo_total_topup_qty: sum(sd.combo_total_topup_qty),
+              foc_qty: sum(sd.foc_qty),
+              discount_value: sum(sd.discount_value),
+              service_charge: sum(sd.service_charge),
+              nett_sales: sum(sd.afterdisc),
+              unit_price: sd.unit_price,
+              store_owner: sd.staffname,
+              combo_name: sd.combo_name
+            }
+          )
+        )
+      else
+         Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            group_by: [sd.salesdate, sd.branchname, sd.itemid],
+            where:
+              sd.salesdate >= ^start_date and sd.salesdate <= ^end_date and sd.brand_id == ^brand.id and
+                sd.is_void == 0,
+            select: %{
+              salesdate: sd.salesdate,
+              branchname: sd.branchname,
+              itemcode: sd.itemcode,
+              hierachy: sd.cat_type,
+              category: sd.cat_name,
+              itemcode: sd.itemcode,
+              itemname: sd.itemname,
+              itemid: sd.itemid,
+              qty: sum(sd.qty),
+              order_price: sum(sd.order_price),
+              final_nett_sales: sum(sd.final_nett_sales),
+              combo_total_topup_qty: sum(sd.combo_total_topup_qty),
+              foc_qty: sum(sd.foc_qty),
+              discount_value: sum(sd.discount_value),
+              service_charge: sum(sd.service_charge),
+              nett_sales: sum(sd.afterdisc),
+              unit_price: sd.unit_price,
+              store_owner: sd.staffname,
+              combo_name: sd.combo_name
+            }
+          )
+        )
+      end
+  
+
+          name =
+      if branch_id != "0" do
+        b = Repo.get_by(Branch, brand_id: brand.id, branchid: branch_id)
+        b.branchname
+      else
+        "ALL"
+      end
+
+
+    item_sales_outlet
+    |> Stream.map(fn x ->
+      item_sales_outlet_csv_content_v2(
+        x,
+        conn,
+        params)
+    end)
+    |> (fn stream -> Stream.concat(csv_header, stream) end).()
+    |> CSV.encode()
+    |> Enum.into(
+      conn
+      |> put_resp_content_type("application/csv")
+      |> put_resp_header(
+        "content-disposition",
+        "attachment; filename=\"Item Outlet Sales Report - #{name}.csv\""
+      )
+      |> send_chunked(200)
+    )
+  end
+
+
+  defp item_sales_outlet_csv_content_v2(
+         item,
+         conn,
+         params
+         ) do
+
+    item_qty=if item.qty == nil do
+      0
+    else
+      item.qty
+      
+    end
+
+    item_foc=if item.foc_qty == nil do
+      0
+    else
+      item.foc_qty
+      
+    end
+
+
+
+    nett_qty =Decimal.to_float(item_qty) -item_foc
+
+    [
+      item.salesdate,
+      item.branchname,
+      item.hierachy,
+      item.category,
+      item.itemcode,
+      item.itemname,
+      item.itemid,
+      item.qty,
+      nett_qty,
+      item.foc_qty,
+      item.final_nett_sales,
+      item.nett_sales,
+      item.unit_price,
+      item.discount_value,
+      item.service_charge,
+      item.store_owner,
+      item.combo_name
+    ]
+  end
+
   defp item_sales_outlet_csv_content(
          item,
          conn,
@@ -2447,6 +2621,8 @@ defmodule BoatNoodleWeb.SalesController do
          combo_data,
          combo_data_price
        ) do
+
+
     discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
     up = unit_price(item.unit_price, item.itemid, item.combo_id, combo_data_price)
     foc = foc_qty(discount_value, up)

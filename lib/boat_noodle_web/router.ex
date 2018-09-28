@@ -109,6 +109,7 @@ defmodule BoatNoodleWeb.Router do
     get("/tables", SalesController, :tables)
     post("/item_sales_report_csv", SalesController, :item_sales_report_csv)
     post("/item_sales_outlet_csv", SalesController, :item_sales_outlet_csv)
+    post("/item_sales_outlet_csv_v2", SalesController, :item_sales_outlet_csv_v2)
     # post("/combo_item_sales_csv", SalesController, :combo_item_sales_csv)
     post("/combo_item_sales_csv", SalesController, :item_sales_outlet_csv2)
     post("/discount_item_report_csv", SalesController, :discount_item_report_csv)

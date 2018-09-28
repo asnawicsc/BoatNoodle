@@ -127,6 +127,17 @@
               <div class="ripple-container"></div>
             </button>
         </form>
+
+                    <form method="post" action='/<%= @conn.params["brand"] %>/item_sales_outlet_csv_v2'>
+             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+              <input type="hidden" name="start_date">
+                <input type="hidden" name="end_date">
+            <input type="hidden" name="branch">
+             <button class="btn btn-default btn-round" data-toggle="modal" id="item_sales_outlet_csv_v2" data-target="#exampleModal2">
+                <i class="material-icons">add_box</i> Item Sales Outlet Report V2
+              <div class="ripple-container"></div>
+            </button>
+        </form>
              
            </div>
         </div>
