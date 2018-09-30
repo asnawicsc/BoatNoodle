@@ -197,6 +197,7 @@ defmodule BoatNoodleWeb.Router do
     resources("/payment_type", PaymentTypeController)
     resources("/sales_master", SalesMasterController)
     resources("/sales", SalesController)
+    get("/payment_type_v2", PaymentTypeController, :payment_type_v2)
     get("/payment_types", PaymentTypeController, :payment_types)
     get("/summary", SalesController, :summary)
     get("/item_sales", SalesController, :item_sales)

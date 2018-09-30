@@ -59,7 +59,7 @@
 
                         <h3 align="center" class="card-category">Total Amounts by Cash</h3>
                         <h3 class="card-title" align="center">
-                            <div class="payment" id="payment_type1"></div>
+                            <div class="payment_v2" id="payment_type1_v2"></div>
                         </h3>
                     </div>
                     <div class="card-footer">
@@ -75,7 +75,7 @@
                     <div class="card-header card-header-info card-header-icon">
                         <h3 align="center" class="card-category">Total Amounts by Card</h3>
                         <h3 class="card-title" align="center">
-                            <div class="payment" id="payment_type2"></div>
+                            <div class="payment_v2" id="payment_type2_v2"></div>
                         </h3>
                     </div>
                     <div class="card-footer">
@@ -97,12 +97,12 @@
                         </h4>
                     </div>
                     <div class="card-body">
-                        <div id="paymentBarChart" class="ct-chart" style="height: 400px;"></div>
+                        <div id="paymentBarChart_v2" class="ct-chart" style="height: 400px;"></div>
                     </div>
                 </div>
   
 
-        <div class="panel-body" id="payment_type">
+        <div class="panel-body" id="payment_type_v2">
          
                 <div class="card" style="width: 100%; overflow-x: scroll; ">
                     <div class="card-header card-header-icon card-header-rose">
@@ -112,7 +112,7 @@
                     </div>
                     <div class="card-body" style="width: 100%; overflow-x: scroll; ">
 
-                        <table id="payment_type" class="table">
+                        <table id="payment_type_v2" class="table">
                             <thead align="center">
                                 <tr>
                                     <th>Payment Type</th>
@@ -136,87 +136,7 @@
 </div>
 
 
-          <div class="modal fade" id="modelb" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document" style="width: 1000px; margin-left: 550px;">
-                                            <div class="modal-content" style="width: 1000px;">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Add Payment Type</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body" id="modal_form5">
-
-                                                    <form method="post" action="/<%= @conn.params["brand"] %>/create_payment_type">
-                                                   
-                                                        <input type="hidden" name="brand_id" value="<%= @brand_id %>">
-                                                        <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-                                                             <div class="row">
-                                                      <div class="col-sm-3">
-                                                        <div class="form-group bmd-form-group">
-                                                          <label class="bmd-label-floating">Payment Type Name</label>
-                                                          <input name="payment_type_name" class="form-control" type="text"  required="">
-                                                        </div>
-                                                      </div>
-                                                      <div class="col-sm-3">
-                                                        <div class="form-group bmd-form-group">
-                                                          <label class="bmd-label-floating">Payment Type Code</label>
-                                                          <input name="payment_type_code" class="form-control" type="text" required="">
-                                                        </div>
-                                                        
-                                                      </div>
-                                                  </div>
-                                                  <br>
-                                                            <div class="row">
-         
-                                                               
-                                                                        <div class="col-sm-3">
-                                                                            <div class="form-check form-check-inline">
-                                                                          <label class="form-check-label">
-                                                                            <input class="form-check-input" type="checkbox" name="is_card_no" > 4 Digits Card Number?
-                                                                            <span class="form-check-sign">
-                                                                              <span class="check"></span>
-                                                                            </span>
-                                                                          </label>
-                                                                        </div>
-                                                                        </div>
-                                                                    
-                                                              <div class="col-sm-3">
-                                                                            <div class="form-check form-check-inline">
-                                                                          <label class="form-check-label">
-                                                                            <input class="form-check-input" type="checkbox" name="is_visible" > Visible?
-                                                                            <span class="form-check-sign">
-                                                                              <span class="check"></span>
-                                                                            </span>
-                                                                          </label>
-                                                                        </div>
-                                                                        </div>
-
-                                                              <div class="col-sm-3">
-                                                                            <div class="form-check form-check-inline">
-                                                                          <label class="form-check-label">
-                                                                            <input class="form-check-input" type="checkbox" name="is_delivery" > Only Appear in Take Away?
-                                                                            <span class="form-check-sign">
-                                                                              <span class="check"></span>
-                                                                            </span>
-                                                                          </label>
-                                                                        </div>
-                                                                        </div>
-                                                            </div>
-
-                                                         <br><br>
-                                                        <input class="btn btn-primary" name="" value="Submit" type="submit">
-                                                    </form>
-
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    <input type="hidden" name="popup" value="0">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
+        
 <script type="text/javascript">
     $(document).ready(function() {
 
@@ -238,7 +158,7 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
     
         var s_date = localStorage.getItem('start_date')
         var e_date = localStorage.getItem('end_date')
-        channel.push("payment_type", {
+        channel.push("payment_type_v2", {
             user_id: window.currentUser,
             branch_id: b_id,
             s_date: s_date,
@@ -247,7 +167,7 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
         })
    
 
-    channel.on("populate_payment", payload => {
+    channel.on("populate_payment_v2", payload => {
 
         console.log(payload.payment_type_cash)
         console.log(payload.payment_type_others)
@@ -256,14 +176,14 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
         var card = payload.payment_type_others
 
 
-        $(".payment#payment_type1").html(cash);
+        $(".payment_v2#payment_type1_v2").html(cash);
 
-        $(".payment#payment_type2").html(card);
+        $(".payment_v2#payment_type2_v2").html(card);
 
         console.log(payload.payment)
         var data = payload.payment
 
-        $("table#payment_type").DataTable({
+        $("table#payment_type_v2").DataTable({
              destroy: true,
             data: data,
             dom: 'Bfrtip',
@@ -294,7 +214,7 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
         $(maps).each(function() {
             card.push(this.card)
         })
-        Highcharts.chart('paymentBarChart', {
+        Highcharts.chart('paymentBarChart_v2', {
             chart: {
                 type: 'line'
             },

@@ -23,6 +23,26 @@ defmodule BoatNoodleWeb.PaymentTypeController do
     brand_id = BN.get_brand_id(conn)
     render(conn, "index.html", branches: branches, brand_id: brand_id)
   end
+
+    def payment_type_v2(conn, _params) do
+    branches =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.UserBranchAccess,
+          left_join: g in BoatNoodle.BN.Branch,
+          on: s.branchid == g.branchid,
+          where:
+            s.brand_id == ^BN.get_brand_id(conn) and g.brand_id == ^BN.get_brand_id(conn) and
+              s.userid == ^conn.private.plug_session["user_id"],
+          select: %{branchid: s.branchid, branchname: g.branchname},
+          order_by: g.branchname
+        )
+      )
+
+    brand_id = BN.get_brand_id(conn)
+    render(conn, "payment_type_v2.html", branches: branches, brand_id: brand_id)
+  end
+
   def payment_types(conn, params) do
 
       payment_type = BN.list_payment_type()|>Enum.filter(fn x -> x.brand_id ==BN.get_brand_id(conn) end)
