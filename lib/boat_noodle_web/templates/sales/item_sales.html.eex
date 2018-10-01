@@ -58,11 +58,11 @@
                       <i class="material-icons">description</i> Item Sold
                     </a>
                         </li>
-                        <li class="nav-item">
+               <%#          <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" id="item_sales_detail" href="" role="tablist">
                       <i class="material-icons">subject</i> Item Sales Details
                     </a>
-                        </li>
+                        </li> %>
                     </ul>
                 </div>
             </div>

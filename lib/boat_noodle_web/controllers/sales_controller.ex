@@ -2850,6 +2850,124 @@ defmodule BoatNoodleWeb.SalesController do
     end
   end
 
+  def item_transaction_report(conn, params) do
+    csv_header = [
+      [
+        'BILL DATE',
+        'BILL TIME',
+        'INVOICE NO',
+        'ITEM NAME',
+        'QTY',
+        'GROSS AMT',
+        'NETT AMT',
+        'BRANCH NAME'
+      ]
+    ]
+
+    branch_id = params["branch"]
+    brand = params["brand"]
+    brand = Repo.get_by(Brand, domain_name: brand)
+    start_date = params["start_date"]
+    end_date = params["end_date"]
+
+    item_transaction_report =
+      if branch_id != "0" do
+        Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and s.is_void == ^0 and sd.is_void == ^0 and
+                s.branchid == ^branch_id,
+            select: %{
+              salesdate: s.salesdate,
+              salesdatetime: s.salesdatetime,
+              invoiceno: s.invoiceno,
+              itemname: sd.itemname,
+              qty: sd.qty,
+              gross_amt: sd.order_price,
+              nett_amt: sd.afterdisc,
+              branchname: b.branchname,
+            }
+          )
+        )
+      else
+         Repo.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: s.salesid == sd.salesid,
+            left_join: b in BoatNoodle.BN.Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
+                b.brand_id == ^brand.id and s.is_void == ^0 and sd.is_void == ^0 ,
+            select: %{
+              salesdate: s.salesdate,
+              salesdatetime: s.salesdatetime,
+              invoiceno: s.invoiceno,
+              itemname: sd.itemname,
+              qty: sd.qty,
+              gross_amt: sd.order_price,
+              nett_amt: sd.afterdisc,
+              branchname: b.branchname,
+            }
+          )
+        )
+      end
+
+          name =
+      if branch_id != "0" do
+        b = Repo.get_by(Branch, brand_id: brand.id, branchid: branch_id)
+        b.branchname
+      else
+        "ALL"
+      end
+
+    
+
+    item_transaction_report
+    |> Stream.map(fn x ->
+      item_transaction_report_csv(
+        x,
+        conn,
+        params)
+    end)
+    |> (fn stream -> Stream.concat(csv_header, stream) end).()
+    |> CSV.encode()
+    |> Enum.into(
+      conn
+      |> put_resp_content_type("application/csv")
+      |> put_resp_header(
+        "content-disposition",
+        "attachment; filename=\"Item Transaction Report- #{name}.csv\""
+      )
+      |> send_chunked(200)
+    )
+  end
+
+   defp item_transaction_report_csv(
+         item,
+         conn,
+         params
+       ) do
+   
+    [
+      item.salesdate,
+      item.salesdatetime,
+      item.invoiceno,
+      item.itemname,
+      item.qty,
+      item.gross_amt,
+      item.nett_amt,
+      item.branchname
+    ]
+  end
+
   def item_sales_outlet_csv2(conn, params) do
     csv_header = [
       [
