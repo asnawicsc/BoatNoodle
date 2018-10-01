@@ -496,11 +496,8 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and s.branchid == ^params["branch"] and 
-              s.salesdate >= ^start_d and
-                s.salesdate <= ^end_d and 
-                s.brand_id == ^brand_id and 
-                b.brand_id == ^brand_id and
+              s.is_void == 0 and s.branchid == ^params["branch"] and s.salesdate >= ^start_d and
+                s.salesdate <= ^end_d and s.brand_id == ^brand_id and b.brand_id == ^brand_id and
                 sp.brand_id == ^brand_id,
             group_by: [s.salesdate],
             order_by: [desc: s.salesdate],
@@ -563,8 +560,10 @@ defmodule BoatNoodleWeb.SalesController do
             (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
                Decimal.to_float(item.gst) + Decimal.to_float(item.rounding))
 
-            dis=  (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
-               Decimal.to_float(item.gst) + Decimal.to_float(item.rounding)) -   Decimal.to_float(item.grand_total)
+        dis =
+          Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+            Decimal.to_float(item.gst) + Decimal.to_float(item.rounding) -
+            Decimal.to_float(item.grand_total)
 
         grand_total = Decimal.to_float(item.grand_total) |> Float.round(2)
 
@@ -706,8 +705,10 @@ defmodule BoatNoodleWeb.SalesController do
 
         grand_total = Decimal.to_float(item.grand_total) |> Float.round(2)
 
-                 dis=  (Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
-               Decimal.to_float(item.gst) + Decimal.to_float(item.rounding)) -   Decimal.to_float(item.grand_total)
+        dis =
+          Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
+            Decimal.to_float(item.gst) + Decimal.to_float(item.rounding) -
+            Decimal.to_float(item.grand_total)
 
         after_disc = (sub_total - dis) |> Float.round(2)
 
@@ -2212,7 +2213,6 @@ defmodule BoatNoodleWeb.SalesController do
     )
   end
 
-
   defp combo_item_report_csv_content(
          item,
          conn,
@@ -2439,7 +2439,7 @@ defmodule BoatNoodleWeb.SalesController do
     )
   end
 
-   def item_sales_outlet_csv_v2(conn, params) do
+  def item_sales_outlet_csv_v2(conn, params) do
     csv_header = [
       [
         'Date',
@@ -2468,7 +2468,7 @@ defmodule BoatNoodleWeb.SalesController do
     start_date = params["start_date"]
     end_date = params["end_date"]
 
-    branch=Repo.get_by(Branch, branchid: branch_id,brand_id: brand.id)
+    branch = Repo.get_by(Branch, branchid: branch_id, brand_id: brand.id)
 
     item_sales_outlet =
       if branch_id != "0" do
@@ -2477,9 +2477,8 @@ defmodule BoatNoodleWeb.SalesController do
             sd in BoatNoodle.BN.SalesMaster,
             group_by: [sd.salesdate, sd.branchname, sd.itemid],
             where:
-              sd.salesdate >= ^start_date and sd.salesdate <= ^end_date and sd.brand_id == ^brand.id and
-                sd.is_void == ^0 and
-                sd.branchid == ^branch.id,
+              sd.salesdate >= ^start_date and sd.salesdate <= ^end_date and
+                sd.brand_id == ^brand.id and sd.is_void == ^0 and sd.branchid == ^branch.id,
             select: %{
               salesdate: sd.salesdate,
               branchname: sd.branchname,
@@ -2504,13 +2503,13 @@ defmodule BoatNoodleWeb.SalesController do
           )
         )
       else
-         Repo.all(
+        Repo.all(
           from(
             sd in BoatNoodle.BN.SalesMaster,
             group_by: [sd.salesdate, sd.branchname, sd.itemid],
             where:
-              sd.salesdate >= ^start_date and sd.salesdate <= ^end_date and sd.brand_id == ^brand.id and
-                sd.is_void == 0,
+              sd.salesdate >= ^start_date and sd.salesdate <= ^end_date and
+                sd.brand_id == ^brand.id and sd.is_void == 0,
             select: %{
               salesdate: sd.salesdate,
               branchname: sd.branchname,
@@ -2535,9 +2534,8 @@ defmodule BoatNoodleWeb.SalesController do
           )
         )
       end
-  
 
-          name =
+    name =
       if branch_id != "0" do
         b = Repo.get_by(Branch, brand_id: brand.id, branchid: branch_id)
         b.branchname
@@ -2545,13 +2543,9 @@ defmodule BoatNoodleWeb.SalesController do
         "ALL"
       end
 
-
     item_sales_outlet
     |> Stream.map(fn x ->
-      item_sales_outlet_csv_content_v2(
-        x,
-        conn,
-        params)
+      item_sales_outlet_csv_content_v2(x, conn, params)
     end)
     |> (fn stream -> Stream.concat(csv_header, stream) end).()
     |> CSV.encode()
@@ -2566,30 +2560,43 @@ defmodule BoatNoodleWeb.SalesController do
     )
   end
 
-
   defp item_sales_outlet_csv_content_v2(
          item,
          conn,
          params
-         ) do
+       ) do
+    item_qty =
+      if item.qty == nil do
+        0
+      else
+        item.qty
+      end
 
-    item_qty=if item.qty == nil do
-      0
-    else
-      item.qty
-      
-    end
+    item_foc =
+      if item.foc_qty == nil do
+        0
+      else
+        item.foc_qty
+      end
 
-    item_foc=if item.foc_qty == nil do
-      0
-    else
-      item.foc_qty
-      
-    end
+    IO.inspect(item_qty)
+    IO.inspect(item_foc)
 
+    item_qty =
+      if Decimal.decimal?(item_qty) do
+        Decimal.to_float(item_qty)
+      else
+        item_qty
+      end
 
+    item_foc =
+      if Decimal.decimal?(item_foc) do
+        Decimal.to_float(item_foc)
+      else
+        item_foc
+      end
 
-    nett_qty =Decimal.to_float(item_qty) -item_foc
+    nett_qty = item_qty - item_foc
 
     [
       item.salesdate,
@@ -2621,8 +2628,6 @@ defmodule BoatNoodleWeb.SalesController do
          combo_data,
          combo_data_price
        ) do
-
-
     discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
     up = unit_price(item.unit_price, item.itemid, item.combo_id, combo_data_price)
     foc = foc_qty(discount_value, up)
