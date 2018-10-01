@@ -114,7 +114,7 @@ defmodule BoatNoodleWeb.Router do
     post("/combo_item_sales_csv", SalesController, :item_sales_outlet_csv2)
     post("/discount_item_report_csv", SalesController, :discount_item_report_csv)
     post("/discount_item_detail_report_csv", SalesController, :discount_item_detail_report_csv)
-
+    get("/item_transaction_report", SalesController, :item_transaction_report)
     get("/export_to_csv_group_by_branch", SalesController, :export_to_csv_group_by_branch)
 
     get("/export_to_csv_summary", SalesController, :export_to_csv_summary)
