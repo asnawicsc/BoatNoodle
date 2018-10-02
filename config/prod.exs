@@ -3,7 +3,7 @@ use Mix.Config
 config :boat_noodle, BoatNoodleWeb.Endpoint,
   http: [port: 8889],
   url: [host: "gummypos.resertech.com", port: 8889],
-  check_origin: ["110.4.42.45"]
+  check_origin: ["https://gummypos.resertech.com"]
 
 config :logger, level: :info
 
