@@ -62,6 +62,13 @@
                     <i class="material-icons">bookmarks</i> Menu
                   <div class="ripple-container"></div>
                 </button>
+
+
+                    <button type="button" rel="tooltip" title="" aria-label="assign_to_unused" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>">
+
+                    <i class="material-icons">book</i> Mark as Unused
+                  <div class="ripple-container"></div>
+                </button>
       
                           </td>
             </tr>
@@ -152,6 +159,34 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
+
+  $("button[aria-label='assign_to_unused']").click(function() {
+  var subcat_id = $(this).attr("id");
+
+  channel2.push("assign_to_unused", {subcat_id: subcat_id,user: window.currentUser, brand_id: window.currentBrand})
+  });
+
+  channel2.on("populate_assign_to_unused", payload => {
+
+
+    $.notify({
+        icon: "notifications",
+        message: "Category updated!"
+
+    }, {
+        type: 'success',
+        timer: 100,
+        placement: {
+            from: 'bottom',
+            align: 'right'
+        }
+    })
+
+      window.location.reload();
+
+   }) ;
+
+
   $("button[aria-label='item_summary']").click(function() {
     $("div[aria-label='item_detail']").toggleClass("hidding");
   });
