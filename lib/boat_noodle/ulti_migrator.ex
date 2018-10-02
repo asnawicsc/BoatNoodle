@@ -57,7 +57,7 @@ defmodule BoatNoodle.UltiMigrator do
           on: sm.salesid == s.salesid,
           where:
             s.salesdate > ^start_date and s.salesdate < ^end_date and s.is_void == ^0 and
-              sm.is_void == ^0 and s.brand_id == ^2 and sm.combo_name == "Combo",
+              sm.is_void == ^0 and s.brand_id == ^2,
           select: %{
             staffid: s.staffid,
             branchid: s.branchid,
@@ -495,9 +495,12 @@ defmodule BoatNoodle.UltiMigrator do
         }
       end)
 
+    sp = Repo.get_by(SalesPayment, brand_id: 2, salesid: sd.salesid)
+
     # calculate combo_total_topup_qty
     combo_total_topup_qty =
       sales_details
+      |> Enum.uniq()
       |> Enum.filter(fn x -> x.order_price > Decimal.new(0.00) end)
       |> Enum.map(fn x -> Decimal.to_float(x.order_price) end)
       |> Enum.sum()
@@ -508,16 +511,13 @@ defmodule BoatNoodle.UltiMigrator do
 
     final_nett_sales =
       sales_details
+      |> Enum.uniq()
       |> Enum.map(fn x ->
         x.qty * Decimal.to_float(x.order_price)
 
         # x.qty * (Decimal.to_float(x.order_price) + Decimal.to_float(x.unit_price)) chiilll no need
       end)
       |> Enum.sum()
-
-    # if sd.order_price > final_nett_sales do
-
-    # end
 
     if Decimal.to_float(sd.order_price) > final_nett_sales do
       final_nett_sales = (sd.order_price |> Decimal.to_float()) + final_nett_sales
@@ -546,6 +546,40 @@ defmodule BoatNoodle.UltiMigrator do
 
       case a do
         {:ok, sm} ->
+          # tt =
+          #   Repo.all(
+          #     from(
+          #       sm in SalesMaster,
+          #       where:
+          #         sm.brand_id == ^2 and sm.salesid == ^sd.salesid and
+          #           sm.sales_details != ^sd.sales_details and sm.is_void == ^0,
+          #       select: sm.final_nett_sales
+          #     )
+          #   )
+
+          # fin =
+          #   if tt == [] do
+          #     sd.order_price |> Decimal.to_float()
+          #   else
+          #     z =
+          #       tt
+          #       |> Enum.map(fn x -> Decimal.to_float(x) end)
+          #       |> Enum.sum()
+
+          #     if z != 0 do
+          #       final_nett_sales + z
+          #     else
+          #       final_nett_sales
+          #     end
+          #   end
+
+          # if fin != Decimal.to_float(sp.sub_total) do
+          #   IO.inspect(sd)
+          #   IO.inspect(final_nett_sales)
+          #   IO.inspect(Decimal.to_float(sp.sub_total))
+          #   IEx.pry()
+          # end
+
           true
 
         {:error, a} ->
