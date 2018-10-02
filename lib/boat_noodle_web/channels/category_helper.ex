@@ -235,6 +235,22 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
+    def handle_in("assign_to_unused", payload, socket) do
+
+
+     item= Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: payload["subcat_id"],brand_id: payload["brand_id"])
+
+
+          edit_item =
+            BoatNoodle.BN.ItemSubcat.changeset(item, %{is_delete: 1},payload["user"], "Update ItemSubcat")|>Repo.update()
+
+            action="This item is successfully deactivate"
+        
+
+    broadcast(socket, "populate_assign_to_unused", %{action: action})
+    {:noreply, socket}
+  end
+
   defp authorized?(_payload) do
     true
   end
