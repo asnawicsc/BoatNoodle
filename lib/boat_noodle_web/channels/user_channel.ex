@@ -1652,142 +1652,141 @@ defmodule BoatNoodleWeb.UserChannel do
   end
 
   def handle_in("item_sales_detail", payload, socket) do
-    branchid = payload["branch_id"]
+    # branchid = payload["branch_id"]
 
-    brand_id = payload["brand_id"]
-    [y, m, d] = payload["s_date"] |> String.split("-")
-    {:ok, start_d} = Date.new(String.to_integer(y), String.to_integer(m), String.to_integer(d))
+    # brand_id = payload["brand_id"]
+    # [y, m, d] = payload["s_date"] |> String.split("-")
+    # {:ok, start_d} = Date.new(String.to_integer(y), String.to_integer(m), String.to_integer(d))
 
-    [y1, m1, d1] = payload["e_date"] |> String.split("-")
-    {:ok, end_d} = Date.new(String.to_integer(y1), String.to_integer(m1), String.to_integer(d1))
-    brand = Repo.get_by(Brand, id: brand_id)
+    # [y1, m1, d1] = payload["e_date"] |> String.split("-")
+    # {:ok, end_d} = Date.new(String.to_integer(y1), String.to_integer(m1), String.to_integer(d1))
+    # brand = Repo.get_by(Brand, id: brand_id)
 
-    item_sales_detail_data_history =
-      Repo.get_by(
-        HistoryData,
-        start_date: start_d,
-        end_date: end_d,
-        branch_id: branchid,
-        brand_id: brand_id,
-        name: "item_sales_detail"
-      )
+    # item_sales_detail_data_history =
+    #   Repo.get_by(
+    #     HistoryData,
+    #     start_date: start_d,
+    #     end_date: end_d,
+    #     branch_id: branchid,
+    #     brand_id: brand_id,
+    #     name: "item_sales_detail"
+    #   )
 
-    q =
-      if payload["branch_id"] == "0" do
-        from(
-          s in BoatNoodle.BN.Sales,
-          left_join: sd in BoatNoodle.BN.SalesMaster,
-          on: s.salesid == sd.salesid,
-          left_join: f in BoatNoodle.BN.Staff,
-          on: s.staffid == f.staff_id,
-          left_join: br in BoatNoodle.BN.Branch,
-          on: br.branchid == s.branchid,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          left_join: b in BoatNoodle.BN.Brand,
-          on: b.id == s.brand_id,
-          where:
-            s.is_void == 0 and ic.brand_id == ^payload["brand_id"] and
-              s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
-              s.brand_id == ^payload["brand_id"],
-          select: %{
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            itemcatname: ic.itemcatname,
-            qty: sd.qty,
-            invoiceno: s.invoiceno,
-            tbl_no: s.tbl_no,
-            staff_name: f.staff_name,
-            afterdisc: sd.order_price,
-            salesdate: s.salesdate,
-            branchid: s.branchid,
-            domainname: b.domain_name
-          }
-        )
-      else
-        from(
-          s in BoatNoodle.BN.Sales,
-          left_join: sd in BoatNoodle.BN.SalesMaster,
-          on: s.salesid == sd.salesid,
-          left_join: f in BoatNoodle.BN.Staff,
-          on: s.staffid == f.staff_id,
-          left_join: br in BoatNoodle.BN.Branch,
-          on: br.branchid == s.branchid,
-          left_join: i in BoatNoodle.BN.ItemSubcat,
-          on: sd.itemid == i.subcatid,
-          left_join: ic in BoatNoodle.BN.ItemCat,
-          on: ic.itemcatid == i.itemcatid,
-          left_join: b in BoatNoodle.BN.Brand,
-          on: b.id == s.brand_id,
-          where:
-            s.is_void == 0 and br.branchid == ^payload["branch_id"] and
-              ic.brand_id == ^payload["brand_id"] and s.salesdate >= ^payload["s_date"] and
-              s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
-          select: %{
-            itemcode: i.itemcode,
-            itemname: i.itemname,
-            itemcatname: ic.itemcatname,
-            qty: sd.qty,
-            invoiceno: s.invoiceno,
-            tbl_no: s.tbl_no,
-            staff_name: f.staff_name,
-            afterdisc: sd.order_price,
-            salesdate: s.salesdate,
-            branchid: s.branchid,
-            domainname: b.domain_name
-          }
-        )
-      end
+    # q =
+    #   if payload["branch_id"] == "0" do
+    #     from(
+    #       s in BoatNoodle.BN.Sales,
+    #       left_join: sd in BoatNoodle.BN.SalesMaster,
+    #       on: s.salesid == sd.salesid,
+    #       left_join: f in BoatNoodle.BN.Staff,
+    #       on: s.staffid == f.staff_id,
+    #       left_join: br in BoatNoodle.BN.Branch,
+    #       on: br.branchid == s.branchid,
+    #       left_join: i in BoatNoodle.BN.ItemSubcat,
+    #       on: sd.itemid == i.subcatid,
+    #       left_join: ic in BoatNoodle.BN.ItemCat,
+    #       on: ic.itemcatid == i.itemcatid,
+    #       left_join: b in BoatNoodle.BN.Brand,
+    #       on: b.id == s.brand_id,
+    #       where:
+    #         s.is_void == 0 and ic.brand_id == ^payload["brand_id"] and
+    #           s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+    #           s.brand_id == ^payload["brand_id"],
+    #       select: %{
+    #         itemcode: i.itemcode,
+    #         itemname: i.itemname,
+    #         itemcatname: ic.itemcatname,
+    #         qty: sd.qty,
+    #         invoiceno: s.invoiceno,
+    #         tbl_no: s.tbl_no,
+    #         staff_name: f.staff_name,
+    #         afterdisc: sd.order_price,
+    #         salesdate: s.salesdate,
+    #         branchid: s.branchid,
+    #         domainname: b.domain_name
+    #       }
+    #     )
+    #   else
+    #     from(
+    #       s in BoatNoodle.BN.Sales,
+    #       left_join: sd in BoatNoodle.BN.SalesMaster,
+    #       on: s.salesid == sd.salesid,
+    #       left_join: f in BoatNoodle.BN.Staff,
+    #       on: s.staffid == f.staff_id,
+    #       left_join: br in BoatNoodle.BN.Branch,
+    #       on: br.branchid == s.branchid,
+    #       left_join: i in BoatNoodle.BN.ItemSubcat,
+    #       on: sd.itemid == i.subcatid,
+    #       left_join: ic in BoatNoodle.BN.ItemCat,
+    #       on: ic.itemcatid == i.itemcatid,
+    #       left_join: b in BoatNoodle.BN.Brand,
+    #       on: b.id == s.brand_id,
+    #       where:
+    #         s.is_void == 0 and br.branchid == ^payload["branch_id"] and
+    #           ic.brand_id == ^payload["brand_id"] and s.salesdate >= ^payload["s_date"] and
+    #           s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+    #       select: %{
+    #         itemcode: i.itemcode,
+    #         itemname: i.itemname,
+    #         itemcatname: ic.itemcatname,
+    #         qty: sd.qty,
+    #         invoiceno: s.invoiceno,
+    #         tbl_no: s.tbl_no,
+    #         staff_name: f.staff_name,
+    #         afterdisc: sd.order_price,
+    #         salesdate: s.salesdate,
+    #         branchid: s.branchid,
+    #         domainname: b.domain_name
+    #       }
+    #     )
+    #   end
 
-    item_sales_detail_data =
-      if item_sales_detail_data_history == nil do
-        b = Repo.all(q)
+    # item_sales_detail_data =
+    #   if item_sales_detail_data_history == nil do
+    #     b = Repo.all(q)
 
-        {:ok, item_sales_detail_data_history} =
-          HistoryData.changeset(%HistoryData{}, %{
-            start_date: start_d,
-            end_date: end_d,
-            json_map: Poison.encode!(b),
-            branch_id: branchid,
-            brand_id: brand_id,
-            name: "item_sales_detail"
-          })
-          |> Repo.insert()
+    #     {:ok, item_sales_detail_data_history} =
+    #       HistoryData.changeset(%HistoryData{}, %{
+    #         start_date: start_d,
+    #         end_date: end_d,
+    #         json_map: Poison.encode!(b),
+    #         branch_id: branchid,
+    #         brand_id: brand_id,
+    #         name: "item_sales_detail"
+    #       })
+    #       |> Repo.insert()
 
-        b
-      else
-        if end_d == Date.utc_today() do
-          b = Repo.all(q)
+    #     b
+    #   else
+    #     if end_d == Date.utc_today() do
+    #       b = Repo.all(q)
 
-          {:ok, item_sales_detail_data_history} =
-            HistoryData.changeset(item_sales_detail_data_history, %{
-              start_date: start_d,
-              end_date: end_d,
-              json_map: Poison.encode!(b),
-              branch_id: branchid,
-              brand_id: brand_id,
-              name: "item_sales_detail"
-            })
-            |> Repo.update()
+    #       {:ok, item_sales_detail_data_history} =
+    #         HistoryData.changeset(item_sales_detail_data_history, %{
+    #           start_date: start_d,
+    #           end_date: end_d,
+    #           json_map: Poison.encode!(b),
+    #           branch_id: branchid,
+    #           brand_id: brand_id,
+    #           name: "item_sales_detail"
+    #         })
+    #         |> Repo.update()
 
-          b
-        else
-          data = Poison.decode!(item_sales_detail_data_history.json_map)
+    #       b
+    #     else
+    #       data = Poison.decode!(item_sales_detail_data_history.json_map)
 
-          for item <- data do
-            item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
-            item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
-            item = Map.put(item, :qty, Decimal.new(item.qty))
-            item = Map.put(item, :afterdisc, Decimal.new(item.afterdisc))
-          end
-        end
-      end
+    #       for item <- data do
+    #         item = for {key, val} <- item, into: %{}, do: {String.to_atom(key), val}
+    #         item = Map.put(item, :salesdate, Date.from_iso8601!(item.salesdate))
+    #         item = Map.put(item, :qty, Decimal.new(item.qty))
+    #         item = Map.put(item, :afterdisc, Decimal.new(item.afterdisc))
+    #       end
+    #     end
+    #   end
 
     broadcast(socket, "populate_table_item_sales_detail", %{
-      item_sales_detail_data: item_sales_detail_data
-    })
+      })
 
     {:noreply, socket}
   end

@@ -58,11 +58,11 @@
                       <i class="material-icons">description</i> Item Sold
                     </a>
                         </li>
-               <%#          <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" id="item_sales_detail" href="" role="tablist">
                       <i class="material-icons">subject</i> Item Sales Details
                     </a>
-                        </li> %>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -166,14 +166,32 @@
         </div>
 
         <div class="panel-body" id="item_sales_detail" style="width: 100%; overflow-x: scroll;">
+
+
             <div class="col-md-12">
+
                 <div class="card" style="width: 100%; overflow-x: scroll; ">
                     <div class="card-header card-header-icon card-header-rose">
 
                         <h4 class="card-title"> Item Sales Detail
                         </h4>
                     </div>
+
+      
                     <div class="card-body">
+                                                <div class="dropdown pull-right" style="padding: 10px;">
+             <form method="get" action='/<%= @conn.params["brand"] %>/item_transaction_report' class="form-horizontal" >
+                <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                     <input type="hidden" name="branch">
+
+           <button class="btn btn-rose btn-round" type="submit">
+                <i class="material-icons">add_box</i> Item Transaction Report
+              <div class="ripple-container"></div>
+
+            </button>
+        </form>
+        </div>
 
 
                         <table id="item_sales_detail" class="table">
@@ -406,42 +424,42 @@
         var data = payload.item_sales_detail_data
 
 
-        $("table#item_sales_detail").DataTable({
-              destroy: true,
-            data: data,
-            dom: 'BlTfgitp',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            columns: [{
-                    data: 'itemcode'
-                },
-                {
-                    data: 'itemname'
-                },
-                {
-                    data: 'qty'
-                },
-                {
-                    data: 'invoiceno',
-                    'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
-                    }
-                },
-                {
-                    data: 'tbl_no'
-                },
-                {
-                    data: 'staff_name'
-                },
-                {
-                    data: 'afterdisc'
-                },
-                {
-                    data: 'salesdate'
-                }
-            ]
-        });
+        // $("table#item_sales_detail").DataTable({
+        //       destroy: true,
+        //     data: data,
+        //     dom: 'BlTfgitp',
+        //     buttons: [
+        //         'copy', 'csv', 'excel', 'pdf', 'print'
+        //     ],
+        //     columns: [{
+        //             data: 'itemcode'
+        //         },
+        //         {
+        //             data: 'itemname'
+        //         },
+        //         {
+        //             data: 'qty'
+        //         },
+        //         {
+        //             data: 'invoiceno',
+        //             'fnCreatedCell': function(nTd, sData, oData, iRow, iCol) {
+        //                 $(nTd).html("<a href='/"+ oData.domainname +"/detail_invoice/"+ oData.branchid +"/"+ oData.invoiceno +"' target='_blank' >View Details</a>");
+        //             }
+        //         },
+        //         {
+        //             data: 'tbl_no'
+        //         },
+        //         {
+        //             data: 'staff_name'
+        //         },
+        //         {
+        //             data: 'afterdisc'
+        //         },
+        //         {
+        //             data: 'salesdate'
+        //         }
+        //     ]
+        // });
 
         $("#backdrop").delay(500).fadeOut()
     })
