@@ -284,6 +284,46 @@
 <div class="row">
   <div class="col-md-6">
     <div class="card">
+      <div class="card-header card-header-icon card-header-rose">
+        <div class="card-icon">
+          <i class="material-icons">perm_identity</i>
+        </div>
+        <h4 class="card-title"><b>Item Detail</b>
+        </h4>
+      </div>
+      <br>
+
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-12">
+
+           <table class="table">
+                     <%= for item_detail <- @item_details  do %>
+             <tr>
+
+               <td><%=item_detail.itemcode%></td>
+                <td><%=item_detail.subcatid%></td>
+                 <td><%=item_detail.itemname%></td>
+                 <td><%=item_detail.price_code%></td>
+                 <td><%=item_detail.itemprice%></td>                
+             </tr>
+                <%end%>
+            
+               
+           </table>
+
+            
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+    <div class="col-md-6">
+    <div class="card">
       <div class="card-header card-header-icon card-header-info">
         <div class="card-icon">
           <i class="material-icons">perm_identity</i>
@@ -298,7 +338,7 @@
           <div class="col-lg-12">
 
            <table class="table">
-              <%= for combo_detail <- @combo_details  do %>
+               <%= for combo_detail <- @combo_details  do %>
              <tr>
 
                <td><%=combo_detail.combo_item_code%></td>

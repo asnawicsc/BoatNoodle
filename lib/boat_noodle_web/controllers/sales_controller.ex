@@ -3454,8 +3454,8 @@ defmodule BoatNoodleWeb.SalesController do
 
         [
           item.salesdate,
-          item.discname,
           item.discitemsname,
+          item.discname ,
           item.qty,
           discount_amount |> :erlang.float_to_binary(decimals: 2)
         ]

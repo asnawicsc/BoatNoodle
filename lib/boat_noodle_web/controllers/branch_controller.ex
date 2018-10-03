@@ -571,6 +571,18 @@ defmodule BoatNoodleWeb.BranchController do
       current_menu_catalog.items |> String.split(",")
       |> Enum.filter(fn x -> String.length(x) == 6 end)
 
+      items =
+      current_menu_catalog.items |> String.split(",")
+      |> Enum.filter(fn x -> String.length(x) != 6 end)
+
+          all_item =
+      Repo.all(
+        from(
+          i in ItemSubcat,
+          where: i.subcatid in ^items and i.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+
     combos =
       Repo.all(
         from(
@@ -592,6 +604,19 @@ defmodule BoatNoodleWeb.BranchController do
       end
       |> List.flatten()
 
+          item_details =
+      for item <- all_item do
+        Repo.all(
+          from(
+            c in ItemSubcat,
+            where:
+              c.subcatid == ^item.subcatid and c.brand_id == ^BN.get_brand_id(conn) and
+                c.is_delete == ^0
+          )
+        )
+      end
+      |> List.flatten()
+
     render(
       conn,
       "edit.html",
@@ -603,7 +628,8 @@ defmodule BoatNoodleWeb.BranchController do
       disc_catalog: disc_catalog,
       selected: selected,
       unselected: unselected,
-      combo_details: combo_details
+      combo_details: combo_details,
+      item_details: item_details
     )
   end
 
