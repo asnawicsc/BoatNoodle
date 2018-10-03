@@ -2478,7 +2478,8 @@ defmodule BoatNoodleWeb.SalesController do
             group_by: [sd.salesdate, sd.branchname, sd.itemid],
             where:
               sd.salesdate >= ^start_date and sd.salesdate <= ^end_date and
-                sd.brand_id == ^brand.id and sd.is_void == ^0 and sd.branchid == ^branch.id,
+                sd.brand_id == ^brand.id and sd.is_void == ^0 and
+                sd.branchname == ^branch.branchname,
             select: %{
               salesdate: sd.salesdate,
               branchname: sd.branchname,
@@ -2896,12 +2897,12 @@ defmodule BoatNoodleWeb.SalesController do
               qty: sd.qty,
               gross_amt: sd.order_price,
               nett_amt: sd.afterdisc,
-              branchname: b.branchname,
+              branchname: b.branchname
             }
           )
         )
       else
-         Repo.all(
+        Repo.all(
           from(
             sd in BoatNoodle.BN.SalesMaster,
             left_join: s in BoatNoodle.BN.Sales,
@@ -2910,7 +2911,7 @@ defmodule BoatNoodleWeb.SalesController do
             on: b.branchid == s.branchid,
             where:
               s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and s.is_void == ^0 and sd.is_void == ^0 ,
+                b.brand_id == ^brand.id and s.is_void == ^0 and sd.is_void == ^0,
             select: %{
               salesdate: s.salesdate,
               salesdatetime: s.salesdatetime,
@@ -2919,13 +2920,13 @@ defmodule BoatNoodleWeb.SalesController do
               qty: sd.qty,
               gross_amt: sd.order_price,
               nett_amt: sd.afterdisc,
-              branchname: b.branchname,
+              branchname: b.branchname
             }
           )
         )
       end
 
-          name =
+    name =
       if branch_id != "0" do
         b = Repo.get_by(Branch, brand_id: brand.id, branchid: branch_id)
         b.branchname
@@ -2933,14 +2934,9 @@ defmodule BoatNoodleWeb.SalesController do
         "ALL"
       end
 
-    
-
     item_transaction_report
     |> Stream.map(fn x ->
-      item_transaction_report_csv(
-        x,
-        conn,
-        params)
+      item_transaction_report_csv(x, conn, params)
     end)
     |> (fn stream -> Stream.concat(csv_header, stream) end).()
     |> CSV.encode()
@@ -2955,12 +2951,11 @@ defmodule BoatNoodleWeb.SalesController do
     )
   end
 
-   defp item_transaction_report_csv(
+  defp item_transaction_report_csv(
          item,
          conn,
          params
        ) do
-   
     [
       item.salesdate,
       DateTime.from_naive!(item.salesdatetime , "Etc/UTC")

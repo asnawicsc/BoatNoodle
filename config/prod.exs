@@ -5,6 +5,11 @@ config :boat_noodle, BoatNoodleWeb.Endpoint,
   url: [host: "gummypos.resertech.com", port: 8889],
   check_origin: ["https://gummypos.resertech.com"]
 
+# config :boat_noodle, BoatNoodleWeb.Endpoint,
+#   http: [port: 8889],
+#   url: [host: "110.4.42.48", port: 8889],
+#   check_origin: ["http://110.4.42.48:8889"]
+
 config :logger, level: :info
 
 config :boat_noodle, BoatNoodleWeb.Endpoint, server: true
