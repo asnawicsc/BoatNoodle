@@ -1858,7 +1858,8 @@ defmodule BoatNoodleWeb.SalesController do
         item = String.to_integer(item)
 
         a =
-          Enum.filter(try1, fn x -> x.date.month == item end) |> Enum.map(fn x -> x.total end)
+          Enum.filter(try1, fn x -> x.date.month == item end)
+          |> Enum.map(fn x -> x.total end)
           |> Enum.sum()
 
         %{month: item, sum: a}
@@ -2898,7 +2899,8 @@ defmodule BoatNoodleWeb.SalesController do
               gross_amt: sd.order_price,
               nett_amt: sd.afterdisc,
               branchname: b.branchname
-            }
+            },
+            order_by: s.salesdatetime
           )
         )
       else
@@ -2921,7 +2923,8 @@ defmodule BoatNoodleWeb.SalesController do
               gross_amt: sd.order_price,
               nett_amt: sd.afterdisc,
               branchname: b.branchname
-            }
+            },
+            order_by: s.salesdatetime
           )
         )
       end
@@ -2958,7 +2961,7 @@ defmodule BoatNoodleWeb.SalesController do
        ) do
     [
       item.salesdate,
-      DateTime.from_naive!(item.salesdatetime , "Etc/UTC")
+      DateTime.from_naive!(item.salesdatetime, "Etc/UTC")
       |> DateTime.to_string()
       |> String.split_at(19)
       |> elem(0),
@@ -3449,8 +3452,8 @@ defmodule BoatNoodleWeb.SalesController do
 
         [
           item.salesdate,
-          item.discname,
           item.discitemsname,
+          item.discname,
           item.qty,
           discount_amount |> :erlang.float_to_binary(decimals: 2)
         ]

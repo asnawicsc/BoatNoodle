@@ -252,7 +252,8 @@ defmodule BoatNoodleWeb.BranchController do
     branch = Repo.get_by(Branch, branchcode: branch_code)
 
     api_key =
-      Comeonin.Bcrypt.hashpwsalt(branch.branchname) |> String.replace("$2b", "$2y")
+      Comeonin.Bcrypt.hashpwsalt(branch.branchname)
+      |> String.replace("$2b", "$2y")
       |> Base.url_encode64()
 
     cg = Branch.changeset(branch, %{api_key: api_key}, 0, "edit")
@@ -536,13 +537,33 @@ defmodule BoatNoodleWeb.BranchController do
 
     managers =
       BN.list_user()
+      |> Enum.filter(fn x -> x.brand_id == BN.get_brand_id(conn) end)
       |> Enum.map(fn x -> {x.username, x.id} end)
       |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     organizations =
-      BN.list_organization()
-      |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
-      |> Enum.sort_by(fn x -> elem(x, 0) end)
+      Repo.all(
+        from(
+          b in Branch,
+          left_join: o in Organization,
+          on: b.org_id == o.organisationid,
+          left_join: u in User,
+          on: u.id == b.manager,
+          where: b.brand_id == ^BN.get_brand_id(conn),
+          select: %{
+            org_id: o.organisationid,
+            org_name: o.organisationname
+          }
+        )
+      )
+      |> Enum.uniq()
+      |> Enum.filter(fn x -> x.org_id != nil end)
+
+    # organizations =
+    #   BN.list_organization()
+    #   |> Enum.filter(fn x -> x.brand_id == BN.get_brand_id(conn) end)
+    #   |> Enum.map(fn x -> {x.organisationname, x.organisationid} end)
+    #   |> Enum.sort_by(fn x -> elem(x, 0) end)
 
     menu_catalog =
       Repo.all(
@@ -568,8 +589,22 @@ defmodule BoatNoodleWeb.BranchController do
       Repo.get_by(MenuCatalog, id: branch.menu_catalog, brand_id: BN.get_brand_id(conn))
 
     combo_items =
-      current_menu_catalog.items |> String.split(",")
+      current_menu_catalog.items
+      |> String.split(",")
       |> Enum.filter(fn x -> String.length(x) == 6 end)
+
+    items =
+      current_menu_catalog.items
+      |> String.split(",")
+      |> Enum.filter(fn x -> String.length(x) != 6 end)
+
+    all_item =
+      Repo.all(
+        from(
+          i in ItemSubcat,
+          where: i.subcatid in ^items and i.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
 
     combos =
       Repo.all(
@@ -592,6 +627,19 @@ defmodule BoatNoodleWeb.BranchController do
       end
       |> List.flatten()
 
+    item_details =
+      for item <- all_item do
+        Repo.all(
+          from(
+            c in ItemSubcat,
+            where:
+              c.subcatid == ^item.subcatid and c.brand_id == ^BN.get_brand_id(conn) and
+                c.is_delete == ^0
+          )
+        )
+      end
+      |> List.flatten()
+
     render(
       conn,
       "edit.html",
@@ -603,7 +651,8 @@ defmodule BoatNoodleWeb.BranchController do
       disc_catalog: disc_catalog,
       selected: selected,
       unselected: unselected,
-      combo_details: combo_details
+      combo_details: combo_details,
+      item_details: item_details
     )
   end
 
