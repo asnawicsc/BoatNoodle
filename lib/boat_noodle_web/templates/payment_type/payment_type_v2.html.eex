@@ -194,7 +194,7 @@ $('select[name="branchid"]').selectpicker('val',localStorage.getItem("new_brand"
                     data: 'payment_type'
                 },
                 {
-                    data: 'grand_total'
+                    data: 'cash'
                 }
             ]
         });

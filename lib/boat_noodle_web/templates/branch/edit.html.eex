@@ -68,7 +68,7 @@
 
   <select style="margin-bottom: 10px;" name="branch[org_id]" class="selectpicker" data-style="btn select-with-transition"  title="Choose Organization" data-size="10">
     <%= for organization <- @organizations do %>
-      <option value="<%= elem(organization,1) %>"><%= elem(organization,0) %> </option>
+      <option value="<%= organization.org_id %>"><%= organization.org_name %> </option>
     <% end %>
   </select>
 </div>
