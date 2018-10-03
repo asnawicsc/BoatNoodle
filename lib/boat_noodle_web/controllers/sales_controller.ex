@@ -2958,7 +2958,10 @@ defmodule BoatNoodleWeb.SalesController do
        ) do
     [
       item.salesdate,
-      item.salesdatetime,
+      DateTime.from_naive!(item.salesdatetime , "Etc/UTC")
+      |> DateTime.to_string()
+      |> String.split_at(19)
+      |> elem(0),
       item.invoiceno,
       item.itemname,
       item.qty,
