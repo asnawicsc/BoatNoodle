@@ -32,6 +32,8 @@ defmodule BoatNoodle.BN.SalesMaster do
     field(:final_nett_sales, :decimal)
     field(:total_combo_sub_item_qty, :integer)
     field(:combo_total_topup_qty, :decimal)
+    field(:combo_items_str, :binary)
+
     field(:foc_qty, :integer)
     field(:discount_value, :decimal)
     field(:service_charge, :decimal)
@@ -45,6 +47,7 @@ defmodule BoatNoodle.BN.SalesMaster do
   def changeset(sales_master, attrs) do
     sales_master
     |> cast(attrs, [
+      :combo_items_str,
       :cat_type,
       :cat_name,
       :combo_name,
