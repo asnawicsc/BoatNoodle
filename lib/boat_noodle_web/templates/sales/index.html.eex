@@ -119,20 +119,6 @@
         </form>
         </div>
 
-                              <div class="dropdown pull-right" style="padding: 10px;">
-             <form method="get" action='/<%= @conn.params["brand"] %>/item_transaction_report' class="form-horizontal" >
-                <input type="hidden" name="start_date">
-                                    <input type="hidden" name="end_date">
-                                     <input type="hidden" name="branch">
-
-           <button class="btn btn-rose btn-round" type="submit">
-                <i class="material-icons">add_box</i> Item Transaction Report
-              <div class="ripple-container"></div>
-
-            </button>
-        </form>
-        </div>
-
                         <table id="sales_transaction" class="table">
                             <thead align="center">
                                 <tr>
