@@ -629,7 +629,9 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           s in ItemSubcat,
-          where: s.subcatid in ^subcat_ids and s.brand_id == ^brand_id and s.is_activate != ^0
+          where:
+            s.subcatid in ^subcat_ids and s.brand_id == ^brand_id and s.is_activate != ^0 and
+              s.is_delete == ^0
         )
       )
       |> Enum.map(fn x ->
