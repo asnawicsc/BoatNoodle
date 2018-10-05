@@ -57,7 +57,8 @@ defmodule BoatNoodle.UltiMigrator do
           on: sm.salesid == s.salesid,
           where:
             s.salesdate > ^start_date and s.salesdate < ^end_date and s.is_void == ^0 and
-              sm.is_void == ^0 and s.brand_id == ^2 and is_nil(sm.final_nett_sales),
+              sm.is_void == ^0 and s.brand_id == ^2 and sm.combo_name == ^"Combo" and
+              sm.salesid == ^"ONEU57755",
           select: %{
             staffid: s.staffid,
             branchid: s.branchid,
@@ -397,7 +398,7 @@ defmodule BoatNoodle.UltiMigrator do
       BoatNoodle.BN.SalesMaster.changeset(sd, %{
         combo_total_topup_qty: combo_total_topup_qty,
         total_combo_sub_item_qty: total_combo_sub_item_qty,
-        final_nett_sales: final_nett_sales,
+        final_nett_sales: 0,
         service_charge: serv_charge,
         discount_value: discount_value,
         foc_qty: foc_qty
@@ -477,6 +478,10 @@ defmodule BoatNoodle.UltiMigrator do
   end
 
   def calculate_final_nett_sales(sd) do
+    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+
+    new_path = image_path <> "/not_tally_final_nett_sales_my.csv"
+
     sales_details =
       BoatNoodle.Repo.all(
         from(
@@ -519,6 +524,8 @@ defmodule BoatNoodle.UltiMigrator do
       end)
       |> Enum.sum()
 
+    IEx.pry()
+
     if Decimal.to_float(sd.order_price) > final_nett_sales do
       final_nett_sales = (sd.order_price |> Decimal.to_float()) + final_nett_sales
 
@@ -546,39 +553,61 @@ defmodule BoatNoodle.UltiMigrator do
 
       case a do
         {:ok, sm} ->
-          # tt =
-          #   Repo.all(
-          #     from(
-          #       sm in SalesMaster,
-          #       where:
-          #         sm.brand_id == ^2 and sm.salesid == ^sd.salesid and
-          #           sm.sales_details != ^sd.sales_details and sm.is_void == ^0,
-          #       select: sm.final_nett_sales
-          #     )
-          #   )
+          tt =
+            Repo.all(
+              from(
+                sm in SalesMaster,
+                where:
+                  sm.brand_id == ^2 and sm.salesid == ^sd.salesid and
+                    sm.sales_details != ^sd.sales_details and sm.is_void == ^0,
+                select: sm.final_nett_sales
+              )
+            )
 
-          # fin =
-          #   if tt == [] do
-          #     sd.order_price |> Decimal.to_float()
-          #   else
-          #     z =
-          #       tt
-          #       |> Enum.map(fn x -> Decimal.to_float(x) end)
-          #       |> Enum.sum()
+          fin =
+            if tt == [] do
+              sd.order_price |> Decimal.to_float()
+            else
+              z =
+                tt
+                |> Enum.map(fn x -> Decimal.to_float(x) end)
+                |> Enum.sum()
 
-          #     if z != 0 do
-          #       final_nett_sales + z
-          #     else
-          #       final_nett_sales
-          #     end
-          #   end
+              if z != 0 do
+                final_nett_sales + z
+              else
+                final_nett_sales
+              end
+            end
 
-          # if fin != Decimal.to_float(sp.sub_total) do
-          #   IO.inspect(sd)
-          #   IO.inspect(final_nett_sales)
-          #   IO.inspect(Decimal.to_float(sp.sub_total))
-          #   IEx.pry()
-          # end
+          if Float.round(fin, 2) != Decimal.to_float(sp.sub_total) do
+            IO.inspect(sd)
+            IO.inspect(final_nett_sales)
+            IO.inspect(Decimal.to_float(sp.sub_total))
+
+            if File.exists?(new_path) do
+              data = File.read!(new_path)
+              list = String.split(data, "\r\n")
+
+              list =
+                List.insert_at(list, 0, "#{sd.salesid}")
+                |> Enum.map(fn x -> x <> "\r\n" end)
+                |> Enum.join()
+
+              File.write(new_path, list)
+              # Enum.into(list, file)
+            else
+              list = []
+
+              list =
+                List.insert_at(list, 0, "#{sd.salesid}")
+                |> Enum.map(fn x -> x <> "\r\n" end)
+                |> Enum.join()
+
+              File.write(new_path, list)
+              # Enum.into(list, file)
+            end
+          end
 
           true
 
