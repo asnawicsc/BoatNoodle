@@ -1148,4 +1148,42 @@ defmodule BoatNoodle.UltiMigrator do
         end
     end
   end
+
+  def v2_missing_sp_data() do
+    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+
+    new_path = image_path <> "/not_tally_sp_BN2.csv"
+    bin = File.read!(new_path)
+
+    salesids = bin |> String.split("\n") |> Enum.reject(fn x -> x == "" end)
+
+    for salesid <- salesids do
+      # check sales exist
+
+      v1sp = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+
+      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+
+      cg =
+        BoatNoodle.BN.SalesPayment.changeset(v2sp, %{
+          payment_name1: v1sp.payment_name1,
+          payment_type_amt1: v1sp.payment_type_amt1,
+          payment_type_id1: v1sp.payment_type_id1,
+          payment_code1: v1sp.payment_code1,
+          payment_code2: v1sp.payment_code2,
+          payment_type_amt2: v1sp.payment_type_amt2,
+          payment_name2: v1sp.payment_name2,
+          payment_type_id2: v1sp.payment_type_id2,
+          voucher_code: v1sp.voucher_code
+        })
+
+      case BoatNoodle.Repo.update(cg) do
+        {:ok, v2sp} ->
+          true
+
+        {:error, cg} ->
+          IEx.pry()
+      end
+    end
+  end
 end

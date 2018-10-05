@@ -118,7 +118,7 @@ defmodule BoatNoodleWeb.Router do
     get("/export_to_csv_group_by_branch", SalesController, :export_to_csv_group_by_branch)
 
     get("/export_to_csv_summary", SalesController, :export_to_csv_summary)
-     get("/monthly_sales_csv", SalesController, :monthly_sales_csv)
+    get("/monthly_sales_csv", SalesController, :monthly_sales_csv)
 
     get(
       "/discount_insert_into_catalog3",
@@ -205,7 +205,7 @@ defmodule BoatNoodleWeb.Router do
     get("/voided", SalesController, :voided)
     get("/sales_chart", SalesController, :sales_chart)
     get("/payment_type/:id/edits", PaymentTypeController, :edits)
-    post("/edit_payment_type",PaymentTypeController, :edit_payment_type)
+    post("/edit_payment_type", PaymentTypeController, :edit_payment_type)
 
     get("/detail_invoice/:branchid/:invoiceno", SalesController, :detail_invoice)
     get("/report", SalesController, :report)
