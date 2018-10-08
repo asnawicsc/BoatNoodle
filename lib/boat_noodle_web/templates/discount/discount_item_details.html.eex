@@ -27,7 +27,7 @@
           </div>
           <div class="col-lg-4 col-md-6 col-sm-3">
            <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Discount Type</label>
-            <select class="selectpicker" data-style="btn select-with-transition" disabled="disabled" onchange="changeFunc();" id="dis_type" value="<%= @discount_a.disctypeid %>" name="disctype" data-size="7">
+            <select class="selectpicker" data-style="btn select-with-transition"  onchange="changeFunc();" id="dis_type" value="<%= @discount_a.disctypeid %>" name="disctype" data-size="7">
 
                            
                            
