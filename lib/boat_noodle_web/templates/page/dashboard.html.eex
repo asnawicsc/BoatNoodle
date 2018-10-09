@@ -177,14 +177,22 @@
         </div>
 
 
-                      
+              
+              <div class=row>
+                   <div class="col-md-6">
+                <div class="alert alert-info"><b><font style="color: black">Nett Sales :  Gross Sales + Discount Amt </font></b></div>
+              </div>
+                 <div class="col-md-6">
+                 <div class="alert alert-primary"><b><font style="color: black">Total Sales : Nett Sales + Service Charge</font></b></div>
+               </div>
+              </div>
                         <table id="outlet_sales_information" class="table">
                             <thead >
                                 <tr>
                                     <th>Branch Name</th>
                                     <th>Gross Sales</th>
                                     <th>Service Charge</th>
-                                    <th>GST</th>
+                                    <th>SST</th>
                                     <th>Discount Amt</th>
                                     <th>Nett Sales</th>
                                     <th>Roundings</th>
@@ -218,7 +226,7 @@
                                     <th>GST</th>
                                     <th>Discount Amt</th>
                                     <th>Nett Sales</th>
-                                    <th>Roundings</th>
+                                   <%#  <th>Roundings</th> %>
                                     <th>Total Sales</th>
                                     <th>Pax</th>
                                     
@@ -232,7 +240,7 @@
                                     <td id="gst_data"></td>
                                     <td id="discount_data"></td>
                                     <td id="nett_sales_data"></td>
-                                    <td id="roundings_data"></td>
+                                  <%#   <td id="roundings_data"></td> %>
                                     <td id="total_sales_data"></td>
                                     <td id="pax_data"></td>
                                     
