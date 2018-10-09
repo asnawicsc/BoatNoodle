@@ -777,7 +777,7 @@ defmodule BoatNoodleWeb.DiscountController do
     discount = Repo.get_by(BoatNoodle.BN.Discount, discountid: id, brand_id: brand)
 
     discount_category_params = %{
-      is_categorize: discount_type,
+      is_categorize: 1,
       disctype: disc_type,
       discname: discname,
       descriptions: descriptions,

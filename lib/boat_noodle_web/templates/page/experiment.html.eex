@@ -23,3 +23,109 @@
 		$("td[itemcode='"+payload.itemcode+"'][comboid='"+payload.comboid+"']").html(payload.price)
 	})
 </script>
+
+
+
+<form>
+	
+<textarea id="sql"></textarea>
+<div class="btn btn-primary">check</div>
+</form>
+<div id="text">
+	
+</div>
+<script type="text/javascript">
+	$("div.btn").click(function(){
+
+		var text = $("textarea#sql").val()
+
+		text = text.replace(/<{/g, "");
+		text = text.replace(/}>/g, "");
+		text = text.replace(/:/g, "");
+		text = text.replace(/0/g, "");
+		text = text.replace(/1/g, "");
+		text = text.replace(/CURRENT_TIMESTAMP/g, "");
+
+
+		$("div#text").html(text)
+	})
+</script>
+
+<table class="TFtable2" width="100%" cellspacing="0" cellpadding="4">
+
+	<tbody>
+		
+
+
+
+	</tbody>
+</table>
+
+<form>
+	<input type="text" name="head" placeholder="head">
+
+	<div class="btn btn-primary btn-xs iti_submit_month">Create Itinerary Month</div>
+</form>
+
+<form>
+	<input type="text" name="date" placeholder="date">
+	<input type="text" name="itinerary" placeholder="itinerary">
+
+	<div class="btn btn-primary btn-xs iti_submit">Insert Itinerary</div>
+</form>
+
+<form>
+
+	<textarea style="width: 100%; height: 500px;" name="whole"></textarea>
+	<div class="btn btn-primary btn-xs iti_submit2">Insert Itinerary</div>
+</form>
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+
+		$("div.iti_submit_month").click(function(){
+			var head = $("input[name='head']").val()
+			var month_head = '<tr><td colspan="2" class="month">'+head+'</td></tr>'
+
+			$("table.TFtable2 tbody").append(month_head)
+
+	$("td.month").click(function(){
+		var oss = prompt("new month header", "");
+		$(this).html(oss)
+	})
+
+		})
+		$("div.iti_submit").click(function(){
+
+
+			var date = $("input[name='date']").val()
+
+			var iti = $("input[name='itinerary']").val()
+			
+			var tr = "<tr><td>"+date+"</td><td>"+iti+"</td></tr>"
+			$("table.TFtable2 tbody").append(tr)
+		})
+
+		$("div.iti_submit2").click(function(){
+
+
+			var textarea_str = $("textarea[name='whole']").val()
+
+			var arr = textarea_str.split("\n")
+			console.log(arr)	
+
+			$(arr).each(function(){
+				var data = this.split("\t\t")
+				var date = data[0]
+				var iti = data[1]
+				var tr = "<tr><td>"+date+"</td><td>"+iti+"</td></tr>"
+				$("table.TFtable2 tbody").append(tr)
+			})
+			// var tr = "<tr><td>"+date+"</td><td>"+iti+"</td></tr>"
+			// $("table.TFtable2 tbody").append(tr)
+		})
+	})
+
+
+</script>
