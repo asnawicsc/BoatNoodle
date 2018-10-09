@@ -35,25 +35,50 @@
                        <label class="col-sm-2 col-form-label">Discount Type</label>
                         <div class="col-sm-5">
                             <div class="form-group">
-
+<% a = @discount %>
                                   <%= if  @discount.is_categorize == 1  do   %>
 
                                 <select class="selectpicker" name="discount_type" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc3();" value="<%= @discount.is_categorize %>" data-size="7" >
-                           
-                                            <option  value="1" selected="selected"   >Other Discount
-                                            </option>
-                                             <option value="0"  >Full Amount Discount
-                                            </option>
+                                    <%= if a.disctype == "MOBILE" do %>
+                                                <option value="2" selected="">Mobile</option>
+                                          <% else %>
+                                                <option value="2">Mobile</option>
+                                          <% end %>
+                                          <%= if a.disctype == "FREE" do %>
+                                                 <option  value="1" >Other Discount</option>
+                                          <% else %>
+                                                <option  value="1" >Other Discount</option>
+                                          <% end %>
+                                          <%= if a.disctype == "CASH" do %>
+                                                       <option value="0"  >Full Amount Discount</option>
+                                          <% else %>
+                                                       <option value="0"  >Full Amount Discount</option>
+                                          <% end %>
+                                         
+
+                                          
+                                         
+                                     
                                         
                                 </select>
                                 <% else %>
 
                                  <select class="selectpicker" name="discount_type" data-style="btn select-with-transition" id="selectBox" onchange="changeFunc3();" value="<%= @discount.is_categorize %>" data-size="7" >
-                           
-                                            <option  value="1"  >Other Discount
-                                            </option>
-                                             <option value="0" selected="selected"   >Full Amount Discount
-                                            </option>
+                                    <%= if a.disctype == "MOBILE" do %>
+                                                <option value="2" selected="">Mobile</option>
+                                          <% else %>
+                                                <option value="2">Mobile</option>
+                                          <% end %>
+                                          <%= if a.disctype == "FREE" do %>
+                                                 <option  value="1" >Other Discount</option>
+                                          <% else %>
+                                                <option  value="1" >Other Discount</option>
+                                          <% end %>
+                                          <%= if a.disctype == "CASH" do %>
+                                                       <option value="0"  >Full Amount Discount</option>
+                                          <% else %>
+                                                       <option value="0"  >Full Amount Discount</option>
+                                          <% end %>
                                         
                                 </select>
 

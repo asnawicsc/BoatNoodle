@@ -35,7 +35,8 @@
                                             </option>
                                              <option value="1"  >Full Amount Discount
                                             </option>
-                                           
+                                           <option value="2"  >Mobile
+                                            </option>
                                         
                                         </select>
               </div>

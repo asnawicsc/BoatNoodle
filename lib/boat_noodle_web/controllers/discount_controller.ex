@@ -195,14 +195,21 @@ defmodule BoatNoodleWeb.DiscountController do
       end
 
     {disctype, is_categorize} =
-      if item["select"] == "1" do
-        disctype = "CASH"
-        is_categorize = 0
-        {disctype, is_categorize}
-      else
-        disctype = "FREE"
-        is_categorize = 1
-        {disctype, is_categorize}
+      cond do
+        item["select"] == "1" ->
+          disctype = "CASH"
+          is_categorize = 0
+          {disctype, is_categorize}
+
+        item["select"] == "2" ->
+          disctype = "MOBILE"
+          is_categorize = 0
+          {disctype, is_categorize}
+
+        true ->
+          disctype = "FREE"
+          is_categorize = 1
+          {disctype, is_categorize}
       end
 
     descriptions = item["description"]
@@ -743,14 +750,21 @@ defmodule BoatNoodleWeb.DiscountController do
     discount_type = params["discount_type"] |> String.to_integer()
 
     {disc_type, discamtpercentage} =
-      if discount_type == 1 do
-        disc_type = "FREE"
-        discamtpercentage = 0
-        {disc_type, discamtpercentage}
-      else
-        disc_type = "CASH"
-        discamtpercentage = params["discamtpercentage"]
-        {disc_type, discamtpercentage}
+      cond do
+        discount_type == 1 ->
+          disc_type = "FREE"
+          discamtpercentage = 0
+          {disc_type, discamtpercentage}
+
+        discount_type == 2 ->
+          disc_type = "MOBILE"
+          discamtpercentage = 0
+          {disc_type, discamtpercentage}
+
+        true ->
+          disc_type = "CASH"
+          discamtpercentage = params["discamtpercentage"]
+          {disc_type, discamtpercentage}
       end
 
     is_visable =
