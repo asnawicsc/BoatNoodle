@@ -303,6 +303,8 @@ defmodule BoatNoodleWeb.Router do
     get("/experiment2", PageController, :experiment2)
     get("/experiment3", PageController, :experiment3)
     get("/experiment4", PageController, :experiment4)
+
+    resources("/reports", ReportController)
     get("/*path", PageController, :no_page_found)
   end
 end

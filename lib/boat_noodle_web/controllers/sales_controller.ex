@@ -1578,7 +1578,10 @@ defmodule BoatNoodleWeb.SalesController do
         )
       )
 
-    render(conn, "item_sales.html", branches: branches)
+    reports =
+      Repo.all(from(r in BoatNoodle.BN.Report, where: r.brand_id == ^BN.get_brand_id(conn)))
+
+    render(conn, "item_sales.html", branches: branches, reports: reports)
   end
 
   def discounts(conn, _params) do
@@ -2858,6 +2861,24 @@ defmodule BoatNoodleWeb.SalesController do
   end
 
   def item_transaction_report(conn, params) do
+    Task.start_link(__MODULE__, :item_transaction_report_save_file, [conn, params])
+
+    # |> Enum.into(
+    #   conn
+    #   |> put_resp_content_type("application/csv")
+    #   |> put_resp_header(
+    #     "content-disposition",
+    #     "attachment; filename=\"Item Transaction Report- #{name}.csv\""
+    #   )
+    #   |> send_chunked(200)
+    # )
+
+    conn
+    |> put_flash(:info, "Item Sales Transaction Report is being prepared...")
+    |> redirect(to: sales_path(conn, :item_sales, BN.get_domain(conn)))
+  end
+
+  def item_transaction_report_save_file(conn, params) do
     csv_header = [
       [
         'BILL DATE',
@@ -2937,21 +2958,53 @@ defmodule BoatNoodleWeb.SalesController do
         "ALL"
       end
 
-    item_transaction_report
-    |> Stream.map(fn x ->
-      item_transaction_report_csv(x, conn, params)
-    end)
-    |> (fn stream -> Stream.concat(csv_header, stream) end).()
-    |> CSV.encode()
-    |> Enum.into(
-      conn
-      |> put_resp_content_type("application/csv")
-      |> put_resp_header(
-        "content-disposition",
-        "attachment; filename=\"Item Transaction Report- #{name}.csv\""
-      )
-      |> send_chunked(200)
-    )
+    a =
+      item_transaction_report
+      |> Stream.map(fn x ->
+        item_transaction_report_csv(x, conn, params)
+      end)
+      |> (fn stream -> Stream.concat(csv_header, stream) end).()
+      |> CSV.encode()
+      |> Enum.to_list()
+      |> to_string
+
+    # csv_content2 =
+    #   List.insert_at(data, 0, csv_content)
+    #   |> CSV.encode()
+    #   |> Enum.to_list()
+    #   |> to_string
+    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+
+    new_path = image_path <> "/item_transaction_report_#{name}_#{start_date}_#{end_date}.csv"
+
+    if File.exists?(new_path) do
+      file =
+        Repo.get_by(
+          BoatNoodle.BN.Report,
+          filename: "item_transaction_report_#{name}_#{start_date}_#{end_date}.csv",
+          brand_id: brand.id,
+          branch_id: String.to_integer(branch_id)
+        )
+
+      case BoatNoodle.BN.Report.changeset(file, %{updated_at: DateTime.utc_now()})
+           |> Repo.update() do
+        {:ok, file} ->
+          true
+
+        {:error, cg} ->
+          IO.inspect(cg)
+      end
+    else
+      BoatNoodle.BN.Report.changeset(%BoatNoodle.BN.Report{}, %{
+        filename: "item_transaction_report_#{name}_#{start_date}_#{end_date}.csv",
+        url_path: new_path,
+        brand_id: brand.id,
+        branch_id: String.to_integer(branch_id)
+      })
+      |> Repo.insert()
+    end
+
+    File.write(new_path, a)
   end
 
   defp item_transaction_report_csv(

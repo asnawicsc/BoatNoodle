@@ -3858,4 +3858,68 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_history_data(history_data)
     end
   end
+
+  describe "reports" do
+    alias BoatNoodle.BN.Report
+
+    @valid_attrs %{bin: "some bin", filename: "some filename", url_path: "some url_path"}
+    @update_attrs %{bin: "some updated bin", filename: "some updated filename", url_path: "some updated url_path"}
+    @invalid_attrs %{bin: nil, filename: nil, url_path: nil}
+
+    def report_fixture(attrs \\ %{}) do
+      {:ok, report} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_report()
+
+      report
+    end
+
+    test "list_reports/0 returns all reports" do
+      report = report_fixture()
+      assert BN.list_reports() == [report]
+    end
+
+    test "get_report!/1 returns the report with given id" do
+      report = report_fixture()
+      assert BN.get_report!(report.id) == report
+    end
+
+    test "create_report/1 with valid data creates a report" do
+      assert {:ok, %Report{} = report} = BN.create_report(@valid_attrs)
+      assert report.bin == "some bin"
+      assert report.filename == "some filename"
+      assert report.url_path == "some url_path"
+    end
+
+    test "create_report/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_report(@invalid_attrs)
+    end
+
+    test "update_report/2 with valid data updates the report" do
+      report = report_fixture()
+      assert {:ok, report} = BN.update_report(report, @update_attrs)
+      assert %Report{} = report
+      assert report.bin == "some updated bin"
+      assert report.filename == "some updated filename"
+      assert report.url_path == "some updated url_path"
+    end
+
+    test "update_report/2 with invalid data returns error changeset" do
+      report = report_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_report(report, @invalid_attrs)
+      assert report == BN.get_report!(report.id)
+    end
+
+    test "delete_report/1 deletes the report" do
+      report = report_fixture()
+      assert {:ok, %Report{}} = BN.delete_report(report)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_report!(report.id) end
+    end
+
+    test "change_report/1 returns a report changeset" do
+      report = report_fixture()
+      assert %Ecto.Changeset{} = BN.change_report(report)
+    end
+  end
 end

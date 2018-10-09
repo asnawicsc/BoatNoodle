@@ -193,29 +193,20 @@
         </form>
         </div>
 
-
-                        <table id="item_sales_detail" class="table">
-                            <thead align="center">
-                                <tr>
-                                    <th>Item Code</th>
-                                    <th>Item Name</th>
-                                    <th>Item Quantity</th>
-                                    <th>Receipt ID</th>
-                                    <th>Table</th>
-                                    <th>Waiter</th>
-                                    <th>Nett Sales</th>
-                                    <th>Date Time</th>
-                                </tr>
-                            </thead>
-                            <tbody align="center">
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
+<table class="table">
+    <%= for report <- @reports do %>
+    <tr>
+        <td><%= report.filename %></td>
+        <td><%= BoatNoodleWeb.LayoutView.my_time(report.updated_at )%></td>
+        <td>
+<%= if File.exists?(report.url_path)  do %>
+            <a href="/images/<%= report.filename %>">Download</a>
+<% end %>
+        </td>
+    </tr>
+    <% end %>
+</table>
+                     
                     </div>
                 </div>
             </div>
