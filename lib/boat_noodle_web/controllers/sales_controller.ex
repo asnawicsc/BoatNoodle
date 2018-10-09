@@ -3366,73 +3366,140 @@ defmodule BoatNoodleWeb.SalesController do
     start_date = params["start_date"]
     end_date = params["end_date"]
 
-    discount_item_report_csv_content =
+    {discount_item_report_csv_content, s} =
       if branch_id != "0" do
-        Repo.all(
-          from(
-            sd in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == sd.salesid,
-            left_join: di in BoatNoodle.BN.DiscountItem,
-            on: sd.discountid == di.discountitemsid,
-            left_join: d in BoatNoodle.BN.Discount,
-            on: d.discountid == di.discountid,
-            left_join: b in BoatNoodle.BN.Branch,
-            on: b.branchid == s.branchid,
-            left_join: br in BoatNoodle.BN.Brand,
-            on: br.id == sd.brand_id,
-            group_by: [s.salesdate, di.discitemsname],
-            where:
-              s.is_void == 0 and sd.discountid != "0" and sd.brand_id == ^brand.id and
-                di.brand_id == ^brand.id and d.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and br.id == ^brand.id and s.branchid == ^branch_id and
-                s.salesdate >= ^start_date and s.salesdate <= ^end_date,
-            select: %{
-              salesdate: s.salesdate,
-              discname: d.discname,
-              discitemsname: di.discitemsname,
-              qty: count(s.salesid),
-              grand_total: sum(sd.grand_total),
-              sub_total: sum(sd.sub_total),
-              service_charge: sum(sd.service_charge),
-              gst_charge: sum(sd.gst_charge),
-              rounding: sum(sd.rounding)
-            }
+        discount_item_report_csv_content =
+          Repo.all(
+            from(
+              sd in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sd.salesid,
+              left_join: di in BoatNoodle.BN.DiscountItem,
+              on: sd.discountid == di.discountitemsid,
+              left_join: d in BoatNoodle.BN.Discount,
+              on: d.discountid == di.discountid,
+              left_join: b in BoatNoodle.BN.Branch,
+              on: b.branchid == s.branchid,
+              left_join: br in BoatNoodle.BN.Brand,
+              on: br.id == sd.brand_id,
+              group_by: [s.salesdate, di.discitemsname, di.discountitemsid],
+              where:
+                s.is_void == 0 and sd.discountid != "0" and sd.brand_id == ^brand.id and
+                  di.brand_id == ^brand.id and d.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                  b.brand_id == ^brand.id and br.id == ^brand.id and s.branchid == ^branch_id and
+                  s.salesdate >= ^start_date and s.salesdate <= ^end_date,
+              select: %{
+                salesdate: s.salesdate,
+                discname: d.discname,
+                disctype: di.disctype,
+                discitemsname: di.discitemsname,
+                discountitemsid: di.discountitemsid,
+                qty: count(s.salesid),
+                discount_qty: sum(s.salesid),
+                grand_total: sum(sd.grand_total),
+                sub_total: sum(sd.sub_total),
+                service_charge: sum(sd.service_charge),
+                gst_charge: sum(sd.gst_charge),
+                rounding: sum(sd.rounding)
+              }
+            )
           )
-        )
+
+        s =
+          Repo.all(
+            from(
+              s in BoatNoodle.BN.Sales,
+              left_join: sp in BoatNoodle.BN.SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: sm in BoatNoodle.BN.SalesMaster,
+              on: s.salesid == sm.salesid,
+              left_join: i in BoatNoodle.BN.DiscountItem,
+              on: sp.discountid == i.discountitemsid,
+              left_join: br in BoatNoodle.BN.Branch,
+              on: br.branchid == s.branchid,
+              left_join: g in BoatNoodle.BN.Brand,
+              on: g.id == ^brand.id,
+              group_by: [s.salesid],
+              where:
+                s.is_void == 0 and sp.discountid != "0" and br.branchid == ^branch_id and
+                  s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"] and
+                  s.brand_id == ^brand.id and sp.brand_id == ^brand.id and i.brand_id == ^brand.id and
+                  br.brand_id == ^brand.id,
+              select: %{
+                salesid: s.salesid,
+                itemname: sm.itemname,
+                itemid: sm.itemid
+              }
+            )
+          )
+
+        {discount_item_report_csv_content, s}
       else
-        Repo.all(
-          from(
-            sd in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales,
-            on: s.salesid == sd.salesid,
-            left_join: di in BoatNoodle.BN.DiscountItem,
-            on: sd.discountid == di.discountitemsid,
-            left_join: d in BoatNoodle.BN.Discount,
-            on: d.discountid == di.discountid,
-            left_join: b in BoatNoodle.BN.Branch,
-            on: b.branchid == s.branchid,
-            left_join: br in BoatNoodle.BN.Brand,
-            on: br.id == sd.brand_id,
-            group_by: [s.salesdate, di.discitemsname],
-            where:
-              s.is_void == 0 and sd.brand_id == ^brand.id and sd.discountid != "0" and
-                di.brand_id == ^brand.id and d.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and br.id == ^brand.id and s.salesdate >= ^start_date and
-                s.salesdate <= ^end_date,
-            select: %{
-              salesdate: s.salesdate,
-              discname: d.discname,
-              discitemsname: di.discitemsname,
-              qty: count(s.salesid),
-              grand_total: sum(sd.grand_total),
-              sub_total: sum(sd.sub_total),
-              service_charge: sum(sd.service_charge),
-              gst_charge: sum(sd.gst_charge),
-              rounding: sum(sd.rounding)
-            }
+        discount_item_report_csv_content =
+          Repo.all(
+            from(
+              sd in BoatNoodle.BN.SalesPayment,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: s.salesid == sd.salesid,
+              left_join: di in BoatNoodle.BN.DiscountItem,
+              on: sd.discountid == di.discountitemsid,
+              left_join: d in BoatNoodle.BN.Discount,
+              on: d.discountid == di.discountid,
+              left_join: b in BoatNoodle.BN.Branch,
+              on: b.branchid == s.branchid,
+              left_join: br in BoatNoodle.BN.Brand,
+              on: br.id == sd.brand_id,
+              group_by: [s.salesdate, di.discitemsname, di.discountitemsid],
+              where:
+                s.is_void == 0 and sd.brand_id == ^brand.id and sd.discountid != "0" and
+                  di.brand_id == ^brand.id and d.brand_id == ^brand.id and s.brand_id == ^brand.id and
+                  b.brand_id == ^brand.id and br.id == ^brand.id and s.salesdate >= ^start_date and
+                  s.salesdate <= ^end_date,
+              select: %{
+                salesdate: s.salesdate,
+                discname: d.discname,
+                discitemsname: di.discitemsname,
+                qty: count(s.salesid),
+                discountitemsid: di.discountitemsid,
+                disctype: di.disctype,
+                grand_total: sum(sd.grand_total),
+                sub_total: sum(sd.sub_total),
+                service_charge: sum(sd.service_charge),
+                gst_charge: sum(sd.gst_charge),
+                rounding: sum(sd.rounding)
+              }
+            )
           )
-        )
+
+        s =
+          Repo.all(
+            from(
+              s in BoatNoodle.BN.Sales,
+              left_join: sp in BoatNoodle.BN.SalesPayment,
+              on: s.salesid == sp.salesid,
+              left_join: sm in BoatNoodle.BN.SalesMaster,
+              on: s.salesid == sm.salesid,
+              left_join: i in BoatNoodle.BN.DiscountItem,
+              on: sp.discountid == i.discountitemsid,
+              left_join: br in BoatNoodle.BN.Branch,
+              on: br.branchid == s.branchid,
+              left_join: g in BoatNoodle.BN.Brand,
+              on: g.id == ^brand.id,
+              group_by: [s.salesid],
+              where:
+                s.is_void == 0 and sp.discountid != "0" and s.salesdate >= ^params["start_date"] and
+                  s.salesdate <= ^params["end_date"] and s.brand_id == ^brand.id and
+                  sp.brand_id == ^brand.id and i.brand_id == ^brand.id and
+                  br.brand_id == ^brand.id,
+              select: %{
+                salesid: s.salesid,
+                itemname: sm.itemname,
+                itemid: sm.itemid
+              }
+            )
+          )
+
+        {discount_item_report_csv_content, s}
       end
 
     csv_content = [
