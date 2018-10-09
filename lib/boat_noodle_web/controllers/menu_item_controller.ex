@@ -331,7 +331,7 @@ defmodule BoatNoodleWeb.MenuItemController do
               left_join: c in ItemCat,
               on: c.itemcatid == s.itemcatid,
               where:
-                s.is_comboitem == ^0 and s.is_delete == ^0 and c.category_type != "COMBO" and
+                s.is_comboitem == ^0 and c.category_type != "COMBO" and
                   s.brand_id == ^BN.get_brand_id(conn),
               select: s.subcatid,
               order_by: [asc: s.subcatid]
