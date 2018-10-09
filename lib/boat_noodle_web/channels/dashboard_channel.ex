@@ -159,7 +159,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
           for item <- year do
             sales = Enum.filter(a, fn x -> x.salesdate.year == item end)
 
-            months = sales |> Enum.group_by(fn x -> x.salesdate.month end) |> Map.keys()
+            # months = sales |> Enum.group_by(fn x -> x.salesdate.month end) |> Map.keys()
+
+            months = 1..12
 
             for month <- months do
               sales = Enum.filter(a, fn x -> x.salesdate.month == month end)
@@ -179,18 +181,21 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   Enum.map(data, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
 
                 total_sales =
-                  Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+                  Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end)
+                  |> Enum.sum()
                   |> Float.round(2)
 
                 total_rounding =
                   Enum.map(data, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
 
                 total_taxes =
-                  Enum.map(data, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+                  Enum.map(data, fn x -> Decimal.to_float(x.gst) end)
+                  |> Enum.sum()
                   |> Float.round(2)
 
                 total_service_charge =
-                  Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end) |> Enum.sum()
+                  Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end)
+                  |> Enum.sum()
                   |> Float.round(2)
 
                 total_discount =
@@ -202,7 +207,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 %{
                   date: day,
-                  total_sales: total_sales - total_taxes,
+                  total_sales: total_sales - total_taxes - total_rounding - total_service_charge,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
@@ -269,7 +274,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   nett_sales =
-                    (grand_total - gst - rounding)
+                    (grand_total - gst - rounding - service_charge)
                     |> Number.Delimit.number_to_delimited()
 
                   roundings =
@@ -284,7 +289,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
                   transaction =
-                    Enum.map(item, fn x -> x.transaction end) |> Enum.sum()
+                    Enum.map(item, fn x -> x.transaction end)
+                    |> Enum.sum()
                     |> Number.Delimit.number_to_delimited()
 
                   %{
@@ -316,10 +322,11 @@ defmodule BoatNoodleWeb.DashboardChannel do
         discount = grand_total - (sub_total + gst + service_charge + rounding)
 
         d_nett_sales =
-          (grand_total - gst - rounding + rounding) |> Number.Delimit.number_to_delimited()
+          (grand_total - gst - rounding - service_charge) |> Number.Delimit.number_to_delimited()
 
         d_taxes =
-          Enum.map(a, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+          Enum.map(a, fn x -> Decimal.to_float(x.gst) end)
+          |> Enum.sum()
           |> Number.Delimit.number_to_delimited()
 
         d_pax =
@@ -637,7 +644,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
         top_10_selling_category =
           for item <- new_one do
             y =
-              item |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.y) end) |> Enum.sum()
+              item
+              |> elem(1)
+              |> Enum.map(fn x -> Decimal.to_float(x.y) end)
+              |> Enum.sum()
               |> Float.round(2)
 
             name = item |> elem(0)
@@ -726,7 +736,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
           for item <- year do
             sales = Enum.filter(a, fn x -> x.salesdate.year == item end)
 
-            months = sales |> Enum.group_by(fn x -> x.salesdate.month end) |> Map.keys()
+            # months = sales |> Enum.group_by(fn x -> x.salesdate.month end) |> Map.keys()
+
+            months = 1..12
 
             for month <- months do
               sales = Enum.filter(a, fn x -> x.salesdate.month == month end)
@@ -742,25 +754,31 @@ defmodule BoatNoodleWeb.DashboardChannel do
                 total_sub_total =
                   Enum.map(data, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
 
+                total_rounding =
+                  Enum.map(data, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
+
                 total_sales =
-                  Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+                  Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end)
+                  |> Enum.sum()
                   |> Float.round(2)
 
                 total_taxes =
-                  Enum.map(data, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+                  Enum.map(data, fn x -> Decimal.to_float(x.gst) end)
+                  |> Enum.sum()
                   |> Float.round(2)
 
                 total_discount = (total_after_disc - total_sub_total) |> Float.round(2)
 
                 total_service_charge =
-                  Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end) |> Enum.sum()
+                  Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end)
+                  |> Enum.sum()
                   |> Float.round(2)
 
                 total_transaction = Enum.map(data, fn x -> x.transaction end) |> Enum.sum()
 
                 %{
                   date: day,
-                  total_sales: total_sales - total_taxes,
+                  total_sales: total_sales - total_taxes - total_rounding - total_service_charge,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
@@ -828,7 +846,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   nett_sales =
-                    (grand_total - gst - rounding)
+                    (grand_total - gst - rounding - service_charge)
                     |> Number.Delimit.number_to_delimited()
 
                   roundings =
@@ -846,7 +864,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
                   transaction =
-                    Enum.map(item, fn x -> x.transaction end) |> Enum.sum()
+                    Enum.map(item, fn x -> x.transaction end)
+                    |> Enum.sum()
                     |> Number.Delimit.number_to_delimited()
 
                   %{
@@ -878,10 +897,11 @@ defmodule BoatNoodleWeb.DashboardChannel do
         discount = grand_total - (sub_total + gst + service_charge + rounding)
 
         d_nett_sales =
-          (grand_total - gst - rounding + rounding) |> Number.Delimit.number_to_delimited()
+          (grand_total - gst - rounding - service_charge) |> Number.Delimit.number_to_delimited()
 
         d_taxes =
-          Enum.map(a, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+          Enum.map(a, fn x -> Decimal.to_float(x.gst) end)
+          |> Enum.sum()
           |> Number.Delimit.number_to_delimited()
 
         d_pax =
@@ -1200,7 +1220,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
         top_10_selling_category =
           for item <- new_one do
             y =
-              item |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.y) end) |> Enum.sum()
+              item
+              |> elem(1)
+              |> Enum.map(fn x -> Decimal.to_float(x.y) end)
+              |> Enum.sum()
               |> Float.round(2)
 
             name = item |> elem(0)
@@ -1269,7 +1292,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
             data = item |> elem(1)
 
             grand_total =
-              Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+              Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end)
+              |> Enum.sum()
               |> Float.round(2)
 
             gst =
@@ -1311,7 +1335,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
             data = item |> elem(1)
 
             grand_total =
-              Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+              Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end)
+              |> Enum.sum()
               |> Float.round(2)
 
             gst =
