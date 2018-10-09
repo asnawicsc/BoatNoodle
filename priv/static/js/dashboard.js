@@ -318,7 +318,7 @@ $("div#transaction").html(transaction);
                 enabled: false
             },
             series: [{
-                name: 'Sales',
+                name: 'Nett Sales',
                 data: total_sales
             },
             {
