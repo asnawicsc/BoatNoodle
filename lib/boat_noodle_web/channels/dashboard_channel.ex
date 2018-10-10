@@ -207,10 +207,11 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 %{
                   date: day,
-                  total_sales: total_sales - total_taxes - total_rounding,
+                  total_sales: total_sales - total_taxes - total_rounding - total_service_charge,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
+                  total_rounding: total_rounding,
                   total_transaction: total_transaction
                 }
               end
@@ -247,7 +248,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   rounding =
                     Enum.map(item, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
 
-                  nett_sale = grand_total - gst - rounding
+                  nett_sale = grand_total - gst - rounding - service_charge
 
                   branchname = Enum.map(item, fn x -> x.branchname end) |> Enum.uniq() |> hd
 
@@ -274,7 +275,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   nett_sales =
-                    (grand_total - gst - rounding)
+                    (grand_total - gst - rounding - service_charge)
                     |> Number.Delimit.number_to_delimited()
 
                   roundings =
@@ -284,7 +285,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   total_sales =
-                    grand_total |> Float.round(2) |> Number.Delimit.number_to_delimited()
+                    (nett_sale + service_charge)
+                    |> Float.round(2)
+                    |> Number.Delimit.number_to_delimited()
 
                   pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
@@ -300,9 +303,9 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     gst: taxes,
                     discount: discounts,
                     nett_sales: nett_sales,
-                    roundings: roundings,
                     total_sales: total_sales,
                     pax: pax,
+                    roundings: roundings,
                     transaction: transaction
                   }
                 end
@@ -321,7 +324,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
         transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()
         discount = grand_total - (sub_total + gst + service_charge + rounding)
 
-        d_nett_sales = (grand_total - gst - rounding) |> Number.Delimit.number_to_delimited()
+        d_nett_sales =
+          (grand_total - gst - rounding - service_charge) |> Number.Delimit.number_to_delimited()
 
         d_taxes =
           Enum.map(a, fn x -> Decimal.to_float(x.gst) end)
@@ -777,11 +781,12 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 %{
                   date: day,
-                  total_sales: total_sales - total_taxes - total_rounding,
+                  total_sales: total_sales - total_taxes - total_rounding - total_service_charge,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
-                  total_transaction: total_transaction
+                  total_transaction: total_transaction,
+                  total_rounding: total_rounding
                 }
               end
             end
@@ -818,7 +823,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     Enum.map(item, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
 
                   discount = after_disc - sub_total
-                  nett_sale = sub_total + service_charge + discount
+                  nett_sale = grand_total - gst - rounding - service_charge
 
                   branchname = Enum.map(item, fn x -> x.branchname end) |> Enum.uniq() |> hd
 
@@ -845,7 +850,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   nett_sales =
-                    (grand_total - gst - rounding)
+                    (grand_total - gst - rounding - service_charge)
                     |> Number.Delimit.number_to_delimited()
 
                   roundings =
@@ -856,7 +861,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                   # (sub_total + service_charge + discount + rounding + gst) 
                   total_sales =
-                    grand_total
+                    (nett_sale + service_charge)
                     |> Float.round(2)
                     |> Number.Delimit.number_to_delimited()
 
@@ -874,10 +879,10 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     gst: taxes,
                     discount: discounts,
                     nett_sales: nett_sales,
-                    roundings: roundings,
                     total_sales: total_sales,
                     pax: pax,
-                    transaction: transaction
+                    transaction: transaction,
+                    roundings: roundings
                   }
                 end
               end
@@ -895,7 +900,8 @@ defmodule BoatNoodleWeb.DashboardChannel do
         transaction = Enum.map(a, fn x -> x.transaction end) |> Enum.sum()
         discount = grand_total - (sub_total + gst + service_charge + rounding)
 
-        d_nett_sales = (grand_total - gst - rounding) |> Number.Delimit.number_to_delimited()
+        d_nett_sales =
+          (grand_total - gst - rounding - service_charge) |> Number.Delimit.number_to_delimited()
 
         d_taxes =
           Enum.map(a, fn x -> Decimal.to_float(x.gst) end)
