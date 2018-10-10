@@ -245,9 +245,7 @@ $("div#transaction").html(transaction);
                  {
                    data: 'nett_sales'
                 },
-                 {
-                    data: 'roundings'
-                },
+                 
                  {
                     data: 'total_sales'
                 },
