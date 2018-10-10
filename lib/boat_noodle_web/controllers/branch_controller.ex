@@ -589,14 +589,22 @@ defmodule BoatNoodleWeb.BranchController do
       Repo.get_by(MenuCatalog, id: branch.menu_catalog, brand_id: BN.get_brand_id(conn))
 
     combo_items =
-      current_menu_catalog.items
-      |> String.split(",")
-      |> Enum.filter(fn x -> String.length(x) == 6 end)
+      if current_menu_catalog == nil do
+        []
+      else
+        current_menu_catalog.items
+        |> String.split(",")
+        |> Enum.filter(fn x -> String.length(x) == 6 end)
+      end
 
     items =
-      current_menu_catalog.items
-      |> String.split(",")
-      |> Enum.filter(fn x -> String.length(x) != 6 end)
+      if current_menu_catalog == nil do
+        []
+      else
+        current_menu_catalog.items
+        |> String.split(",")
+        |> Enum.filter(fn x -> String.length(x) != 6 end)
+      end
 
     all_item =
       Repo.all(

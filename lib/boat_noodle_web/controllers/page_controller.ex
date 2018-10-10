@@ -544,60 +544,23 @@ defmodule BoatNoodleWeb.PageController do
   end
 
   def experiment(conn, params) do
-    date_range = Date.range(Date.from_iso8601!("2018-08-01"), Date.from_iso8601!("2018-08-31"))
-    s_date = Date.from_iso8601!("2018-08-01")
-    e_date = Date.from_iso8601!("2018-08-31")
+    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
 
-    sm =
-      for date <- date_range do
-      end
+    new_path = image_path <> "/tag_item_data_12.csv"
 
-    datas =
-      Repo.all(
-        from(
-          s in Sales,
-          left_join: sm in SalesMaster,
-          on: sm.salesid == s.salesid,
-          left_join: is in ItemSubcat,
-          on: is.subcatid == sm.itemid,
-          left_join: ic in ItemCat,
-          on: is.itemcatid == ic.itemcatid,
-          where:
-            s.brand_id == ^BN.get_brand_id(conn) and s.salesdate >= ^s_date and
-              s.salesdate <= ^e_date and s.branchid == ^"31" and ic.category_type == ^"COMBO" and
-              is.brand_id == ^BN.get_brand_id(conn) and ic.brand_id == ^BN.get_brand_id(conn) and
-              s.is_void == ^0 and sm.is_void == ^0,
-          select: %{
-            salesid: s.salesid,
-            salesdate: s.salesdate,
-            itemname: sm.itemname,
-            itemcode: sm.itemcode,
-            itemid: sm.itemid,
-            catid: is.itemcatid,
-            category_type: ic.category_type,
-            combo_id: sm.combo_id,
-            qty: sm.qty
-          }
-        )
-      )
+    bin =
+      File.read!(new_path)
+      |> String.split("\n")
+      |> Enum.map(fn x -> String.split(x, ",") end)
 
-    data =
-      for data <- datas do
-        combo_qty_checker_stats("1", data.itemid, data.qty, data.salesid)
-      end
+    {header, data} = List.pop_at(bin, 0)
 
-    combos = data |> Enum.group_by(fn x -> x.name end) |> Map.keys()
-    combo_data = data |> Enum.group_by(fn x -> x.name end)
+    for line <- data do
+      [tagname, tagdesc, printer, subcatid] = line
+      IEx.pry()
+    end
 
-    data =
-      for combo <- combos do
-        data = combo_data[combo]
-
-        qty = Enum.map(data, fn x -> x.qty end) |> Enum.sum()
-        %{combo: combo, qty: qty}
-      end
-
-    render(conn, "experiment.html", data: data)
+    render(conn, "experiment.html", data: [])
   end
 
   def csv_content(conn, params) do
