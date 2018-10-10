@@ -640,10 +640,12 @@ defmodule BoatNoodleWeb.SalesController do
             on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: b.manager == st.staff_id,
             where:
               s.is_void == 0 and s.branchid == ^params["branch"] and s.salesdate >= ^start_d and
                 s.salesdate <= ^end_d and s.brand_id == ^brand_id and b.brand_id == ^brand_id and
-                sp.brand_id == ^brand_id,
+                sp.brand_id == ^brand_id and st.brand_id == ^brand_id,
             group_by: [s.salesdate, b.branchname],
             select: %{
               id: count(s.salesid),
@@ -656,7 +658,8 @@ defmodule BoatNoodleWeb.SalesController do
               after_disc: sum(sp.after_disc),
               transaction: count(s.salesid),
               sub_total: sum(sp.sub_total),
-              rounding: sum(sp.rounding)
+              rounding: sum(sp.rounding),
+              owner: st.staff_name
             }
           )
         )
@@ -668,10 +671,12 @@ defmodule BoatNoodleWeb.SalesController do
             on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
+            left_join: st in BoatNoodle.BN.Staff,
+            on: b.manager == st.staff_id,
             where:
               s.is_void == 0 and s.salesdate >= ^params["start_date"] and
                 s.salesdate <= ^params["end_date"] and sp.brand_id == ^brand_id and
-                b.brand_id == ^brand_id,
+                b.brand_id == ^brand_id and st.brand_id == ^brand_id,
             group_by: [s.salesdate, b.branchname],
             select: %{
               id: count(s.salesid),
@@ -684,7 +689,8 @@ defmodule BoatNoodleWeb.SalesController do
               after_disc: sum(sp.after_disc),
               transaction: count(s.salesid),
               sub_total: sum(sp.sub_total),
-              rounding: sum(sp.rounding)
+              rounding: sum(sp.rounding),
+              owner: st.staff_name
             }
           )
         )
@@ -710,7 +716,11 @@ defmodule BoatNoodleWeb.SalesController do
             Decimal.to_float(item.gst) + Decimal.to_float(item.rounding) -
             Decimal.to_float(item.grand_total)
 
-        after_disc = (sub_total - dis) |> Float.round(2)
+        after_disc = (sub_total - dis + rounding) |> Float.round(2)
+
+        nett_sales = grand_total - service_charge - gst_charge - rounding
+
+        total_sales = nett_sales + service_charge
 
         beforedisc =
           Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
@@ -726,23 +736,25 @@ defmodule BoatNoodleWeb.SalesController do
           gst_charge |> :erlang.float_to_binary(decimals: 2),
           service_charge |> :erlang.float_to_binary(decimals: 2),
           rounding |> :erlang.float_to_binary(decimals: 2),
-          grand_total |> :erlang.float_to_binary(decimals: 2),
-          item.branchname
+          total_sales |> :erlang.float_to_binary(decimals: 2),
+          item.branchname,
+          item.owner
         ]
       end
 
     csv_content = [
-      'Day ',
+      'Date ',
       'Pax',
       'Total Receipts',
-      'SubTotal',
+      'Gross Sales',
       'After Discount',
       'Discount Amount',
-      'GST',
+      'SST',
       'Service Charge',
       'Roundings',
       'Total',
-      'Branch Name'
+      'Branch Name',
+      'Branch Owner'
     ]
 
     csv_content =
@@ -2888,7 +2900,11 @@ defmodule BoatNoodleWeb.SalesController do
         'QTY',
         'GROSS AMT',
         'NETT AMT',
-        'BRANCH NAME'
+        'BRANCH NAME',
+        'PAYMENT TYPE',
+        'PAYMENT TYPE NAME',
+        'PAYMENT TYPE ID 1',
+        'PAYMENT CODE 1'
       ]
     ]
 
@@ -2905,12 +2921,14 @@ defmodule BoatNoodleWeb.SalesController do
             sd in BoatNoodle.BN.SalesMaster,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sd.salesid,
+            left_join: sp in BoatNoodle.BN.SalesPayment,
+            on: s.salesid == sp.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
               s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
                 b.brand_id == ^brand.id and s.is_void == ^0 and sd.is_void == ^0 and
-                s.branchid == ^branch_id,
+                s.branchid == ^branch_id and sp.brand_id == ^brand.id,
             select: %{
               salesdate: s.salesdate,
               salesdatetime: s.salesdatetime,
@@ -2919,7 +2937,11 @@ defmodule BoatNoodleWeb.SalesController do
               qty: sd.qty,
               gross_amt: sd.order_price,
               nett_amt: sd.afterdisc,
-              branchname: b.branchname
+              branchname: b.branchname,
+              payment_type: sp.payment_type,
+              payment_name1: sp.payment_name1,
+              payment_type_id1: sp.payment_type_id1,
+              payment_code1: sp.payment_code1
             },
             order_by: s.salesdatetime
           )
@@ -2930,11 +2952,14 @@ defmodule BoatNoodleWeb.SalesController do
             sd in BoatNoodle.BN.SalesMaster,
             left_join: s in BoatNoodle.BN.Sales,
             on: s.salesid == sd.salesid,
+            left_join: sp in BoatNoodle.BN.SalesPayment,
+            on: s.salesid == sp.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
               s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and s.is_void == ^0 and sd.is_void == ^0,
+                b.brand_id == ^brand.id and s.is_void == ^0 and sd.is_void == ^0 and
+                sp.brand_id == ^brand.id,
             select: %{
               salesdate: s.salesdate,
               salesdatetime: s.salesdatetime,
@@ -2943,7 +2968,11 @@ defmodule BoatNoodleWeb.SalesController do
               qty: sd.qty,
               gross_amt: sd.order_price,
               nett_amt: sd.afterdisc,
-              branchname: b.branchname
+              branchname: b.branchname,
+              payment_type: sp.payment_type,
+              payment_name1: sp.payment_name1,
+              payment_type_id1: sp.payment_type_id1,
+              payment_code1: sp.payment_code1
             },
             order_by: s.salesdatetime
           )
@@ -3023,7 +3052,11 @@ defmodule BoatNoodleWeb.SalesController do
       item.qty,
       item.gross_amt,
       item.nett_amt,
-      item.branchname
+      item.branchname,
+      item.payment_type,
+      item.payment_name1,
+      item.payment_type_id1,
+      item.payment_code1
     ]
   end
 
