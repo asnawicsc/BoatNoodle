@@ -131,9 +131,9 @@
                       </div>
                     </div>
 
-                    <% if @discount.is_visable == 0 do %>
 
                 </div>
+               
                  <div class="card-footer">
                                     <div class="mr-auto">
 
@@ -145,6 +145,7 @@
                                     </div>
                                     <div class="clearfix"></div>
                                 </div>
+                          
               </div>
                </form>
             </div>
