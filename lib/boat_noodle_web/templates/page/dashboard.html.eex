@@ -223,7 +223,7 @@
                  
                                     <th>Gross Sales</th>
                                     <th>Service Charge</th>
-                                    <th>GST</th>
+                                    <th>SST</th>
                                     <th>Discount Amt</th>
                                     <th>Nett Sales</th>
                                    <%#  <th>Roundings</th> %>

@@ -7,7 +7,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
   def combo_create(conn, params) do
     item_code =
-      Repo.get_by(ItemSubcat, %{itemcode: params["itemcode"], brand_id: BN.get_brand_id(conn)})
+      Repo.get_by(ItemSubcat, %{
+        itemcode: params["itemcode"],
+        brand_id: BN.get_brand_id(conn),
+        is_delete: 0,
+        is_activate: 1
+      })
 
     if item_code != nil do
       conn
@@ -792,14 +797,13 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       Repo.all(
         from(
           c in ItemSubcat,
-          where: c.brand_id==^BN.get_brand_id(conn),
+          where: c.brand_id == ^BN.get_brand_id(conn),
           select: %{
             price_code: c.price_code
           }
         )
       )
       |> Enum.uniq()
-
 
     render(
       conn,
@@ -1172,7 +1176,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   end
 
   def combo_show(conn, %{"subcatid" => id}) do
-
     id = String.to_integer(id)
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
 

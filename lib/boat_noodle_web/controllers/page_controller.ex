@@ -555,9 +555,113 @@ defmodule BoatNoodleWeb.PageController do
 
     {header, data} = List.pop_at(bin, 0)
 
+    known_items =
+      "1278,1361,1280,1281,1282,1283,1284,1286,1285,1287,1288,1362,1363,1364,1360,1290,1291,1292,1293,1294,1367,1368,1422,1370,1371,1372,1373,1374,1303,1304,1305,1306,1299,1300,1339,1426,1307,1308,1309,1424,1425,1423,1366,1343,1344,1345,1346,1349,1350,1351,1352,1353,1354,1355,1312,1313,1314,1315,1316,1317,1318,1333,1334,1335,1336,1440,1441,1442,1443,1444,1445,1446,1447,1448,1449,1450,1451,1452,1453,1454,1455,1456,1457,1458,1319,1320,1321,1322,1323,1324,1325,1337,1326,1327,1328,1329,1330,1331,1332,1338,1428,1429,1430,1431,1432,1433,1434,1435,1436,1437,1438,1439"
+      |> String.split(",")
+
     for line <- data do
-      [tagname, tagdesc, printer, subcatid] = line
-      IEx.pry()
+      [tagitemid, tagname, tagdesc, printer, subcatid] = line
+
+      tag =
+        Repo.get_by(
+          Tag,
+          brand_id: 12,
+          branch_id: 2,
+          tagname: tagname,
+          tagdesc: tagdesc,
+          printer: printer
+        )
+
+      {:ok, tag} =
+        if tag == nil do
+          Tag.changeset(
+            %Tag{},
+            %{brand_id: 12, branch_id: 2, tagname: tagname, tagdesc: tagdesc, printer: printer},
+            0,
+            "new"
+          )
+          |> Repo.insert()
+        else
+          {:ok, tag}
+        end
+
+      # create the tag first
+
+      # find the subcat
+      if String.length(subcatid) == 9 do
+        no =
+          subcatid
+          |> String.split("")
+          |> Enum.reject(fn x -> x == "" end)
+          |> Enum.reverse()
+          |> Enum.take(3)
+          |> Enum.reverse()
+          |> List.insert_at(0, "1")
+          |> Enum.join()
+          |> String.to_integer()
+
+        new_subcatid = (no - 1000) |> Integer.to_string()
+
+        subcat = Repo.get_by(ItemSubcat, brand_id: 12, subcatid: new_subcatid)
+
+        {:ok, subcat} =
+          if subcat.printer == "" or subcat.printer == nil do
+            ItemSubcat.changeset(subcat, %{tagdesc: tagdesc, printer: printer}, "0", "Update")
+            |> Repo.update()
+          else
+            {:ok, subcat}
+          end
+
+        combo_item_ids =
+          tag.combo_item_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end)
+
+        new_combo_item_ids =
+          List.insert_at(combo_item_ids, 0, subcatid)
+          |> Enum.sort()
+          |> Enum.uniq()
+          |> Enum.join(",")
+          |> String.trim_trailing(",")
+
+        Tag.changeset(
+          tag,
+          %{combo_item_ids: new_combo_item_ids},
+          0,
+          "Update"
+        )
+        |> Repo.update()
+      else
+        subcat = Repo.get_by(ItemSubcat, brand_id: 12, subcatid: subcatid)
+        # assign the logical physical printer
+        {:ok, subcat} =
+          ItemSubcat.changeset(subcat, %{tagdesc: tagdesc, printer: printer}, "0", "Update")
+          |> Repo.update()
+
+        subcat_ids = tag.subcat_ids |> String.split(",") |> Enum.reject(fn x -> x == "" end)
+
+        new_subcat_ids =
+          List.insert_at(subcat_ids, 0, subcatid) |> Enum.sort() |> Enum.uniq() |> Enum.join(",")
+          |> String.trim_trailing(",")
+
+        tag =
+          Repo.get_by(
+            Tag,
+            brand_id: 12,
+            branch_id: 2,
+            tagname: tagname,
+            tagdesc: tagdesc,
+            printer: printer
+          )
+
+        Tag.changeset(
+          tag,
+          %{subcat_ids: new_subcat_ids},
+          0,
+          "Update"
+        )
+        |> Repo.update()
+      end
+
+      # insert into a list and then 
     end
 
     render(conn, "experiment.html", data: [])
