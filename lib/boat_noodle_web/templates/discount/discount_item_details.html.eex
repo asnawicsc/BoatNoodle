@@ -114,7 +114,7 @@
             <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Target Items</label>
             <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" multiple="multiple" id="target_item2" name="is_targetmenuitems[]" data-size="7">
 
-                                           
+                                        
                                           <%= for item <- @item_subcat  |> Enum.sort_by(fn x -> x.itemname end ) do %>
                                     
                                          

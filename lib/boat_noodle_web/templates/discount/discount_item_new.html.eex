@@ -165,7 +165,7 @@
         <div class="row justify-content-left">
           <div class="col-sm-5" id="target_item">
             <label>Target Items</label>
-            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" data-size="7">
+            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
                                            
                                            <%= for item <- @item_subcat |> Enum.sort() do %>
                                              <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
@@ -192,7 +192,7 @@
           </div>
           <div class="col-sm-4" id="target_item">
             <label>Pre-requisite Items</label>
-            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple" title="Pre-requisite Item" data-size="7">
+            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple" title="Pre-requisite Item" name="prerequisite_items[]" data-size="7">
                                            
                                            <%= for item <- @item_subcat |> Enum.sort() do %>
                                              <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
@@ -303,11 +303,23 @@
   </div>
 </form>
 
+
+
 <script type="text/javascript">
-  var multiselect = $('#target_items').val();
-  $("input[name='item[target_items]']").val(multiselect)
-  var multiselect2 = $('#prerequisite_items').val();
-  $("input[name='item[prerequisite_items]']").val(multiselect2)
+
+    $('select[name="target_items[]"]').on('hidden.bs.select', function(e) {
+      var multiselect = $('#target_items').val();
+      $("input[name='item[target_items]']").val(multiselect);
+    });
+
+
+    $('select[name="prerequisite_items[]"]').on('hidden.bs.select', function(e) {
+      var multiselect2 = $('#prerequisite_items').val();
+      $("input[name='item[prerequisite_items]']").val(multiselect2);
+    });
+
+
+
   $("#discount_category").hide();
   $("#discount_percentage").hide();
   $("#discount_quantity").hide();
