@@ -5,7 +5,7 @@ defmodule BoatNoodleWeb.ItemCatController do
   alias BoatNoodle.BN.ItemCat
 
   def index(conn, _params) do
-    itemcat = BN.list_itemcat()
+    itemcat = BN.list_itemcat() |> Enum.filter(fn x -> x.brand_id == BN.get_bran_id(conn) end)
     render(conn, "index.html", itemcat: itemcat)
   end
 
