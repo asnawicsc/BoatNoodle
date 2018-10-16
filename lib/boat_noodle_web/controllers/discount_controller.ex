@@ -374,7 +374,7 @@ defmodule BoatNoodleWeb.DiscountController do
       Repo.all(
         from(
           b in BoatNoodle.BN.ItemSubcat,
-          where: b.brand_id == ^brand,
+          where: b.brand_id == ^brand and b.is_activate == ^1 and b.is_delete == ^0,
           select: %{
             subcatid: b.subcatid,
             itemname: b.itemname,
@@ -388,7 +388,7 @@ defmodule BoatNoodleWeb.DiscountController do
       Repo.all(
         from(
           s in BoatNoodle.BN.ItemCat,
-          where: s.brand_id == ^brand,
+          where: s.brand_id == ^brand and s.is_delete == ^0 and s.visable == ^1,
           select: %{id: s.itemcatid, name: s.itemcatname}
         )
       )

@@ -3619,46 +3619,7 @@ defmodule BoatNoodleWeb.SalesController do
       |> to_string
   end
 
-  def upload_voucher(conn, params) do
-    discountid = params["disc_cat"] |> String.to_integer()
-    file = params["item_subcat"]["file"]
-
-    {:ok, binary} = File.read(params["item_subcat"]["file"].path)
-
-    Task.start_link(__MODULE__, :upload_voucher, [binary, conn, params])
-
-    conn
-    |> put_flash(:info, "Discount updated successfully.")
-    |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
-  end
-
-  def upload_voucher(binary, conn, params) do
-    voucher_codes = binary |> String.split("\n")
-
-    disc_cat =
-      Repo.get_by(Discount, discountid: params["disc_cat"], brand_id: BN.get_brand_id(conn))
-
-    name = disc_cat.discname
-
-    for voucher_code <- voucher_codes do
-      case Voucher.changeset(%Voucher{}, %{
-             code_number: voucher_code,
-             discount_name: name,
-             brand_id: BN.get_brand_id(conn)
-           })
-           |> Repo.insert() do
-        {:ok, voucher} ->
-          IO.inspect(voucher)
-
-        {:error, %Ecto.Changeset{} = changeset} ->
-          IO.inspect(changeset)
-      end
-    end
-  end
-
   def discount_item_detail_report_csv(conn, params) do
-    Task.start_link(__MODULE__, :discount_item_detail_report_csv_content, [conn, params])
-
     conn
     |> put_resp_content_type("text/csv")
     |> put_resp_header(
@@ -3787,7 +3748,12 @@ defmodule BoatNoodleWeb.SalesController do
 
     data =
       for item <- discount_item_detail_report_csv do
-        unit_price = Decimal.to_float(item.itemprice) / item.qty
+        unit_price =
+          if Decimal.to_float(item.itemprice) == 0.00 do
+            0.00
+          else
+            Decimal.to_float(item.itemprice) / item.qty
+          end
 
         after_disc = Decimal.to_float(item.afterdisc)
 
