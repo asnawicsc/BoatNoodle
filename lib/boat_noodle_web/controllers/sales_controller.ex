@@ -640,13 +640,11 @@ defmodule BoatNoodleWeb.SalesController do
             on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: b.manager == st.staff_id,
             where:
               s.is_void == 0 and s.branchid == ^params["branch"] and s.salesdate >= ^start_d and
                 s.salesdate <= ^end_d and s.brand_id == ^brand_id and b.brand_id == ^brand_id and
-                sp.brand_id == ^brand_id and st.brand_id == ^brand_id,
-            group_by: [s.salesdate, b.branchname, st.staff_name],
+                sp.brand_id == ^brand_id,
+            group_by: [s.salesdate, b.branchname],
             select: %{
               id: count(s.salesid),
               salesdate: s.salesdate,
@@ -659,7 +657,7 @@ defmodule BoatNoodleWeb.SalesController do
               transaction: count(s.salesid),
               sub_total: sum(sp.sub_total),
               rounding: sum(sp.rounding),
-              owner: st.staff_name
+              owner: b.manager
             }
           )
         )
@@ -671,13 +669,10 @@ defmodule BoatNoodleWeb.SalesController do
             on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: b.manager == st.staff_id,
             where:
               s.is_void == 0 and s.salesdate >= ^start_d and s.salesdate <= ^end_d and
-                sp.brand_id == ^brand_id and b.brand_id == ^brand_id and st.brand_id == ^brand_id and
-                s.brand_id == ^brand_id,
-            group_by: [s.salesdate, b.branchname, st.staff_name],
+                sp.brand_id == ^brand_id and b.brand_id == ^brand_id and s.brand_id == ^brand_id,
+            group_by: [s.salesdate, b.branchname],
             select: %{
               id: count(s.salesid),
               salesdate: s.salesdate,
@@ -690,11 +685,23 @@ defmodule BoatNoodleWeb.SalesController do
               transaction: count(s.salesid),
               sub_total: sum(sp.sub_total),
               rounding: sum(sp.rounding),
-              owner: st.staff_name
+              owner: b.manager
             }
           )
         )
       end
+
+    staffs =
+      Repo.all(
+        from(
+          cd in Staff,
+          where: cd.brand_id == ^brand.id,
+          select: %{
+            staff_id: cd.staff_id,
+            staff_name: cd.staff_name
+          }
+        )
+      )
 
     data =
       for item <- all do
@@ -738,7 +745,7 @@ defmodule BoatNoodleWeb.SalesController do
           rounding |> :erlang.float_to_binary(decimals: 2),
           total_sales |> :erlang.float_to_binary(decimals: 2),
           item.branchname,
-          item.owner
+          manager(item.owner, staffs)
         ]
       end
 
