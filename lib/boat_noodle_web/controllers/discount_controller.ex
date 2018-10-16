@@ -483,7 +483,7 @@ defmodule BoatNoodleWeb.DiscountController do
 
     pre_req_item =
       if count2 > 1 do
-        item["prerequisite_items"] |> String.split(",")
+        item["prerequisite_items"]
       else
         ""
       end
