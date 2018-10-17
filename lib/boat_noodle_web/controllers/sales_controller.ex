@@ -646,7 +646,7 @@ defmodule BoatNoodleWeb.SalesController do
               s.is_void == 0 and s.branchid == ^params["branch"] and s.salesdate >= ^start_d and
                 s.salesdate <= ^end_d and s.brand_id == ^brand_id and b.brand_id == ^brand_id and
                 sp.brand_id == ^brand_id and st.brand_id == ^brand_id,
-            group_by: [s.salesdate, b.branchname],
+            group_by: [s.salesdate, b.branchname, st.staff_name],
             select: %{
               id: count(s.salesid),
               salesdate: s.salesdate,
@@ -674,10 +674,10 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: st in BoatNoodle.BN.Staff,
             on: b.manager == st.staff_id,
             where:
-              s.is_void == 0 and s.salesdate >= ^params["start_date"] and
-                s.salesdate <= ^params["end_date"] and sp.brand_id == ^brand_id and
-                b.brand_id == ^brand_id and st.brand_id == ^brand_id,
-            group_by: [s.salesdate, b.branchname],
+              s.is_void == 0 and s.salesdate >= ^start_d and s.salesdate <= ^end_d and
+                sp.brand_id == ^brand_id and b.brand_id == ^brand_id and st.brand_id == ^brand_id and
+                s.brand_id == ^brand_id,
+            group_by: [s.salesdate, b.branchname, st.staff_name],
             select: %{
               id: count(s.salesid),
               salesdate: s.salesdate,
@@ -2334,8 +2334,6 @@ defmodule BoatNoodleWeb.SalesController do
             on: s.salesid == sd.salesid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: st.staff_id == b.manager,
             group_by: [s.salesdate, b.branchname, sd.itemid],
             where:
               s.salesdate >= ^start_date and s.salesdate <= ^end_date and s.brand_id == ^brand.id and
@@ -2842,9 +2840,9 @@ defmodule BoatNoodleWeb.SalesController do
 
         if Decimal.to_float(gross_sales) != (qty |> Decimal.to_float()) * top_up do
           # IEx.pry()
-          Decimal.to_float(gross_sales) + Decimal.to_float(qty) * unit_price
+          Decimal.to_float(qty) * unit_price + Decimal.to_float(gross_sales)
         else
-          res = Decimal.to_float(qty) * (unit_price + top_up)
+          Decimal.to_float(qty) * (unit_price + top_up)
         end
       else
         0
