@@ -3471,13 +3471,17 @@ defmodule BoatNoodleWeb.SalesController do
               on: d.discountid == di.discountid,
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
-              left_join: br in BoatNoodle.BN.Brand,
-              on: br.id == sd.brand_id,
-              group_by: [s.salesdate, di.discitemsname, di.discountitemsid],
+              group_by: [
+                s.salesdate,
+                d.discname,
+                di.disctype,
+                di.discitemsname,
+                di.discountitemsid
+              ],
               where:
                 s.is_void == 0 and sd.discountid != "0" and sd.brand_id == ^brand.id and
                   di.brand_id == ^brand.id and d.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                  b.brand_id == ^brand.id and br.id == ^brand.id and s.branchid == ^branch_id and
+                  b.brand_id == ^brand.id and s.branchid == ^branch_id and
                   s.salesdate >= ^start_date and s.salesdate <= ^end_date,
               select: %{
                 salesdate: s.salesdate,
@@ -3508,13 +3512,11 @@ defmodule BoatNoodleWeb.SalesController do
               on: sp.discountid == i.discountitemsid,
               left_join: br in BoatNoodle.BN.Branch,
               on: br.branchid == s.branchid,
-              left_join: g in BoatNoodle.BN.Brand,
-              on: g.id == ^brand.id,
               group_by: [s.salesid],
               where:
-                s.is_void == 0 and sp.discountid != "0" and br.branchid == ^branch_id and
-                  s.salesdate >= ^params["start_date"] and s.salesdate <= ^params["end_date"] and
-                  s.brand_id == ^brand.id and sp.brand_id == ^brand.id and i.brand_id == ^brand.id and
+                s.is_void == 0 and sp.discountid != "0" and s.salesdate >= ^params["start_date"] and
+                  s.salesdate <= ^params["end_date"] and s.brand_id == ^brand.id and
+                  sp.brand_id == ^brand.id and i.brand_id == ^brand.id and
                   br.brand_id == ^brand.id,
               select: %{
                 salesid: s.salesid,
@@ -3538,13 +3540,17 @@ defmodule BoatNoodleWeb.SalesController do
               on: d.discountid == di.discountid,
               left_join: b in BoatNoodle.BN.Branch,
               on: b.branchid == s.branchid,
-              left_join: br in BoatNoodle.BN.Brand,
-              on: br.id == sd.brand_id,
-              group_by: [s.salesdate, di.discitemsname, di.discountitemsid],
+              group_by: [
+                s.salesdate,
+                d.discname,
+                di.disctype,
+                di.discitemsname,
+                di.discountitemsid
+              ],
               where:
                 s.is_void == 0 and sd.brand_id == ^brand.id and sd.discountid != "0" and
                   di.brand_id == ^brand.id and d.brand_id == ^brand.id and s.brand_id == ^brand.id and
-                  b.brand_id == ^brand.id and br.id == ^brand.id and s.salesdate >= ^start_date and
+                  b.brand_id == ^brand.id and s.salesdate >= ^start_date and
                   s.salesdate <= ^end_date,
               select: %{
                 salesdate: s.salesdate,
@@ -3624,17 +3630,17 @@ defmodule BoatNoodleWeb.SalesController do
       |> to_string
   end
 
-  def discount_item_detail_report_csv(conn, params) do
-    conn
-    |> put_resp_content_type("text/csv")
-    |> put_resp_header(
-      "content-disposition",
-      "attachment; filename=\"Discount Item Detail Report.csv\""
-    )
-    |> send_resp(200, discount_item_detail_report_csv_content(conn, params))
-  end
+  # def discount_item_detail_report_csv(conn, params) do
+  #   conn
+  #   |> put_resp_content_type("text/csv")
+  #   |> put_resp_header(
+  #     "content-disposition",
+  #     "attachment; filename=\"Discount Item Detail Report.csv\""
+  #   )
+  #   |> send_resp(200, discount_item_detail_report_csv_content(conn, params))
+  # end
 
-  defp discount_item_detail_report_csv_content(conn, params) do
+  def discount_item_detail_report_csv(conn, params) do
     branch_id = params["branch"]
     brand = params["brand"]
     brand = Repo.get_by(Brand, domain_name: brand)
@@ -3652,37 +3658,30 @@ defmodule BoatNoodleWeb.SalesController do
             on: sp.salesid == s.salesid,
             left_join: di in BoatNoodle.BN.DiscountItem,
             on: di.discountitemsid == sp.discountid,
-            left_join: d in BoatNoodle.BN.Discount,
-            on: d.discountid == di.discountid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: sd.itemid == i.subcatid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: st.staff_id == s.staffid,
-            left_join: br in BoatNoodle.BN.Brand,
-            on: br.id == sd.brand_id,
             where:
-              s.is_void == 0 and i.brand_id == ^brand.id and sd.brand_id == ^brand.id and
-                di.brand_id == ^brand.id and s.brand_id == ^brand.id and st.brand_id == ^brand.id and
-                d.brand_id == ^brand.id and b.brand_id == ^brand.id and br.id == ^brand.id and
-                sp.brand_id == ^brand.id and st.brand_id == ^brand.id and s.branchid == ^branch_id and
+              s.is_void == 0 and sd.is_void == 0 and sp.discountid != "0" and
+                s.brand_id == ^brand.id and sd.brand_id == ^brand.id and di.brand_id == ^brand.id and
+                sp.brand_id == ^brand.id and b.brand_id == ^brand.id and s.branchid == ^branch_id and
                 s.salesdate >= ^start_date and s.salesdate <= ^end_date,
             select: %{
               salesdate: s.salesdate,
               invoiceno: s.invoiceno,
-              itemcode: i.itemcode,
-              itemname: i.itemname,
-              qty: sd.qty,
-              afterdisc: sd.afterdisc,
-              itemprice: sd.order_price,
-              discname: d.discname,
+              salesid: s.salesid,
+              itemcode: sd.itemcode,
+              itemname: sd.itemname,
               discitemsname: di.discitemsname,
               disamtpercentage: di.discamtpercentage,
               disctype: di.disctype,
+              discountid: di.discountid,
+              qty: sd.qty,
+              afterdisc: sd.afterdisc,
+              itemprice: sd.order_price,
               tbl_no: s.tbl_no,
-              staff_name: st.staff_name,
+              staffid: s.staffid,
               branchname: b.branchname,
+              branchid: b.branchid,
               voucher_code: sp.voucher_code
             }
           )
@@ -3697,101 +3696,233 @@ defmodule BoatNoodleWeb.SalesController do
             on: sp.salesid == s.salesid,
             left_join: di in BoatNoodle.BN.DiscountItem,
             on: di.discountitemsid == sp.discountid,
-            left_join: d in BoatNoodle.BN.Discount,
-            on: d.discountid == di.discountid,
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
-            left_join: i in BoatNoodle.BN.ItemSubcat,
-            on: sd.itemid == i.subcatid,
-            left_join: st in BoatNoodle.BN.Staff,
-            on: st.staff_id == s.staffid,
-            left_join: br in BoatNoodle.BN.Brand,
-            on: br.id == sd.brand_id,
             where:
-              s.is_void == 0 and s.brand_id == ^brand.id and sd.brand_id == ^brand.id and
-                sp.brand_id == ^brand.id and di.brand_id == ^brand.id and d.brand_id == ^brand.id and
-                b.brand_id == ^brand.id and i.brand_id == ^brand.id and st.brand_id == ^brand.id and
-                br.id == ^brand.id and sp.brand_id == ^brand.id and s.salesdate >= ^start_date and
-                s.salesdate <= ^end_date,
+              s.is_void == 0 and sd.is_void == 0 and sp.discountid != "0" and
+                s.brand_id == ^brand.id and sd.brand_id == ^brand.id and di.brand_id == ^brand.id and
+                sp.brand_id == ^brand.id and b.brand_id == ^brand.id and
+                s.salesdate >= ^start_date and s.salesdate <= ^end_date,
             select: %{
               salesdate: s.salesdate,
               invoiceno: s.invoiceno,
-              itemcode: i.itemcode,
-              itemname: i.itemname,
+              salesid: s.salesid,
+              itemcode: sd.itemcode,
+              itemname: sd.itemname,
+              discitemsname: di.discitemsname,
+              disamtpercentage: di.discamtpercentage,
+              disctype: di.disctype,
+              discountid: di.discountid,
               qty: sd.qty,
               afterdisc: sd.afterdisc,
-              discname: d.discname,
-              disamtpercentage: di.discamtpercentage,
               itemprice: sd.order_price,
-              disctype: di.disctype,
-              discitemsname: di.discitemsname,
               tbl_no: s.tbl_no,
-              staff_name: st.staff_name,
+              staffid: s.staffid,
               branchname: b.branchname,
+              branchid: b.branchid,
               voucher_code: sp.voucher_code
             }
           )
         )
       end
 
-    csv_content = [
-      'Date ',
-      'Invoice No',
-      'Item Code',
-      'Item Name',
-      'Quantity',
-      'Unit Price',
-      'Price Before Discount',
-      'Discount Amount',
-      'Discount Name',
-      'Discount Item Name',
-      'Table No',
-      'Staff Name',
-      'Branch Name ',
-      'Voucher Code'
-    ]
+    # discount_item =
+    #   Repo.all(
+    #     from(
+    #       di in DiscountItem,
+    #       where: di.brand_id == ^brand.id,
+    #       select: %{
+    #         discountid: di.discountid,
+    #         discamtpercentage: di.discamtpercentage,
+    #         disctype: di.disctype,
+    #         discitemsname: di.discitemsname
+    #       }
+    #     )
+    #   )
 
-    data =
-      for item <- discount_item_detail_report_csv do
-        unit_price =
-          if Decimal.to_float(item.itemprice) == 0.00 do
-            0.00
-          else
-            Decimal.to_float(item.itemprice) / item.qty
-          end
+    staffs =
+      Repo.all(
+        from(
+          cd in Staff,
+          where: cd.brand_id == ^brand.id,
+          select: %{
+            staff_id: cd.staff_id,
+            staff_name: cd.staff_name
+          }
+        )
+      )
 
-        after_disc = Decimal.to_float(item.afterdisc)
+    discount =
+      Repo.all(
+        from(
+          d in Discount,
+          where: d.brand_id == ^brand.id,
+          select: %{
+            discountid: d.discountid,
+            discname: d.discname
+          }
+        )
+      )
 
-        discount_amount =
-          if item.disctype == "VOUCHER" do
-            Decimal.to_float(item.disamtpercentage)
-          else
-            Decimal.to_float(item.itemprice) - after_disc
-          end
+    salesdetail =
+      Repo.all(
+        from(
+          s in Sales,
+          left_join: sd in SalesMaster,
+          on: s.salesid == sd.salesid,
+          where:
+            s.is_void == 0 and sd.is_void == 0 and s.brand_id == ^brand.id and
+              sd.brand_id == ^brand.id and s.salesdate >= ^start_date and s.salesdate <= ^end_date,
+          group_by: sd.salesid,
+          select: %{
+            total: count(sd.salesid),
+            salesid: sd.salesid
+          }
+        )
+      )
 
-        [
-          item.salesdate,
-          item.invoiceno,
-          item.itemcode,
-          item.itemname,
-          item.qty,
-          unit_price |> :erlang.float_to_binary(decimals: 2),
-          item.itemprice,
-          discount_amount |> :erlang.float_to_binary(decimals: 2),
-          item.discname,
-          item.discitemsname,
-          item.tbl_no,
-          item.staff_name,
-          item.branchname,
-          item.voucher_code
-        ]
+    name =
+      if branch_id != "0" do
+        b = Repo.get_by(Branch, brand_id: brand.id, branchid: branch_id)
+        b.branchname
+      else
+        "ALL"
       end
 
-    csv_content2 =
-      List.insert_at(data, 0, csv_content)
-      |> CSV.encode()
-      |> Enum.to_list()
-      |> to_string
+    csv_header = [
+      [
+        'Date ',
+        'Invoice No',
+        'Item Code',
+        'Item Name',
+        'Quantity',
+        'Unit Price',
+        'Price Before Discount',
+        'Discount Amount',
+        'Discount Name',
+        'Discount Item Name',
+        'Staff Name',
+        'Table No',
+        'Branch Name ',
+        'Voucher Code'
+      ]
+    ]
+
+    discount_item_detail_report_csv
+    |> Stream.map(fn x ->
+      discount_item_detail_report_csv_contant(x, conn, params, discount, salesdetail, staffs)
+    end)
+    |> (fn stream -> Stream.concat(csv_header, stream) end).()
+    |> CSV.encode()
+    |> Enum.into(
+      conn
+      |> put_resp_content_type("application/csv")
+      |> put_resp_header(
+        "content-disposition",
+        "attachment; filename=\"Discount Item Detail Report - #{name}.csv\""
+      )
+      |> send_chunked(200)
+    )
+  end
+
+  defp discount_item_detail_report_csv_contant(
+         x,
+         conn,
+         params,
+         discount,
+         salesdetail,
+         staffs
+       ) do
+    # disctype = discount_type(item.discountid, discount_item)
+    # discamtpercentage = discount_amount(item.discountid, discount_item)
+
+    unit_price =
+      if Decimal.to_float(x.itemprice) == 0.00 do
+        0.00
+      else
+        Decimal.to_float(x.itemprice) / x.qty
+      end
+
+    discount_amount =
+      if x.disctype == "VOUCHER" do
+        qty = qty_lookoup(salesdetail, x.salesid)
+
+        Decimal.to_float(x.disamtpercentage) / qty
+      else
+        Decimal.to_float(x.itemprice) - Decimal.to_float(x.afterdisc)
+      end
+
+    [
+      x.salesdate,
+      x.invoiceno,
+      x.itemcode,
+      x.itemname,
+      x.qty,
+      unit_price,
+      x.itemprice,
+      discount_amount |> :erlang.float_to_binary(decimals: 2),
+      discount_name(x.discountid, discount),
+      x.discitemsname,
+      staff_name(x.staffid, staffs),
+      x.tbl_no,
+      x.branchname,
+      x.voucher_code
+    ]
+  end
+
+  def qty_lookoup(salesdetail, salesid) do
+    a = salesdetail |> Enum.filter(fn x -> x.salesid == salesid end) |> hd
+    a.total
+  end
+
+  def staff_name(staffid, staffs) do
+    a = staffs |> Enum.filter(fn x -> x.staff_id == String.to_integer(staffid) end)
+
+    if a != [] do
+      hd(a).staff_name
+    else
+      "Unknown Staff"
+    end
+  end
+
+  def discount_name(discountid, discounts) do
+    a = discounts |> Enum.filter(fn x -> x.discountid == discountid end)
+
+    if a != [] do
+      hd(a).discname
+    else
+      "Unknown Discount"
+    end
+  end
+
+  def discount_item_name(discountid, discount_item) do
+    a = discount_item |> Enum.filter(fn x -> x.discountid == String.to_integer(discountid) end)
+
+    if a != [] do
+      hd(a).discitemsname
+    else
+      "Unknown Discount Item"
+    end
+  end
+
+  def discount_type(discountid, discount_item) do
+    a = discount_item |> Enum.filter(fn x -> x.discountid == String.to_integer(discountid) end)
+
+    if a != [] do
+      hd(a).disctype
+    else
+      "Unknown Discount Type"
+    end
+  end
+
+  def discount_amount(discountid, discount_item) do
+    a = discount_item |> Enum.filter(fn x -> x.discountid == String.to_integer(discountid) end)
+
+    if a != [] do
+      hd(a).discamtpercentage
+    else
+      "Unknown Discount Amount"
+    end
   end
 
   def sales_chart(conn, params) do

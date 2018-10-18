@@ -27,10 +27,10 @@ config :boat_noodle, BoatNoodle.Repo,
 
 config :boat_noodle, BoatNoodle.RepoGeop,
   adapter: Ecto.Adapters.MySQL,
-  hostname: "pos.geopbyteapp.com",
+  hostname: "chillchill.geopbyteapp.com",
   port: "3306",
-  username: "posgb_user",
+  username: "chillchi_user",
   password: "!@#000",
-  database: "posgb_boatnoodle",
+  database: "chillchi_db",
   pool_size: 10,
   timeout: 1500_000
