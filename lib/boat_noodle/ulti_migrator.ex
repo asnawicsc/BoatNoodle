@@ -1188,10 +1188,9 @@ defmodule BoatNoodle.UltiMigrator do
 
     for salesid <- salesids do
       # check sales exist
+      v1sp = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 2, salesid: salesid)
 
-      v1sp = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
-
-      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 2, salesid: salesid)
 
       cg =
         BoatNoodle.BN.SalesPayment.changeset(v2sp, %{

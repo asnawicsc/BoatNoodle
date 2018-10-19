@@ -495,6 +495,13 @@ defmodule BoatNoodleWeb.DiscountController do
         0
       end
 
+    is_force_apply =
+      if item["is_force_apply"] == "on" do
+        1
+      else
+        0
+      end
+
     min_spend = item["minimum_spend"]
 
     discount_items_params = %{
@@ -508,6 +515,7 @@ defmodule BoatNoodleWeb.DiscountController do
       multi_item_list: multi_item_list,
       is_targetmenuitems: is_targetmenuitems,
       is_visable: is_visable,
+      is_force_apply: is_force_apply,
       min_spend: min_spend,
       brand_id: BN.get_brand_id(conn),
       pre_req_item: pre_req_item
@@ -667,6 +675,7 @@ defmodule BoatNoodleWeb.DiscountController do
             is_targetmenuitems: s.is_targetmenuitems,
             multi_item_list: s.multi_item_list,
             is_visable: s.is_visable,
+            is_force_apply: s.is_force_apply,
             min_spend: s.min_spend,
             target_cat: s.target_cat,
             itemcatname: b.itemcatname,
@@ -827,6 +836,13 @@ defmodule BoatNoodleWeb.DiscountController do
         0
       end
 
+    is_force_apply =
+      if params["is_force_apply"] == "on" do
+        1
+      else
+        0
+      end
+
     {is_targetmenuitems, multi_item_list} =
       if params["is_targetmenuitems"] == nil do
         is_targetmenuitems = 0
@@ -889,6 +905,7 @@ defmodule BoatNoodleWeb.DiscountController do
       target_cat: target_cat,
       multi_item_list: multi_item_list,
       is_visable: is_visable,
+      is_force_apply: is_force_apply,
       min_spend: min_spend,
       pre_req_item: pre_req_item
     }

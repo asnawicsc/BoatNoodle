@@ -205,6 +205,25 @@
                           </label>
             </div>
           </div>
+                    <div class="col-sm-3">
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+
+                             <%= if  @discount_a.is_force_apply == 0  do   %>
+                   
+                               <input class="form-check-input"  type="checkbox" name="is_force_apply" > Is Force Apply?
+                          <% else %>
+                        
+                             <input class="form-check-input"  type="checkbox" name="is_force_apply" checked="checked" > Is Force Apply?
+
+                          <% end %> 
+                           
+                            <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                          </label>
+            </div>
+          </div>
         </div>
 
       </div>

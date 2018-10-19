@@ -21,7 +21,7 @@ defmodule BoatNoodle.BN.DiscountItem do
     field(:multi_item_list, :string, default: "")
     field(:pre_req_item, :string, default: "")
     field(:min_order, :integer)
-    field(:is_force_apply, :boolean, default: false)
+    field(:is_force_apply, :integer, default: 0)
     field(:is_oc, :integer, default: 0)
     field(:brand_id, :integer, primary_key: true)
   end
