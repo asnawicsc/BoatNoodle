@@ -497,9 +497,9 @@ defmodule BoatNoodleWeb.DiscountController do
 
     is_force_apply =
       if item["is_force_apply"] == "on" do
-        1
+        true
       else
-        0
+        false
       end
 
     min_spend = item["minimum_spend"]
@@ -838,9 +838,9 @@ defmodule BoatNoodleWeb.DiscountController do
 
     is_force_apply =
       if params["is_force_apply"] == "on" do
-        1
+        true
       else
-        0
+        false
       end
 
     {is_targetmenuitems, multi_item_list} =
