@@ -209,7 +209,7 @@
             <div class="form-check form-check-inline">
               <label class="form-check-label">
 
-                             <%= if  @discount_a.is_force_apply == 0  do   %>
+                             <%= if  @discount_a.is_force_apply == false  do   %>
                    
                                <input class="form-check-input"  type="checkbox" name="is_force_apply" > Is Force Apply?
                           <% else %>
