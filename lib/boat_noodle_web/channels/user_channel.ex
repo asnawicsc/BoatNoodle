@@ -3599,8 +3599,7 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: sp.salesid == s.salesid,
-              where:
-                s.salesdate == ^item and sp.brand_id == ^brand_id and s.brand_id == ^brand_id,
+              where: s.salesdate == ^item and sp.brand_id == ^brand_id and s.brand_id == ^brand_id,
               select: %{
                 salesdate: s.salesdate,
                 grand_total: sp.grand_total,
@@ -4099,8 +4098,17 @@ defmodule BoatNoodleWeb.UserChannel do
 
     a =
       for item <- map do
-        id = elem(item, 0) |> String.split_at(9) |> elem(0)
-        c = elem(item, 0) |> String.split_at(9) |> elem(1)
+        id = item |> elem(0) |> String.split("[") |> hd()
+
+        c =
+          item
+          |> elem(0)
+          |> String.split("[")
+          |> List.last()
+          |> String.split("")
+          |> List.insert_at(0, "[")
+          |> Enum.join()
+
         price = item |> elem(1)
 
         %{id: id, item: c, price: price}
@@ -4227,62 +4235,67 @@ defmodule BoatNoodleWeb.UserChannel do
            elem(insert, 0) != "is_default_combo" && elem(insert, 0) != "enable_disc" do
         id = elem(insert, 0) |> String.to_integer()
 
-        combo =
-          Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.combo_item_id == ^id)) |> hd
+        combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.id == ^id))
 
-        a =
-          for item <- elem(insert, 1) do
-            if item.item == "[cost_price]" do
-              %{item: item.item, price: item.price}
+        if combo == [] do
+          IEx.pry()
+        else
+          combo = hd(combo)
+
+          a =
+            for item <- elem(insert, 1) do
+              if item.item == "[cost_price]" do
+                %{item: item.item, price: item.price}
+              end
             end
-          end
-          |> Enum.filter(fn x -> x != nil end)
-          |> hd
+            |> Enum.filter(fn x -> x != nil end)
+            |> hd
 
-        b =
-          for item <- elem(insert, 1) do
-            if item.item == "[top_up]" do
-              %{item: item.item, price: item.price}
+          b =
+            for item <- elem(insert, 1) do
+              if item.item == "[top_up]" do
+                %{item: item.item, price: item.price}
+              end
             end
+            |> Enum.filter(fn x -> x != nil end)
+            |> hd
+
+          is_delete = "0"
+
+          c = Enum.filter(elem(insert, 1), fn x -> x.item == "[is_delete]" end)
+
+          is_delete =
+            if c == [] do
+              "0"
+            else
+              "1"
+            end
+
+          unit_price = a.price
+          top_up = b.price
+
+          update_combo_details_params = %{
+            top_up: top_up,
+            unit_price: unit_price,
+            is_delete: String.to_integer(is_delete)
+          }
+
+          update_combo_details =
+            BoatNoodle.BN.ComboDetails.changeset(
+              combo,
+              update_combo_details_params,
+              user_id,
+              "Update Combo Details"
+            )
+
+          case Repo.update(update_combo_details) do
+            {:ok, combo_details} ->
+              true
+
+            _ ->
+              IO.puts("failed combo details update")
+              false
           end
-          |> Enum.filter(fn x -> x != nil end)
-          |> hd
-
-        is_delete = "0"
-
-        c = Enum.filter(elem(insert, 1), fn x -> x.item == "[is_delete]" end)
-
-        is_delete =
-          if c == [] do
-            "0"
-          else
-            "1"
-          end
-
-        unit_price = a.price
-        top_up = b.price
-
-        update_combo_details_params = %{
-          top_up: top_up,
-          unit_price: unit_price,
-          is_delete: String.to_integer(is_delete)
-        }
-
-        update_combo_details =
-          BoatNoodle.BN.ComboDetails.changeset(
-            combo,
-            update_combo_details_params,
-            user_id,
-            "Update Combo Details"
-          )
-
-        case Repo.update(update_combo_details) do
-          {:ok, combo_details} ->
-            true
-
-          _ ->
-            IO.puts("failed combo details update")
-            false
         end
       else
       end
