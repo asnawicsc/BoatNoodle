@@ -62,7 +62,7 @@ defmodule BoatNoodleWeb.BranchController do
     combo_ids = combos |> Enum.map(fn x -> x.id end)
 
     combo_items =
-      Repo.all(from(c in ComboDetails, where: c.combo_id in ^combo_ids))
+      Repo.all(from(c in ComboDetails, where: c.combo_id in ^combo_ids and c.is_delete == ^0))
       |> Enum.group_by(fn x -> x.combo_id end)
 
     # each combo has a list of items

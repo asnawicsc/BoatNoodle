@@ -137,7 +137,7 @@
           </div>
           <div class="col-md-10">
             <div class="tab-content">
-              <%= for combo <- @combos do %>
+              <%= for combo <- @combos  do %>
               <div class="tab-pane" id="<%= combo.id %>">
 
                 <div class="row">
@@ -150,7 +150,7 @@
                       </tr>
 
             
-                      <%= for combo_item <- @combo_items[combo.id] do %>
+                      <%= for combo_item <- @combo_items[combo.id] |> Enum.sort() do %>
                       
                               <tr>
                                 <td>
@@ -179,7 +179,7 @@
                             <% end %>
                         </tr>
 
-                        <%= for combo_item <- @combo_items[combo.id] do %>
+                        <%= for combo_item <- @combo_items[combo.id]  |> Enum.sort() do %>
                           <tr>
 
                             <%= for printer <- @printers do %>

@@ -41,7 +41,11 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
-  def handle_in("toggle_printer_combo", %{"info" => info, "brand_id" => brand_id,"user_id" => user_id}, socket) do
+  def handle_in(
+        "toggle_printer_combo",
+        %{"info" => info, "brand_id" => brand_id, "user_id" => user_id},
+        socket
+      ) do
     tuple_data =
       info
       |> String.replace("][", ",")
@@ -54,41 +58,32 @@ defmodule BoatNoodleWeb.TagHelper do
     combo_item_id = elem(tuple_data, 2)
 
     tag = Repo.get_by(Tag, tagid: tagid, brand_id: brand_id)
-    combo_item = Repo.get_by(ComboDetails, combo_item_id: combo_item_id)
 
-     existing_combo_item_ids = if tag.combo_item_ids != nil do
-     tag.combo_item_ids |> String.split(",")
-    else
-      []
-    end
+    combo_item =
+      Repo.get_by(ComboDetails, combo_item_id: combo_item_id, is_delete: 0, brand_id: brand_id)
 
-    {new_combo_ids,action,alert}=if Enum.any?(existing_combo_item_ids, fn x -> x == combo_item_id end) do
-      
-        
+    existing_combo_item_ids =
+      if tag.combo_item_ids != nil do
+        tag.combo_item_ids |> String.split(",")
+      else
+        []
+      end
 
+    {new_combo_ids, action, alert} =
+      if Enum.any?(existing_combo_item_ids, fn x -> x == combo_item_id end) do
         {List.delete(existing_combo_item_ids, combo_item_id)
-        |> Enum.sort()
-        |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(","),
-        "removed from",
-        "danger"}
+         |> Enum.sort()
+         |> Enum.reject(fn x -> x == "" end)
+         |> Enum.join(","), "removed from", "danger"}
+      else
+        {new_combo_ids =
+           List.insert_at(existing_combo_item_ids, 0, combo_item_id)
+           |> Enum.sort()
+           |> Enum.reject(fn x -> x == "" end)
+           |> Enum.join(","), "added to", "success"}
+      end
 
-      
-    else
-     
-
-        { new_combo_ids =
-        List.insert_at(existing_combo_item_ids, 0, combo_item_id)
-        |> Enum.sort()
-        |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(","),
-        "added to",
-        "success"}
-
-      
-    end
-
-    cg = Tag.changeset(tag, %{combo_item_ids: new_combo_ids}, user_id,"Update")
+    cg = Tag.changeset(tag, %{combo_item_ids: new_combo_ids}, user_id, "Update")
 
     case Repo.update(cg) do
       {:ok, tag} ->
@@ -107,8 +102,11 @@ defmodule BoatNoodleWeb.TagHelper do
     {:noreply, socket}
   end
 
-  def handle_in("toggle_printer", %{"info" => info, "brand_id" => brand_id,"user_id" => user_id}, socket) do
-   
+  def handle_in(
+        "toggle_printer",
+        %{"info" => info, "brand_id" => brand_id, "user_id" => user_id},
+        socket
+      ) do
     tuple_data =
       info
       |> String.replace("][", ",")
@@ -131,26 +129,20 @@ defmodule BoatNoodleWeb.TagHelper do
       )
       |> Enum.map(fn x -> Integer.to_string(x) end)
 
-     {new_subcatids,action,alert}= if Enum.any?(existing_subcats, fn x -> x == subcatid end) do
-     
-        
+    {new_subcatids, action, alert} =
+      if Enum.any?(existing_subcats, fn x -> x == subcatid end) do
+        {List.delete(existing_subcats, subcatid)
+         |> Enum.sort()
+         |> Enum.reject(fn x -> x == "" end)
+         |> Enum.join(","), "removed from", "danger"}
+      else
+        {List.insert_at(existing_subcats, 0, subcatid)
+         |> Enum.sort()
+         |> Enum.reject(fn x -> x == "" end)
+         |> Enum.join(","), "added to", "success"}
+      end
 
-      {List.delete(existing_subcats, subcatid) |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(","),
-        "removed from",
-        "danger"}
-    else
-       
-      { List.insert_at(existing_subcats, 0, subcatid)
-        |> Enum.sort()
-        |> Enum.reject(fn x -> x == "" end)
-        |> Enum.join(","),
-        "added to",
-        "success"
-      }
-    end
-
-    cg = Tag.changeset(tag, %{subcat_ids: new_subcatids}, user_id,"Update")
+    cg = Tag.changeset(tag, %{subcat_ids: new_subcatids}, user_id, "Update")
 
     case Repo.update(cg) do
       {:ok, tag} ->
@@ -168,7 +160,6 @@ defmodule BoatNoodleWeb.TagHelper do
 
     {:noreply, socket}
   end
-
 
   def handle_in("toggle_user_branch", %{"info" => info}, socket) do
     tuple_data =
@@ -190,19 +181,19 @@ defmodule BoatNoodleWeb.TagHelper do
     # )
     uba = Repo.get_by(UserBranchAccess, userid: user_id, branchid: branch_id)
 
-     {action,alert}= if uba != nil do
-      Repo.delete(uba)
+    {action, alert} =
+      if uba != nil do
+        Repo.delete(uba)
 
-       {"removed from","danger"}
-      
-    else
-      cg =
-        UserBranchAccess.changeset(%UserBranchAccess{}, %{userid: user_id, branchid: branch_id})
+        {"removed from", "danger"}
+      else
+        cg =
+          UserBranchAccess.changeset(%UserBranchAccess{}, %{userid: user_id, branchid: branch_id})
 
-      Repo.insert(cg)
+        Repo.insert(cg)
 
-      {"added to","success"}
-    end
+        {"added to", "success"}
+      end
 
     broadcast(socket, "updated_branch_access", %{
       user_name: user.username,

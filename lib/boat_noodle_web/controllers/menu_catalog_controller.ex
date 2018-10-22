@@ -216,7 +216,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       if Enum.any?(items, fn x -> x == subcat_id end) do
         cata
       else
-        items =
+        new_items =
           List.insert_at(items, 0, subcat_id) |> Enum.uniq() |> Enum.join(",")
           |> String.trim_trailing(",")
 
@@ -234,7 +234,7 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         {:ok, cata} =
           MenuCatalog.changeset(
             cata,
-            %{items: items, categories: new_cata_categories},
+            %{items: new_items, categories: new_cata_categories},
             BN.current_user(conn),
             "Update"
           )

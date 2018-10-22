@@ -4124,8 +4124,8 @@ defmodule BoatNoodleWeb.UserChannel do
     price = s.price
 
     {p, included_spend} =
-      if a["include_s"] != nil do
-        p = a["include_s"] |> hd
+      if a["included_spend"] != nil do
+        p = a["included_spend"] |> hd
         included_spend = p.price
         {p, included_spend}
       else
@@ -4135,8 +4135,8 @@ defmodule BoatNoodleWeb.UserChannel do
       end
 
     {p, is_activate} =
-      if a["is_activa"] != nil do
-        p = a["is_activa"] |> hd
+      if a["is_activate"] != nil do
+        p = a["is_activate"] |> hd
         is_activate = p.price
         {p, is_activate}
       else
@@ -4146,8 +4146,8 @@ defmodule BoatNoodleWeb.UserChannel do
       end
 
     {p, is_default_combo} =
-      if a["is_defaul"] != nil do
-        p = a["is_defaul"] |> hd
+      if a["is_default_combo"] != nil do
+        p = a["is_default_combo"] |> hd
         is_default_combo = p.price
         {p, is_default_combo}
       else
@@ -4157,8 +4157,8 @@ defmodule BoatNoodleWeb.UserChannel do
       end
 
     {p, enable_disc} =
-      if a["enable_di"] != nil do
-        p = a["enable_di"] |> hd
+      if a["enable_disc"] != nil do
+        p = a["enable_disc"] |> hd
         enable_disc = p.price
         {p, enable_disc}
       else
@@ -4238,7 +4238,6 @@ defmodule BoatNoodleWeb.UserChannel do
         combo = Repo.all(from(s in BoatNoodle.BN.ComboDetails, where: s.id == ^id))
 
         if combo == [] do
-          IEx.pry()
         else
           combo = hd(combo)
 
