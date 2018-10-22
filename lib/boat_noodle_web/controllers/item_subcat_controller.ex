@@ -7,66 +7,73 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
   def combo_create(conn, params) do
     item_code =
-      Repo.get_by(ItemSubcat, %{
-        itemcode: params["itemcode"],
-        brand_id: BN.get_brand_id(conn),
-        is_delete: 0,
-        is_activate: 1
-      })
+      Repo.all(
+        from(
+          i in ItemSubcat,
+          where:
+            i.itemcode == ^params["itemcode"] and i.brand_id == ^BN.get_brand_id(conn) and
+              i.is_delete == ^0 and i.is_activate == ^1,
+          select: i.itemcode
+        )
+      )
+      |> Enum.uniq()
 
-    if item_code != nil do
+    if item_code != [] do
       conn
-      |> put_flash(:info, "Item Code already exist.")
+      |> put_flash(
+        :info,
+        "Item Code already exist, please deactivate the old combo code to continue using same item code."
+      )
       |> redirect(to: item_subcat_path(conn, :combo_new, BN.get_domain(conn)))
-    end
+    else
+      ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
+      itemname = params["itemcode"] <> " " <> params["itemdesc"]
+      params = Map.put(params, "itemname", itemname)
 
-    ala_cart_ids = params["item"]["itemcode"] |> String.split(",")
-    itemname = params["itemcode"] <> " " <> params["itemdesc"]
-    params = Map.put(params, "itemname", itemname)
+      prev_subcatid =
+        Repo.all(from(c in ItemSubcat, select: %{subcatid: c.subcatid}))
+        |> Enum.map(fn x -> Integer.to_string(x.subcatid) end)
+        |> Enum.filter(fn x -> String.length(x) == 6 end)
+        |> Enum.sort()
+        |> List.last()
 
-    prev_subcatid =
-      Repo.all(from(c in ItemSubcat, select: %{subcatid: c.subcatid}))
-      |> Enum.map(fn x -> Integer.to_string(x.subcatid) end)
-      |> Enum.filter(fn x -> String.length(x) == 6 end)
-      |> Enum.sort()
-      |> List.last()
+      subcatid = String.to_integer(prev_subcatid) + 1
+      params = Map.put(params, "subcatid", subcatid)
 
-    subcatid = String.to_integer(prev_subcatid) + 1
-    params = Map.put(params, "subcatid", subcatid)
+      brand = BN.get_brand_id(conn)
+      itemcat = params["itemcat"]
 
-    brand = BN.get_brand_id(conn)
-    itemcat = params["itemcat"]
-
-    all =
-      for item <- ala_cart_ids do
-        abc =
-          Repo.all(
-            from(
-              c in ItemCat,
-              where: c.itemcatid == ^item and c.brand_id == ^brand,
-              select: %{
-                itemcatcode: c.itemcatcode,
-                itemcatid: c.itemcatid,
-                itemcatname: c.itemcatname
-              }
+      all =
+        for item <- ala_cart_ids do
+          abc =
+            Repo.all(
+              from(
+                c in ItemCat,
+                where: c.itemcatid == ^item and c.brand_id == ^brand,
+                select: %{
+                  itemcatcode: c.itemcatcode,
+                  itemcatid: c.itemcatid,
+                  itemcatname: c.itemcatname
+                }
+              )
             )
-          )
-          |> hd
-      end
+            |> hd
+        end
 
-    branches =
-      Repo.all(from(m in Branch, select: %{name: m.branchname, id: m.branchid}))
-      |> Enum.filter(fn x -> x.id != 0 end)
+      branches =
+        Repo.all(from(m in Branch, select: %{name: m.branchname, id: m.branchid}))
+        |> Enum.filter(fn x -> x.id != 0 end)
 
-    render(
-      conn,
-      "combo_new_price.html",
-      brand: brand,
-      params: params,
-      all: all,
-      branches: branches,
-      itemcat: itemcat
-    )
+      render(
+        conn,
+        "combo_new_price.html",
+        brand: brand,
+        params: params,
+        all: all,
+        branches: branches,
+        itemcat: itemcat
+      )
+    end
   end
 
   def combo_create_price(conn, params) do
