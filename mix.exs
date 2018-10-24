@@ -25,8 +25,7 @@ defmodule BoatNoodle.Mixfile do
         :runtime_tools,
         :elixir_make,
         :parse_trans,
-        :scrivener_ecto,
-        :sftp_ex
+        :scrivener_ecto
       ]
     ]
   end
