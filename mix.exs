@@ -20,7 +20,14 @@ defmodule BoatNoodle.Mixfile do
   def application do
     [
       mod: {BoatNoodle.Application, []},
-      extra_applications: [:logger, :runtime_tools, :elixir_make, :parse_trans,:scrivener_ecto]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :elixir_make,
+        :parse_trans,
+        :scrivener_ecto,
+        :sftp_ex
+      ]
     ]
   end
 
@@ -52,8 +59,8 @@ defmodule BoatNoodle.Mixfile do
       {:httpoison, "~> 1.0"},
       {:csv, "~> 1.4.0"},
       {:number, "~> 0.5.7"},
-      {:scrivener_ecto, "~> 1.0"}
-
+      {:scrivener_ecto, "~> 1.0"},
+      {:sftp_ex, "~> 0.2.1"}
     ]
   end
 
