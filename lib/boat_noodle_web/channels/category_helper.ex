@@ -63,56 +63,76 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-
-    def handle_in("view_item_category", %{"cat_id" => cat_id, "brand_id" => brand_id}, socket) do
+  def handle_in("view_item_category", %{"cat_id" => cat_id, "brand_id" => brand_id}, socket) do
     cat =
       Repo.all(from(i in ItemCat, where: i.itemcatid == ^cat_id and i.brand_id == ^brand_id))
       |> hd()
 
-      cat_id=Integer.to_string(cat.itemcatid)
+    cat_id = Integer.to_string(cat.itemcatid)
 
-      item_subcat=Repo.all(from s in ItemSubcat,where: s.itemcatid==^cat_id and s.brand_id == ^brand_id,select: %{itemcode: s.itemcode,itemname: s.itemname,price_code: s.price_code,is_delete: s.is_delete,is_activate: s.is_activate})
+    item_subcat =
+      Repo.all(
+        from(
+          s in ItemSubcat,
+          where: s.itemcatid == ^cat_id and s.brand_id == ^brand_id,
+          select: %{
+            itemcode: s.itemcode,
+            itemname: s.itemname,
+            price_code: s.price_code,
+            is_delete: s.is_delete,
+            is_activate: s.is_activate
+          }
+        )
+      )
 
-
- html =
- Phoenix.View.render_to_string(
-            BoatNoodleWeb.MenuItemView,
-            "view_item_category.html",
-            itemcatcode: cat.itemcatcode,
-       itemcatname: cat.itemcatname,
-      itemcatdesc: cat.itemcatdesc,
-      category_type: cat.category_type,
-      itemcatid: cat.itemcatid,
-      item_subcat: item_subcat
-    )
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.MenuItemView,
+        "view_item_category.html",
+        itemcatcode: cat.itemcatcode,
+        itemcatname: cat.itemcatname,
+        itemcatdesc: cat.itemcatdesc,
+        category_type: cat.category_type,
+        itemcatid: cat.itemcatid,
+        item_subcat: item_subcat
+      )
 
     broadcast(socket, "open_view_item_category", %{
-     html: html
+      html: html
     })
 
     {:noreply, socket}
   end
 
-   def handle_in("dis_item_view", %{"cat_id" => cat_id, "brand_id" => brand_id}, socket) do
+  def handle_in("dis_item_view", %{"cat_id" => cat_id, "brand_id" => brand_id}, socket) do
     cat =
       Repo.all(from(i in BN.Discount, where: i.discountid == ^cat_id and i.brand_id == ^brand_id))
       |> hd()
 
+    discount_item =
+      Repo.all(
+        from(
+          s in BN.DiscountItem,
+          where: s.discountid == ^cat.discountid and s.brand_id == ^brand_id,
+          select: %{
+            discitemsname: s.discitemsname,
+            disctype: s.disctype,
+            is_visable: s.is_visable,
+            is_delete: s.is_delete
+          }
+        )
+      )
 
-
-      discount_item=Repo.all(from s in BN.DiscountItem,where: s.discountid==^cat.discountid and s.brand_id == ^brand_id,select: %{discitemsname: s.discitemsname,disctype: s.disctype,is_visable: s.is_visable,is_delete: s.is_delete})
-
-
- html =
- Phoenix.View.render_to_string(
-            BoatNoodleWeb.DiscountView,
-            "discount_item_view.html",
-            discount_item: discount_item,
-       discname: cat.discname
-    )
+    html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.DiscountView,
+        "discount_item_view.html",
+        discount_item: discount_item,
+        discname: cat.discname
+      )
 
     broadcast(socket, "open_view_discount_item", %{
-     html: html
+      html: html
     })
 
     {:noreply, socket}
@@ -203,7 +223,8 @@ defmodule BoatNoodleWeb.CategoryHelper do
           itemcatdesc: i.itemcatdesc,
           category_type: i.category_type,
           is_default: i.is_default,
-          is_delete: i.is_delete
+          is_delete: i.is_delete,
+          sort_no: i.sort_no
         }
       )
     )
@@ -235,17 +256,24 @@ defmodule BoatNoodleWeb.CategoryHelper do
     {:noreply, socket}
   end
 
-    def handle_in("assign_to_unused", payload, socket) do
+  def handle_in("assign_to_unused", payload, socket) do
+    item =
+      Repo.get_by(
+        BoatNoodle.BN.ItemSubcat,
+        subcatid: payload["subcat_id"],
+        brand_id: payload["brand_id"]
+      )
 
+    edit_item =
+      BoatNoodle.BN.ItemSubcat.changeset(
+        item,
+        %{is_delete: 1},
+        payload["user"],
+        "Update ItemSubcat"
+      )
+      |> Repo.update()
 
-     item= Repo.get_by(BoatNoodle.BN.ItemSubcat, subcatid: payload["subcat_id"],brand_id: payload["brand_id"])
-
-
-          edit_item =
-            BoatNoodle.BN.ItemSubcat.changeset(item, %{is_delete: 1},payload["user"], "Update ItemSubcat")|>Repo.update()
-
-            action="This item is successfully deactivate"
-        
+    action = "This item is successfully deactivate"
 
     broadcast(socket, "populate_assign_to_unused", %{action: action})
     {:noreply, socket}

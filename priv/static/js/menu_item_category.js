@@ -13,7 +13,7 @@ $(document).ready(function() {
       
       if ($("table[aria-label='categories_body']").find("tr.selected").length == 1) {
         var rw = $("table[aria-label='categories_body']").find("tr.selected")
-        var cat_id = rw.find("td:first").html()
+        var cat_id = rw.find("td:nth-child(2)").html()
         channel2.push("edit_item_category", {cat_id: cat_id, brand_id: window.currentBrand})
       }
   });
@@ -24,7 +24,7 @@ $(document).ready(function() {
       
       if ($("table[aria-label='categories_body']").find("tr.selected").length == 1) {
         var rw = $("table[aria-label='categories_body']").find("tr.selected")
-        var cat_id = rw.find("td:first").html()
+        var cat_id = rw.find("td:nth-child(2)").html()
         channel2.push("view_item_category", {cat_id: cat_id, brand_id: window.currentBrand})
       }
   });
@@ -52,8 +52,11 @@ $(document).ready(function() {
   })
 
 
-
-
+   $("div[aria-label='go_back_menu_cat']").click(function(){
+         $("div[aria-label='menu_item_content']").show()
+    $("div[aria-label='edit_new_category']").hide()
+    $("div[aria-label='view_item_category']").hide()
+    })
 
 
   $("input[name='category_update']").click(function(){
@@ -67,7 +70,7 @@ $(document).ready(function() {
     $("div[aria-label='edit_new_category']").hide()
     $("div[aria-label='menu_item_content']").show()
         $("div[aria-label='view_item_category']").hide()
-
+$("form[aria-label='edit_category_form'] input[name='sort_no']").val("")
     $("form[aria-label='edit_category_form'] input[name='itemcatcode']").val("")
     $("form[aria-label='edit_category_form'] input[name='itemcatname']").val("")
     $("form[aria-label='edit_category_form'] input[name='itemcatdesc']").val("")
@@ -76,10 +79,11 @@ $(document).ready(function() {
     var data = payload.categories
     var table = $("table[aria-label='categories_body']").DataTable({
       ordering: true,  // Column ordering
-      order: [0, 'desc'],
+      order: [[0, 'asc'],[3, 'asc']],
       destroy: true,
       data: data,
       columns: [
+      {data: 'sort_no'},
       {data: 'itemcatid'},
       {data: 'itemcatname'},
       {data: 'itemcatcode'},
@@ -169,10 +173,11 @@ $(document).ready(function() {
     var data = payload.categories
     var table = $("table[aria-label='categories_body']").DataTable({
       ordering: true,  // Column ordering
-      order: [0, 'desc'],
+      order: [[0, 'asc'],[3,'asc']],
       destroy: true,
       data: data,
       columns: [
+      {data: 'sort_no'},
       {data: 'itemcatid'},
       {data: 'itemcatname'},
       {data: 'itemcatcode'},

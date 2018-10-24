@@ -16,6 +16,7 @@ defmodule BoatNoodle.BN.ItemCat do
     field(:itemcatname, :string)
     field(:updated_at, :utc_datetime)
     field(:brand_id, :integer, primary_key: true)
+    field(:sort_no, :integer)
   end
 
   @doc false
@@ -23,6 +24,7 @@ defmodule BoatNoodle.BN.ItemCat do
     item_cat =
       item_cat
       |> cast(attrs, [
+        :sort_no,
         :category_img,
         :visable,
         :brand_id,

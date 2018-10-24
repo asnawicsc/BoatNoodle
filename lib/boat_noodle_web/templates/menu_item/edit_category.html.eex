@@ -14,7 +14,13 @@
 
   
             <div class="row">
-              <div class="col-sm-3">
+              <div class="col-sm-1">
+                <div class="form-group bmd-form-group">
+                  <label class="bmd-label-floating">Sort No</label>
+                  <input name="sort_no" class="form-control" type="text">
+                </div>
+              </div>
+              <div class="col-sm-2">
                 <div class="form-group bmd-form-group">
                   <label class="bmd-label-floating">Code</label>
                   <input name="itemcatcode" class="form-control" type="text">
@@ -49,7 +55,7 @@
         </div>
         <div class="card-footer">
         <div class="mr-auto">
-          <div class="btn btn-previous btn-fill btn-default btn-wd" aria-label="go_back">Go Back</div>
+          <div class="btn btn-previous btn-fill btn-default btn-wd" aria-label="go_back_menu_cat">Go Back</div>
       
           </div>
           <div class="ml-auto">

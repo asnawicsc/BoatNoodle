@@ -618,7 +618,8 @@ defmodule BoatNoodleWeb.ApiController do
           itemcatdesc: x.itemcatdesc,
           is_default: x.is_default,
           visable: x.visable,
-          category_img: x.category_img
+          category_img: x.category_img,
+          sort_no: x.sort_no
           # category_type: x.category_type,
           # created_at: x.created_at,
           # updated_at: x.updated_at

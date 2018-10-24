@@ -95,6 +95,7 @@
               <table aria-label="categories_body" class="table">
                 <thead>
                   <tr>
+                    <th>Sort</th>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Product Code</th>

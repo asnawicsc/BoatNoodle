@@ -67,7 +67,7 @@ defmodule BoatNoodle.BN.Sales_v1 do
   schema "sales" do
     field(:salesid, :string, primary_key: true)
     field(:invoiceno, :string)
-
+    field(:salesdate, :date)
     field(:salesdatetime, :naive_datetime)
     field(:tbl_no, :string)
     field(:pax, :integer)

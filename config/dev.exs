@@ -56,25 +56,25 @@ config :phoenix, :stacktrace_depth, 20
 #   hostname: "localhost",
 #   pool_size: 10
 
-# config :boat_noodle, BoatNoodle.RepoGeop,
-#   adapter: Ecto.Adapters.MySQL,
-#   hostname: "pos.geopbyteapp.com",
-#   port: "3306",
-#   username: "posgb_user",
-#   password: "!@#000",
-#   database: "posgb_boatnoodle",
-#   pool_size: 10,
-#   timeout: 1500_000
-
 config :boat_noodle, BoatNoodle.RepoGeop,
   adapter: Ecto.Adapters.MySQL,
-  hostname: "chillchill.geopbyteapp.com",
+  hostname: "pos.geopbyteapp.com",
   port: "3306",
-  username: "chillchi_user",
+  username: "posgb_user",
   password: "!@#000",
-  database: "chillchi_db",
+  database: "posgb_boatnoodle",
   pool_size: 10,
   timeout: 1500_000
+
+# config :boat_noodle, BoatNoodle.RepoGeop,
+#   adapter: Ecto.Adapters.MySQL,
+#   hostname: "chillchill.geopbyteapp.com",
+#   port: "3306",
+#   username: "chillchi_user",
+#   password: "!@#000",
+#   database: "chillchi_db",
+#   pool_size: 10,
+#   timeout: 1500_000
 
 config :boat_noodle, BoatNoodle.Repo,
   adapter: Ecto.Adapters.MySQL,

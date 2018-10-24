@@ -1178,20 +1178,40 @@ defmodule BoatNoodle.UltiMigrator do
     end
   end
 
-  def v2_missing_sp_data() do
-    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+  def v2_missing_fp_data() do
+    # image_path = Application.app_dir(:boat_noodle, "priv/static/images")
 
-    new_path = image_path <> "/not_tally_sp_BN2.csv"
-    bin = File.read!(new_path)
+    # new_path = image_path <> "/not_tally_sp_BN2.csv"
+    # bin = File.read!(new_path)
 
-    salesids = bin |> String.split("\n") |> Enum.reject(fn x -> x == "" end)
+    # salesids = bin |> String.split("\n") |> Enum.reject(fn x -> x == "" end)
+    start_date = Date.new(2018, 9, 30) |> elem(1)
+    end_date = Date.new(2018, 11, 1) |> elem(1)
+
+    salesids =
+      BoatNoodle.RepoGeop.all(
+        from(
+          sm in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales_v1,
+          on: s.salesid == sm.salesid,
+          where:
+            s.salesdate > ^start_date and s.salesdate < ^end_date and sm.payment_type_amt1 > 0,
+          select: s.salesid
+        )
+      )
 
     for salesid <- salesids do
-      # check sales exist
-      v1sp = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 2, salesid: salesid)
+      update_payment(salesid)
+    end
+  end
 
-      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 2, salesid: salesid)
+  def update_payment(salesid) do
+    # check sales exist
+    v1sp = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
 
+    v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+
+    if v1sp != nil and v2sp != nil do
       cg =
         BoatNoodle.BN.SalesPayment.changeset(v2sp, %{
           payment_name1: v1sp.payment_name1,
