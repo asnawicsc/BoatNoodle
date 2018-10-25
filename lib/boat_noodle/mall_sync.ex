@@ -71,23 +71,43 @@ defmodule BoatNoodle.MallSync do
     IO.puts("Starting repos..")
     Enum.each(repos(), & &1.start_link(pool_size: 1))
 
-    connect_to
+    connect_to(1, "2")
+    connect_to(2, "2")
+    connect_to(3, "2")
+    connect_to(1, "23")
+    connect_to(2, "23")
+    connect_to(3, "23")
 
     # Signal shutdown
     IO.puts("Success!")
     :init.stop()
   end
 
-  def connect_to do
+  def connect_to(days_ago, branchid_str) do
     {:ok, connection} = SftpEx.connect(host: '110.4.42.48', user: 'ubuntu', password: 'scmcapp')
 
     # image_path = Application.app_dir(:boat_noodle, "priv/static/images")
-    date_str = Date.utc_today() |> Date.to_string() |> String.split("-") |> Enum.join()
+    date_str =
+      Date.utc_today() |> Timex.shift(days: -days_ago) |> Date.to_string() |> String.split("-")
+      |> Enum.join()
 
     date_str2 =
-      Date.utc_today() |> Date.to_string() |> String.split("-") |> Enum.reverse() |> Enum.join()
+      Date.utc_today()
+      |> Timex.shift(days: -days_ago)
+      |> Date.to_string()
+      |> String.split("-")
+      |> Enum.reverse()
+      |> Enum.join()
 
-    tenant_machine_id = "12345678"
+    tenant_machine_id =
+      case branchid_str do
+        "2" ->
+          "50000078"
+
+        "23" ->
+          "52000183"
+      end
+
     # new_path = image_path <> "/H#{tenant_machine_id}-#{date_str}.txt"
     # bin = File.read!(new_path)
 
@@ -96,13 +116,13 @@ defmodule BoatNoodle.MallSync do
     #   |> Stream.into(SftpEx.stream!(conn, "/boat_noodle/sales.txt"))
     #   |> Stream.run()
     no_range = 0..23
-    sales_data = sales_payment_data()
+    sales_data = sales_payment_data(days_ago, branchid_str)
 
     data =
       for hour <- no_range do
         line(
           tenant_machine_id,
-          1,
+          date_str,
           date_str2,
           hour,
           sales_data
@@ -118,8 +138,8 @@ defmodule BoatNoodle.MallSync do
     SftpEx.disconnect(connection)
   end
 
-  def sales_payment_data() do
-    date = Date.utc_today()
+  def sales_payment_data(days_ago, branchid_str) do
+    date = Date.utc_today() |> Timex.shift(days: -days_ago)
 
     sales_data =
       Repo.all(
@@ -128,7 +148,8 @@ defmodule BoatNoodle.MallSync do
           left_join: sp in SalesPayment,
           on: sp.salesid == s.salesid,
           where:
-            s.brand_id == ^1 and s.is_void == ^0 and s.salesdate == ^date and s.branchid == ^"2",
+            s.brand_id == ^1 and s.is_void == ^0 and s.salesdate == ^date and
+              s.branchid == ^branchid_str,
           select: %{
             datetime: s.salesdatetime,
             afterdisc: sp.after_disc,
@@ -206,7 +227,7 @@ defmodule BoatNoodle.MallSync do
     discount =
       sales_data
       |> Enum.filter(fn x -> x.hour == hour end)
-      |> Enum.map(fn x -> if x.disc_amt == 0, do: 0.00, else: Decimal.to_float(x.disc_amt) end)
+      |> Enum.map(fn x -> if x.disc_amt == 0, do: 0.00, else: x.disc_amt end)
       |> Enum.sum()
 
     discount =
