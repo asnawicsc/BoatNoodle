@@ -1582,7 +1582,7 @@ defmodule BoatNoodleWeb.ApiController do
       |> elem(1)
       |> String.reverse()
 
-    BoatNoodleWeb.Endpoint.broadcast("dashboard_channel:#{brand_id}", "dashboard_1", %{
+    BoatNoodleWeb.Endpoint.broadcast("dashboard_channel:#{brand_id}", "dashboard_2", %{
       nett_sales: d_nett_sales,
       taxes: d_taxes,
       order: d_order,

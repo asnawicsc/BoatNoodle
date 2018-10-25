@@ -49,6 +49,10 @@
 
   window.currentBrand = '<%=  @conn.private.plug_session["brand_id"] %>';
 
+var bool = localStorage.getItem("real_time_update")
+  if (bool == null) {
+    localStorage.setItem("real_time_update", "no")
+  }
 
 
 </script>

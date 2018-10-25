@@ -74,14 +74,26 @@ if (localStorage.getItem('new_brand') == null) {
 
     cb(start, end);
 
-dashboard_channel.on("dashboard_1", payload => {
+dashboard_channel.on("dashboard_2", payload => {
+var bool = localStorage.getItem("real_time_update")
+  if (bool == "yes") {
+    
+    var nett_sales = payload.nett_sales
+    var taxes = payload.taxes
+    var order = payload.order
+    var pax = payload.pax
+    var transaction = payload.transaction
 
-console.log(payload.nett_sales)
-console.log(payload.taxes)
-console.log(payload.order)
-console.log(payload.pax)
-console.log(payload.transaction)
-console.log(payload.table)
+    $("div#nett_sales").html(nett_sales);  
+    $("div#tax").html(taxes);      
+    $("div#order").html(order);     
+    $("div#pax").html(pax);      
+    $("div#transaction").html(transaction);
+  }
+})
+
+
+dashboard_channel.on("dashboard_1", payload => {
 
 var nett_sales = payload.nett_sales
 var taxes = payload.taxes

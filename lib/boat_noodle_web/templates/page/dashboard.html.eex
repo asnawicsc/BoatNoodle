@@ -51,8 +51,34 @@
                 </div>
 
             </div>
+            <div class="panel-footer">
+              <div class="togglebutton">
+                <label>
+                  <input  aria-label="real_time_update" type="checkbox" >
+                    <span aria-label="real_time_update" class="toggle"></span>
+                    <span id="real">Realtime monitoring is off</span>
+                </label>
+              </div>
             </div>
-
+            </div>
+<script type="text/javascript">
+  var bool = localStorage.getItem("real_time_update")
+  if (bool == "yes") {
+    $("span[aria-label='real_time_update']").click(function(){});
+    $("input[aria-label='real_time_update']")[0].checked = true;
+    $("span#real").html("Realtime monitoring is on")
+  }
+$("span[aria-label='real_time_update']").click(function(){
+  var val = $("input[aria-label='real_time_update']")[0].checked
+if (val == false) {
+ localStorage.setItem("real_time_update", "yes")
+ $("span#real").html("Realtime monitoring is on")
+} else  {
+ localStorage.setItem("real_time_update", "no")
+ $("span#real").html("Realtime monitoring is off")
+}
+})
+</script>
                <div class="row">
                         <div class="col-lg-6 col-md-3 col-sm-3" >
                           <div class="card card-stats bg-success"  >
