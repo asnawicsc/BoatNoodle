@@ -1078,7 +1078,7 @@ defmodule BoatNoodleWeb.SalesController do
               s.is_void == 0 and p.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
                 s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
                 s.salesdate <= ^params["end_date"] and p.combo_id == ^0,
-            group_by: [s.salesdate, p.itemid, b.branchcode],
+            group_by: [s.salesdate, p.itemid, p.itemname, b.branchcode],
             order_by: [s.salesdate, p.itemname],
             select: %{
               date: s.salesdate,
@@ -1105,7 +1105,7 @@ defmodule BoatNoodleWeb.SalesController do
               s.is_void == 0 and p.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
                 s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
                 s.salesdate <= ^params["end_date"] and p.combo_id != ^0,
-            group_by: [s.salesdate, p.itemid, b.branchcode],
+            group_by: [s.salesdate, p.itemid, p.itemname, b.branchcode],
             order_by: [s.salesdate, p.itemname],
             select: %{
               date: s.salesdate,
@@ -2369,7 +2369,9 @@ defmodule BoatNoodleWeb.SalesController do
           is in ItemSubcat,
           left_join: ic in ItemCat,
           on: ic.itemcatid == is.itemcatid,
-          where: is.brand_id == ^brand.id and ic.brand_id == ^brand.id,
+          where:
+            is.brand_id == ^brand.id and ic.brand_id == ^brand.id and ic.is_delete == ^0 and
+              is.is_delete == ^0,
           select: %{
             category_type: ic.category_type,
             subcatid: is.subcatid,
@@ -2389,7 +2391,8 @@ defmodule BoatNoodleWeb.SalesController do
           left_join: ic in ItemCat,
           on: ic.itemcatid == is.itemcatid,
           where:
-            cd.brand_id == ^brand.id and is.brand_id == ^brand.id and ic.brand_id == ^brand.id,
+            cd.brand_id == ^brand.id and is.brand_id == ^brand.id and ic.brand_id == ^brand.id and
+              ic.is_delete == ^0 and is.is_delete == ^0,
           select: %{
             combo_id: cd.combo_id,
             itemid: cd.combo_item_id,
