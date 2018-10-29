@@ -13,6 +13,7 @@
                         <label class="col-sm-2 col-form-label">Item Name</label>
                         <div class="col-sm-4">
                             <div class="form-group">
+
                                 <input type="text" class="form-control" value='<%= @com["item_name"] %>' disabled>
                                 <input type="hidden" class="form-control" name="item[itemname]" value='<%= @com["item_name"] %>' >
 
@@ -146,7 +147,7 @@
         
     
     </div>
-      
+    <% require IEx %>
 
     <div class="card " data-color="rose" >
      

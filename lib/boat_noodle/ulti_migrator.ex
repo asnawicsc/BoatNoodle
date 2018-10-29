@@ -1200,7 +1200,22 @@ defmodule BoatNoodle.UltiMigrator do
         )
       )
 
-    for salesid <- salesids do
+    salesids2 =
+      BoatNoodle.Repo.all(
+        from(
+          sm in BoatNoodle.BN.SalesPayment,
+          left_join: s in BoatNoodle.BN.Sales,
+          on: s.salesid == sm.salesid,
+          where:
+            s.brand_id == 1 and s.salesdate > ^start_date and s.salesdate < ^end_date and
+              sm.payment_type_amt1 > 0,
+          select: s.salesid
+        )
+      )
+
+    c = salesids -- salesids2
+
+    for salesid <- c do
       update_payment(salesid)
     end
   end

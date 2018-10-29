@@ -71,7 +71,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         params: params,
         all: all,
         branches: branches,
-        itemcat: itemcat
+        itemcat: itemcat,
+        price_code: params["price_code"]
       )
     end
   end
@@ -182,6 +183,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         )
       )
 
+    item_data = params["item"]
+
     render(
       conn,
       "combo_branch.html",
@@ -191,7 +194,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       is_default_combo: is_default_combo,
       is_activate: is_activate,
       enable_discount: enable_discount,
-      included_spend: included_spend
+      included_spend: included_spend,
+      item_data: item_data
     )
   end
 
@@ -579,6 +583,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
     for branch <- branchs do
       id = branch |> String.to_integer()
+
       item = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
       com_items = item.items
       comb = com_items |> String.split(",") |> Enum.uniq()
@@ -605,8 +610,17 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       itemname = elem(item, 1)["product_name"]
       item_coded = itemname |> String.split_at(3) |> elem(0)
       s = elem(item, 1)["subcatid"] |> String.to_integer()
+
       itemcat = Repo.get_by(ItemSubcat, subcatid: s, brand_id: BN.get_brand_id(conn))
-      menu_cat_id = itemcat.itemcatid
+
+      itemcat2 =
+        Repo.get_by(
+          ItemCat,
+          itemcatname: elem(item, 1)["item_cat"],
+          brand_id: BN.get_brand_id(conn)
+        )
+
+      menu_cat_id = itemcat2.itemcatid
       combo_id = subcatid
       combo_qty = elem(item, 1)["cat_limit"]
       comboid2 = combo_id |> Integer.to_string()

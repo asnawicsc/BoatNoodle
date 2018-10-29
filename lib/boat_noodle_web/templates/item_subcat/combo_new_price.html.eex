@@ -153,15 +153,20 @@
 														
 													<% ala_carte = Repo.all(from s in BoatNoodle.BN.ItemSubcat,
 														left_join: i in BoatNoodle.BN.ItemCat,  on: i.itemcatid == s.itemcatid,
-														where: i.itemcatid == ^data.itemcatid 
-														and s.brand_id ==^@brand, 
+														where: 
+														# i.itemcatid == ^data.itemcatid and 
+														s.brand_id ==^@brand and i.brand_id == ^@brand, 
 														select: %{
+															category_type: i.category_type,
 														itemname: s.itemname,
 														itemdesc: s.itemdesc,
 														subcatid: s.subcatid,
 														price_code: s.price_code,
 														itemcode: s.itemcode}, 
-														order_by: [asc: s.itemcode])|>Enum.filter(fn x -> x.price_code != "" end)|>Enum.uniq %>
+														order_by: [asc: s.itemcode]) |> Enum.reject(fn x -> x.category_type == "COMBO" end) |>Enum.filter(fn x -> x.price_code == @price_code end)|> Enum.uniq 
+
+
+														%>
 
 
 								
