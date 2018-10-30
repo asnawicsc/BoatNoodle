@@ -141,7 +141,7 @@
                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Target Category</label>
             <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" value="<%= @discount_a.target_cat %>" id="select_target_category" name="target_cat" data-size="7">
                         
-                              
+                              <option value="0" >None</option>
                                             <%= for item <- @categories do %>
                                            
                                         <%=if item.id== @discount_a.target_cat do %>
