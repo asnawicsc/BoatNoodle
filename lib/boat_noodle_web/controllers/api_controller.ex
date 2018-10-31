@@ -5,8 +5,6 @@ defmodule BoatNoodleWeb.ApiController do
   require IEx
 
   def webhook_post_operations(conn, params) do
-    IO.inspect(params)
-
     cond do
       params["scope"] == nil ->
         message = List.insert_at(conn.req_headers, 0, {"scope", "scope value is empty"})
@@ -42,6 +40,9 @@ defmodule BoatNoodleWeb.ApiController do
 
             "void_sales" ->
               push_scope_void_sales(conn, params, user)
+
+            "restaurant_status" ->
+              push_restaurant_status(conn, params, user)
 
             _ ->
               send_resp(conn, 500, "requested scope not available. \n")
@@ -143,6 +144,16 @@ defmodule BoatNoodleWeb.ApiController do
         model_insert_error(conn, changeset, params)
         send_resp(conn, 500, "not ok")
     end
+  end
+
+  def push_restaurant_status(conn, params, user) do
+    params = Map.put(params, "branch_id", user.branchid)
+    params = Map.put(params, "brand_id", user.brand_id)
+
+    update_rest_status(user.brand_id, user.branchid, params)
+
+    map = %{status: "ok"} |> Poison.encode!()
+    send_resp(conn, 200, map)
   end
 
   def push_scope_shift_detail(conn, params, user) do
@@ -1588,6 +1599,14 @@ defmodule BoatNoodleWeb.ApiController do
       order: d_order,
       pax: d_pax,
       transaction: d_transaction
+    })
+  end
+
+  def update_rest_status(brand_id, branch_id, params) do
+    BoatNoodleWeb.Endpoint.broadcast("dashboard_channel:#{brand_id}", "branch_#{branch_id}", %{
+      staff: params["current_user"],
+      unsync: params["unsync"],
+      versions: params["version"]
     })
   end
 

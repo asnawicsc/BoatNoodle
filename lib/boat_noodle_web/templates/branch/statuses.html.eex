@@ -1,0 +1,54 @@
+  <script src="/js/dashboard.js"></script>
+<div class="row">
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Active Branches</h4>
+        <p class="category">GUMMY POS system that connected online</p>
+      </div>
+      <div class="card-body">
+		<div class="row">
+<%= for branch <- @branches do %>
+
+<div class="col-sm-4">
+	
+	<div class="card">
+	  <div class="card-body" >
+	    <h4 class="card-title"><%= branch.branchname%></h4>
+	    <h6 class="card-subtitle mb-2 text-muted version" aria-label="<%= branch.branchid%>">unknown</h6>
+	    <p class="card-text logged_in">Logged In: <span aria-label="<%= branch.branchid%>" class="staff">Zisan</span> </p>
+	    <a href="#0" class="card-link">Unsync: <span aria-label="<%= branch.branchid%>" class="unsync">0</span></a>
+	    <a href="#0" class="card-link"><span aria-label="<%= branch.branchid%>" class="badge badge-default online">Offline</span></a>
+	  </div>
+	</div>
+</div>
+<script type="text/javascript">
+	dashboard_channel.on("branch_<%= branch.branchid%>", payload => {
+	$("h6[aria-label='<%= branch.branchid%>']").html(payload.versions)
+	$("span[aria-label='<%= branch.branchid%>'].staff").html(payload.staff)
+	$("span[aria-label='<%= branch.branchid%>'].unsync").html(payload.unsync)
+
+	$("span[aria-label='<%= branch.branchid%>'].online").attr("class", "badge badge-success online")
+	$("span[aria-label='<%= branch.branchid%>'].online").html("Online")
+
+	$("span[aria-label='<%= branch.branchid%>'].online").delay(5000).attr("class", "badge badge-default online")
+	$("span[aria-label='<%= branch.branchid%>'].online").delay(5000).html("Offline")
+})
+</script>
+<% end %>
+		</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Regular header</h4>
+        <p class="category">Category subtitle</p>
+      </div>
+      <div class="card-body">
+        The place is close to Barceloneta Beach and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the main night life in Barcelona...
+      </div>
+    </div>
+  </div>
+</div>

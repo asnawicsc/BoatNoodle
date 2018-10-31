@@ -134,7 +134,7 @@
                                           
                                         </select>
           </div>
-
+      
           <input type="hidden" class="form-control" name="try">
           
                     <div class="col-sm-3" id="target_category">
@@ -181,6 +181,7 @@
                                           
                                         </select>
           </div>
+
            <input type="hidden" class="form-control" name="try2">
 
         </div>
@@ -476,9 +477,12 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    <%= if @discount_a.multi_item_list != nil do %>
-    <% ids= @discount_a.multi_item_list|>String.split(",") %>
+
+    <%= if @discount_a.multi_item_list != "" do %>
+    <% ids= @discount_a.multi_item_list|> String.split(",") %>
     $('select[name="is_targetmenuitems[]"]').selectpicker('val', [<%= Enum.map(ids,fn x -> "#{x}," end) %>]);
+    <% else %>
+    $('select[name="is_targetmenuitems[]"]').selectpicker('val', [<%= @discount_a.is_targetmenuitems %>]);
     <% end %>
     $('select[name="is_targetmenuitems[]"]').on('hidden.bs.select', function(e) {
       var multiselect = $('#target_item2').val();

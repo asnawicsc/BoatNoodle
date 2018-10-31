@@ -6,6 +6,12 @@ defmodule BoatNoodleWeb.BranchController do
   alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, ComboDetails, PaymentType}
   require IEx
 
+  def statuses(conn, params) do
+    branches = BN.list_branches(BN.get_brand_id(conn))
+
+    render(conn, "statuses.html", branches: branches)
+  end
+
   def printers(conn, %{"id" => id}) do
     printers =
       Repo.all(from(t in Tag, where: t.branch_id == ^id and t.brand_id == ^BN.get_brand_id(conn)))
@@ -602,6 +608,8 @@ defmodule BoatNoodleWeb.BranchController do
         current_menu_catalog.items
         |> String.split(",")
         |> Enum.filter(fn x -> String.length(x) == 6 end)
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.map(fn x -> String.to_integer(x) end)
       end
 
     items =
@@ -611,6 +619,8 @@ defmodule BoatNoodleWeb.BranchController do
         current_menu_catalog.items
         |> String.split(",")
         |> Enum.filter(fn x -> String.length(x) != 6 end)
+        |> Enum.reject(fn x -> x == "" end)
+        |> Enum.map(fn x -> String.to_integer(x) end)
       end
 
     all_item =

@@ -190,7 +190,7 @@ defmodule BoatNoodleWeb.Router do
 
     resources("/organization", OrganizationController)
     resources("/branch", BranchController)
-    get("/branch/:id/get_api", BranchController, :get_api)
+    get("/branches_status", BranchController, :statuses)
 
     get("/branch/:id/printers", BranchController, :printers)
     get("/branch/:id/populate_printers", BranchController, :populate_printers)

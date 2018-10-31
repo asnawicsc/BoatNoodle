@@ -21,8 +21,6 @@ defmodule BoatNoodle.BN do
     Repo.all(MenuItem)
   end
 
-
-
   @doc """
   Gets a single menu_item.
 
@@ -1371,6 +1369,10 @@ defmodule BoatNoodle.BN do
     Repo.all(Branch)
   end
 
+  def list_branches(brand_id) do
+    Repo.all(from(b in Branch, where: b.brand_id == ^brand_id))
+  end
+
   @doc """
   Gets a single branch.
 
@@ -1788,7 +1790,6 @@ defmodule BoatNoodle.BN do
     |> Sales.changeset(attrs)
     |> Repo.insert()
   end
-
 
   @doc """
   Updates a sales.

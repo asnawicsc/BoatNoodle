@@ -31,7 +31,7 @@ defmodule BoatNoodle.BN.SalesMaster do
     field(:combo_name, :string)
     field(:final_nett_sales, :decimal)
     field(:total_combo_sub_item_qty, :integer)
-    field(:combo_total_topup_qty, :decimal)
+    field(:combo_total_topup_amt, :decimal)
     field(:combo_items_str, :binary)
 
     field(:foc_qty, :integer)
@@ -53,7 +53,7 @@ defmodule BoatNoodle.BN.SalesMaster do
       :combo_name,
       :final_nett_sales,
       :total_combo_sub_item_qty,
-      :combo_total_topup_qty,
+      :combo_total_topup_amt,
       :foc_qty,
       :discount_value,
       :service_charge,
