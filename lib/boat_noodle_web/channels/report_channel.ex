@@ -11,5990 +11,6338 @@ defmodule BoatNoodleWeb.ReportChannel do
   end
 
   def handle_in("sales_trend", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-     all =if branchid != "0" do
-
-    
+    all =
+      if branchid != "0" do
         Repo.all(
           from(
             sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               grand_total: sum(sp.grand_total)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       else
-
-
         Repo.all(
           from(
             sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               grand_total: sum(sp.grand_total)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
+      end
 
-      
-    end
+    year = all |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-     
+    sales_trend =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(all, fn x -> x.salesdate.year == item end)
 
-   year=all|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+        data = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-sales_trend=for item <- year do
- 
- year=%{year: item}
+        all =
+          for item <- data do
+            month = item |> elem(0) |> Timex.month_name()
+            month_number = item |> elem(0) |> Integer.to_string()
+            month_number = month_number <> "."
 
-         sales=Enum.filter(all,fn x -> x.salesdate.year==item end)
+            grand_total1 =
+              item
+              |> elem(1)
+              |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+              |> Enum.sum()
+              |> Float.round(2)
+              |> Number.Delimit.number_to_delimited()
 
-        data=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-         all= for item <- data do
-                 month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+            grand_total =
+              item
+              |> elem(1)
+              |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+              |> Enum.sum()
+              |> Float.round(2)
 
-             grand_total1=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-             grand_total=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)
-              a=%{month: month,m: month, grand_total: grand_total, grand_total1: grand_total1}
+            a = %{month: month, m: month, grand_total: grand_total, grand_total1: grand_total1}
 
-               Map.merge(year,a)
+            Map.merge(year, a)
           end
-  
-end|>List.flatten
+      end
+      |> List.flatten()
 
+    st_graph =
+      for item <- sales_trend do
+        %{month: item.m, grand_total: item.grand_total}
+      end
 
- st_graph=for item <- sales_trend do
+    broadcast(socket, "sales_trend", %{
+      st_graph: Poison.encode!(st_graph),
+      sales_trend: sales_trend
+    })
 
-
-     %{month: item.m, grand_total: item.grand_total}
-  
-end
-
-
-    
-
-    broadcast(socket, "sales_trend", %{ st_graph: Poison.encode!(st_graph),sales_trend: sales_trend})
     {:noreply, socket}
   end
-
-
-
-
-
 
   def handle_in("average_daily", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-      all = if branchid != "0" do
-        
-   
+    all =
+      if branchid != "0" do
         Repo.all(
           from(
             sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               grand_total: sum(sp.grand_total)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
-
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       else
-
-             Repo.all(
+        Repo.all(
           from(
             sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               grand_total: sum(sp.grand_total)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
-
-
-
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       end
 
+    year = all |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-   year=all|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    average_daily =
+      for item <- year do
+        year = %{year: item}
 
-average_daily=for item <- year do
- 
- year=%{year: item}
+        sales = Enum.filter(all, fn x -> x.salesdate.year == item end)
 
-         sales=Enum.filter(all,fn x -> x.salesdate.year==item end)
+        data = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        data=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-         all= for item <- data do
-             month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+        all =
+          for item <- data do
+            month = item |> elem(0) |> Timex.month_name()
+            month_number = item |> elem(0) |> Integer.to_string()
+            month_number = month_number <> "."
 
+            count = item |> elem(1) |> Enum.count()
 
-             count=item|>elem(1)|>Enum.count()
+            grand_total =
+              item
+              |> elem(1)
+              |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+              |> Enum.sum()
+              |> Float.round(2)
 
-             grand_total=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)
+            average1 =
+              (grand_total / count) |> Float.round(2) |> Number.Delimit.number_to_delimited()
 
-             average1=grand_total/count|>Float.round(2)|>Number.Delimit.number_to_delimited()
-             average=grand_total/count|>Float.round(2)
+            average = (grand_total / count) |> Float.round(2)
 
-              a=%{month: month,m: month, grand_total: average, grand_total1: average1}
+            a = %{month: month, m: month, grand_total: average, grand_total1: average1}
 
-               Map.merge(year,a)
+            Map.merge(year, a)
           end
-  
-end|>List.flatten
+      end
+      |> List.flatten()
 
-ad_graph=for item <- average_daily do
+    ad_graph =
+      for item <- average_daily do
+        %{month: item.m, grand_total: item.grand_total}
+      end
 
+    broadcast(socket, "average_daily", %{
+      ad_graph: Poison.encode!(ad_graph),
+      average_daily: average_daily
+    })
 
-     %{month: item.m, grand_total: item.grand_total}
-  
-end
-
-       
-
-
-
-    broadcast(socket, "average_daily", %{ad_graph: Poison.encode!(ad_graph),average_daily: average_daily})
     {:noreply, socket}
   end
 
-    def handle_in("pax_trend", payload, socket) do
-
+  def handle_in("pax_trend", payload, socket) do
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-      all =if branchid != "0" do
+    all =
+      if branchid != "0" do
         Repo.all(
-          from(s in BoatNoodle.BN.Sales,
+          from(
+            s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               pax: sum(s.pax)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
-
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       else
-
-             Repo.all(
-          from(s in BoatNoodle.BN.Sales,
+        Repo.all(
+          from(
+            s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               pax: sum(s.pax)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
-
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       end
 
+    year = all |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-   year=all|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    pax_trend =
+      for item <- year do
+        year = %{year: item}
 
-pax_trend=for item <- year do
- 
- year=%{year: item}
+        sales = Enum.filter(all, fn x -> x.salesdate.year == item end)
 
-         sales=Enum.filter(all,fn x -> x.salesdate.year==item end)
+        data = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        data=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-         all= for item <- data do
-             month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+        all =
+          for item <- data do
+            month = item |> elem(0) |> Timex.month_name()
+            month_number = item |> elem(0) |> Integer.to_string()
+            month_number = month_number <> "."
 
-           
-             pax=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.pax) end)|>Enum.sum
+            pax = item |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
-              a=%{month: month,m: month, pax: pax}
-          
+            a = %{month: month, m: month, pax: pax}
 
-               Map.merge(year,a)
+            Map.merge(year, a)
           end
-  
-end|>List.flatten
+      end
+      |> List.flatten()
 
-pt_graph=for item <- pax_trend do
+    pt_graph =
+      for item <- pax_trend do
+        %{month: item.m, pax: item.pax}
+      end
 
-
-     %{month: item.m, pax: item.pax}
-  
-end
-
-
-
-
-    broadcast(socket, "pax_trend", %{pt_graph: Poison.encode!(pt_graph),pax_trend: pax_trend})
+    broadcast(socket, "pax_trend", %{pt_graph: Poison.encode!(pt_graph), pax_trend: pax_trend})
     {:noreply, socket}
   end
-
 
   def handle_in("average_daily_pax", payload, socket) do
-
-        branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-      all = if branchid != "0" do
-  
+    all =
+      if branchid != "0" do
         Repo.all(
-          from(s in BoatNoodle.BN.Sales,
+          from(
+            s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               pax: sum(s.pax)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       else
-
-           Repo.all(
-          from(s in BoatNoodle.BN.Sales,
+        Repo.all(
+          from(
+            s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               pax: sum(s.pax)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       end
 
+    year = all |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-   year=all|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    average_daily_pax =
+      for item <- year do
+        year = %{year: item}
 
-average_daily_pax=for item <- year do
- 
- year=%{year: item}
+        sales = Enum.filter(all, fn x -> x.salesdate.year == item end)
 
-         sales=Enum.filter(all,fn x -> x.salesdate.year==item end)
+        data = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        data=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-         all= for item <- data do
-            month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+        all =
+          for item <- data do
+            month = item |> elem(0) |> Timex.month_name()
+            month_number = item |> elem(0) |> Integer.to_string()
+            month_number = month_number <> "."
 
-              count=item|>elem(1)|>Enum.count()
-             pax=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.pax) end)|>Enum.sum
-                 average=pax/count|>Float.round(0)
-             
-              a=%{month: month,m: month, pax: average}
-          
+            count = item |> elem(1) |> Enum.count()
+            pax = item |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
+            average = (pax / count) |> Float.round(0)
 
-               Map.merge(year,a)
+            a = %{month: month, m: month, pax: average}
+
+            Map.merge(year, a)
           end
-  
-end|>List.flatten
+      end
+      |> List.flatten()
 
-adp_graph=for item <- average_daily_pax do
+    adp_graph =
+      for item <- average_daily_pax do
+        %{month: item.m, pax: item.pax}
+      end
 
+    broadcast(socket, "average_daily_pax", %{
+      adp_graph: Poison.encode!(adp_graph),
+      average_daily_pax: average_daily_pax
+    })
 
-     %{month: item.m, pax: item.pax}
-  
-end
-
-
-
-    broadcast(socket, "average_daily_pax", %{adp_graph: Poison.encode!(adp_graph),average_daily_pax: average_daily_pax})
     {:noreply, socket}
   end
-
 
   def handle_in("per_pax_spending_trend", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-      all =if branchid != "0" do
+    all =
+      if branchid != "0" do
         Repo.all(
           from(
             sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               pax: sum(s.pax),
               salesdate: s.salesdate,
               grand_total: sum(sp.grand_total)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
-
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       else
-
-
         Repo.all(
           from(
             sp in BoatNoodle.BN.SalesPayment,
-            left_join: s in BoatNoodle.BN.Sales, on: sp.salesid==s.salesid,
+            left_join: s in BoatNoodle.BN.Sales,
+            on: sp.salesid == s.salesid,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               pax: sum(s.pax),
               salesdate: s.salesdate,
               grand_total: sum(sp.grand_total)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
-
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       end
 
+    year = all |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-   year=all|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    per_pax_spending_trend =
+      for item <- year do
+        year = %{year: item}
 
-per_pax_spending_trend=for item <- year do
- 
- year=%{year: item}
+        sales = Enum.filter(all, fn x -> x.salesdate.year == item end)
 
-         sales=Enum.filter(all,fn x -> x.salesdate.year==item end)
+        data = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        data=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-         all= for item <- data do
-             month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
-              pax=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.pax) end)|>Enum.sum
-              grand_total=item|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.grand_total) end)|>Enum.sum|>Float.round(2)
-              average1=grand_total/pax|>Float.round(2)|>Number.Delimit.number_to_delimited()
-              average=grand_total/pax|>Float.round(2)
-              a=%{month: month,m: month, grand_total: average, grand_total1: average1}
+        all =
+          for item <- data do
+            month = item |> elem(0) |> Timex.month_name()
+            month_number = item |> elem(0) |> Integer.to_string()
+            month_number = month_number <> "."
+            pax = item |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
-               Map.merge(year,a)
+            grand_total =
+              item
+              |> elem(1)
+              |> Enum.map(fn x -> Decimal.to_float(x.grand_total) end)
+              |> Enum.sum()
+              |> Float.round(2)
+
+            average1 =
+              (grand_total / pax) |> Float.round(2) |> Number.Delimit.number_to_delimited()
+
+            average = (grand_total / pax) |> Float.round(2)
+            a = %{month: month, m: month, grand_total: average, grand_total1: average1}
+
+            Map.merge(year, a)
           end
-  
-end|>List.flatten
+      end
+      |> List.flatten()
 
+    pps_graph =
+      for item <- per_pax_spending_trend do
+        %{month: item.m, grand_total: item.grand_total}
+      end
 
+    broadcast(socket, "per_pax_spending_trend", %{
+      pps_graph: Poison.encode!(pps_graph),
+      per_pax_spending_trend: per_pax_spending_trend
+    })
 
-pps_graph=for item <- per_pax_spending_trend do
-
-
-     %{month: item.m, grand_total: item.grand_total}
-  
-end
-
-
-    broadcast(socket, "per_pax_spending_trend", %{pps_graph: Poison.encode!(pps_graph),per_pax_spending_trend: per_pax_spending_trend})
     {:noreply, socket}
   end
-
 
   def handle_in("pax_visit_trend", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-     pax_visit_trend =if branchid != "0"  do
-       
-  
+    pax_visit_trend =
+      if branchid != "0" do
         Repo.all(
-          from(s in BoatNoodle.BN.Sales,
+          from(
+            s in BoatNoodle.BN.Sales,
             left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.branchid == ^payload["branch_id"] and
+                s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
             select: %{
               salesdate: s.salesdate,
               pax: sum(s.pax)
             }
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
-
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
       else
+        Repo.all(
+          from(
+            s in BoatNoodle.BN.Sales,
+            left_join: b in BoatNoodle.BN.Brand,
+            where:
+              s.is_void == 0 and b.id == s.brand_id and s.salesdate >= ^payload["s_date"] and
+                s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+            group_by: s.salesdate,
+            select: %{
+              salesdate: s.salesdate,
+              pax: sum(s.pax)
+            }
+          )
+        )
+        |> Enum.reject(fn x -> x.salesdate == nil end)
+      end
 
+    pvt_graph =
+      for item <- pax_visit_trend do
+        %{day: item.salesdate, pax: Decimal.to_float(item.pax) |> Float.round(0)}
+      end
+
+    broadcast(socket, "pax_visit_trend", %{
+      pvt_graph: Poison.encode!(pvt_graph),
+      pax_visit_trend: pax_visit_trend
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("category_trend", payload, socket) do
+    branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
           Repo.all(
-          from(s in BoatNoodle.BN.Sales,
-            left_join: b in BoatNoodle.BN.Brand,
-            where: s.is_void == 0 and b.id==s.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: s.salesdate,
-            select: %{
-              salesdate: s.salesdate,
-              pax: sum(s.pax)
-            }
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )|> Enum.reject(fn x -> x.salesdate == nil end)
 
-      end
-
-
-     pvt_graph=for item <- pax_visit_trend do
-    
-     %{day: item.salesdate, pax: Decimal.to_float(item.pax)|>Float.round(0)}
-  
-        end
-
-    broadcast(socket, "pax_visit_trend", %{pvt_graph: Poison.encode!(pvt_graph),pax_visit_trend: pax_visit_trend})
-    {:noreply, socket}
-  end
-
-   def handle_in("category_trend", payload, socket) do
-
-    branchid = payload["branch_id"]
-    brand_id = payload["brand_id"]
-
-    brand=Repo.get_by(Brand,id: brand_id)
-
-    {all,combo_detail}=if branchid != "0" do
-      
-  
-     all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,      
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
 
-
-
-
-             combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
-          )
-        )
-
-          {all,combo_detail}
-
-        else
-
-               all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,      
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
-          )
-        )
-
-
-
-
-             combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
-          )
-        )
-
-          {all,combo_detail}
-
-  end
-
-
-
-        new_one=all++combo_detail
-
-
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
-
-        
-
-
-        category_trend=for item <- year do
-
-                  year=%{year: item}
-
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
-
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
-
-            for item <- pax_visit_trend do
-
-              month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-
-              month=%{month: month,m: month_number}
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-                    ass=for cat <- all_data do
-
-                                  category=cat|>elem(0)
-                              
-                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                      grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
-            end
-
-        end|>List.flatten
-
- year=category_trend|> Enum.group_by(fn x -> x.year end)|>Map.keys
-
-        ct_graph=for item <- year do
-
-
-                  sales=Enum.filter(category_trend,fn x -> x.year==item end)
-
-                  month_keys=sales|>Enum.group_by(fn x -> x.m end)|>Map.keys
-
-
-  for month <- month_keys do
-
-
-
-        item=Enum.filter(category_trend,fn x -> x.m==month end)
-month=month|> Timex.month_name()
-  add_on=item|>Enum.filter(fn x -> x.category=="F_AddOn" end)
-  beverages=item|>Enum.filter(fn x -> x.category=="F_Beverages" end)
-  noodle=item|>Enum.filter(fn x -> x.category=="F_Noodle" end)
-  rice=item|>Enum.filter(fn x -> x.category=="F_Rice" end)
-  sidedish=item|>Enum.filter(fn x -> x.category=="F_SideDish" end)
-  toppings=item|>Enum.filter(fn x -> x.category=="Toppings" end)
-
-  {add_on}=if add_on == [] do
-
-   {0.0}
-  else
-    add_on=add_on|>hd
-    add_on=add_on.grand_total
-    {add_on}
-    
-  end
-   {beverages}= if beverages == [] do
-
-    {0.0}
-  else
-    beverages=beverages|>hd
-    beverages=beverages.grand_total
-    {beverages}
-  end
-
-  {noodle}=if noodle == [] do
-
-    {0.0}
-  else
-    noodle=noodle|>hd
-    noodle=noodle.grand_total
-    {noodle}
-  end
-
- {rice}= if rice == [] do
-
-    {0.0}
-  else
-    rice=rice|>hd
-    rice=rice.grand_total
-    {rice}
-    
-  end
-
- {sidedish}= if sidedish == [] do
-
-    {0.0}
-
-  else
-    sidedish=sidedish|>hd
-    sidedish=sidedish.grand_total
-
-    {sidedish}
-    
-  end
-
-  {toppings}=if toppings == [] do
-
-    {0.0}
-  else
-    toppings=toppings|>hd
-    toppings=toppings.grand_total
-    {toppings}
-    
-  end
-
-
-%{month: month,toppings: toppings, add_on: add_on,beverages: beverages,noodle: noodle,
-rice: rice,sidedish: sidedish}
-  
-
-
-end
-end|>List.flatten
-
-
-
-            broadcast(socket, "category_trend", %{ct_graph: Poison.encode!(ct_graph),category_trend: category_trend})
-    {:noreply, socket}
-
-  
-  end
-
-   def handle_in("category_trend_noodle", payload, socket) do
-
-    branchid = payload["branch_id"]
-    brand_id = payload["brand_id"]
-
-    brand=Repo.get_by(Brand,id: brand_id)
-
-      {all,combo_detail}=if branchid != "0" do
-
-     all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-              left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,      
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
-          )
-        )
-
-
-             combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
-          )
-        )
-        {all,combo_detail}
+        {all, combo_detail}
       else
-             all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-              left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,      
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-             combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    category_trend =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        category_trend_noodle=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  year=%{year: item}
+          month = %{month: month, m: month_number}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-            for item <- pax_visit_trend do
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-                month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              month=%{month: month}
+              a = %{category: category, grand_total: grand_total, grand_total1: grand_total1}
+              b = Map.merge(year, a)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-           
+    year = category_trend |> Enum.group_by(fn x -> x.year end) |> Map.keys()
 
-                    ass=for cat <- all_data do
-                            category=cat|>elem(0)
-                              if category=="F_Noodle"  do
-                                                        
-                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                     grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
+    ct_graph =
+      for item <- year do
+        sales = Enum.filter(category_trend, fn x -> x.year == item end)
 
-                               c=Map.merge(month,b)
-                              end
-                    end
-               
+        month_keys = sales |> Enum.group_by(fn x -> x.m end) |> Map.keys()
+
+        for month <- month_keys do
+          item = Enum.filter(category_trend, fn x -> x.m == month end)
+          month = month |> Timex.month_name()
+          add_on = item |> Enum.filter(fn x -> x.category == "F_AddOn" end)
+          beverages = item |> Enum.filter(fn x -> x.category == "F_Beverages" end)
+          noodle = item |> Enum.filter(fn x -> x.category == "F_Noodle" end)
+          rice = item |> Enum.filter(fn x -> x.category == "F_Rice" end)
+          sidedish = item |> Enum.filter(fn x -> x.category == "F_SideDish" end)
+          toppings = item |> Enum.filter(fn x -> x.category == "Toppings" end)
+
+          {add_on} =
+            if add_on == [] do
+              {0.0}
+            else
+              add_on = add_on |> hd
+              add_on = add_on.grand_total
+              {add_on}
             end
 
-        end|>List.flatten|>Enum.reject(fn x -> x == nil end)
+          {beverages} =
+            if beverages == [] do
+              {0.0}
+            else
+              beverages = beverages |> hd
+              beverages = beverages.grand_total
+              {beverages}
+            end
 
+          {noodle} =
+            if noodle == [] do
+              {0.0}
+            else
+              noodle = noodle |> hd
+              noodle = noodle.grand_total
+              {noodle}
+            end
 
-            broadcast(socket, "category_trend_noodle", %{category_trend_noodle: category_trend_noodle})
+          {rice} =
+            if rice == [] do
+              {0.0}
+            else
+              rice = rice |> hd
+              rice = rice.grand_total
+              {rice}
+            end
+
+          {sidedish} =
+            if sidedish == [] do
+              {0.0}
+            else
+              sidedish = sidedish |> hd
+              sidedish = sidedish.grand_total
+
+              {sidedish}
+            end
+
+          {toppings} =
+            if toppings == [] do
+              {0.0}
+            else
+              toppings = toppings |> hd
+              toppings = toppings.grand_total
+              {toppings}
+            end
+
+          %{
+            month: month,
+            toppings: toppings,
+            add_on: add_on,
+            beverages: beverages,
+            noodle: noodle,
+            rice: rice,
+            sidedish: sidedish
+          }
+        end
+      end
+      |> List.flatten()
+
+    broadcast(socket, "category_trend", %{
+      ct_graph: Poison.encode!(ct_graph),
+      category_trend: category_trend
+    })
+
     {:noreply, socket}
-
-  
   end
 
-     def handle_in("category_trend_rice", payload, socket) do
-
+  def handle_in("category_trend_noodle", payload, socket) do
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0"  do
-
-       all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,           
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
-{all,combo_detail}
-    else
 
-      all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-             left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,           
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
-      {all,combo_detail}
-    end
 
-     
+        {all, combo_detail}
+      end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    category_trend_noodle =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        category_trend_rice=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-                  year=%{year: item}
+          month = %{month: month}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-            for item <- pax_visit_trend do
-              month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+              if category == "F_Noodle" do
+                grand_total1 =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
+                  |> Number.Delimit.number_to_delimited()
 
-              month=%{month: month}
+                grand_total =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
+                a = %{category: category, grand_total: grand_total, grand_total1: grand_total1}
+                b = Map.merge(year, a)
 
-           
-
-                    ass=for cat <- all_data do
-                            category=cat|>elem(0)
-                              if category=="F_Rice"  do
-                                                        
-                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                     grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                              end
-                    end
-               
+                c = Map.merge(month, b)
+              end
             end
+        end
+      end
+      |> List.flatten()
+      |> Enum.reject(fn x -> x == nil end)
 
-        end|>List.flatten|>Enum.reject(fn x -> x == nil end)
-
-
-            broadcast(socket, "category_trend_rice", %{category_trend_rice: category_trend_rice})
+    broadcast(socket, "category_trend_noodle", %{category_trend_noodle: category_trend_noodle})
     {:noreply, socket}
-
-  
   end
 
+  def handle_in("category_trend_rice", payload, socket) do
+    branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
+          )
+
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
+          )
+
+        {all, combo_detail}
+      end
+
+    new_one = all ++ combo_detail
+
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
+
+    category_trend_rice =
+      for item <- year do
+        year = %{year: item}
+
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
+
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
+
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
+
+          month = %{month: month}
+
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
+
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
+
+              if category == "F_Rice" do
+                grand_total1 =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
+                  |> Number.Delimit.number_to_delimited()
+
+                grand_total =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
+
+                a = %{category: category, grand_total: grand_total, grand_total1: grand_total1}
+                b = Map.merge(year, a)
+
+                c = Map.merge(month, b)
+              end
+            end
+        end
+      end
+      |> List.flatten()
+      |> Enum.reject(fn x -> x == nil end)
+
+    broadcast(socket, "category_trend_rice", %{category_trend_rice: category_trend_rice})
+    {:noreply, socket}
+  end
 
   def handle_in("category_trend_others", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-      
-
-    
-
-     all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,  
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
-        {all,combo_detail}
 
+        {all, combo_detail}
       else
-
-             all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,  
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
-        {all,combo_detail}
+
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    category_trend_others =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        category_trend_others=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-                  year=%{year: item}
+          month = %{month: month}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-            for item <- pax_visit_trend do
+              if category == "F_AddOn" or category == "Toppings" do
+                grand_total1 =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
+                  |> Number.Delimit.number_to_delimited()
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+                grand_total =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
 
-              month=%{month: month}
+                a = %{category: category, grand_total: grand_total, grand_total1: grand_total1}
+                b = Map.merge(year, a)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-           
-
-                    ass=for cat <- all_data do
-                            category=cat|>elem(0)
-                              if category=="F_AddOn" or category=="Toppings"  do
-                                                        
-                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                     grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                              end
-                    end
-               
+                c = Map.merge(month, b)
+              end
             end
+        end
+      end
+      |> List.flatten()
+      |> Enum.reject(fn x -> x == nil end)
 
-        end|>List.flatten|>Enum.reject(fn x -> x == nil end)
-
-
-            broadcast(socket, "category_trend_others", %{category_trend_others: category_trend_others})
+    broadcast(socket, "category_trend_others", %{category_trend_others: category_trend_others})
     {:noreply, socket}
-
-  
   end
 
-
   def handle_in("category_trend_dessert", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0"  do
-
-
-     all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,    
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       else
-
-
-     all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,    
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       end
-        new_one=all++combo_detail
 
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
+    category_trend_dessert =
+      for item <- year do
+        year = %{year: item}
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-        category_trend_dessert=for item <- year do
+          month = %{month: month}
 
-                  year=%{year: item}
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+              if category == "F_SideDish" do
+                grand_total1 =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
+                  |> Number.Delimit.number_to_delimited()
 
-            for item <- pax_visit_trend do
+                grand_total =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+                a = %{category: category, grand_total: grand_total, grand_total1: grand_total1}
+                b = Map.merge(year, a)
 
-              month=%{month: month}
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-           
-
-                    ass=for cat <- all_data do
-                            category=cat|>elem(0)
-                              if category=="F_SideDish"  do
-                                                        
-                     grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                     grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                              end
-                    end
-               
+                c = Map.merge(month, b)
+              end
             end
+        end
+      end
+      |> List.flatten()
+      |> Enum.reject(fn x -> x == nil end)
 
-        end|>List.flatten|>Enum.reject(fn x -> x == nil end)
-
-
-            broadcast(socket, "category_trend_dessert", %{category_trend_dessert: category_trend_dessert})
+    broadcast(socket, "category_trend_dessert", %{category_trend_dessert: category_trend_dessert})
     {:noreply, socket}
-
-  
   end
 
   def handle_in("category_trend_beverage", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if  branchid != "0" do
-      
-    
-
-     all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-              combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
-   {all,combo_detail}
+
+        {all, combo_detail}
       else
-
-
-     all =
-        Repo.all(
-           from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-
-              combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
 
-           {all,combo_detail}
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    category_trend_beverage =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        category_trend_beverage=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-                  year=%{year: item}
+          month = %{month: month}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-            for item <- pax_visit_trend do
+              if category == "F_Beverages" do
+                grand_total1 =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
+                  |> Number.Delimit.number_to_delimited()
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+                grand_total =
+                  cat
+                  |> elem(1)
+                  |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                  |> Enum.sum()
+                  |> Float.round(2)
 
-              month=%{month: month}
+                a = %{category: category, grand_total: grand_total, grand_total1: grand_total1}
+                b = Map.merge(year, a)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-           
-
-                    ass=for cat <- all_data do
-                            category=cat|>elem(0)
-                              if category=="F_Beverages"  do
-                                                        
-                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                     grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                     a=%{category: category,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                              end
-                    end
-               
+                c = Map.merge(month, b)
+              end
             end
+        end
+      end
+      |> List.flatten()
+      |> Enum.reject(fn x -> x == nil end)
 
-        end|>List.flatten|>Enum.reject(fn x -> x == nil end)
+    broadcast(socket, "category_trend_beverage", %{
+      category_trend_beverage: category_trend_beverage
+    })
 
-
-            broadcast(socket, "category_trend_beverage", %{category_trend_beverage: category_trend_beverage})
     {:noreply, socket}
-
-  
   end
 
- def handle_in("category_contribute_trend", payload, socket) do
-
+  def handle_in("category_contribute_trend", payload, socket) do
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-     
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-          combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
-{all,combo_detail}
-             else 
 
-                   all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(sm.afterdisc)
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(sm.afterdisc)
+              }
+            )
           )
-        )
 
-          combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.menu_cat_id==c.itemcatid, 
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and  b.id==c.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                  group_by: [c.itemcatname,s.salesdate],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: c.itemcatname,
-              afterdisc: sum(i.unit_price)
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.menu_cat_id == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == c.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [c.itemcatname, s.salesdate],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: c.itemcatname,
+                afterdisc: sum(i.unit_price)
+              }
+            )
           )
-        )
-        {all,combo_detail}
-    end
 
-        new_one=all++combo_detail
+        {all, combo_detail}
+      end
 
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+    category_contribute_trend =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        category_contribute_trend=for item <- year do
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  year=%{year: item}
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          month = %{month: month, m: month_number}
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          count1 =
+            item |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end) |> Enum.sum()
 
-            for item <- pax_visit_trend do
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              month=%{month: month,m: month_number}
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-              count1=item|>elem(1)|>Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)|>Enum.sum
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
+              count =
+                cat |> elem(1) |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
 
-                    ass=for cat <- all_data do
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-                                  category=cat|>elem(0)
-  
-                                   grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                  
+              a = %{
+                category: category,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-                                        count=cat|>elem(1)|>Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)|>Enum.sum
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+              b = Map.merge(year, a)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+    year = category_contribute_trend |> Enum.group_by(fn x -> x.year end) |> Map.keys()
+
+    cct_graph =
+      for item <- year do
+        sales = Enum.filter(category_contribute_trend, fn x -> x.year == item end)
+
+        month_keys = sales |> Enum.group_by(fn x -> x.m end) |> Map.keys()
+
+        for month <- month_keys do
+          item = Enum.filter(category_contribute_trend, fn x -> x.m == month end)
+
+          month = month |> Timex.month_name()
+
+          add_on = item |> Enum.filter(fn x -> x.category == "F_AddOn" end)
+          beverages = item |> Enum.filter(fn x -> x.category == "F_Beverages" end)
+          noodle = item |> Enum.filter(fn x -> x.category == "F_Noodle" end)
+          rice = item |> Enum.filter(fn x -> x.category == "F_Rice" end)
+          sidedish = item |> Enum.filter(fn x -> x.category == "F_SideDish" end)
+          toppings = item |> Enum.filter(fn x -> x.category == "Toppings" end)
+
+          {add_on} =
+            if add_on == [] do
+              {0.0}
+            else
+              add_on = add_on |> hd
+              add_on = add_on.grand_total
+              {add_on}
             end
 
-        end|>List.flatten
+          {beverages} =
+            if beverages == [] do
+              {0.0}
+            else
+              beverages = beverages |> hd
+              beverages = beverages.grand_total
+              {beverages}
+            end
 
-        year=category_contribute_trend|> Enum.group_by(fn x -> x.year end)|>Map.keys
+          {noodle} =
+            if noodle == [] do
+              {0.0}
+            else
+              noodle = noodle |> hd
+              noodle = noodle.grand_total
+              {noodle}
+            end
 
-       cct_graph=for item <- year do
+          {rice} =
+            if rice == [] do
+              {0.0}
+            else
+              rice = rice |> hd
+              rice = rice.grand_total
+              {rice}
+            end
 
+          {sidedish} =
+            if sidedish == [] do
+              {0.0}
+            else
+              sidedish = sidedish |> hd
+              sidedish = sidedish.grand_total
 
-                  sales=Enum.filter(category_contribute_trend,fn x -> x.year==item end)
+              {sidedish}
+            end
 
-                  month_keys=sales|>Enum.group_by(fn x -> x.m end)|>Map.keys
+          {toppings} =
+            if toppings == [] do
+              {0.0}
+            else
+              toppings = toppings |> hd
+              toppings = toppings.grand_total
+              {toppings}
+            end
 
+          %{
+            month: month,
+            toppings: toppings,
+            add_on: add_on,
+            beverages: beverages,
+            noodle: noodle,
+            rice: rice,
+            sidedish: sidedish
+          }
+        end
+      end
+      |> List.flatten()
 
-for month <- month_keys do
+    broadcast(socket, "category_contribute_trend", %{
+      cct_graph: Poison.encode!(cct_graph),
+      category_contribute_trend: category_contribute_trend
+    })
 
-        item=Enum.filter(category_contribute_trend,fn x -> x.m==month end)
-
-        month=month|>Timex.month_name
-
-  add_on=item|>Enum.filter(fn x -> x.category=="F_AddOn" end)
-  beverages=item|>Enum.filter(fn x -> x.category=="F_Beverages" end)
-  noodle=item|>Enum.filter(fn x -> x.category=="F_Noodle" end)
-  rice=item|>Enum.filter(fn x -> x.category=="F_Rice" end)
-  sidedish=item|>Enum.filter(fn x -> x.category=="F_SideDish" end)
-  toppings=item|>Enum.filter(fn x -> x.category=="Toppings" end)
- {add_on}=if add_on == [] do
-
-   {0.0}
-  else
-    add_on=add_on|>hd
-    add_on=add_on.grand_total
-    {add_on}
-    
-  end
-   {beverages}= if beverages == [] do
-
-    {0.0}
-  else
-    beverages=beverages|>hd
-    beverages=beverages.grand_total
-    {beverages}
-  end
-
-  {noodle}=if noodle == [] do
-
-    {0.0}
-  else
-    noodle=noodle|>hd
-    noodle=noodle.grand_total
-    {noodle}
-  end
-
- {rice}= if rice == [] do
-
-    {0.0}
-  else
-    rice=rice|>hd
-    rice=rice.grand_total
-    {rice}
-    
-  end
-
- {sidedish}= if sidedish == [] do
-
-    {0.0}
-
-  else
-    sidedish=sidedish|>hd
-    sidedish=sidedish.grand_total
-
-    {sidedish}
-    
-  end
-
-  {toppings}=if toppings == [] do
-
-    {0.0}
-  else
-    toppings=toppings|>hd
-    toppings=toppings.grand_total
-    {toppings}
-    
-  end
-
-
-
-%{month: month,toppings: toppings, add_on: add_on,beverages: beverages,noodle: noodle,
-rice: rice,sidedish: sidedish}
-  
-
-
-end
-end|>List.flatten
-
-
-            broadcast(socket, "category_contribute_trend", %{cct_graph: Poison.encode!(cct_graph),category_contribute_trend: category_contribute_trend})
     {:noreply, socket}
-
-  
   end
-
 
   def handle_in("top_10_items_qty", payload, socket) do
-
     branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-   {top_10_items_qty,top_10_items_value}= if branchid !="0" do
-      
- 
-
-     top_10_items_qty =
-        Repo.all(
-          from sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales, on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,
-            where: s.is_void == 0 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [i.subcatid,i.itemname],
-            select: %{
-              id: i.subcatid,
-              itemname: i.itemname,
-              qty: sum(sm.qty)
-             
-            },
-             order_by: [desc: sum(sm.qty)],limit: 10)
-
-
+    {top_10_items_qty, top_10_items_value} =
+      if branchid != "0" do
+        top_10_items_qty =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [i.subcatid, i.itemname],
+              select: %{
+                id: i.subcatid,
+                itemname: i.itemname,
+                qty: sum(sm.qty)
+              },
+              order_by: [desc: sum(sm.qty)],
+              limit: 10
+            )
+          )
 
         top_10_items_value =
-        Repo.all(
-          from sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales, on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-           left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,
-            where: s.is_void == 0 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [i.subcatid,i.itemname],
-            select: %{
-              id: i.subcatid,
-              itemname: i.itemname,
-              value: sum(sm.afterdisc)
-             
-            },
-             order_by: [desc: sum(sm.afterdisc)],limit: 10)
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              group_by: [i.subcatid, i.itemname],
+              select: %{
+                id: i.subcatid,
+                itemname: i.itemname,
+                value: sum(sm.afterdisc)
+              },
+              order_by: [desc: sum(sm.afterdisc)],
+              limit: 10
+            )
+          )
 
-        {top_10_items_qty,top_10_items_value}
-
+        {top_10_items_qty, top_10_items_value}
       else
-
-             top_10_items_qty =
-        Repo.all(
-          from sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales, on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,
-            where: s.is_void == 0 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [i.subcatid,i.itemname],
-            select: %{
-              id: i.subcatid,
-              itemname: i.itemname,
-              qty: sum(sm.qty)
-             
-            },
-             order_by: [desc: sum(sm.qty)],limit: 10)
-
-
+        top_10_items_qty =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [i.subcatid, i.itemname],
+              select: %{
+                id: i.subcatid,
+                itemname: i.itemname,
+                qty: sum(sm.qty)
+              },
+              order_by: [desc: sum(sm.qty)],
+              limit: 10
+            )
+          )
 
         top_10_items_value =
-        Repo.all(
-          from sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales, on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-           left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,
-            where: s.is_void == 0 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-                group_by: [i.subcatid,i.itemname],
-            select: %{
-              id: i.subcatid,
-              itemname: i.itemname,
-              value: sum(sm.afterdisc)
-             
-            },
-             order_by: [desc: sum(sm.afterdisc)],limit: 10)
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              group_by: [i.subcatid, i.itemname],
+              select: %{
+                id: i.subcatid,
+                itemname: i.itemname,
+                value: sum(sm.afterdisc)
+              },
+              order_by: [desc: sum(sm.afterdisc)],
+              limit: 10
+            )
+          )
 
-          {top_10_items_qty,top_10_items_value}
+        {top_10_items_qty, top_10_items_value}
+      end
 
-           end
+    top10_qty_chart =
+      for item <- top_10_items_qty do
+        %{names: item.itemname, qty: item.qty}
+      end
 
+    broadcast(socket, "top_10_items_qty", %{
+      top10_qty_chart: Poison.encode!(top10_qty_chart),
+      top_10_items_qty: top_10_items_qty,
+      top_10_items_value: top_10_items_value
+    })
 
-top10_qty_chart=for item <- top_10_items_qty do
-
-  %{names: item.itemname,qty: item.qty }
-  
-end
-
-
-            broadcast(socket, "top_10_items_qty", %{top10_qty_chart: Poison.encode!(top10_qty_chart),top_10_items_qty: top_10_items_qty,top_10_items_value: top_10_items_value})
     {:noreply, socket}
+  end
 
-  
-  end 
-
-   def handle_in("sales_trend_by_qty", payload, socket) do
-
-     branchid = payload["branch_id"]
+  def handle_in("sales_trend_by_qty", payload, socket) do
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}= if branchid != "0"  do
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              afterdisc: sm.afterdisc
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 1 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                afterdisc: sm.afterdisc
+              }
+            )
           )
-        )
 
-
-     combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
           )
-        )
 
- {all,combo_detail}
-    else
-
-           all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 1 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              afterdisc: sm.afterdisc
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 1 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                afterdisc: sm.afterdisc
+              }
+            )
           )
-        )
 
-
-     combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
           )
-        )
-      {all,combo_detail}
-    end
 
-        new_one=all++combo_detail
+        {all, combo_detail}
+      end
 
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    sales_trend_by_qty =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        sales_trend_by_qty=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  year=%{year: item}
+          month = %{month: month, m: month_number}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          count1 = item |> elem(1) |> Enum.count()
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-            for item <- pax_visit_trend do
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-              month=%{month: month,m: month_number}
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              count1=item|>elem(1)|>Enum.count() 
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
+              a = %{
+                itemname: itemname,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-                    ass=for cat <- all_data do
+              b = Map.merge(year, a)
 
-                                  itemname=cat|>elem(0)
-  
-                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
+    year = sales_trend_by_qty |> Enum.group_by(fn x -> x.year end) |> Map.keys()
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+    stbrn_graph =
+      for item <- year do
+        sales = Enum.filter(sales_trend_by_qty, fn x -> x.year == item end)
+
+        month_keys = Enum.group_by(sales, fn x -> x.m end) |> Map.keys()
+
+        for month <- month_keys do
+          item = Enum.filter(sales_trend_by_qty, fn x -> x.m == month end)
+
+          month = month |> Timex.month_name()
+
+          n01 = item |> Enum.filter(fn x -> x.itemname == "N01 P. Beef Thai Rice Noodle" end)
+          n02 = item |> Enum.filter(fn x -> x.itemname == "N02 A. Beef Thai Rice Noodle" end)
+          n03 = item |> Enum.filter(fn x -> x.itemname == "N03 P. Chick Thai Rice Noodle" end)
+          n04 = item |> Enum.filter(fn x -> x.itemname == "N04 A. Chick Thai Rice Noodle" end)
+          n05 = item |> Enum.filter(fn x -> x.itemname == "N05 P. Beef Thai Egg Noodle" end)
+          n06 = item |> Enum.filter(fn x -> x.itemname == "N06 A. Beef Thai Egg Noodle" end)
+          n07 = item |> Enum.filter(fn x -> x.itemname == "N07 P. Chick Thai Egg Noodle" end)
+          n08 = item |> Enum.filter(fn x -> x.itemname == "N08 A. Chick Thai Egg Noodle" end)
+          n09 = item |> Enum.filter(fn x -> x.itemname == "N09 P. Beef Springy Noodle" end)
+          n10 = item |> Enum.filter(fn x -> x.itemname == "N10 A. Beef Springy Noodle" end)
+          n11 = item |> Enum.filter(fn x -> x.itemname == "N11 P. Chick Springy  Noodle" end)
+          n12 = item |> Enum.filter(fn x -> x.itemname == "N12 A. Chick Springy Noodle" end)
+
+          {n01} =
+            if n01 == [] do
+              n01 = 0.0
+              {n01}
+            else
+              n01 = n01 |> hd
+              n01 = n01.percentage
+              {n01}
             end
 
-        end|>List.flatten
+          {n02} =
+            if n02 == [] do
+              n02 = 0.0
+              {n02}
+            else
+              n02 = n02 |> hd
+              n02 = n02.percentage
+              {n02}
+            end
 
-        year=sales_trend_by_qty|> Enum.group_by(fn x -> x.year end)|>Map.keys
+          {n03} =
+            if n03 == [] do
+              n03 = 0.0
+              {n03}
+            else
+              n03 = n03 |> hd
+              n03 = n03.percentage
+              {n03}
+            end
 
-        
+          {n04} =
+            if n04 == [] do
+              n04 = 0.0
+              {n04}
+            else
+              n04 = n04 |> hd
+              n04 = n04.percentage
+              {n04}
+            end
 
+          {n05} =
+            if n05 == [] do
+              n05 = 0.0
+              {n05}
+            else
+              n05 = n05 |> hd
+              n05 = n05.percentage
+              {n05}
+            end
 
-        stbrn_graph=for item <- year do
+          {n06} =
+            if n06 == [] do
+              n06 = 0.0
+              {n06}
+            else
+              n06 = n06 |> hd
+              n06 = n06.percentage
+              {n06}
+            end
 
-        
+          {n07} =
+            if n07 == [] do
+              n07 = 0.0
+              {n07}
+            else
+              n07 = n07 |> hd
+              n07 = n07.percentage
+              {n07}
+            end
 
-                  sales=Enum.filter(sales_trend_by_qty,fn x -> x.year==item end)
+          {n08} =
+            if n08 == [] do
+              n08 = 0.0
+              {n08}
+            else
+              n08 = n08 |> hd
+              n08 = n08.percentage
+              {n08}
+            end
 
+          {n09} =
+            if n09 == [] do
+              n09 = 0.0
+            else
+              n09 = n09 |> hd
+              n09 = n09.percentage
+              {n09}
+            end
 
-  month_keys=Enum.group_by(sales,fn x -> x.m end)|>Map.keys
+          {n10} =
+            if n10 == [] do
+              n10 = 0.0
+              {n10}
+            else
+              n10 = n10 |> hd
+              n10 = n10.percentage
+              {n10}
+            end
 
-for month <- month_keys do
+          {n11} =
+            if n11 == [] do
+              n11 = 0.0
+              {n11}
+            else
+              n11 = n11 |> hd
+              n11 = n11.percentage
+              {n11}
+            end
 
-        item=Enum.filter(sales_trend_by_qty,fn x -> x.m==month end)
+          {n12} =
+            if n12 == [] do
+              n12 = 0.0
+              {n12}
+            else
+              n12 = n12 |> hd
+              n12 = n12.percentage
+              {n12}
+            end
 
-        month=month|>Timex.month_name
+          %{
+            month: month,
+            n01: n01,
+            n02: n02,
+            n03: n03,
+            n04: n04,
+            n05: n05,
+            n06: n06,
+            n07: n07,
+            n08: n08,
+            n09: n09,
+            n10: n10,
+            n11: n11,
+            n12: n12
+          }
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "sales_trend_by_qty", %{
+      stbrn_graph: Poison.encode!(stbrn_graph),
+      sales_trend_by_qty: sales_trend_by_qty
+    })
 
-          n01=item|>Enum.filter(fn x -> x.itemname=="N01 P. Beef Thai Rice Noodle" end)
-          n02=item|>Enum.filter(fn x -> x.itemname=="N02 A. Beef Thai Rice Noodle" end)
-          n03=item|>Enum.filter(fn x -> x.itemname=="N03 P. Chick Thai Rice Noodle" end)
-          n04=item|>Enum.filter(fn x -> x.itemname=="N04 A. Chick Thai Rice Noodle" end)
-          n05=item|>Enum.filter(fn x -> x.itemname=="N05 P. Beef Thai Egg Noodle" end)
-          n06=item|>Enum.filter(fn x -> x.itemname=="N06 A. Beef Thai Egg Noodle" end)
-          n07=item|>Enum.filter(fn x -> x.itemname=="N07 P. Chick Thai Egg Noodle" end)
-          n08=item|>Enum.filter(fn x -> x.itemname=="N08 A. Chick Thai Egg Noodle" end)
-          n09=item|>Enum.filter(fn x -> x.itemname=="N09 P. Beef Springy Noodle" end)
-          n10=item|>Enum.filter(fn x -> x.itemname=="N10 A. Beef Springy Noodle" end)
-          n11=item|>Enum.filter(fn x -> x.itemname=="N11 P. Chick Springy  Noodle" end)
-          n12=item|>Enum.filter(fn x -> x.itemname=="N12 A. Chick Springy Noodle" end)
-                 
-                 {n01}= if n01 == [] do
-
-                    n01=0.0
-                    {n01}
-                  else
-                    n01=n01|>hd
-                    n01=n01.percentage
-                    {n01}
-                  end
-
-                   {n02}= if n02 == [] do
-
-                    n02=0.0
-                     {n02}
-                  else
-                    n02=n02|>hd
-                    n02=n02.percentage
-                     {n02}
-                    
-                  end
-
-                  {n03}= if n03 == [] do
-
-                    n03=0.0
-                     {n03}
-                  else
-                    n03=n03|>hd
-                    n03=n03.percentage
-                     {n03}
-                    
-                  end
-
-                   {n04}=if n04 == [] do
-
-                    n04=0.0
-                      {n04}
-
-                  else
-                    n04=n04|>hd
-                    n04=n04.percentage
-                      {n04}
-                  end
-
-                    {n05}=if n05 == [] do
-
-                    n05=0.0
-                     {n05}
-                  else
-                    n05=n05|>hd
-                    n05=n05.percentage
-                     {n05}
-                    
-                  end
-
-                   {n06}=if n06 == [] do
-
-                    n06=0.0
-                      {n06}
-                  else
-                    n06=n06|>hd
-                    n06=n06.percentage
-                      {n06}
-                    
-                  end
-
-                      {n07}=if n07 == [] do
-
-                    n07=0.0
-                     {n07}
-                  else
-                    n07=n07|>hd
-                    n07=n07.percentage
-                     {n07}
-                    
-                  end
-
-                   {n08}=  if n08 == [] do
-
-                    n08=0.0
-                    {n08}
-                  else
-                    n08=n08|>hd
-                    n08=n08.percentage
-                    {n08}
-                    
-                  end
-
-                   {n09}=if n09 == [] do
-
-                    n09=0.0
-                  else
-                    n09=n09|>hd
-                    n09=n09.percentage
-                     {n09}
-                    
-                  end
-
-                    {n10}= if n10 == [] do
-
-                    n10=0.0
-                    {n10}
-                  else
-                    n10=n10|>hd
-                    n10=n10.percentage
-                    {n10}
-                    
-                  end
-
-                    {n11}= if n11 == [] do
-
-                    n11=0.0
-                    {n11}
-                  else
-                    n11=n11|>hd
-                    n11=n11.percentage
-                    {n11}
-                  end
-
-                    {n12}=if n12 == [] do
-
-                    n12=0.0
-                     {n12}
-                  else
-                    n12=n12|>hd
-                    n12=n12.percentage
-                     {n12}
-                    
-                  end
-
-
-              %{month: month,
-               n01: n01,
-                n02: n02 ,
-                n03: n03,
-                n04: n04,
-                n05: n05,
-                n06: n06,
-                n07: n07,
-                n08: n08,
-                n09: n09,
-                n10: n10,
-                n11: n11,
-                n12: n12}
-  
-
-
-end
-end|>List.flatten
-
-
-
-      broadcast(socket, "sales_trend_by_qty", %{stbrn_graph: Poison.encode!(stbrn_graph),sales_trend_by_qty: sales_trend_by_qty})
     {:noreply, socket}
-
-  
   end
 
   def handle_in("sales_trend_by_qty_rice", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-      
- 
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 2 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
           )
-        )
 
-
-    combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
           )
-        )
 
-         {all,combo_detail}
+        {all, combo_detail}
       else
-
-
-             all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 2 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 2 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
           )
-        )
 
-
-    combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
           )
-        )
 
-         {all,combo_detail}
-
+        {all, combo_detail}
       end
-        new_one=all++combo_detail
 
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+    sales_trend_by_qty_rice =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        sales_trend_by_qty_rice=for item <- year do
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  year=%{year: item}
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          month = %{month: month}
 
-            for item <- pax_visit_trend do
+          count1 = item |> elem(1) |> Enum.count()
 
-              month=item|>elem(0)|> Timex.month_name()
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
 
-              month=%{month: month}
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-              count1=item|>elem(1)|>Enum.count() 
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-                    ass=for cat <- all_data do
+              a = %{
+                itemname: itemname,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-                                  itemname=cat|>elem(0)
-  
-                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+              b = Map.merge(year, a)
 
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+              c = Map.merge(month, b)
             end
+        end
+      end
+      |> List.flatten()
 
-        end|>List.flatten
+    broadcast(socket, "sales_trend_by_qty_rice", %{
+      sales_trend_by_qty_rice: sales_trend_by_qty_rice
+    })
 
-
-
-    
-
-            broadcast(socket, "sales_trend_by_qty_rice", %{sales_trend_by_qty_rice: sales_trend_by_qty_rice})
     {:noreply, socket}
-
-  
   end
-
 
   def handle_in("sales_trend_by_qty_beverage", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-
-   
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 4 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
           )
-        )
-
-    combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
-          )
-        )
-
-          {all,combo_detail}
-
-         else
-
-               all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 4 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
-          )
-        )
-
-    combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
-          )
-        )
-
-          {all,combo_detail}
-      
-    end
-
-        new_one=all++combo_detail
-
-
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
-
-        
-
-
-        sales_trend_by_qty_beverage=for item <- year do
-
-                  year=%{year: item}
-
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
-
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
-
-            for item <- pax_visit_trend do
-
-              month=item|>elem(0)|> Timex.month_name()
-
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
-
-              month=%{month: month}
-
-              count1=item|>elem(1)|>Enum.count() 
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-                    ass=for cat <- all_data do
-
-                                  itemname=cat|>elem(0)
-  
-                                 grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
-            end
-
-        end|>List.flatten
-
-
-
-    
-
-            broadcast(socket, "sales_trend_by_qty_beverage", %{sales_trend_by_qty_beverage: sales_trend_by_qty_beverage})
-    {:noreply, socket}
-
-  
-  end
-
-    def handle_in("sales_trend_by_qty_dessert", payload, socket) do
-
-     branchid = payload["branch_id"]
-    brand_id = payload["brand_id"]
-
-    brand=Repo.get_by(Brand,id: brand_id)
-  {all,combo_detail}=if branchid != "0" do
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
-          )
-        )
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
-          )
-        )
-
-         {all,combo_detail}
-
-  else
-
-         all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 3 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
-          )
-        )
-
-      combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
-          )
-        )
-       {all,combo_detail}
-  end
-
-        new_one=all++combo_detail
-
-
-
-
-
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
-
-        
-
-
-        sales_trend_by_qty_dessert=for item <- year do
-
-                  year=%{year: item}
-
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
-
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
-
-            for item <- pax_visit_trend do
-
-              month=item|>elem(0)|> Timex.month_name()
-
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
-
-              month=%{month: month}
-
-              count1=item|>elem(1)|>Enum.count() 
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-                    ass=for cat <- all_data do
-
-                                  itemname=cat|>elem(0)
-  
-                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
-            end
-
-        end|>List.flatten
-
-
-
-    
-
-            broadcast(socket, "sales_trend_by_qty_dessert", %{sales_trend_by_qty_dessert: sales_trend_by_qty_dessert})
-    {:noreply, socket}
-
-  
-  end
-
-    def handle_in("sales_trend_by_qty_others", payload, socket) do
-
-     branchid = payload["branch_id"]
-    brand_id = payload["brand_id"]
-
-    brand=Repo.get_by(Brand,id: brand_id)
-
- {all,all2,combo_detail,combo_detail2}= if branchid != "0" do
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 6  and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
-          )
-        )
-
-
-             all2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 10  and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
-          )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
           )
-        )
 
-                combo_detail2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 10 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
-          )
-        )
-
-        {all,all2,combo_detail,combo_detail2}
-
+        {all, combo_detail}
       else
-
-             all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 6  and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 4 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
           )
-        )
-
-
-             all2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 10  and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc
- 
-            }
-          )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
           )
-        )
 
-                combo_detail2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 10 and i.menu_cat_id == 6 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price
- 
-            }
-          )
-        )
-
-        {all,all2,combo_detail,combo_detail2}
+        {all, combo_detail}
       end
 
-       
-        all=all++all2
-        combo=combo_detail++combo_detail2
+    new_one = all ++ combo_detail
 
-        new_one=all++combo
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
+    sales_trend_by_qty_beverage =
+      for item <- year do
+        year = %{year: item}
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
 
-        sales_trend_by_qty_others=for item <- year do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-                  year=%{year: item}
+          month = %{month: month}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          count1 = item |> elem(1) |> Enum.count()
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-            for item <- pax_visit_trend do
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
 
-     
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-                month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              month=%{month: month}
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              count1=item|>elem(1)|>Enum.count() 
+              a = %{
+                itemname: itemname,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
+              b = Map.merge(year, a)
 
-                    ass=for cat <- all_data do
-
-                                  itemname=cat|>elem(0)
-  
-                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{itemname: itemname,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+              c = Map.merge(month, b)
             end
+        end
+      end
+      |> List.flatten()
 
-        end|>List.flatten
+    broadcast(socket, "sales_trend_by_qty_beverage", %{
+      sales_trend_by_qty_beverage: sales_trend_by_qty_beverage
+    })
 
-    
-
-            broadcast(socket, "sales_trend_by_qty_others", %{sales_trend_by_qty_others: sales_trend_by_qty_others})
     {:noreply, socket}
-
-  
   end
 
+  def handle_in("sales_trend_by_qty_dessert", payload, socket) do
+    branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 3 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
+          )
+
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 3 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
+          )
+
+        {all, combo_detail}
+      end
+
+    new_one = all ++ combo_detail
+
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
+
+    sales_trend_by_qty_dessert =
+      for item <- year do
+        year = %{year: item}
+
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
+
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
+
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
+
+          month = %{month: month}
+
+          count1 = item |> elem(1) |> Enum.count()
+
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
+
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
+
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
+
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
+
+              a = %{
+                itemname: itemname,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
+
+              b = Map.merge(year, a)
+
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
+
+    broadcast(socket, "sales_trend_by_qty_dessert", %{
+      sales_trend_by_qty_dessert: sales_trend_by_qty_dessert
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("sales_trend_by_qty_others", payload, socket) do
+    branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    {all, all2, combo_detail, combo_detail2} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 6 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
+          )
+
+        all2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 10 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
+          )
+
+        combo_detail2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 10 and i.menu_cat_id == 6 and
+                  b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
+          )
+
+        {all, all2, combo_detail, combo_detail2}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 6 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
+          )
+
+        all2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 10 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
+          )
+
+        combo_detail2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 10 and i.menu_cat_id == 6 and
+                  b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price
+              }
+            )
+          )
+
+        {all, all2, combo_detail, combo_detail2}
+      end
+
+    all = all ++ all2
+    combo = combo_detail ++ combo_detail2
+
+    new_one = all ++ combo
+
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
+
+    sales_trend_by_qty_others =
+      for item <- year do
+        year = %{year: item}
+
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
+
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
+
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
+
+          month = %{month: month}
+
+          count1 = item |> elem(1) |> Enum.count()
+
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
+
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
+
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
+
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
+
+              a = %{
+                itemname: itemname,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
+
+              b = Map.merge(year, a)
+
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
+
+    broadcast(socket, "sales_trend_by_qty_others", %{
+      sales_trend_by_qty_others: sales_trend_by_qty_others
+    })
+
+    {:noreply, socket}
+  end
 
   def handle_in("sales_trend_by_rm", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 1 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
-{all,combo_detail}
 
-    else
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 1 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 1 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-      
-    end
-
-        new_one=all++combo_detail
-
-
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
-
-        
-
-
-        sales_trend_by_rm=for item <- year do
-
-                  year=%{year: item}
-
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
-
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
-
-            for item <- pax_visit_trend do
-
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-
-              month=%{month: month,m: month_number}
-
-              count1=item|>elem(1)|>Enum.count() 
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-                    ass=for cat <- all_data do
-
-                                  itemname=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{itemname: itemname,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
-            end
-
-        end|>List.flatten
-
-
-                year=sales_trend_by_rm|> Enum.group_by(fn x -> x.year end)|>Map.keys
-
-        
-
-
-       stbqn_graph=for item <- year do
-
-        
-
-                  sales=Enum.filter(sales_trend_by_rm,fn x -> x.year==item end)
-
-
-  month_keys=Enum.group_by(sales,fn x -> x.m end)|>Map.keys
-
-
-for month <- month_keys do
-
-        item=Enum.filter(sales_trend_by_rm,fn x -> x.m==month end)
-
-month=month|>Timex.month_name
-
-          n01=item|>Enum.filter(fn x -> x.itemname=="N01 P. Beef Thai Rice Noodle" end)
-          n02=item|>Enum.filter(fn x -> x.itemname=="N02 A. Beef Thai Rice Noodle" end)
-          n03=item|>Enum.filter(fn x -> x.itemname=="N03 P. Chick Thai Rice Noodle" end)
-          n04=item|>Enum.filter(fn x -> x.itemname=="N04 A. Chick Thai Rice Noodle" end)
-          n05=item|>Enum.filter(fn x -> x.itemname=="N05 P. Beef Thai Egg Noodle" end)
-          n06=item|>Enum.filter(fn x -> x.itemname=="N06 A. Beef Thai Egg Noodle" end)
-          n07=item|>Enum.filter(fn x -> x.itemname=="N07 P. Chick Thai Egg Noodle" end)
-          n08=item|>Enum.filter(fn x -> x.itemname=="N08 A. Chick Thai Egg Noodle" end)
-          n09=item|>Enum.filter(fn x -> x.itemname=="N09 P. Beef Springy Noodle" end)
-          n10=item|>Enum.filter(fn x -> x.itemname=="N10 A. Beef Springy Noodle" end)
-          n11=item|>Enum.filter(fn x -> x.itemname=="N11 P. Chick Springy  Noodle" end)
-          n12=item|>Enum.filter(fn x -> x.itemname=="N12 A. Chick Springy Noodle" end)
-                 
- {n01}= if n01 == [] do
-
-                    n01=0.0
-                    {n01}
-                  else
-                    n01=n01|>hd
-                    n01=n01.percentage
-                    {n01}
-                  end
-
-                   {n02}= if n02 == [] do
-
-                    n02=0.0
-                     {n02}
-                  else
-                    n02=n02|>hd
-                    n02=n02.percentage
-                     {n02}
-                    
-                  end
-
-                  {n03}= if n03 == [] do
-
-                    n03=0.0
-                     {n03}
-                  else
-                    n03=n03|>hd
-                    n03=n03.percentage
-                     {n03}
-                    
-                  end
-
-                   {n04}=if n04 == [] do
-
-                    n04=0.0
-                      {n04}
-
-                  else
-                    n04=n04|>hd
-                    n04=n04.percentage
-                      {n04}
-                  end
-
-                    {n05}=if n05 == [] do
-
-                    n05=0.0
-                     {n05}
-                  else
-                    n05=n05|>hd
-                    n05=n05.percentage
-                     {n05}
-                    
-                  end
-
-                   {n06}=if n06 == [] do
-
-                    n06=0.0
-                      {n06}
-                  else
-                    n06=n06|>hd
-                    n06=n06.percentage
-                      {n06}
-                    
-                  end
-
-                      {n07}=if n07 == [] do
-
-                    n07=0.0
-                     {n07}
-                  else
-                    n07=n07|>hd
-                    n07=n07.percentage
-                     {n07}
-                    
-                  end
-
-                   {n08}=  if n08 == [] do
-
-                    n08=0.0
-                    {n08}
-                  else
-                    n08=n08|>hd
-                    n08=n08.percentage
-                    {n08}
-                    
-                  end
-
-                   {n09}=if n09 == [] do
-
-                    n09=0.0
-                  else
-                    n09=n09|>hd
-                    n09=n09.percentage
-                     {n09}
-                    
-                  end
-
-                    {n10}= if n10 == [] do
-
-                    n10=0.0
-                    {n10}
-                  else
-                    n10=n10|>hd
-                    n10=n10.percentage
-                    {n10}
-                    
-                  end
-
-                    {n11}= if n11 == [] do
-
-                    n11=0.0
-                    {n11}
-                  else
-                    n11=n11|>hd
-                    n11=n11.percentage
-                    {n11}
-                  end
-
-                    {n12}=if n12 == [] do
-
-                    n12=0.0
-                     {n12}
-                  else
-                    n12=n12|>hd
-                    n12=n12.percentage
-                     {n12}
-                    
-                  end
-
-
-              %{month: month,
-               n01: n01,
-                n02: n02 ,
-                n03: n03,
-                n04: n04,
-                n05: n05,
-                n06: n06,
-                n07: n07,
-                n08: n08,
-                n09: n09,
-                n10: n10,
-                n11: n11,
-                n12: n12}
-  
-
-
-end
-end|>List.flatten
-
-
-
-            broadcast(socket, "sales_trend_by_rm", %{stbqn_graph: Poison.encode!(stbqn_graph),sales_trend_by_rm: sales_trend_by_rm})
-    {:noreply, socket}
-
-  
-  end
-
-
-  def handle_in("sales_trend_by_rm_rice", payload, socket) do
-
-     branchid = payload["branch_id"]
-    brand_id = payload["brand_id"]
-
-    brand=Repo.get_by(Brand,id: brand_id)
-
-  {all,combo_detail}=if branchid !="0" do
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
-          )
-        )
-
-
-        combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
-          )
-        )
-
-        {all,combo_detail}
-
-        else
-
-               all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 2 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
-          )
-        )
-
-
-        combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
-          )
-        )
-
-        {all,combo_detail}
-  
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    sales_trend_by_rm =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        sales_trend_by_rm_rice=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  year=%{year: item}
+          month = %{month: month, m: month_number}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          count1 = item |> elem(1) |> Enum.count()
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-            for item <- pax_visit_trend do
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              month=%{month: month}
+              a = %{itemname: itemname, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-              count1=item|>elem(1)|>Enum.count() 
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
+    year = sales_trend_by_rm |> Enum.group_by(fn x -> x.year end) |> Map.keys()
 
-                    ass=for cat <- all_data do
+    stbqn_graph =
+      for item <- year do
+        sales = Enum.filter(sales_trend_by_rm, fn x -> x.year == item end)
 
-                                  itemname=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+        month_keys = Enum.group_by(sales, fn x -> x.m end) |> Map.keys()
 
-                                     a=%{itemname: itemname,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
+        for month <- month_keys do
+          item = Enum.filter(sales_trend_by_rm, fn x -> x.m == month end)
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+          month = month |> Timex.month_name()
+
+          n01 = item |> Enum.filter(fn x -> x.itemname == "N01 P. Beef Thai Rice Noodle" end)
+          n02 = item |> Enum.filter(fn x -> x.itemname == "N02 A. Beef Thai Rice Noodle" end)
+          n03 = item |> Enum.filter(fn x -> x.itemname == "N03 P. Chick Thai Rice Noodle" end)
+          n04 = item |> Enum.filter(fn x -> x.itemname == "N04 A. Chick Thai Rice Noodle" end)
+          n05 = item |> Enum.filter(fn x -> x.itemname == "N05 P. Beef Thai Egg Noodle" end)
+          n06 = item |> Enum.filter(fn x -> x.itemname == "N06 A. Beef Thai Egg Noodle" end)
+          n07 = item |> Enum.filter(fn x -> x.itemname == "N07 P. Chick Thai Egg Noodle" end)
+          n08 = item |> Enum.filter(fn x -> x.itemname == "N08 A. Chick Thai Egg Noodle" end)
+          n09 = item |> Enum.filter(fn x -> x.itemname == "N09 P. Beef Springy Noodle" end)
+          n10 = item |> Enum.filter(fn x -> x.itemname == "N10 A. Beef Springy Noodle" end)
+          n11 = item |> Enum.filter(fn x -> x.itemname == "N11 P. Chick Springy  Noodle" end)
+          n12 = item |> Enum.filter(fn x -> x.itemname == "N12 A. Chick Springy Noodle" end)
+
+          {n01} =
+            if n01 == [] do
+              n01 = 0.0
+              {n01}
+            else
+              n01 = n01 |> hd
+              n01 = n01.percentage
+              {n01}
             end
 
-        end|>List.flatten
+          {n02} =
+            if n02 == [] do
+              n02 = 0.0
+              {n02}
+            else
+              n02 = n02 |> hd
+              n02 = n02.percentage
+              {n02}
+            end
 
-            broadcast(socket, "sales_trend_by_rm_rice", %{sales_trend_by_rm_rice: sales_trend_by_rm_rice})
+          {n03} =
+            if n03 == [] do
+              n03 = 0.0
+              {n03}
+            else
+              n03 = n03 |> hd
+              n03 = n03.percentage
+              {n03}
+            end
+
+          {n04} =
+            if n04 == [] do
+              n04 = 0.0
+              {n04}
+            else
+              n04 = n04 |> hd
+              n04 = n04.percentage
+              {n04}
+            end
+
+          {n05} =
+            if n05 == [] do
+              n05 = 0.0
+              {n05}
+            else
+              n05 = n05 |> hd
+              n05 = n05.percentage
+              {n05}
+            end
+
+          {n06} =
+            if n06 == [] do
+              n06 = 0.0
+              {n06}
+            else
+              n06 = n06 |> hd
+              n06 = n06.percentage
+              {n06}
+            end
+
+          {n07} =
+            if n07 == [] do
+              n07 = 0.0
+              {n07}
+            else
+              n07 = n07 |> hd
+              n07 = n07.percentage
+              {n07}
+            end
+
+          {n08} =
+            if n08 == [] do
+              n08 = 0.0
+              {n08}
+            else
+              n08 = n08 |> hd
+              n08 = n08.percentage
+              {n08}
+            end
+
+          {n09} =
+            if n09 == [] do
+              n09 = 0.0
+            else
+              n09 = n09 |> hd
+              n09 = n09.percentage
+              {n09}
+            end
+
+          {n10} =
+            if n10 == [] do
+              n10 = 0.0
+              {n10}
+            else
+              n10 = n10 |> hd
+              n10 = n10.percentage
+              {n10}
+            end
+
+          {n11} =
+            if n11 == [] do
+              n11 = 0.0
+              {n11}
+            else
+              n11 = n11 |> hd
+              n11 = n11.percentage
+              {n11}
+            end
+
+          {n12} =
+            if n12 == [] do
+              n12 = 0.0
+              {n12}
+            else
+              n12 = n12 |> hd
+              n12 = n12.percentage
+              {n12}
+            end
+
+          %{
+            month: month,
+            n01: n01,
+            n02: n02,
+            n03: n03,
+            n04: n04,
+            n05: n05,
+            n06: n06,
+            n07: n07,
+            n08: n08,
+            n09: n09,
+            n10: n10,
+            n11: n11,
+            n12: n12
+          }
+        end
+      end
+      |> List.flatten()
+
+    broadcast(socket, "sales_trend_by_rm", %{
+      stbqn_graph: Poison.encode!(stbqn_graph),
+      sales_trend_by_rm: sales_trend_by_rm
+    })
+
     {:noreply, socket}
-
-  
   end
 
+  def handle_in("sales_trend_by_rm_rice", payload, socket) do
+    branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
+
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 2 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
+          )
+
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 2 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
+          )
+
+        {all, combo_detail}
+      end
+
+    new_one = all ++ combo_detail
+
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
+
+    sales_trend_by_rm_rice =
+      for item <- year do
+        year = %{year: item}
+
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
+
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
+
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
+
+          month = %{month: month}
+
+          count1 = item |> elem(1) |> Enum.count()
+
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
+
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
+
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
+
+              a = %{itemname: itemname, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
+
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
+
+    broadcast(socket, "sales_trend_by_rm_rice", %{sales_trend_by_rm_rice: sales_trend_by_rm_rice})
+    {:noreply, socket}
+  end
 
   def handle_in("sales_trend_by_rm_beverage", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
-  {all,combo_detail}=if branchid !="0" do
+    brand = Repo.get_by(Brand, id: brand_id)
 
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 4 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-         {all,combo_detail}
-
-  else
-
-         all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 4 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 4 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
-     {all,combo_detail}
-  end
 
-        new_one=all++combo_detail
+        {all, combo_detail}
+      end
 
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+    sales_trend_by_rm_beverage =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        sales_trend_by_rm_beverage=for item <- year do
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  year=%{year: item}
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          month = %{month: month}
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          count1 = item |> elem(1) |> Enum.count()
 
-            for item <- pax_visit_trend do
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
 
-              month=%{month: month}
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              count1=item|>elem(1)|>Enum.count() 
+              a = %{itemname: itemname, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-                    ass=for cat <- all_data do
-
-                                  itemname=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{itemname: itemname,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+              c = Map.merge(month, b)
             end
+        end
+      end
+      |> List.flatten()
 
-        end|>List.flatten
+    broadcast(socket, "sales_trend_by_rm_beverage", %{
+      sales_trend_by_rm_beverage: sales_trend_by_rm_beverage
+    })
 
-            broadcast(socket, "sales_trend_by_rm_beverage", %{sales_trend_by_rm_beverage: sales_trend_by_rm_beverage})
     {:noreply, socket}
-
-  
   end
-
 
   def handle_in("sales_trend_by_rm_dessert", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
+    brand = Repo.get_by(Brand, id: brand_id)
 
-
-    brand=Repo.get_by(Brand,id: brand_id)
- {all,combo_detail} =if branchid !="0"  do
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 3 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-         {all,combo_detail}
-
-         else
-
-               all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 3 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 3 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-         {all,combo_detail}
+        {all, combo_detail}
+      end
 
-   
- end
+    new_one = all ++ combo_detail
 
-        new_one=all++combo_detail
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
+    sales_trend_by_rm_dessert =
+      for item <- year do
+        year = %{year: item}
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-        sales_trend_by_rm_dessert=for item <- year do
+          month = %{month: month}
 
-                  year=%{year: item}
+          count1 = item |> elem(1) |> Enum.count()
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
 
-            for item <- pax_visit_trend do
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+              a = %{itemname: itemname, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-              month=%{month: month}
-
-              count1=item|>elem(1)|>Enum.count() 
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-                    ass=for cat <- all_data do
-
-                                  itemname=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{itemname: itemname,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+              c = Map.merge(month, b)
             end
+        end
+      end
+      |> List.flatten()
 
-        end|>List.flatten
+    broadcast(socket, "sales_trend_by_rm_dessert", %{
+      sales_trend_by_rm_dessert: sales_trend_by_rm_dessert
+    })
 
-            broadcast(socket, "sales_trend_by_rm_dessert", %{sales_trend_by_rm_dessert: sales_trend_by_rm_dessert})
     {:noreply, socket}
-
-  
   end
 
   def handle_in("sales_trend_by_rm_others", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-{all1,all2,combo_detail1,combo_detail2}=if branchid != "0" do
-  
-
-     all1 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+    {all1, all2, combo_detail1, combo_detail2} =
+      if branchid != "0" do
+        all1 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 6 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-             all2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  s.is_void == 0 and c.itemcatid == 10 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+        all2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 10 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail1 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-                combo_detail2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 10 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+        combo_detail2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 10 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-        {all1,all2,combo_detail1,combo_detail2}
-
-      else 
-
-             all1 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.itemcatid == 6 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+        {all1, all2, combo_detail1, combo_detail2}
+      else
+        all1 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 6 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-             all2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  s.is_void == 0 and c.itemcatid == 10 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty
- 
-            }
+        all2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.itemcatid == 10 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty
+              }
+            )
           )
-        )
-
 
         combo_detail1 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
 
-                combo_detail2 =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 10 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty
- 
-            }
+        combo_detail2 =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 10 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty
+              }
+            )
           )
-        )
-         {all1,all2,combo_detail1,combo_detail2}
 
+        {all1, all2, combo_detail1, combo_detail2}
       end
 
-        all=all1++all2
-        combo_detail=combo_detail1++combo_detail2
+    all = all1 ++ all2
+    combo_detail = combo_detail1 ++ combo_detail2
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    sales_trend_by_rm_others =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        sales_trend_by_rm_others=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0) |> Integer.to_string()
+          month_number = month_number <> "."
 
-                  year=%{year: item}
+          month = %{month: month}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          count1 = item |> elem(1) |> Enum.count()
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.itemcatname end)
 
-            for item <- pax_visit_trend do
+          ass =
+            for cat <- all_data do
+              itemname = cat |> elem(0)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)|>Integer.to_string
-             month_number=month_number<>"."
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              month=%{month: month}
+              a = %{itemname: itemname, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-              count1=item|>elem(1)|>Enum.count() 
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.itemcatname end)
-
-                    ass=for cat <- all_data do
-
-                                  itemname=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{itemname: itemname,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+              c = Map.merge(month, b)
             end
+        end
+      end
+      |> List.flatten()
 
-        end|>List.flatten
+    broadcast(socket, "sales_trend_by_rm_others", %{
+      sales_trend_by_rm_others: sales_trend_by_rm_others
+    })
 
-            broadcast(socket, "sales_trend_by_rm_others", %{sales_trend_by_rm_others: sales_trend_by_rm_others})
     {:noreply, socket}
-
-  
   end
 
-
   def handle_in("compare_sales_trend_rm", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-   {all,combo_detail}= if branchid != "0" do
-      
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 1 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       else
-
-             all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 1 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-    
+    compare_sales_trend_rm =
+      for item <- year do
+        year = %{year: item}
 
-        compare_sales_trend_rm=for item <- year do
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-                  year=%{year: item}
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          month = %{month: month, m: month_number}
 
-            for item <- pax_visit_trend do
+          count1 = item |> elem(1) |> Enum.count()
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-            
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-              month=%{month: month,m: month_number}
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              count1=item|>elem(1)|>Enum.count() 
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              a = %{category: category, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-                    ass=for cat <- all_data do
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                                  category=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+    graph_year = Enum.group_by(compare_sales_trend_rm, fn x -> x.year end) |> Map.keys()
 
-                                     a=%{category: category,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
+    compare_trend_rm_graph =
+      for item <- graph_year do
+        year = %{year: item}
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+        graph_year = Enum.filter(compare_sales_trend_rm, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_rm, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_rm", %{
+      compare_trend_rm_graph: Poison.encode!(compare_trend_rm_graph),
+      compare_sales_trend_rm: compare_sales_trend_rm
+    })
 
-
-  graph_year=Enum.group_by(compare_sales_trend_rm,fn x -> x.year end)|>Map.keys
-
-     compare_trend_rm_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_rm,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_rm,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo ,
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-
-            broadcast(socket, "compare_sales_trend_rm", %{compare_trend_rm_graph: Poison.encode!(compare_trend_rm_graph),compare_sales_trend_rm: compare_sales_trend_rm})
     {:noreply, socket}
-
-  
   end
 
   def handle_in("compare_sales_trend_rm_rice", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-
-      all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 2 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
-      {all,combo_detail}
 
-    else
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 2 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
+        {all, combo_detail}
       end
-        new_one=all++combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    new_one = all ++ combo_detail
 
-        
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
+    compare_sales_trend_rm_rice =
+      for item <- year do
+        year = %{year: item}
 
-        compare_sales_trend_rm_rice=for item <- year do
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-                  year=%{year: item}
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          month = %{month: month, m: month_number}
 
-                        for item <- pax_visit_trend do
+          count1 = item |> elem(1) |> Enum.count()
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-            
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-              month=%{month: month,m: month_number}
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              count1=item|>elem(1)|>Enum.count() 
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              a = %{category: category, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-                    ass=for cat <- all_data do
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                                  category=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+    graph_year = Enum.group_by(compare_sales_trend_rm_rice, fn x -> x.year end) |> Map.keys()
 
-                                     a=%{category: category,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
+    compare_trend_rm_rice_graph =
+      for item <- graph_year do
+        year = %{year: item}
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+        graph_year = Enum.filter(compare_sales_trend_rm_rice, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_rm_rice, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_rm_rice", %{
+      compare_trend_rm_rice_graph: Poison.encode!(compare_trend_rm_rice_graph),
+      compare_sales_trend_rm_rice: compare_sales_trend_rm_rice
+    })
 
-
-  graph_year=Enum.group_by(compare_sales_trend_rm_rice,fn x -> x.year end)|>Map.keys
-
-     compare_trend_rm_rice_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_rm_rice,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_rm_rice,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-              
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo ,
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-
-
-
-
-            broadcast(socket, "compare_sales_trend_rm_rice", %{compare_trend_rm_rice_graph: Poison.encode!(compare_trend_rm_rice_graph),compare_sales_trend_rm_rice: compare_sales_trend_rm_rice})
     {:noreply, socket}
-
-  
   end
 
   def handle_in("compare_sales_trend_rm_beverage", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 4 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-{all,combo_detail}
-
-    else
-
-           all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 4 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
-{all,combo_detail}
-      
-    end
 
-        new_one=all++combo_detail
+        {all, combo_detail}
+      end
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    new_one = all ++ combo_detail
 
-        
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
+    compare_sales_trend_rm_beverage =
+      for item <- year do
+        year = %{year: item}
 
-        compare_sales_trend_rm_beverage=for item <- year do
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-                  year=%{year: item}
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          month = %{month: month, m: month_number}
 
-                       for item <- pax_visit_trend do
+          count1 = item |> elem(1) |> Enum.count()
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-            
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-              month=%{month: month,m: month_number}
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              count1=item|>elem(1)|>Enum.count() 
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              a = %{category: category, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-                    ass=for cat <- all_data do
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                                  category=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+    graph_year = Enum.group_by(compare_sales_trend_rm_beverage, fn x -> x.year end) |> Map.keys()
 
-                                     a=%{category: category,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
+    compare_trend_rm_beverage_graph =
+      for item <- graph_year do
+        year = %{year: item}
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+        graph_year = Enum.filter(compare_sales_trend_rm_beverage, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_rm_beverage, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_rm_beverage", %{
+      compare_trend_rm_beverage_graph: Poison.encode!(compare_trend_rm_beverage_graph),
+      compare_sales_trend_rm_beverage: compare_sales_trend_rm_beverage
+    })
 
-
-  graph_year=Enum.group_by(compare_sales_trend_rm_beverage,fn x -> x.year end)|>Map.keys
-
-     compare_trend_rm_beverage_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_rm_beverage,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_rm_beverage,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-        
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo ,
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-            broadcast(socket, "compare_sales_trend_rm_beverage", %{compare_trend_rm_beverage_graph: Poison.encode!(compare_trend_rm_beverage_graph),compare_sales_trend_rm_beverage: compare_sales_trend_rm_beverage})
     {:noreply, socket}
-
-  
   end
 
-
-    def handle_in("compare_sales_trend_rm_dessert", payload, socket) do
-
-     branchid = payload["branch_id"]
+  def handle_in("compare_sales_trend_rm_dessert", payload, socket) do
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid !="0" do
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 3 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
-          {all,combo_detail}
 
-    else
-
-           all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 3 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where:  s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-       {all,combo_detail}
-    end
+        {all, combo_detail}
+      end
 
+    new_one = all ++ combo_detail
 
-        new_one=all++combo_detail
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    compare_sales_trend_rm_dessert =
+      for item <- year do
+        year = %{year: item}
 
-        
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-        compare_sales_trend_rm_dessert=for item <- year do
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  year=%{year: item}
+          month = %{month: month, m: month_number}
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          count1 = item |> elem(1) |> Enum.count()
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-                           for item <- pax_visit_trend do
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-            
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              month=%{month: month,m: month_number}
+              a = %{category: category, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-              count1=item|>elem(1)|>Enum.count() 
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+    graph_year = Enum.group_by(compare_sales_trend_rm_dessert, fn x -> x.year end) |> Map.keys()
 
-                    ass=for cat <- all_data do
+    compare_trend_rm_dessert_graph =
+      for item <- graph_year do
+        year = %{year: item}
 
-                                  category=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+        graph_year = Enum.filter(compare_sales_trend_rm_dessert, fn x -> x.year == item end)
 
-                                     a=%{category: category,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_rm_dessert, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_rm_dessert", %{
+      compare_trend_rm_dessert_graph: Poison.encode!(compare_trend_rm_dessert_graph),
+      compare_sales_trend_rm_dessert: compare_sales_trend_rm_dessert
+    })
 
-
-  graph_year=Enum.group_by(compare_sales_trend_rm_dessert,fn x -> x.year end)|>Map.keys
-
-     compare_trend_rm_dessert_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_rm_dessert,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_rm_dessert,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-          
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo ,
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-            broadcast(socket, "compare_sales_trend_rm_dessert", %{compare_trend_rm_dessert_graph: Poison.encode!(compare_trend_rm_dessert_graph),compare_sales_trend_rm_dessert: compare_sales_trend_rm_dessert})
     {:noreply, socket}
-
-  
   end
 
   def handle_in("compare_sales_trend_rm_others", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-       {all,combo_detail}=if branchid !="0" do
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 6 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-           {all,combo_detail}
-
-      else  
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              qty: sm.qty,
-              category: "ALA CART"
- 
-            }
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 6 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                qty: sm.qty,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              qty: sm.qty,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                qty: sm.qty,
+                category: "COMBO"
+              }
+            )
           )
-        )
-        {all,combo_detail}
 
-    end
-        new_one=all++combo_detail
+        {all, combo_detail}
+      end
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    new_one = all ++ combo_detail
 
-        
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
+    compare_sales_trend_rm_others =
+      for item <- year do
+        year = %{year: item}
 
-        compare_sales_trend_rm_others=for item <- year do
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-                  year=%{year: item}
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          month = %{month: month, m: month_number}
 
-                           for item <- pax_visit_trend do
+          count1 = item |> elem(1) |> Enum.count()
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-            
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-              month=%{month: month,m: month_number}
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              count1=item|>elem(1)|>Enum.count() 
+              quantity = cat |> elem(1) |> Enum.map(fn x -> x.qty end) |> Enum.sum()
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              a = %{category: category, percentage: percentage, qty: quantity}
+              b = Map.merge(year, a)
 
-                    ass=for cat <- all_data do
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                                  category=cat|>elem(0)
-  
-                                  quantity=cat|>elem(1)|>Enum.map(fn x ->x.qty end)|>Enum.sum
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+    graph_year = Enum.group_by(compare_sales_trend_rm_others, fn x -> x.year end) |> Map.keys()
 
-                                     a=%{category: category,percentage: percentage,qty: quantity}
-                               b= Map.merge(year,a)
+    compare_trend_rm_others_graph =
+      for item <- graph_year do
+        year = %{year: item}
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+        graph_year = Enum.filter(compare_sales_trend_rm_others, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_rm_others, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_rm_others", %{
+      compare_trend_rm_others_graph: Poison.encode!(compare_trend_rm_others_graph),
+      compare_sales_trend_rm_others: compare_sales_trend_rm_others
+    })
 
-
-  graph_year=Enum.group_by(compare_sales_trend_rm_others,fn x -> x.year end)|>Map.keys
-
-     compare_trend_rm_others_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_rm_others,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_rm_others,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-            
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo ,
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-
-
-            broadcast(socket, "compare_sales_trend_rm_others", %{compare_trend_rm_others_graph: Poison.encode!(compare_trend_rm_others_graph),compare_sales_trend_rm_others: compare_sales_trend_rm_others})
     {:noreply, socket}
-
-  
   end
-              
+
   def handle_in("compare_sales_trend_qty", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-     {all,combo_detail}=if branchid != "0" do
-      
-   
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 1 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       else
-
-            all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 1 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 1 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 1 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 1 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+    compare_sales_trend_qty =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        compare_sales_trend_qty=for item <- year do
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  year=%{year: item}
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          month = %{month: month, m: month_number}
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          count1 = item |> elem(1) |> Enum.count()
 
-            for item <- pax_visit_trend do
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-             
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              month=%{month: month,m: month_number}
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-              count1=item|>elem(1)|>Enum.count() 
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-                    ass=for cat <- all_data do
+              a = %{
+                category: category,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-                                  category=cat|>elem(0)
+              b = Map.merge(year, a)
 
-                                  grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                    
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
+    graph_year = Enum.group_by(compare_sales_trend_qty, fn x -> x.year end) |> Map.keys()
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+    compare_trend_qty_graph =
+      for item <- graph_year do
+        year = %{year: item}
+
+        graph_year = Enum.filter(compare_sales_trend_qty, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_qty, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_qty", %{
+      compare_trend_qty_graph: Poison.encode!(compare_trend_qty_graph),
+      compare_sales_trend_qty: compare_sales_trend_qty
+    })
 
-
-graph_year=Enum.group_by(compare_sales_trend_qty,fn x -> x.year end)|>Map.keys
-
-     compare_trend_qty_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_qty,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_qty,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-          
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-
-            broadcast(socket, "compare_sales_trend_qty", %{compare_trend_qty_graph: Poison.encode!(compare_trend_qty_graph),compare_sales_trend_qty: compare_sales_trend_qty})
     {:noreply, socket}
+  end
 
-  
-  end 
-
-    def handle_in("compare_sales_trend_qty_rice", payload, socket) do
-
-     branchid = payload["branch_id"]
+  def handle_in("compare_sales_trend_qty_rice", payload, socket) do
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-
-    {all,combo_detail}=if branchid !="0" do
- 
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 2 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       else
-
-             all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 2 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 2 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 2 and b.id==i.brand_id  and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 2 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+    compare_sales_trend_qty_rice =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        compare_sales_trend_qty_rice=for item <- year do
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  year=%{year: item}
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          month = %{month: month, m: month_number}
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          count1 = item |> elem(1) |> Enum.count()
 
-            for item <- pax_visit_trend do
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-                month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-          
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              month=%{month: month,m: month_number}
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-              count1=item|>elem(1)|>Enum.count() 
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-                    ass=for cat <- all_data do
+              a = %{
+                category: category,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-                                  category=cat|>elem(0)
-  
-                               grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                    
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+              b = Map.merge(year, a)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+    graph_year = Enum.group_by(compare_sales_trend_qty_rice, fn x -> x.year end) |> Map.keys()
+
+    compare_trend_qty_rice_graph =
+      for item <- graph_year do
+        year = %{year: item}
+
+        graph_year = Enum.filter(compare_sales_trend_qty_rice, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_qty_rice, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_qty_rice", %{
+      compare_trend_qty_rice_graph: Poison.encode!(compare_trend_qty_rice_graph),
+      compare_sales_trend_qty_rice: compare_sales_trend_qty_rice
+    })
 
-
-graph_year=Enum.group_by(compare_sales_trend_qty_rice,fn x -> x.year end)|>Map.keys
-
-     compare_trend_qty_rice_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_qty_rice,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_qty_rice,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-          
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-            broadcast(socket, "compare_sales_trend_qty_rice", %{compare_trend_qty_rice_graph: Poison.encode!(compare_trend_qty_rice_graph),compare_sales_trend_qty_rice: compare_sales_trend_qty_rice})
     {:noreply, socket}
-
-  
-  end 
-
+  end
 
   def handle_in("compare_sales_trend_qty_beverage", payload, socket) do
-
-     branchid = payload["branch_id"]
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-      {all,combo_detail}=if branchid !="0" do
-      
-    
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 4 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-          {all,combo_detail}
-
+        {all, combo_detail}
       else
-
-             all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 4 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 4 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 4 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 4 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+    compare_sales_trend_qty_beverage =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        compare_sales_trend_qty_beverage=for item <- year do
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  year=%{year: item}
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          month = %{month: month, m: month_number}
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          count1 = item |> elem(1) |> Enum.count()
 
-            for item <- pax_visit_trend do
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-          
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              month=%{month: month,m: month_number}
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-              count1=item|>elem(1)|>Enum.count() 
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-                    ass=for cat <- all_data do
+              a = %{
+                category: category,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-                                  category=cat|>elem(0)
-  
-                                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                    
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+              b = Map.merge(year, a)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+    graph_year = Enum.group_by(compare_sales_trend_qty_beverage, fn x -> x.year end) |> Map.keys()
+
+    compare_trend_qty_beverage_graph =
+      for item <- graph_year do
+        year = %{year: item}
+
+        graph_year = Enum.filter(compare_sales_trend_qty_beverage, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_qty_beverage, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
-
-
-
-graph_year=Enum.group_by(compare_sales_trend_qty_beverage,fn x -> x.year end)|>Map.keys
-
-     compare_trend_qty_beverage_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_qty_beverage,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_qty_beverage,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-        
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-
-            broadcast(socket, "compare_sales_trend_qty_beverage", %{compare_trend_qty_beverage_graph: Poison.encode!(compare_trend_qty_beverage_graph),compare_sales_trend_qty_beverage: compare_sales_trend_qty_beverage})
-    {:noreply, socket}
-
-  
-  end
-
-    def handle_in("compare_sales_trend_qty_dessert", payload, socket) do
-
-     branchid = payload["branch_id"]
-    brand_id = payload["brand_id"]
-
-    brand=Repo.get_by(Brand,id: brand_id)
-
-    {all,combo_detail}= if branchid != "0" do
-
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
-          )
-        )
-
-
-        combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
-          )
-        )
- {all,combo_detail}
-
-    else
-
-           all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 3 and b.id==i.brand_id and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
-          )
-        )
-
-
-        combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 3 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
-          )
-        )
-
-        {all,combo_detail}
-      
-    end
-
-        new_one=all++combo_detail
-
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
-
-        
-
-
-        compare_sales_trend_qty_dessert=for item <- year do
-
-                  year=%{year: item}
-
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
-
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
-
-
-
-
-            for item <- pax_visit_trend do
-
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-          
-
-              month=%{month: month,m: month_number}
-
-              count1=item|>elem(1)|>Enum.count() 
-
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
-
-                    ass=for cat <- all_data do
-
-                                  category=cat|>elem(0)
-  
-                                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                    
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
-
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
-
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
             end
 
-        end|>List.flatten
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_qty_beverage", %{
+      compare_trend_qty_beverage_graph: Poison.encode!(compare_trend_qty_beverage_graph),
+      compare_sales_trend_qty_beverage: compare_sales_trend_qty_beverage
+    })
 
-
-graph_year=Enum.group_by(compare_sales_trend_qty_dessert,fn x -> x.year end)|>Map.keys
-
-     compare_trend_qty_dessert_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_qty_dessert,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_qty_dessert,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-                 
-          
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-
-            broadcast(socket, "compare_sales_trend_qty_dessert", %{compare_trend_qty_dessert_graph: Poison.encode!(compare_trend_qty_dessert_graph),compare_sales_trend_qty_dessert: compare_sales_trend_qty_dessert})
     {:noreply, socket}
-
-  
   end
 
-
-      def handle_in("compare_sales_trend_qty_others", payload, socket) do
-
-     branchid = payload["branch_id"]
+  def handle_in("compare_sales_trend_qty_dessert", payload, socket) do
+    branchid = payload["branch_id"]
     brand_id = payload["brand_id"]
 
-    brand=Repo.get_by(Brand,id: brand_id)
+    brand = Repo.get_by(Brand, id: brand_id)
 
-    {all,combo_detail}=if branchid != "0" do
-      
-  
-
-     all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 3 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
+        {all, combo_detail}
       else
-
-             all =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ItemSubcat, on: sm.itemid==i.subcatid,
-            left_join: c in BoatNoodle.BN.ItemCat, on: i.itemcatid==c.itemcatid,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and c.itemcatid == 6 and b.id==i.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.itemname,
-              subcatid: i.subcatid,
-              afterdisc: sm.afterdisc,
-              category: "ALA CART"
- 
-            }
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 3 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
           )
-        )
-
 
         combo_detail =
-        Repo.all(
-          from(sm in BoatNoodle.BN.SalesMaster,
-            left_join: s in BoatNoodle.BN.Sales,  on: sm.salesid==s.salesid,
-            left_join: i in BoatNoodle.BN.ComboDetails, on: sm.itemid==i.combo_item_id,
-            left_join: b in BoatNoodle.BN.Brand, on: b.id==^brand.id,     
-            where: s.is_void == 0 and i.menu_cat_id == 6 and b.id==i.brand_id and  s.salesdate >= ^payload["s_date"] and
-                s.salesdate <= ^payload["e_date"] and s.brand_id==^payload["brand_id"],
-            select: %{
-              salesdate: s.salesdate,
-              itemcatname: i.combo_item_name,
-              afterdisc: i.unit_price,
-              category: "COMBO"
- 
-            }
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 3 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
           )
-        )
 
-        {all,combo_detail}
-
-
+        {all, combo_detail}
       end
 
-        new_one=all++combo_detail
+    new_one = all ++ combo_detail
 
-          year=new_one|> Enum.group_by(fn x -> x.salesdate.year end)|>Map.keys
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
 
-        
+    compare_sales_trend_qty_dessert =
+      for item <- year do
+        year = %{year: item}
 
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
 
-        compare_sales_trend_qty_others=for item <- year do
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
 
-                  year=%{year: item}
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
 
-                  sales=Enum.filter(new_one,fn x -> x.salesdate.year==item end)
+          month = %{month: month, m: month_number}
 
-                  pax_visit_trend=sales|>Enum.group_by(fn x -> x.salesdate.month end)
-          
+          count1 = item |> elem(1) |> Enum.count()
 
-                      for item <- pax_visit_trend do
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
 
-                 month=item|>elem(0)|> Timex.month_name()
-              month=item|>elem(0)|> Timex.month_name()
-             month_number=item|>elem(0)
-          
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
 
-              month=%{month: month,m: month_number}
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
 
-              count1=item|>elem(1)|>Enum.count() 
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
 
-              all_data=item|>elem(1)|>Enum.group_by(fn x -> x.category end)
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
 
-                    ass=for cat <- all_data do
+              a = %{
+                category: category,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
 
-                                  category=cat|>elem(0)
-  
-                                      grand_total1=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)|>Number.Delimit.number_to_delimited()
-                                        grand_total=cat|>elem(1)|>Enum.map(fn x ->Decimal.to_float( x.afterdisc) end)|>Enum.sum|>Float.round(2)
-                                    
-                                        count=cat|>elem(1)|>Enum.count() 
-                                       a=count/count1
-                                       percentage=a*100|>Float.round(2)
+              b = Map.merge(year, a)
 
-                                     a=%{category: category,percentage: percentage,grand_total: grand_total,grand_total1: grand_total1}
-                               b= Map.merge(year,a)
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
 
-                               c=Map.merge(month,b)
-                   
-                    end
-               
+    graph_year = Enum.group_by(compare_sales_trend_qty_dessert, fn x -> x.year end) |> Map.keys()
+
+    compare_trend_qty_dessert_graph =
+      for item <- graph_year do
+        year = %{year: item}
+
+        graph_year = Enum.filter(compare_sales_trend_qty_dessert, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_qty_dessert, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
             end
 
-        end|>List.flatten
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
 
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
 
+    broadcast(socket, "compare_sales_trend_qty_dessert", %{
+      compare_trend_qty_dessert_graph: Poison.encode!(compare_trend_qty_dessert_graph),
+      compare_sales_trend_qty_dessert: compare_sales_trend_qty_dessert
+    })
 
-graph_year=Enum.group_by(compare_sales_trend_qty_others,fn x -> x.year end)|>Map.keys
-
-     compare_trend_qty_others_graph=for item <- graph_year do
-
-                  year=%{year: item}
-
-                  graph_year=Enum.filter(compare_sales_trend_qty_others,fn x -> x.year==item end)
-
-                  compare_sales_trend_rm_graph=graph_year|>Enum.group_by(fn x -> x.m end)
-          
-
-    
- 
-              for month <- compare_sales_trend_rm_graph do
-
-                month=month|>elem(0)
-                 month_name=month|> Timex.month_name()
-    
-            item=Enum.filter(compare_sales_trend_qty_others,fn x -> x.m==month end)
-     
-
-          alacart=item|>Enum.filter(fn x -> x.category=="ALA CART" end)
-          combo=item|>Enum.filter(fn x -> x.category=="COMBO" end)
- 
-       
-                  {alacart} =if alacart == [] do
-
-                   {0.0}
-                  else
-                    alacart=alacart|>hd
-                    alacart=alacart.percentage
-                     {alacart}
-                  end
-
-                   {combo}=  if combo == [] do
-
-                    combo=0.0
-                    {combo}
-                  else
-                    combo=combo|>hd
-                    combo=combo.percentage
-                    {combo}
-                  end
-
-                
-
-
-              %{month: month_name,
-               alacart: alacart,
-                combo: combo
-               }
-  
-          end
-
-end|>List.flatten
-
-
-
-
-            broadcast(socket, "compare_sales_trend_qty_others", %{compare_trend_qty_others_graph: Poison.encode!(compare_trend_qty_others_graph),compare_sales_trend_qty_others: compare_sales_trend_qty_others})
     {:noreply, socket}
+  end
 
-  
-  end             
-              
-       
+  def handle_in("compare_sales_trend_qty_others", payload, socket) do
+    branchid = payload["branch_id"]
+    brand_id = payload["brand_id"]
 
+    brand = Repo.get_by(Brand, id: brand_id)
+
+    {all, combo_detail} =
+      if branchid != "0" do
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 6 and b.id == i.brand_id and s.branchid == ^payload["branch_id"] and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.branchid == ^payload["branch_id"] and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
+          )
+
+        {all, combo_detail}
+      else
+        all =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ItemSubcat,
+              on: sm.itemid == i.subcatid,
+              left_join: c in BoatNoodle.BN.ItemCat,
+              on: i.itemcatid == c.itemcatid,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and c.category_type != "COMBO" and c.itemcatcode != "empty" and
+                  c.itemcatid == 6 and b.id == i.brand_id and s.salesdate >= ^payload["s_date"] and
+                  s.salesdate <= ^payload["e_date"] and s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.itemname,
+                subcatid: i.subcatid,
+                afterdisc: sm.afterdisc,
+                category: "ALA CART"
+              }
+            )
+          )
+
+        combo_detail =
+          Repo.all(
+            from(
+              sm in BoatNoodle.BN.SalesMaster,
+              left_join: s in BoatNoodle.BN.Sales,
+              on: sm.salesid == s.salesid,
+              left_join: i in BoatNoodle.BN.ComboDetails,
+              on: sm.itemid == i.combo_item_id,
+              left_join: b in BoatNoodle.BN.Brand,
+              on: b.id == ^brand.id,
+              where:
+                s.is_void == 0 and i.menu_cat_id == 6 and b.id == i.brand_id and
+                  s.salesdate >= ^payload["s_date"] and s.salesdate <= ^payload["e_date"] and
+                  s.brand_id == ^payload["brand_id"],
+              select: %{
+                salesdate: s.salesdate,
+                itemcatname: i.combo_item_name,
+                afterdisc: i.unit_price,
+                category: "COMBO"
+              }
+            )
+          )
+
+        {all, combo_detail}
+      end
+
+    new_one = all ++ combo_detail
+
+    year = new_one |> Enum.group_by(fn x -> x.salesdate.year end) |> Map.keys()
+
+    compare_sales_trend_qty_others =
+      for item <- year do
+        year = %{year: item}
+
+        sales = Enum.filter(new_one, fn x -> x.salesdate.year == item end)
+
+        pax_visit_trend = sales |> Enum.group_by(fn x -> x.salesdate.month end)
+
+        for item <- pax_visit_trend do
+          month = item |> elem(0) |> Timex.month_name()
+          month = item |> elem(0) |> Timex.month_name()
+          month_number = item |> elem(0)
+
+          month = %{month: month, m: month_number}
+
+          count1 = item |> elem(1) |> Enum.count()
+
+          all_data = item |> elem(1) |> Enum.group_by(fn x -> x.category end)
+
+          ass =
+            for cat <- all_data do
+              category = cat |> elem(0)
+
+              grand_total1 =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+                |> Number.Delimit.number_to_delimited()
+
+              grand_total =
+                cat
+                |> elem(1)
+                |> Enum.map(fn x -> Decimal.to_float(x.afterdisc) end)
+                |> Enum.sum()
+                |> Float.round(2)
+
+              count = cat |> elem(1) |> Enum.count()
+              a = count / count1
+              percentage = (a * 100) |> Float.round(2)
+
+              a = %{
+                category: category,
+                percentage: percentage,
+                grand_total: grand_total,
+                grand_total1: grand_total1
+              }
+
+              b = Map.merge(year, a)
+
+              c = Map.merge(month, b)
+            end
+        end
+      end
+      |> List.flatten()
+
+    graph_year = Enum.group_by(compare_sales_trend_qty_others, fn x -> x.year end) |> Map.keys()
+
+    compare_trend_qty_others_graph =
+      for item <- graph_year do
+        year = %{year: item}
+
+        graph_year = Enum.filter(compare_sales_trend_qty_others, fn x -> x.year == item end)
+
+        compare_sales_trend_rm_graph = graph_year |> Enum.group_by(fn x -> x.m end)
+
+        for month <- compare_sales_trend_rm_graph do
+          month = month |> elem(0)
+          month_name = month |> Timex.month_name()
+
+          item = Enum.filter(compare_sales_trend_qty_others, fn x -> x.m == month end)
+
+          alacart = item |> Enum.filter(fn x -> x.category == "ALA CART" end)
+          combo = item |> Enum.filter(fn x -> x.category == "COMBO" end)
+
+          {alacart} =
+            if alacart == [] do
+              {0.0}
+            else
+              alacart = alacart |> hd
+              alacart = alacart.percentage
+              {alacart}
+            end
+
+          {combo} =
+            if combo == [] do
+              combo = 0.0
+              {combo}
+            else
+              combo = combo |> hd
+              combo = combo.percentage
+              {combo}
+            end
+
+          %{month: month_name, alacart: alacart, combo: combo}
+        end
+      end
+      |> List.flatten()
+
+    broadcast(socket, "compare_sales_trend_qty_others", %{
+      compare_trend_qty_others_graph: Poison.encode!(compare_trend_qty_others_graph),
+      compare_sales_trend_qty_others: compare_sales_trend_qty_others
+    })
+
+    {:noreply, socket}
+  end
 
   # Add authorization logic here as required.
   defp authorized?(_payload) do
