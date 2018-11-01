@@ -74,9 +74,15 @@ defmodule BoatNoodle.MallSync do
     connect_to(1, "2")
     connect_to(2, "2")
     connect_to(3, "2")
+    # connect_to(1, "7")
+    # connect_to(2, "7")
+    # connect_to(3, "7")
     connect_to(1, "23")
     connect_to(2, "23")
     connect_to(3, "23")
+    # connect_to(1, "26")
+    # connect_to(2, "26")
+    # connect_to(3, "26")
 
     # Signal shutdown
     IO.puts("Success!")
@@ -84,9 +90,29 @@ defmodule BoatNoodle.MallSync do
   end
 
   def connect_to(days_ago, branchid_str) do
-    {:ok, connection} = SftpEx.connect(host: '110.4.42.48', user: 'ubuntu', password: 'scmcapp')
+    {tenant_machine_id, password} =
+      case branchid_str do
+        "2" ->
+          {'50000078', 'e8kgjhR'}
 
-    # image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+        # "7" ->
+        #   {'53000147', '6W95xLM'}
+
+        # "26" ->
+        #   {'51000039', '52F4A1F'}
+
+        "23" ->
+          {'52000183', '4LpAUv1'}
+      end
+
+    host = 'sunway.serveftp.org'
+
+    # # connects to host and assigns pid
+    {:ok, pid} = :inets.start(:ftpc, host: host)
+
+    # # logs into host with username and password
+    :ftp.user(pid, tenant_machine_id, password)
+
     date_str =
       Date.utc_today() |> Timex.shift(days: -days_ago) |> Date.to_string() |> String.split("-")
       |> Enum.join()
@@ -99,22 +125,6 @@ defmodule BoatNoodle.MallSync do
       |> Enum.reverse()
       |> Enum.join()
 
-    tenant_machine_id =
-      case branchid_str do
-        "2" ->
-          "50000078"
-
-        "23" ->
-          "52000183"
-      end
-
-    # new_path = image_path <> "/H#{tenant_machine_id}-#{date_str}.txt"
-    # bin = File.read!(new_path)
-
-    # stream =
-    #   File.stream!(new_path)
-    #   |> Stream.into(SftpEx.stream!(conn, "/boat_noodle/sales.txt"))
-    #   |> Stream.run()
     no_range = 0..23
     sales_data = sales_payment_data(days_ago, branchid_str)
 
@@ -129,16 +139,51 @@ defmodule BoatNoodle.MallSync do
         )
       end
 
-    SFTP.TransferService.upload(
-      connection,
-      "/boat_noodle/H#{tenant_machine_id}-#{date_str}.txt",
-      Enum.join(data)
-    )
+    :ftp.send_bin(pid, Enum.join(data), 'H#{tenant_machine_id}_#{date_str}.txt')
 
-    SftpEx.disconnect(connection)
+    :inets.stop(:ftpc, pid)
   end
 
   def sales_payment_data(days_ago, branchid_str) do
+    date = Date.utc_today() |> Timex.shift(days: -days_ago)
+
+    sales_data =
+      Repo.all(
+        from(
+          s in Sales,
+          left_join: sp in SalesPayment,
+          on: sp.salesid == s.salesid,
+          where:
+            s.brand_id == ^1 and s.is_void == ^0 and s.salesdate == ^date and
+              s.branchid == ^branchid_str and sp.payment_type_id1 != ^9 and
+              sp.payment_type_id1 != ^21 and sp.payment_type_id1 != ^22,
+          select: %{
+            datetime: s.salesdatetime,
+            afterdisc: sp.after_disc,
+            payment_type: sp.payment_type,
+            discount_amt: sp.disc_amt,
+            gst: sp.gst_charge,
+            serv: sp.service_charge,
+            pax: s.pax,
+            sub_total: sp.sub_total
+          }
+        )
+      )
+      |> Enum.map(fn x ->
+        %{
+          datetime: x.datetime,
+          hour: x.datetime.hour,
+          after_disc: x.afterdisc,
+          payment_type: x.payment_type,
+          disc_amt: Decimal.to_float(x.sub_total) - Decimal.to_float(x.afterdisc),
+          gst: x.gst,
+          serv: x.serv,
+          pax: x.pax
+        }
+      end)
+  end
+
+  def sales_payment_data_no_filter_delivery(days_ago, branchid_str) do
     date = Date.utc_today() |> Timex.shift(days: -days_ago)
 
     sales_data =
@@ -314,5 +359,71 @@ defmodule BoatNoodle.MallSync do
     "#{tenant_machine_id}|#{batch_id}|#{date_str2}|#{hour}|#{receipt_count}|#{gto_sales}|#{gst}|#{
       discount
     }|#{serv}|#{pax}|#{cash}|0.00|#{visa}|#{master}|#{amex}|#{voucher_amt}|#{other}|Y\n"
+  end
+
+  def manual_process(start_date, end_date, branchid_str) do
+    s_date = Date.from_iso8601!(start_date)
+    e_date = Date.from_iso8601!(end_date)
+
+    drange = Date.range(s_date, e_date)
+
+    for date <- drange do
+      connect_to(Date.diff(Date.utc_today(), date), branchid_str)
+    end
+  end
+
+  def connect_to_legacy(days_ago, branchid_str) do
+    {:ok, connection} = SftpEx.connect(host: '110.4.42.48', user: 'ubuntu', password: 'scmcapp')
+
+    # image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+    date_str =
+      Date.utc_today() |> Timex.shift(days: -days_ago) |> Date.to_string() |> String.split("-")
+      |> Enum.join()
+
+    date_str2 =
+      Date.utc_today()
+      |> Timex.shift(days: -days_ago)
+      |> Date.to_string()
+      |> String.split("-")
+      |> Enum.reverse()
+      |> Enum.join()
+
+    tenant_machine_id =
+      case branchid_str do
+        "2" ->
+          "50000078"
+
+        "23" ->
+          "52000183"
+      end
+
+    # new_path = image_path <> "/H#{tenant_machine_id}-#{date_str}.txt"
+    # bin = File.read!(new_path)
+
+    # stream =
+    #   File.stream!(new_path)
+    #   |> Stream.into(SftpEx.stream!(conn, "/boat_noodle/sales.txt"))
+    #   |> Stream.run()
+    no_range = 0..23
+    sales_data = sales_payment_data(days_ago, branchid_str)
+
+    data =
+      for hour <- no_range do
+        line(
+          tenant_machine_id,
+          date_str,
+          date_str2,
+          hour,
+          sales_data
+        )
+      end
+
+    SFTP.TransferService.upload(
+      connection,
+      "/boat_noodle/H#{tenant_machine_id}_#{date_str}.txt",
+      Enum.join(data)
+    )
+
+    SftpEx.disconnect(connection)
   end
 end

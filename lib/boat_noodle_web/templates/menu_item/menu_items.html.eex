@@ -59,14 +59,14 @@
       </thead>  
       <tbody>
         <% sbs = @subcats |> Enum.with_index %>
-
+<% subcatdata = subcat_data(@conn) %>
       <%= for subcat <- sbs do %>
       <tr>
         <td><%= elem(subcat,1) + 1 %></td>
         <td><%= elem(subcat,0).itemcode %></td>
         <td><%= elem(subcat,0).itemname %></td>
         <td><%= elem(subcat,0).category %></td>
-        <td class="subcat_price"><%= raw(pricing(elem(subcat,0).subcatid, @conn)) %></td>
+        <td class="subcat_price"><%= raw(pricing(elem(subcat,0).subcatid, @conn, subcatdata)) %></td>
         <td>
           
           <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
