@@ -150,19 +150,21 @@ defmodule BoatNoodleWeb.ApiController do
     params = Map.put(params, "branch_id", user.branchid)
     params = Map.put(params, "brand_id", user.brand_id)
 
-    Branch.changeset(
-      user,
-      %{
-        sync_by: params["current_user"],
-        unsync: params["unsync"],
-        version2: params["version"],
-        last_sync: Timex.now()
-      },
-      0,
-      "Update"
-    )
-    |> Repo.update()
+    a =
+      Branch.changeset(
+        user,
+        %{
+          sync_by: params["current_user"],
+          unsync: params["unsync"],
+          version2: params["version"],
+          last_sync: Timex.now()
+        },
+        0,
+        "Update"
+      )
+      |> Repo.update()
 
+    IO.inspect(a)
     # update_rest_status(user.brand_id, user.branchid, params)
 
     map = %{status: "ok"} |> Poison.encode!()

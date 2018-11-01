@@ -379,12 +379,12 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       for printer <- printers do
         subcatids = printer.subcat_ids
-        all = subcatids |> Enum.uniq() |> String.split(",")
+        all = subcatids |> String.split(",") |> Enum.uniq()
 
         if Enum.any?(all, fn x -> x == subcatid2 end) do
           combo_id = combo_item_id |> Integer.to_string()
           comboitemids = printer.combo_item_ids
-          comb = comboitemids |> Enum.uniq() |> String.split(",")
+          comb = comboitemids |> String.split(",") |> Enum.uniq()
           all_items = List.insert_at(comb, 0, combo_id)
           new_items = all_items |> Enum.join(",")
 
@@ -975,7 +975,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           )
 
         if cg2.valid? == false do
-          IEx.pry()
         end
 
         case Repo.insert(cg2) do
