@@ -150,7 +150,7 @@ defmodule BoatNoodleWeb.ApiController do
     params = Map.put(params, "branch_id", user.branchid)
     params = Map.put(params, "brand_id", user.brand_id)
 
-    update_rest_status(user.brand_id, user.branchid, params)
+    # update_rest_status(user.brand_id, user.branchid, params)
 
     map = %{status: "ok"} |> Poison.encode!()
     send_resp(conn, 200, map)

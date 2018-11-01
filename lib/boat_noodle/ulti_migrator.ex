@@ -108,17 +108,17 @@ defmodule BoatNoodle.UltiMigrator do
       #   staffs
       # ])
 
-      populate_data(
-        sales_detail.staffid,
-        sales_detail.branchid,
-        sales_detail.sales_details,
-        sales_detail.salesdate,
-        sales_detail.salesdatetime,
-        subcat_data,
-        combo_data,
-        branches,
-        staffs
-      )
+      # populate_data(
+      #   sales_detail.staffid,
+      #   sales_detail.branchid,
+      #   sales_detail.sales_details,
+      #   sales_detail.salesdate,
+      #   sales_detail.salesdatetime,
+      #   subcat_data,
+      #   combo_data,
+      #   branches,
+      #   staffs
+      # )
     end
   end
 
@@ -658,13 +658,13 @@ defmodule BoatNoodle.UltiMigrator do
         # Task.start_link(__MODULE__, :checking, [
         #   branch
         # ])
-        checking(branch)
+        checking_sales(branch)
       end
       |> List.flatten()
 
     image_path = Application.app_dir(:boat_noodle, "priv/static/images")
 
-    new_path = image_path <> "/not_tally_is_void_my.csv"
+    new_path = image_path <> "/v1_missing_salespayment_my.csv"
 
     for dif <- diff do
       if File.exists?(new_path) do
@@ -691,45 +691,45 @@ defmodule BoatNoodle.UltiMigrator do
       end
     end
 
-    bin = File.read!(new_path)
+    # bin = File.read!(new_path)
 
-    salesids = bin |> String.split("\r\n")
+    # salesids = bin |> String.split("\r\n")
 
-    for salesid <- salesids do
-      v1s = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.Sales_v1, salesid: salesid)
-      v2s = BoatNoodle.Repo.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
+    # for salesid <- salesids do
+    #   v1s = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.Sales_v1, salesid: salesid)
+    #   v2s = BoatNoodle.Repo.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
 
-      cg =
-        BoatNoodle.BN.Sales.changeset(v2s, %{
-          is_void: 1,
-          voidreason: v1s.voidreason,
-          void_by: v1s.void_by
-        })
+    #   cg =
+    #     BoatNoodle.BN.Sales.changeset(v2s, %{
+    #       is_void: 1,
+    #       voidreason: v1s.voidreason,
+    #       void_by: v1s.void_by
+    #     })
 
-      case BoatNoodle.Repo.update(cg) do
-        {:ok, v2s} ->
-          true
+    #   case BoatNoodle.Repo.update(cg) do
+    #     {:ok, v2s} ->
+    #       true
 
-        {:error, cg} ->
-          IEx.pry()
-      end
-    end
+    #     {:error, cg} ->
+    #       IEx.pry()
+    #   end
+    # end
   end
 
-  def checking(branch) do
-    s_d = NaiveDateTime.from_iso8601!("2018-08-01T00:00:01")
-    e_d = NaiveDateTime.from_iso8601!("2018-09-18T23:59:59")
+  def checking_sales(branch) do
+    s_d = NaiveDateTime.from_iso8601!("2018-10-01T00:00:01")
+    e_d = NaiveDateTime.from_iso8601!("2018-10-31T23:59:59")
 
     data =
       BoatNoodle.RepoGeop.all(
         from(
           s in BoatNoodle.BN.Sales_v1,
-          # left_join: sd in BoatNoodle.BN.SalesPayment,
-          # on: sd.salesid == s.salesid,
+          left_join: sd in BoatNoodle.BN.SalesPayment,
+          on: sd.salesid == s.salesid,
           where:
             s.branchid == ^Integer.to_string(branch.branchid) and s.salesdatetime >= ^s_d and
-              s.salesdatetime <= ^e_d and s.is_void == ^1,
-          select: s.salesid
+              s.salesdatetime <= ^e_d and s.is_void == ^0,
+          select: sd.salesid
         )
       )
 
@@ -737,64 +737,19 @@ defmodule BoatNoodle.UltiMigrator do
       BoatNoodle.Repo.all(
         from(
           s in BoatNoodle.BN.Sales,
-          # left_join: sd in BoatNoodle.BN.SalesPayment,
-          # on: sd.salesid == s.salesid,
+          left_join: sd in BoatNoodle.BN.SalesPayment,
+          on: sd.salesid == s.salesid,
           where:
             s.branchid == ^Integer.to_string(branch.branchid) and s.salesdatetime >= ^s_d and
-              s.salesdatetime <= ^e_d and s.brand_id == ^1 and s.is_void == ^1,
-          select: s.salesid
+              s.salesdatetime <= ^e_d and s.brand_id == ^1 and s.is_void == ^0,
+          select: sd.salesid
         )
       )
 
-    diff = data -- data2
+    diff = data2 -- data
   end
 
-  def compare_sales_data() do
-    branches =
-      BoatNoodle.Repo.all(
-        from(b in BoatNoodle.BN.Branch, where: b.brand_id == ^1 and b.branchid != ^0)
-      )
-
-    diff =
-      for branch <- branches do
-        # Task.start_link(__MODULE__, :checking, [
-        #   branch
-        # ])
-        checking(branch)
-      end
-      |> List.flatten()
-
-    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
-
-    new_path = image_path <> "/not_tally_sp_BN2.csv"
-
-    for dif <- diff do
-      if File.exists?(new_path) do
-        data = File.read!(new_path)
-        list = String.split(data, "\r\n")
-
-        list =
-          List.insert_at(list, 0, "#{dif.salesid}")
-          |> Enum.map(fn x -> x <> "\r\n" end)
-          |> Enum.join()
-
-        File.write(new_path, list)
-        # Enum.into(list, file)
-      else
-        list = []
-
-        list =
-          List.insert_at(list, 0, "#{dif.salesid}")
-          |> Enum.map(fn x -> x <> "\r\n" end)
-          |> Enum.join()
-
-        File.write(new_path, list)
-        # Enum.into(list, file)
-      end
-    end
-  end
-
-  def checking(branch) do
+  def checking_sales_details(branch) do
     data =
       BoatNoodle.RepoGeop.all(
         from(
@@ -830,12 +785,12 @@ defmodule BoatNoodle.UltiMigrator do
   def v2_missing_sp() do
     image_path = Application.app_dir(:boat_noodle, "priv/static/images")
 
-    new_path = image_path <> "/not_tally_sp_BN2.csv"
+    new_path = image_path <> "/not_tally_salesid_my.csv"
     bin = File.read!(new_path)
 
     salesids = bin |> String.split("\n") |> Enum.reject(fn x -> x == "" end)
 
-    for salesid <- ["BNOU13007"] do
+    for salesid <- salesids do
       # check sales exist
       v2s = BoatNoodle.Repo.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
 
@@ -1017,50 +972,52 @@ defmodule BoatNoodle.UltiMigrator do
                 end
               end
 
-            case a do
-              {:ok, v2sd} ->
-                true
+            IEx.pry()
 
-              {:error, cg} ->
-                if cg.errors == [sales_details: {"has already been taken", []}] do
-                  new_cg = cg.changes |> Map.delete(:sales_details)
+            # case a do
+            #   {:ok, v2sd} ->
+            #     true
 
-                  new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, new_cg)
+            #   {:error, cg} ->
+            #     if cg.errors == [sales_details: {"has already been taken", []}] do
+            #       new_cg = cg.changes |> Map.delete(:sales_details)
 
-                  case BoatNoodle.Repo.insert(new_cg) do
-                    {:ok, v2sd} ->
-                      true
+            #       new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, new_cg)
 
-                    {:error, new_cg} ->
-                      sales_details =
-                        BoatNoodle.Repo.all(
-                          from(
-                            sd in BoatNoodle.BN.SalesMaster,
-                            select: sd.sales_details,
-                            limit: 1,
-                            order_by: [desc: sd.sales_details]
-                          )
-                        )
-                        |> hd()
+            #       case BoatNoodle.Repo.insert(new_cg) do
+            #         {:ok, v2sd} ->
+            #           true
 
-                      new_sd_id = sales_details + 101
+            #         {:error, new_cg} ->
+            #           sales_details =
+            #             BoatNoodle.Repo.all(
+            #               from(
+            #                 sd in BoatNoodle.BN.SalesMaster,
+            #                 select: sd.sales_details,
+            #                 limit: 1,
+            #                 order_by: [desc: sd.sales_details]
+            #               )
+            #             )
+            #             |> hd()
 
-                      new_new_cg = new_cg.changes |> Map.put(:sales_details, new_sd_id)
+            #           new_sd_id = sales_details + 101
 
-                      new_new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, new_new_cg)
+            #           new_new_cg = new_cg.changes |> Map.put(:sales_details, new_sd_id)
 
-                      case BoatNoodle.Repo.insert(new_new_cg) do
-                        {:ok, v2sd} ->
-                          true
+            #           new_new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, new_new_cg)
 
-                        {:error, new_new_cg} ->
-                          IEx.pry()
-                      end
-                  end
-                else
-                  IEx.pry()
-                end
-            end
+            #           case BoatNoodle.Repo.insert(new_new_cg) do
+            #             {:ok, v2sd} ->
+            #               true
+
+            #             {:error, new_new_cg} ->
+            #               IEx.pry()
+            #           end
+            #       end
+            #     else
+            #       IEx.pry()
+            #     end
+            # end
           end
         else
           v1sds =

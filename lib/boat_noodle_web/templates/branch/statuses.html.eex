@@ -16,7 +16,7 @@
 	  <div class="card-body" >
 	    <h4 class="card-title"><%= branch.branchname%></h4>
 	    <h6 class="card-subtitle mb-2 text-muted version" aria-label="<%= branch.branchid%>">unknown</h6>
-	    <p class="card-text logged_in">Logged In: <span aria-label="<%= branch.branchid%>" class="staff">Zisan</span> </p>
+	    <p class="card-text logged_in">Logged In: <span aria-label="<%= branch.branchid%>" class="staff">Unknown</span> </p>
 	    <a href="#0" class="card-link">Unsync: <span aria-label="<%= branch.branchid%>" class="unsync">0</span></a>
 	    <a href="#0" class="card-link"><span aria-label="<%= branch.branchid%>" class="badge badge-default online">Offline</span></a>
 	  </div>
@@ -31,8 +31,11 @@
 	$("span[aria-label='<%= branch.branchid%>'].online").attr("class", "badge badge-success online")
 	$("span[aria-label='<%= branch.branchid%>'].online").html("Online")
 
-	$("span[aria-label='<%= branch.branchid%>'].online").delay(5000).attr("class", "badge badge-default online")
-	$("span[aria-label='<%= branch.branchid%>'].online").delay(5000).html("Offline")
+    setTimeout(function() {
+	$("span[aria-label='<%= branch.branchid%>'].online").attr("class", "badge badge-default online")
+	$("span[aria-label='<%= branch.branchid%>'].online").html("Offline")
+    }, 4900);
+
 })
 </script>
 <% end %>
