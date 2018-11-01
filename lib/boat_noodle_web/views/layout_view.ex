@@ -22,4 +22,8 @@ defmodule BoatNoodleWeb.LayoutView do
   def my_time(time) when time != nil do
     Timex.format!(Timex.shift(time, hours: 8), "%Y-%m-%d %I:%M %P", :strftime)
   end
+
+  def my_time(time) when time == nil do
+    "Not Available"
+  end
 end

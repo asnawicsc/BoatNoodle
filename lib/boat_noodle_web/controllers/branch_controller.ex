@@ -300,7 +300,11 @@ defmodule BoatNoodleWeb.BranchController do
             org_id: o.organisationname,
             manager: u.username,
             num_staff: b.num_staff,
-            sync_status: b.sync_status
+            sync_status: b.sync_status,
+            version2: b.version2,
+            unsync: b.unsync,
+            sync_by: b.sync_by,
+            last_sync: b.last_sync
           }
         )
       )

@@ -55,8 +55,10 @@
 
                         <th>Name</th>
                         <th>Code</th>
-                        <th>Manager</th>
-                        <th>Sync Status</th>
+                        <th>Version V2</th>
+                        <th>Unsync (Last 30 Days)</th>
+                        <th>Sync By</th>
+                        <th>Last Sync</th>
                         <th>Action</th>
                         <th></th>
                       </tr>
@@ -68,8 +70,10 @@
 
                         <td><%= branch.branchname %></td>
                         <td><%= branch.branchcode %></td>
-                        <td><%= branch.manager %></td>
-                        <td><%= branch.sync_status %></td>
+                        <td><%= branch.version2 %></td>
+                        <td><%= branch.unsync %></td>
+                        <td><%= branch.sync_by %></td>
+                        <td><%= BoatNoodleWeb.LayoutView.my_time(branch.last_sync) %></td>
                         <td>
 
                           <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
@@ -110,7 +114,8 @@
 
                         <th>Name</th>
                         <th>Code</th>
-                        <th>Manager</th>
+                        <th>Version</th>
+                        <th>Unsync(Last 30 Days)</th>
                         <th>Action</th>
 
                       </tr>
@@ -122,7 +127,8 @@
 
                         <td><%= branch.branchname %></td>
                         <td><%= branch.branchcode %></td>
-                        <td><%= branch.manager %></td>
+                        <td><%= branch.version2 %></td>
+                         <td><%= branch.unsync %></td>
 
                         <td>
                           <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
