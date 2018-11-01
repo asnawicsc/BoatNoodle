@@ -728,7 +728,7 @@ defmodule BoatNoodle.UltiMigrator do
           on: sd.salesid == s.salesid,
           where:
             s.branchid == ^Integer.to_string(branch.branchid) and s.salesdatetime >= ^s_d and
-              s.salesdatetime <= ^e_d and s.is_void == ^0,
+              s.salesdatetime <= ^e_d,
           select: sd.salesid
         )
       )
@@ -741,7 +741,7 @@ defmodule BoatNoodle.UltiMigrator do
           on: sd.salesid == s.salesid,
           where:
             s.branchid == ^Integer.to_string(branch.branchid) and s.salesdatetime >= ^s_d and
-              s.salesdatetime <= ^e_d and s.brand_id == ^1 and s.is_void == ^0,
+              s.salesdatetime <= ^e_d and s.brand_id == ^1,
           select: sd.salesid
         )
       )
@@ -1118,6 +1118,357 @@ defmodule BoatNoodle.UltiMigrator do
 
                           case BoatNoodle.Repo.insert(new_new_cg) do
                             {:ok, v2sd} ->
+                              true
+
+                            {:error, new_new_cg} ->
+                              IEx.pry()
+                          end
+                      end
+                    else
+                      IEx.pry()
+                    end
+                end
+              end
+            end
+          end
+        end
+    end
+  end
+
+  def v1_missing_sp() do
+    image_path = Application.app_dir(:boat_noodle, "priv/static/images")
+
+    new_path = image_path <> "/v1_missing_salespayment_my.csv"
+    bin = File.read!(new_path)
+
+    salesids =
+      bin |> String.replace("\r", "") |> String.split("\n") |> Enum.reject(fn x -> x == "" end)
+
+    for salesid <- salesids do
+      # check sales exist
+      v1s = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
+
+      if v1s == nil do
+        v2s = BoatNoodle.Repo.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
+        cg = BoatNoodle.BN.Sales.changeset(v2s, %{remark: "damien insert"})
+
+        a = BoatNoodle.RepoGeop.insert(cg)
+      end
+
+      v1sp = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+
+      if v1sp == nil do
+        # create sales payment ...
+        v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+
+        salespay_id =
+          BoatNoodle.RepoGeop.all(
+            from(
+              sd in BoatNoodle.BN.SalesPayment,
+              where: sd.brand_id == 1,
+              select: sd.salespay_id,
+              limit: 1,
+              order_by: [desc: sd.salespay_id]
+            )
+          )
+          |> hd()
+
+        new_salespay_id = salespay_id + 1
+
+        cg =
+          BoatNoodle.BN.SalesPayment.changeset(v2sp, %{
+            salespay_id: new_salespay_id,
+            updated_at: Timex.now()
+          })
+
+        # IEx.pry()
+
+        case BoatNoodle.RepoGeop.insert(cg) do
+          {:ok, v2sp} ->
+            true
+
+          {:error, cg} ->
+            if cg.errors == [salespay_id: {"has already been taken", []}] do
+              salespay_id =
+                BoatNoodle.RepoGeop.all(
+                  from(
+                    sd in BoatNoodle.BN.SalesPayment,
+                    select: sd.salespay_id,
+                    limit: 1,
+                    order_by: [desc: sd.salespay_id]
+                  )
+                )
+                |> hd()
+
+              new_salespay_id = salespay_id + 1
+
+              new_cg =
+                BoatNoodle.BN.SalesPayment.changeset(v2sp, %{
+                  salespay_id: new_salespay_id,
+                  updated_at: Timex.now()
+                })
+
+              case BoatNoodle.RepoGeop.insert(new_cg) do
+                {:ok, v2sp} ->
+                  true
+
+                {:error, new_cg} ->
+                  IEx.pry()
+              end
+            else
+              IEx.pry()
+            end
+        end
+      end
+
+      # check sales details exist
+      v1sd =
+        BoatNoodle.RepoGeop.all(
+          from(
+            sd in BoatNoodle.BN.SalesMaster_v1,
+            where: sd.brand_id == ^1 and sd.salesid == ^salesid
+          )
+        )
+
+      a =
+        if Enum.count(v1sd) == 0 do
+          v2sds =
+            BoatNoodle.Repo.all(
+              from(
+                sd in BoatNoodle.BN.SalesMaster_v1,
+                where: sd.brand_id == ^1 and sd.salesid == ^salesid
+              )
+            )
+
+          for v2sd <- v2sds do
+            sales_details =
+              BoatNoodle.RepoGeop.all(
+                from(
+                  sd in BoatNoodle.BN.SalesMaster_v1,
+                  select: sd.sales_details,
+                  limit: 1,
+                  order_by: [desc: sd.sales_details]
+                )
+              )
+              |> hd()
+
+            new_sd_id = sales_details + 101
+
+            a =
+              if v2sd.itemname == "" or v2sd.itemname == nil do
+                itemname = ""
+
+                if v2sd.itemname == "" or v2sd.itemname == nil do
+                  if String.length(Integer.to_string(v2sd.itemid)) == 9 do
+                    is =
+                      BoatNoodle.Repo.get_by(
+                        BoatNoodle.BN.ComboDetails_v1,
+                        combo_item_id: v2sd.itemid
+                      )
+
+                    itemname =
+                      if is != nil do
+                        is.combo_item_name
+                      else
+                        IEx.pry()
+                        ""
+                      end
+                  else
+                    is =
+                      BoatNoodle.Repo.get_by(
+                        BoatNoodle.BN.ItemSubcat,
+                        brand_id: 1,
+                        subcatid: v2sd.itemid
+                      )
+
+                    itemname =
+                      if is != nil do
+                        is.itemname
+                      else
+                        IEx.pry()
+                        ""
+                      end
+                  end
+                end
+
+                cg =
+                  BoatNoodle.BN.SalesMaster_v1.changeset(v2sd, %{
+                    itemname: itemname,
+                    remaks: "damien insert",
+                    sales_details: new_sd_id
+                  })
+
+                a = BoatNoodle.RepoGeop.insert(cg)
+
+                case a do
+                  {:ok, v1sd} ->
+                    true
+
+                  {:error, cg} ->
+                    IEx.pry()
+                end
+              else
+                cg =
+                  BoatNoodle.BN.SalesMaster_v1.changeset(v2sd, %{
+                    remaks: "damien insert",
+                    sales_details: new_sd_id
+                  })
+
+                a = BoatNoodle.RepoGeop.insert(cg)
+
+                case a do
+                  {:ok, v2sd} ->
+                    true
+
+                  {:error, cg} ->
+                    IEx.pry()
+                end
+              end
+
+            # case a do
+            #   {:ok, v2sd} ->
+            #     true
+
+            #   {:error, cg} ->
+            #     if cg.errors == [sales_details: {"has already been taken", []}] do
+            #       new_cg = cg.changes |> Map.delete(:sales_details)
+
+            #       new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, new_cg)
+
+            #       case BoatNoodle.Repo.insert(new_cg) do
+            #         {:ok, v2sd} ->
+            #           true
+
+            #         {:error, new_cg} ->
+            #           sales_details =
+            #             BoatNoodle.Repo.all(
+            #               from(
+            #                 sd in BoatNoodle.BN.SalesMaster,
+            #                 select: sd.sales_details,
+            #                 limit: 1,
+            #                 order_by: [desc: sd.sales_details]
+            #               )
+            #             )
+            #             |> hd()
+
+            #           new_sd_id = sales_details + 101
+
+            #           new_new_cg = new_cg.changes |> Map.put(:sales_details, new_sd_id)
+
+            #           new_new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, new_new_cg)
+
+            #           case BoatNoodle.Repo.insert(new_new_cg) do
+            #             {:ok, v2sd} ->
+            #               true
+
+            #             {:error, new_new_cg} ->
+            #               IEx.pry()
+            #           end
+            #       end
+            #     else
+            #       IEx.pry()
+            #     end
+            # end
+          end
+        else
+          v2sds =
+            BoatNoodle.Repo.all(
+              from(
+                sd in BoatNoodle.BN.SalesMaster_v1,
+                where: sd.brand_id == ^1 and sd.salesid == ^salesid
+              )
+            )
+
+          if Enum.count(v2sds) != Enum.count(v1sd) do
+            v1itemids = v1sd |> Enum.map(fn x -> x.itemid end) |> Enum.sort()
+
+            v2itemids = v2sds |> Enum.map(fn x -> x.itemid end) |> Enum.sort()
+
+            diff = v2itemids -- v1itemids
+
+            for dif <- diff do
+              v2sd = Enum.filter(v2sds, fn x -> x.itemid == dif end) |> hd()
+              itemname = ""
+
+              if v2sd.itemname == "" or v2sd.itemname == nil do
+                if String.length(Integer.to_string(v2sd.itemid)) == 9 do
+                  is =
+                    BoatNoodle.Repo.get_by(
+                      BoatNoodle.BN.ComboDetails_v1,
+                      combo_item_id: v2sd.itemid
+                    )
+
+                  itemname =
+                    if is != nil do
+                      is.combo_item_name
+                    else
+                      IEx.pry()
+                      ""
+                    end
+                else
+                  is =
+                    BoatNoodle.Repo.get_by(
+                      BoatNoodle.BN.ItemSubcat,
+                      brand_id: 1,
+                      subcatid: v2sd.itemid
+                    )
+
+                  itemname =
+                    if is != nil do
+                      is.itemname
+                    else
+                      IEx.pry()
+                      ""
+                    end
+                end
+
+                cg =
+                  BoatNoodle.BN.SalesMaster_v1.changeset(v2sd, %{
+                    remaks: "damien insert",
+                    itemname: itemname
+                  })
+
+                a = BoatNoodle.Repo.insert(cg)
+              else
+                cg =
+                  BoatNoodle.BN.SalesMaster_v1.changeset(v2sd, %{
+                    remaks: "damien insert"
+                  })
+
+                case BoatNoodle.RepoGeop.insert(cg) do
+                  {:ok, v1sd} ->
+                    true
+
+                  {:error, cg} ->
+                    if cg.errors == [sales_details: {"has already been taken", []}] do
+                      new_cg = cg.changes |> Map.delete(:sales_details)
+
+                      new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v2sd, new_cg)
+
+                      case BoatNoodle.RepoGeop.insert(new_cg) do
+                        {:ok, v1sd} ->
+                          true
+
+                        {:error, new_cg} ->
+                          sales_details =
+                            BoatNoodle.RepoGeop.all(
+                              from(
+                                sd in BoatNoodle.BN.SalesMaster_v1,
+                                select: sd.sales_details,
+                                limit: 1,
+                                order_by: [desc: sd.sales_details]
+                              )
+                            )
+                            |> hd()
+
+                          new_sd_id = sales_details + 101
+
+                          new_new_cg = new_cg.changes |> Map.put(:sales_details, new_sd_id)
+
+                          new_new_cg = BoatNoodle.BN.SalesMaster_v1.changeset(v2sd, new_new_cg)
+
+                          case BoatNoodle.Repo.insert(new_new_cg) do
+                            {:ok, v1sd} ->
                               true
 
                             {:error, new_new_cg} ->
