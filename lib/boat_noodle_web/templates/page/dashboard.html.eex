@@ -252,7 +252,11 @@ if (val == false) {
                                     <th>SST</th>
                                     <th>Discount Amt</th>
                                     <th>Nett Sales</th>
-                                   <%#  <th>Roundings</th> %>
+                                       <% brand_id= @conn.private.plug_session["brand_id"]  %>
+                                    <%= if brand_id == 8  do %>
+                                     <th>Roundings</th>
+                                    <% end %>
+                                  
                                     <th>Total Sales</th>
                                     <th>Pax</th>
                                     
@@ -266,7 +270,13 @@ if (val == false) {
                                     <td id="gst_data"></td>
                                     <td id="discount_data"></td>
                                     <td id="nett_sales_data"></td>
-                                  <%#   <td id="roundings_data"></td> %>
+            
+                                    <% brand_id= @conn.private.plug_session["brand_id"]  %>
+                                    <%= if brand_id == 8  do %>
+
+                                      <td id="roundings_data"></td>
+                                    <% end %>
+                                    
                                     <td id="total_sales_data"></td>
                                     <td id="pax_data"></td>
                                     

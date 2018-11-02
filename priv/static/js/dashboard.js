@@ -190,21 +190,21 @@ $("div#transaction").html(transaction);
         })
          $("td#nett_sales_data").html(format(nett_sales_data))
 
+         if (window.currentBrand == "8") {
 
+         var roundings = []
+        $(data).each(function(){
+         var ts = this.roundings
+         roundings.push(parseFloat(ts.replace(",", "")))
+        })
 
-        //  var roundings = []
-        // $(data).each(function(){
-        //  var ts = this.roundings
-        //  roundings.push(parseFloat(ts.replace(",", "")))
-        // })
+        var roundings_data = 0;
+          $.each(roundings, function(idx, num){
+            roundings_data += parseFloat(num)
+        })
+         $("td#roundings_data").html(format(roundings_data))
 
-        // var roundings_data = 0;
-        //   $.each(roundings, function(idx, num){
-        //     roundings_data += parseFloat(num)
-        // })
-        //  $("td#roundings_data").html(format(roundings_data))
-
-
+        }
 
 
          var total_sales = []
