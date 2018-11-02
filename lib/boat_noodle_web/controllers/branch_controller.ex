@@ -9,6 +9,8 @@ defmodule BoatNoodleWeb.BranchController do
   def statuses(conn, params) do
     branches = BN.list_branches(BN.get_brand_id(conn))
 
+    # conn.private.plug_session
+    # branches2= BN.list_user_branches()
     render(conn, "statuses.html", branches: branches)
   end
 
@@ -300,7 +302,11 @@ defmodule BoatNoodleWeb.BranchController do
             org_id: o.organisationname,
             manager: u.username,
             num_staff: b.num_staff,
-            sync_status: b.sync_status
+            sync_status: b.sync_status,
+            version2: b.version2,
+            unsync: b.unsync,
+            sync_by: b.sync_by,
+            last_sync: b.last_sync
           }
         )
       )

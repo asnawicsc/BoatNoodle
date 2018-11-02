@@ -30,23 +30,16 @@ defmodule BoatNoodleWeb.MenuItemView do
     # |> Enum.group_by(fn x -> x.itemcatid end)
   end
 
-  def pricing(subcatid, brand) do
-    subcat =
-      Repo.get_by(
-        ItemSubcat,
-        subcatid: subcatid,
-        brand_id: brand.private.plug_session["brand_id"]
-      )
+  def subcat_data(conn) do
+    subcats =
+      Repo.all(from(i in ItemSubcat, where: i.brand_id == ^conn.private.plug_session["brand_id"]))
+  end
+
+  def pricing(subcatid, brand, subcat_data) do
+    subcat = subcat_data |> Enum.filter(fn x -> x.subcatid == subcatid end) |> hd()
 
     same_items =
-      Repo.all(
-        from(
-          i in ItemSubcat,
-          where:
-            i.itemname == ^subcat.itemname and i.is_delete == ^0 and i.itemprice != 0.00 and
-              i.brand_id == ^brand.private.plug_session["brand_id"]
-        )
-      )
+      subcat_data |> Enum.filter(fn x -> x.itemname == subcat.itemname end)
       |> Enum.reject(fn x -> String.length(x.itemcatid) > 5 end)
 
     same_items

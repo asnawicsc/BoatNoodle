@@ -1373,6 +1373,17 @@ defmodule BoatNoodle.BN do
     Repo.all(from(b in Branch, where: b.brand_id == ^brand_id))
   end
 
+  def list_user_branches(user_id, brand_id) do
+    Repo.all(
+      from(
+        b in Branch,
+        left_join: a in UserBranchAccess,
+        on: a.branchid == b.branchid,
+        where: b.brand_id == ^brand_id and a.user_id == ^user_id
+      )
+    )
+  end
+
   @doc """
   Gets a single branch.
 

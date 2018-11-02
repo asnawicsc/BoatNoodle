@@ -106,7 +106,7 @@
 							</ul>
 						</div>
 						<div class="col-md-10">
-							<div class="tab-content" ">
+							<div class="tab-content">
 								<%= for item <- @all|>Enum.with_index do %>
 								  <% data=elem(item,0) %>
 									<% data2=elem(item,1) %>
@@ -164,7 +164,6 @@
 														price_code: s.price_code,
 														itemcode: s.itemcode}, 
 														order_by: [asc: s.itemcode]) |> Enum.reject(fn x -> x.category_type == "COMBO" end) |>Enum.filter(fn x -> x.price_code == @price_code end)|> Enum.uniq 
-
 
 														%>
 
