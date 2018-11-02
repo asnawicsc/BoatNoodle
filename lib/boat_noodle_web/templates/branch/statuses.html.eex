@@ -1,6 +1,7 @@
+  <% require IEx%>
   <script src="/js/dashboard.js"></script>
 <div class="row">
-  <div class="col-md-7">
+  <div class="col-md-12">
     <div class="card">
       <div class="card-header">
         <h4 class="card-title">Active Branches</h4>
@@ -8,50 +9,34 @@
       </div>
       <div class="card-body">
 		<div class="row">
-<%= for branch <- @branches do %>
+      <% latest_versions = @branches |> Enum.map(fn x -> x.version2 end ) |> Enum.sort() |> Enum.uniq() |> List.last %>
+      
+<%= for branch <- @branches |> Enum.sort_by(fn x -> x.last_sync end ) |> Enum.reverse do %>
 
-<div class="col-sm-4">
+<div class="col-sm-3">
 	
 	<div class="card">
 	  <div class="card-body" >
 	    <h4 class="card-title"><%= branch.branchname%></h4>
-	    <h6 class="card-subtitle mb-2 text-muted version" aria-label="<%= branch.branchid%>">unknown</h6>
-	    <p class="card-text logged_in">Logged In: <span aria-label="<%= branch.branchid%>" class="staff">Unknown</span> </p>
-	    <a href="#0" class="card-link">Unsync: <span aria-label="<%= branch.branchid%>" class="unsync">0</span></a>
-	    <a href="#0" class="card-link"><span aria-label="<%= branch.branchid%>" class="badge badge-default online">Offline</span></a>
+	    <h4 class="card-subtitle mb-2 text-muted version" aria-label="<%= branch.branchid%>"><span 
+<%= if latest_versions == branch.version2 do %>
+        class="badge badge-primary"
+<% else %>
+        class="badge badge-danger"
+<% end %>
+        ><%= branch.version2%></span></h4>
+	    <p class="card-text logged_in">Logged In: <span aria-label="<%= branch.branchid%>" class="staff"><%= branch.sync_by%></span> </p>
+      <p class="card-text logged_in">Last Sync: <br> <span aria-label="<%= branch.branchid%>" class="staff"><%= BoatNoodleWeb.LayoutView.my_time_ago(branch.last_sync) %></span> </p>
+
+	    <a href="#0" class="card-link">Unsync: <span aria-label="<%= branch.branchid%>" class="badge badge-default online"><%= branch.unsync%></span></a>
 	  </div>
 	</div>
 </div>
-<script type="text/javascript">
-	dashboard_channel.on("branch_<%= branch.branchid%>", payload => {
-	$("h6[aria-label='<%= branch.branchid%>']").html(payload.versions)
-	$("span[aria-label='<%= branch.branchid%>'].staff").html(payload.staff)
-	$("span[aria-label='<%= branch.branchid%>'].unsync").html(payload.unsync)
 
-	$("span[aria-label='<%= branch.branchid%>'].online").attr("class", "badge badge-success online")
-	$("span[aria-label='<%= branch.branchid%>'].online").html("Online")
-
-    setTimeout(function() {
-	$("span[aria-label='<%= branch.branchid%>'].online").attr("class", "badge badge-default online")
-	$("span[aria-label='<%= branch.branchid%>'].online").html("Offline")
-    }, 4900);
-
-})
-</script>
 <% end %>
 		</div>
       </div>
     </div>
   </div>
-  <div class="col-md-5">
-    <div class="card">
-      <div class="card-header">
-        <h4 class="card-title">Regular header</h4>
-        <p class="category">Category subtitle</p>
-      </div>
-      <div class="card-body">
-        The place is close to Barceloneta Beach and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the main night life in Barcelona...
-      </div>
-    </div>
-  </div>
+
 </div>

@@ -26,4 +26,24 @@ defmodule BoatNoodleWeb.LayoutView do
   def my_time(time) when time == nil do
     "Not Available"
   end
+
+  def my_time_ago(time) when time != nil do
+    d = Timex.diff(Timex.now(), time, :days)
+    h = Timex.diff(Timex.now(), time, :hours)
+
+    m = Timex.diff(Timex.shift(Timex.now(), hours: -h), time, :minutes)
+
+    message =
+      if d > 0 do
+        "#{d} days ago..."
+      else
+        "#{h} hour  #{m} minutes ago..."
+      end
+
+    message
+  end
+
+  def my_time_ago(time) when time == nil do
+    "Not Available"
+  end
 end

@@ -7,10 +7,17 @@ defmodule BoatNoodleWeb.BranchController do
   require IEx
 
   def statuses(conn, params) do
-    branches = BN.list_branches(BN.get_brand_id(conn))
+    branches1 = BN.list_branches(BN.get_brand_id(conn))
 
-    # conn.private.plug_session
-    # branches2= BN.list_user_branches()
+    branches2 = BN.list_user_branches(conn.private.plug_session["user_id"], BN.get_brand_id(conn))
+
+    branches =
+      if Enum.any?(branches2, fn x -> x.branchid == 0 end) do
+        branches1
+      else
+        branches2 |> Enum.reject(fn x -> x.branchid == 0 end)
+      end
+
     render(conn, "statuses.html", branches: branches)
   end
 

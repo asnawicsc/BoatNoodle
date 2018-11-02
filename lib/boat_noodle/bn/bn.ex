@@ -1377,9 +1377,9 @@ defmodule BoatNoodle.BN do
     Repo.all(
       from(
         b in Branch,
-        left_join: a in UserBranchAccess,
+        left_join: a in BoatNoodle.BN.UserBranchAccess,
         on: a.branchid == b.branchid,
-        where: b.brand_id == ^brand_id and a.user_id == ^user_id
+        where: b.brand_id == ^brand_id and a.userid == ^user_id
       )
     )
   end
