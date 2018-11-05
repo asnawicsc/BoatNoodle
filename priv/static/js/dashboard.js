@@ -124,26 +124,36 @@ $("div#transaction").html(transaction);
 
         var data = JSON.parse(payload.table_branch_daily_sales_sumary)
 
+
         var gross_sales = []
         $(data).each(function(){
          var ts = this.gross_sales
-         gross_sales.push(parseFloat(ts.replace(",", "")))
+          console.log(ts)
+         gross_sales.push(parseFloat(ts.replace(/,/g, "")))
+          console.log(gross_sales)
+
         })
 
      
         var gross_saless_data = 0;
- 
+  
         $.each(gross_sales, function(idx, num){
             gross_saless_data += parseFloat(num)
+
         })
-     
-        $("td#gross_saless_data").html(format(gross_saless_data))
+ 
+    
+
+               $("td#gross_saless_data").html(format(gross_saless_data))
+          
+    
+      
 
 
         var service_charge = []
         $(data).each(function(){
          var ts = this.service_charge
-         service_charge.push(parseFloat(ts.replace(",", "")))
+         service_charge.push(parseFloat(ts.replace(/,/g, "")))
         })
 
         var service_charge_data = 0;
@@ -155,7 +165,7 @@ $("div#transaction").html(transaction);
         var gst = []
         $(data).each(function(){
          var ts = this.gst
-         gst.push(parseFloat(ts.replace(",", "")))
+         gst.push(parseFloat(ts.replace(/,/g, "")))
         })
 
         var gst_data = 0;
@@ -168,7 +178,7 @@ $("div#transaction").html(transaction);
         var discount = []
         $(data).each(function(){
          var ts = this.discount
-         discount.push(parseFloat(ts.replace(",", "")))
+         discount.push(parseFloat(ts.replace(/,/g, "")))
         })
 
         var discount_data = 0;
@@ -181,7 +191,7 @@ $("div#transaction").html(transaction);
         var nett_sales = []
         $(data).each(function(){
          var ts = this.nett_sales
-         nett_sales.push(parseFloat(ts.replace(",", "")))
+         nett_sales.push(parseFloat(ts.replace(/,/g, "")))
         })
 
         var nett_sales_data = 0;
@@ -195,7 +205,7 @@ $("div#transaction").html(transaction);
          var roundings = []
         $(data).each(function(){
          var ts = this.roundings
-         roundings.push(parseFloat(ts.replace(",", "")))
+         roundings.push(parseFloat(ts.replace(/,/g, "")))
         })
 
         var roundings_data = 0;
@@ -210,7 +220,7 @@ $("div#transaction").html(transaction);
          var total_sales = []
         $(data).each(function(){
          var ts = this.total_sales
-         total_sales.push(parseFloat(ts.replace(",", "")))
+         total_sales.push(parseFloat(ts.replace(/,/g, "")))
         })
 
         var total_sales_data = 0;
