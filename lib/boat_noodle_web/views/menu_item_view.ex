@@ -8,7 +8,8 @@ defmodule BoatNoodleWeb.MenuItemView do
 
   def item_subcats(ids) do
     ids =
-      String.split(ids, ",") |> Enum.reject(fn x -> x == "" end)
+      String.split(ids, ",")
+      |> Enum.reject(fn x -> x == "" end)
       |> Enum.map(fn x -> String.to_integer(x) end)
 
     Repo.all(
@@ -39,7 +40,9 @@ defmodule BoatNoodleWeb.MenuItemView do
     subcat = subcat_data |> Enum.filter(fn x -> x.subcatid == subcatid end) |> hd()
 
     same_items =
-      subcat_data |> Enum.filter(fn x -> x.itemname == subcat.itemname end)
+      subcat_data
+      |> Enum.filter(fn x -> x.itemname == subcat.itemname end)
+      |> Enum.filter(fn x -> x.is_delete == 0 end)
       |> Enum.reject(fn x -> String.length(x.itemcatid) > 5 end)
 
     same_items
