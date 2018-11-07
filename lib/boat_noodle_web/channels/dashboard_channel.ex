@@ -205,9 +205,16 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 total_transaction = Enum.map(data, fn x -> x.transaction end) |> Enum.sum()
 
+                total_all =
+                  if payload["brand_id"] == "8" do
+                    total_sales - total_taxes
+                  else
+                    total_sales - total_taxes - total_rounding - total_service_charge
+                  end
+
                 %{
                   date: day,
-                  total_sales: total_sales - total_taxes - total_rounding - total_service_charge,
+                  total_sales: total_all,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
@@ -275,8 +282,13 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   nett_sales =
-                    (grand_total - gst - rounding - service_charge)
-                    |> Number.Delimit.number_to_delimited()
+                    if payload["brand_id"] == "8" do
+                      (grand_total - gst)
+                      |> Number.Delimit.number_to_delimited()
+                    else
+                      (grand_total - gst - rounding - service_charge)
+                      |> Number.Delimit.number_to_delimited()
+                    end
 
                   roundings =
                     Enum.map(item, fn x -> Decimal.to_float(x.rounding) end)
@@ -285,9 +297,15 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   total_sales =
-                    (nett_sale + service_charge)
-                    |> Float.round(2)
-                    |> Number.Delimit.number_to_delimited()
+                    if payload["brand_id"] == "8" do
+                      (nett_sale + service_charge + gst + rounding)
+                      |> Float.round(2)
+                      |> Number.Delimit.number_to_delimited()
+                    else
+                      (nett_sale + service_charge)
+                      |> Float.round(2)
+                      |> Number.Delimit.number_to_delimited()
+                    end
 
                   pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
@@ -325,7 +343,13 @@ defmodule BoatNoodleWeb.DashboardChannel do
         discount = grand_total - (sub_total + gst + service_charge + rounding)
 
         d_nett_sales =
-          (grand_total - gst - rounding - service_charge) |> Number.Delimit.number_to_delimited()
+          if payload["brand_id"] == "8" do
+            (grand_total - gst)
+            |> Number.Delimit.number_to_delimited()
+          else
+            (grand_total - gst - rounding - service_charge)
+            |> Number.Delimit.number_to_delimited()
+          end
 
         d_taxes =
           Enum.map(a, fn x -> Decimal.to_float(x.gst) end)
@@ -779,9 +803,16 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 total_transaction = Enum.map(data, fn x -> x.transaction end) |> Enum.sum()
 
+                total_all =
+                  if payload["brand_id"] == "8" do
+                    total_sales - total_taxes
+                  else
+                    total_sales - total_taxes - total_rounding - total_service_charge
+                  end
+
                 %{
                   date: day,
-                  total_sales: total_sales - total_taxes - total_rounding - total_service_charge,
+                  total_sales: total_all,
                   total_taxes: total_taxes,
                   total_discount: total_discount,
                   total_service_charge: total_service_charge,
@@ -850,8 +881,13 @@ defmodule BoatNoodleWeb.DashboardChannel do
                     |> Number.Delimit.number_to_delimited()
 
                   nett_sales =
-                    (grand_total - gst - rounding - service_charge)
-                    |> Number.Delimit.number_to_delimited()
+                    if payload["brand_id"] == "8" do
+                      (grand_total - gst)
+                      |> Number.Delimit.number_to_delimited()
+                    else
+                      (grand_total - gst - rounding - service_charge)
+                      |> Number.Delimit.number_to_delimited()
+                    end
 
                   roundings =
                     Enum.map(item, fn x -> Decimal.to_float(x.rounding) end)
@@ -861,9 +897,15 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                   # (sub_total + service_charge + discount + rounding + gst) 
                   total_sales =
-                    (nett_sale + service_charge)
-                    |> Float.round(2)
-                    |> Number.Delimit.number_to_delimited()
+                    if payload["brand_id"] == "8" do
+                      (nett_sale + service_charge + gst + rounding)
+                      |> Float.round(2)
+                      |> Number.Delimit.number_to_delimited()
+                    else
+                      (nett_sale + service_charge)
+                      |> Float.round(2)
+                      |> Number.Delimit.number_to_delimited()
+                    end
 
                   pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
@@ -901,7 +943,13 @@ defmodule BoatNoodleWeb.DashboardChannel do
         discount = grand_total - (sub_total + gst + service_charge + rounding)
 
         d_nett_sales =
-          (grand_total - gst - rounding - service_charge) |> Number.Delimit.number_to_delimited()
+          if payload["brand_id"] == "8" do
+            (grand_total - gst)
+            |> Number.Delimit.number_to_delimited()
+          else
+            (grand_total - gst - rounding - service_charge)
+            |> Number.Delimit.number_to_delimited()
+          end
 
         d_taxes =
           Enum.map(a, fn x -> Decimal.to_float(x.gst) end)
