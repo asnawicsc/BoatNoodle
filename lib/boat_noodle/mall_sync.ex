@@ -74,15 +74,15 @@ defmodule BoatNoodle.MallSync do
     connect_to(1, "2")
     connect_to(2, "2")
     connect_to(3, "2")
-    # connect_to(1, "7")
-    # connect_to(2, "7")
-    # connect_to(3, "7")
+    connect_to(1, "7")
+    connect_to(2, "7")
+    connect_to(3, "7")
     connect_to(1, "23")
     connect_to(2, "23")
     connect_to(3, "23")
-    # connect_to(1, "26")
-    # connect_to(2, "26")
-    # connect_to(3, "26")
+    connect_to(1, "26")
+    connect_to(2, "26")
+    connect_to(3, "26")
 
     # Signal shutdown
     IO.puts("Success!")
@@ -95,11 +95,11 @@ defmodule BoatNoodle.MallSync do
         "2" ->
           {'50000078', 'e8kgjhR'}
 
-        # "7" ->
-        #   {'53000147', '6W95xLM'}
+        "7" ->
+          {'53000147', '6W95xLM'}
 
-        # "26" ->
-        #   {'51000039', '52F4A1F'}
+        "26" ->
+          {'51000039', '52F4A1F'}
 
         "23" ->
           {'52000183', '4LpAUv1'}
