@@ -278,6 +278,9 @@ defmodule BoatNoodleWeb.ApiController do
               "payment_types" ->
                 get_scope_payment_types(conn, branch.branchid, branch.brand_id, params["code"])
 
+              "date_price" ->
+                get_scope_date_price(conn, branch.branchid, branch.brand_id, params["code"])
+
               "discount" ->
                 # IO.inspect(branch.branchid)
 
@@ -428,6 +431,28 @@ defmodule BoatNoodleWeb.ApiController do
     else
       0
     end
+  end
+
+  def get_scope_date_price(conn, branch_id, brand_id, branchcode) do
+    date_prices =
+      Repo.all(
+        from(
+          d in DatePrice,
+          where: d.brand_id == ^brand_id,
+          select: %{
+            start_date: d.start_date,
+            end_date: d.end_date,
+            unit_price: d.unit_price,
+            menuitemid: d.item_subcat_id
+          }
+        )
+      )
+
+    map_json = %{date_prices: date_prices} |> Poison.encode!()
+
+    message = List.insert_at(conn.req_headers, 0, {"date_prices", "date_prices"})
+    log_error_api(message, "API GET - date_prices")
+    send_resp(conn, 200, map_json)
   end
 
   def get_scope_payment_types(conn, branch_id, brand_id, branchcode) do

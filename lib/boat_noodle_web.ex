@@ -66,7 +66,8 @@ defmodule BoatNoodleWeb do
         ApiLog,
         Voucher,
         HistoryData,
-        ModalLog
+        ModalLog,
+        DatePrice
       }
     end
   end
@@ -126,7 +127,8 @@ defmodule BoatNoodleWeb do
         Brand,
         ApiLog,
         Voucher,
-        HistoryData
+        HistoryData,
+        DatePrice
       }
     end
   end
@@ -182,7 +184,8 @@ defmodule BoatNoodleWeb do
         Brand,
         ApiLog,
         Voucher,
-        HistoryData
+        HistoryData,
+        DatePrice
       }
 
       import Ecto.Query

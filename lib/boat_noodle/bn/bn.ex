@@ -4938,4 +4938,100 @@ defmodule BoatNoodle.BN do
   def change_report(%Report{} = report) do
     Report.changeset(report, %{})
   end
+
+  alias BoatNoodle.BN.DatePrice
+
+  @doc """
+  Returns the list of item_subcat_date_price.
+
+  ## Examples
+
+      iex> list_item_subcat_date_price()
+      [%DatePrice{}, ...]
+
+  """
+  def list_item_subcat_date_price do
+    Repo.all(DatePrice)
+  end
+
+  @doc """
+  Gets a single date_price.
+
+  Raises `Ecto.NoResultsError` if the Date price does not exist.
+
+  ## Examples
+
+      iex> get_date_price!(123)
+      %DatePrice{}
+
+      iex> get_date_price!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_date_price!(id), do: Repo.get!(DatePrice, id)
+
+  @doc """
+  Creates a date_price.
+
+  ## Examples
+
+      iex> create_date_price(%{field: value})
+      {:ok, %DatePrice{}}
+
+      iex> create_date_price(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_date_price(attrs \\ %{}) do
+    %DatePrice{}
+    |> DatePrice.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a date_price.
+
+  ## Examples
+
+      iex> update_date_price(date_price, %{field: new_value})
+      {:ok, %DatePrice{}}
+
+      iex> update_date_price(date_price, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_date_price(%DatePrice{} = date_price, attrs) do
+    date_price
+    |> DatePrice.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a DatePrice.
+
+  ## Examples
+
+      iex> delete_date_price(date_price)
+      {:ok, %DatePrice{}}
+
+      iex> delete_date_price(date_price)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_date_price(%DatePrice{} = date_price) do
+    Repo.delete(date_price)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking date_price changes.
+
+  ## Examples
+
+      iex> change_date_price(date_price)
+      %Ecto.Changeset{source: %DatePrice{}}
+
+  """
+  def change_date_price(%DatePrice{} = date_price) do
+    DatePrice.changeset(date_price, %{})
+  end
 end

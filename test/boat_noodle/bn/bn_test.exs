@@ -3922,4 +3922,72 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_report(report)
     end
   end
+
+  describe "item_subcat_date_price" do
+    alias BoatNoodle.BN.DatePrice
+
+    @valid_attrs %{brand_id: 42, end_date: ~D[2010-04-17], item_subcat_id: 42, start_date: ~D[2010-04-17], unit_price: "120.5"}
+    @update_attrs %{brand_id: 43, end_date: ~D[2011-05-18], item_subcat_id: 43, start_date: ~D[2011-05-18], unit_price: "456.7"}
+    @invalid_attrs %{brand_id: nil, end_date: nil, item_subcat_id: nil, start_date: nil, unit_price: nil}
+
+    def date_price_fixture(attrs \\ %{}) do
+      {:ok, date_price} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_date_price()
+
+      date_price
+    end
+
+    test "list_item_subcat_date_price/0 returns all item_subcat_date_price" do
+      date_price = date_price_fixture()
+      assert BN.list_item_subcat_date_price() == [date_price]
+    end
+
+    test "get_date_price!/1 returns the date_price with given id" do
+      date_price = date_price_fixture()
+      assert BN.get_date_price!(date_price.id) == date_price
+    end
+
+    test "create_date_price/1 with valid data creates a date_price" do
+      assert {:ok, %DatePrice{} = date_price} = BN.create_date_price(@valid_attrs)
+      assert date_price.brand_id == 42
+      assert date_price.end_date == ~D[2010-04-17]
+      assert date_price.item_subcat_id == 42
+      assert date_price.start_date == ~D[2010-04-17]
+      assert date_price.unit_price == Decimal.new("120.5")
+    end
+
+    test "create_date_price/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_date_price(@invalid_attrs)
+    end
+
+    test "update_date_price/2 with valid data updates the date_price" do
+      date_price = date_price_fixture()
+      assert {:ok, date_price} = BN.update_date_price(date_price, @update_attrs)
+      assert %DatePrice{} = date_price
+      assert date_price.brand_id == 43
+      assert date_price.end_date == ~D[2011-05-18]
+      assert date_price.item_subcat_id == 43
+      assert date_price.start_date == ~D[2011-05-18]
+      assert date_price.unit_price == Decimal.new("456.7")
+    end
+
+    test "update_date_price/2 with invalid data returns error changeset" do
+      date_price = date_price_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_date_price(date_price, @invalid_attrs)
+      assert date_price == BN.get_date_price!(date_price.id)
+    end
+
+    test "delete_date_price/1 deletes the date_price" do
+      date_price = date_price_fixture()
+      assert {:ok, %DatePrice{}} = BN.delete_date_price(date_price)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_date_price!(date_price.id) end
+    end
+
+    test "change_date_price/1 returns a date_price changeset" do
+      date_price = date_price_fixture()
+      assert %Ecto.Changeset{} = BN.change_date_price(date_price)
+    end
+  end
 end

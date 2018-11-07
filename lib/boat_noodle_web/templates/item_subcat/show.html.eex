@@ -64,6 +64,14 @@
                 </button>
 
 
+                <a href="/<%= BN.get_domain(@conn) %>/items/<%= same_item.subcatid %>/date_prices" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
+
+                    <i class="material-icons">event_note</i> Date Prices
+                  <div class="ripple-container"></div>
+                </a>
+
+
+
                     <button type="button" rel="tooltip" title="" aria-label="assign_to_unused" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>">
 
                     <i class="material-icons">book</i> Mark as Unused

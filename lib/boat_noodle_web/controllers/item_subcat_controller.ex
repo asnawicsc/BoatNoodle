@@ -5,6 +5,113 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   alias BoatNoodle.BN.{MenuItem, Discount, ItemSubcat, ComboDetails, Branch, ItemCat, Tag}
   require IEx
 
+  def date_prices(conn, params) do
+    item_subcat_id = params["subcatid"]
+
+    date_prices =
+      Repo.all(
+        from(
+          d in DatePrice,
+          where:
+            d.is_delete == ^0 and d.item_subcat_id == ^item_subcat_id and
+              d.brand_id == ^BN.get_brand_id(conn),
+          order_by: [desc: d.start_date]
+        )
+      )
+
+    render(conn, "date_prices.html", date_prices: date_prices)
+  end
+
+  def new_date_prices(conn, params) do
+    item_subcat_id = params["subcatid"]
+
+    date_prices =
+      Repo.all(
+        from(
+          d in DatePrice,
+          where:
+            d.is_delete == ^0 and d.item_subcat_id == ^item_subcat_id and
+              d.brand_id == ^BN.get_brand_id(conn),
+          select: {d.start_date, d.end_date}
+        )
+      )
+
+    list_of_date_ranges = Enum.map(date_prices, fn x -> Date.range(elem(x, 0), elem(x, 1)) end)
+
+    s_date = params["start_date"] |> Date.from_iso8601!()
+
+    check_start_date_clash =
+      list_of_date_ranges |> Enum.map(fn x -> Enum.any?(x, fn y -> y == s_date end) end)
+      |> Enum.any?(fn x -> x == true end)
+
+    e_date = params["end_date"] |> Date.from_iso8601!()
+
+    check_start_end_clash =
+      list_of_date_ranges |> Enum.map(fn x -> Enum.any?(x, fn y -> y == e_date end) end)
+      |> Enum.any?(fn x -> x == true end)
+
+    if check_start_date_clash == true and check_start_end_clash == true do
+      conn
+      |> put_flash(
+        :info,
+        "Got date clash! Please set the date again."
+      )
+      |> redirect(
+        to: item_subcat_path(conn, :date_prices, BN.get_domain(conn), params["subcatid"])
+      )
+    else
+      cg =
+        DatePrice.changeset(
+          %DatePrice{},
+          %{
+            item_subcat_id: params["subcatid"],
+            brand_id: BN.get_brand_id(conn),
+            unit_price: params["unit_price"],
+            start_date: params["start_date"],
+            end_date: params["end_date"]
+          },
+          BN.current_user(conn),
+          "create"
+        )
+
+      Repo.insert(cg)
+
+      conn
+      |> put_flash(
+        :info,
+        "Date price added!"
+      )
+      |> redirect(
+        to: item_subcat_path(conn, :date_prices, BN.get_domain(conn), params["subcatid"])
+      )
+    end
+  end
+
+  def delete_date_price(conn, params) do
+    item_subcat_id = params["subcatid"]
+
+    dp = Repo.get(DatePrice, params["id"])
+
+    cg =
+      DatePrice.changeset(
+        dp,
+        %{
+          is_delete: 1
+        },
+        BN.current_user(conn),
+        "Update"
+      )
+
+    Repo.update(cg)
+
+    conn
+    |> put_flash(
+      :info,
+      "Date price deleted!"
+    )
+    |> redirect(to: item_subcat_path(conn, :date_prices, BN.get_domain(conn), params["subcatid"]))
+  end
+
   def combo_create(conn, params) do
     item_code =
       Repo.all(

@@ -242,6 +242,15 @@ defmodule BoatNoodleWeb.Router do
     resources("/item_subcat", ItemSubcatController)
 
     get("/items/:subcatid", ItemSubcatController, :item_show)
+    get("/items/:subcatid/date_prices", ItemSubcatController, :date_prices)
+    post("/items/:subcatid/date_prices/new_date_price", ItemSubcatController, :new_date_prices)
+
+    get(
+      "/items/:subcatid/date_prices/delete_date_price/:id",
+      ItemSubcatController,
+      :delete_date_price
+    )
+
     get("/items/:subcatid/edit", ItemSubcatController, :item_edit)
     get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid/add_item", ItemSubcatController, :add_item)
