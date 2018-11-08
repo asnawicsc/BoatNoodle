@@ -246,10 +246,24 @@ defmodule BoatNoodleWeb.Router do
     get("/items/:subcatid/date_prices", ItemSubcatController, :date_prices)
     post("/items/:subcatid/date_prices/new_date_price", ItemSubcatController, :new_date_prices)
 
+    get("/discount/:discountitemsid/date_discount", DiscountController, :date_discount)
+
     get(
       "/items/:subcatid/date_prices/delete_date_price/:id",
       ItemSubcatController,
       :delete_date_price
+    )
+
+    post(
+      "/discount/:discountitemsid/discount_date/new_discount_date",
+      DiscountController,
+      :new_discount_date
+    )
+
+    get(
+      "/discount/:discountitemsid/discount_date/delete_discount_date/:id",
+      DiscountController,
+      :delete_discount_date
     )
 
     get("/items/:subcatid/edit", ItemSubcatController, :item_edit)

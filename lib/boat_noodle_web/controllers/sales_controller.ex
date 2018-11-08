@@ -1399,7 +1399,7 @@ defmodule BoatNoodleWeb.SalesController do
                 on: b.branchid == s.branchid,
                 left_join: t in Brand,
                 on: t.id == s.brand_id,
-                group_by: p.payment_type_name,
+                group_by: [p.payment_type_name, p.payment_type_id],
                 where:
                   s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id1 != 1 and
                     t.id == ^brand.id and s.brand_id == ^brand.id and p.brand_id == ^brand.id and
@@ -1423,7 +1423,7 @@ defmodule BoatNoodleWeb.SalesController do
                 on: b.branchid == s.branchid,
                 left_join: t in Brand,
                 on: t.id == s.brand_id,
-                group_by: p.payment_type_name,
+                group_by: [p.payment_type_name, p.payment_type_id],
                 where:
                   s.is_void == 0 and s.salesdate == ^date2 and sp.payment_type_id2 != 1 and
                     t.id == ^brand.id and p.brand_id == ^brand.id and s.brand_id == ^brand.id and
@@ -1434,6 +1434,8 @@ defmodule BoatNoodleWeb.SalesController do
                 }
               )
             )
+
+          IEx.pry()
 
           paytype = (paytype1 ++ paytype2) |> Enum.filter(fn x -> x.payment_type_name != nil end)
 
