@@ -42,8 +42,12 @@
           <tbody>
             <% ci = @combo_items |> Enum.group_by(fn x -> x.combo_id end) %>
               <%= for same_item <- @same_items do %>
-                <tr align="left">
-
+               
+      <%= if same_item.is_activate == 1 do  %>
+        <tr align="left" style="font-weight: bolder;">
+      <% else %>
+        <tr align="left" style="color: grey;">
+      <% end %>
                   <td>
                     <%= same_item.price_code %>
                   </td>
@@ -89,6 +93,12 @@
                     <i class="material-icons">bookmarks</i> Menu
                   <div class="ripple-container"></div>
                 </button>
+
+                <a href="/<%= BN.get_domain(@conn) %>/combos/<%= same_item.subcatid %>/date_prices" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
+
+                    <i class="material-icons">event_note</i> Date Prices
+                  <div class="ripple-container"></div>
+                </a>
 
                     <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>"  data-toggle="modal" aria-label="price" data-target="#model1" data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>Edit                   <div class="ripple-container"></div>                 
                     </button>

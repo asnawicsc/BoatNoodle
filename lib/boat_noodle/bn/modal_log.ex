@@ -7,8 +7,7 @@ defmodule BoatNoodle.BN.ModalLog do
     field(:description, :binary)
     field(:name, :string)
     field(:user_id, :integer)
-    field(:inserted_at, :naive_datetime, default: Timex.now())
-    field(:updated_at, :naive_datetime, default: Timex.now())
+    timestamps()
   end
 
   @doc false

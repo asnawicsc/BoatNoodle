@@ -193,6 +193,7 @@ defmodule BoatNoodleWeb.Router do
     get("/branches_status", BranchController, :statuses)
 
     get("/branch/:id/printers", BranchController, :printers)
+    get("/branch/:id/api_log", BranchController, :api_log)
     get("/branch/:id/populate_printers", BranchController, :populate_printers)
     resources("/payment_type", PaymentTypeController)
     resources("/sales_master", SalesMasterController)
@@ -256,6 +257,21 @@ defmodule BoatNoodleWeb.Router do
     get("/combos/:subcatid/add_item", ItemSubcatController, :add_item)
     post("/combos/:subcatid/post_item", ItemSubcatController, :post_add_item)
     get("/combos/:subcatid", ItemSubcatController, :combo_show)
+
+    get("/combos/:subcatid/date_prices", ItemSubcatController, :combo_date_prices)
+
+    post(
+      "/combos/:subcatid/date_prices/new_date_price",
+      ItemSubcatController,
+      :combo_new_date_prices
+    )
+
+    get(
+      "/combos/:subcatid/date_prices/delete_date_price/:id",
+      ItemSubcatController,
+      :combo_delete_date_price
+    )
+
     get("/edit_combo/:subcatid/:price_code", ItemSubcatController, :edit_combo)
     post("/edit_combo_detail", ItemSubcatController, :edit_combo_detail)
     post("/combos/new", ItemSubcatController, :combo_create)

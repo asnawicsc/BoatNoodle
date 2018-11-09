@@ -6,6 +6,58 @@ defmodule BoatNoodleWeb.BranchController do
   alias BoatNoodle.BN.{MenuItem, MenuCatalog, ItemSubcat, ItemCat, ComboDetails, PaymentType}
   require IEx
 
+  def api_log(conn, %{"id" => id}) do
+    branch =
+      Repo.all(
+        from(b in Branch, where: b.branchid == ^id and b.brand_id == ^BN.get_brand_id(conn))
+      )
+      |> hd()
+
+    last_30_days = Timex.now() |> Timex.shift(days: -30)
+
+    api_logs =
+      Repo.all(
+        from(
+          a in ApiLog,
+          where: a.inserted_at > ^last_30_days and a.username == ^branch.branchcode,
+          limit: 100
+        )
+      )
+      |> Enum.map(fn x ->
+        %{
+          month: x.inserted_at.month,
+          day: x.inserted_at.day,
+          hour: x.inserted_at.hour,
+          minutes: x.inserted_at.minute
+        }
+      end)
+
+    months = api_logs |> Enum.group_by(fn x -> x.month end)
+
+    a =
+      for month <- months |> Map.keys() do
+        days = months[month] |> Enum.group_by(fn x -> x.day end)
+
+        for day <- days |> Map.keys() do
+          hours = days[day] |> Enum.group_by(fn x -> x.hour end)
+
+          for hour <- hours |> Map.keys() do
+            minutes = hours[hour] |> Enum.group_by(fn x -> x.minutes end)
+
+            for minute <- minutes |> Map.keys() do
+              count = minutes[minute] |> Enum.count()
+
+              %{month: month, day: day, hour: hour, minute: minute, count: count}
+            end
+          end
+        end
+      end
+
+    IEx.pry()
+
+    render(conn, "api_log.html", api_logs: api_logs)
+  end
+
   def statuses(conn, params) do
     branches1 = BN.list_branches(BN.get_brand_id(conn))
 
@@ -697,6 +749,12 @@ defmodule BoatNoodleWeb.BranchController do
   def update(conn, %{"id" => id, "branch" => branch_params}) do
     branch = Repo.get_by(Branch, branchid: id, brand_id: BN.get_brand_id(conn))
 
+    if conn.params["is_test"] != nil do
+      branch_params = Map.put(branch_params, "is_test", 1)
+    else
+      branch_params = Map.put(branch_params, "is_test", 0)
+    end
+
     changeset =
       BoatNoodle.BN.Branch.changeset(branch, branch_params, BN.current_user(conn), "Update")
 
@@ -704,7 +762,7 @@ defmodule BoatNoodleWeb.BranchController do
       {:ok, branch} ->
         conn
         |> put_flash(:info, "Branch updated successfully.")
-        |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
+        |> redirect(to: branch_path(conn, :edit, BN.get_domain(conn), branch.branchid))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", branch: branch, changeset: changeset)

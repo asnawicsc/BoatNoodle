@@ -79,6 +79,10 @@
                           <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/edit" type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" data-original-title="Edit Branch">
                             <i class="material-icons">edit</i>
                           <div class="ripple-container"></div></a>
+
+                          <a href="/<%= @conn.private.plug_session["brand"] %>/branch/<%= branch.branchid %>/api_log" type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" data-original-title="API logs">
+                            <i class="material-icons">bar_chart</i>
+                          <div class="ripple-container"></div></a>
                    
                           </td>
                           <td>

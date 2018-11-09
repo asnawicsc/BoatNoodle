@@ -779,8 +779,28 @@ defmodule BoatNoodleWeb.ApiController do
     #     )
     #   )
 
+    date_prices =
+      Repo.all(
+        from(
+          d in DatePrice,
+          where: d.brand_id == ^brand_id and d.is_delete == ^0,
+          select: %{
+            start_date: d.start_date,
+            end_date: d.end_date,
+            unit_price: d.unit_price,
+            menuitemid: d.item_subcat_id
+          }
+        )
+      )
+
     json_map =
-      %{combo_details: combos, menuitems: subcats, menucategories: item_cats} |> Poison.encode!()
+      %{
+        combo_details: combos,
+        menuitems: subcats,
+        menucategories: item_cats,
+        date_prices: date_prices
+      }
+      |> Poison.encode!()
 
     if menu_catalog != nil do
       message = List.insert_at(conn.req_headers, 0, {"menu_catalog", "menu_catalog"})
@@ -947,6 +967,14 @@ defmodule BoatNoodleWeb.ApiController do
               sales_params = Map.put(sales_params, :brand_id, user.brand_id)
 
               sales_params = Map.put(sales_params, :branchid, Integer.to_string(user.branchid))
+
+              if user.is_test == 1 do
+                sales_params = Map.put(sales_params, :is_void, 1)
+                sales_params = Map.put(sales_params, :void_by, "Phoenix")
+
+                sales_params = Map.put(sales_params, :voidreason, "Flag as is_test")
+              end
+
               # IO.inspect(sales_params)
               sd_count = 0
               sd_count = Enum.count(sales_master_params_list)
@@ -955,12 +983,21 @@ defmodule BoatNoodleWeb.ApiController do
                 {:ok, sales} ->
                   sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
                   sales_payment_params = Map.put(sales_payment_params, :brand_id, user.brand_id)
+
                   Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
 
                   sd =
                     for sales_master_params <- sales_master_params_list do
                       sales_master_params = Map.put(sales_master_params, :salesid, sales.salesid)
                       sales_master_params = Map.put(sales_master_params, :brand_id, user.brand_id)
+
+                      if user.is_test == 1 do
+                        sales_master_params = Map.put(sales_master_params, :is_void, 1)
+                        sales_master_params = Map.put(sales_master_params, :void_by, "Phoenix")
+
+                        sales_master_params =
+                          Map.put(sales_master_params, :voidreason, "Flag as is_test")
+                      end
 
                       case BN.create_sales_master(sales_master_params) do
                         {:ok, sales_master} ->
