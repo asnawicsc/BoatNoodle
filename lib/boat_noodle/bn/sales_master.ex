@@ -85,7 +85,6 @@ defmodule BoatNoodle.BN.SalesMaster do
     ])
     |> validate_required([
       :brand_id,
-      :itemname,
       :unit_price,
       :afterdisc,
       :discountid,
@@ -107,8 +106,6 @@ defmodule BoatNoodle.BN.SalesMaster_v1 do
 
   @primary_key false
   schema "salesdetail" do
-    field(:brand_id, :integer, primary_key: true)
-    field(:itemcode, :string)
     field(:itemname, :string)
     field(:void_by, :string)
     field(:unit_price, :decimal, default: 0.00)
@@ -125,7 +122,6 @@ defmodule BoatNoodle.BN.SalesMaster_v1 do
     field(:combo_id, :integer)
     field(:discountid, :string)
     field(:afterdisc, :decimal)
-    field(:remaks, :string)
     field(:created_at, :utc_datetime)
     field(:updated_at, :utc_datetime)
   end
@@ -134,14 +130,12 @@ defmodule BoatNoodle.BN.SalesMaster_v1 do
   def changeset(sales_master, attrs) do
     sales_master
     |> cast(attrs, [
-      :brand_id,
-      :itemcode,
       :itemname,
       :void_by,
       :unit_price,
       :updated_at,
       :created_at,
-      :remaks,
+      :remark,
       :afterdisc,
       :discountid,
       :combo_id,
@@ -157,8 +151,6 @@ defmodule BoatNoodle.BN.SalesMaster_v1 do
       :order_price
     ])
     |> validate_required([
-      :brand_id,
-      :itemname,
       :unit_price,
       :afterdisc,
       :discountid,

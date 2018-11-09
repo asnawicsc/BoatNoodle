@@ -792,27 +792,26 @@ defmodule BoatNoodle.UltiMigrator do
 
     for salesid <- salesids do
       # check sales exist
-      v2s = BoatNoodle.Repo.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
+      v2s = BoatNoodle.Repo.get_by(BoatNoodle.BN.Sales, brand_id: 2, salesid: salesid)
 
       if v2s == nil do
-        v1s = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.Sales, brand_id: 1, salesid: salesid)
+        v1s = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.Sales, salesid: salesid)
         cg = BoatNoodle.BN.Sales.changeset(v1s, %{remark: "damien insert"})
 
         a = BoatNoodle.Repo.insert(cg)
       end
 
-      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+      v2sp = BoatNoodle.Repo.get_by(BoatNoodle.BN.SalesPayment, brand_id: 2, salesid: salesid)
 
       if v2sp == nil do
         # create sales payment ...
-        v1sp =
-          BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, brand_id: 1, salesid: salesid)
+        v1sp = BoatNoodle.RepoGeop.get_by(BoatNoodle.BN.SalesPayment, salesid: salesid)
 
         salespay_id =
           BoatNoodle.Repo.all(
             from(
               sd in BoatNoodle.BN.SalesPayment,
-              where: sd.brand_id == 1,
+              where: sd.brand_id == 2,
               select: sd.salespay_id,
               limit: 1,
               order_by: [desc: sd.salespay_id]
@@ -871,9 +870,8 @@ defmodule BoatNoodle.UltiMigrator do
       # check sales details exist
       v2sd =
         BoatNoodle.Repo.all(
-          from(
-            sd in BoatNoodle.BN.SalesMaster,
-            where: sd.brand_id == ^1 and sd.salesid == ^salesid
+          from(sd in BoatNoodle.BN.SalesMaster,
+            where: sd.brand_id == ^2 and sd.salesid == ^salesid
           )
         )
 
@@ -883,7 +881,7 @@ defmodule BoatNoodle.UltiMigrator do
             BoatNoodle.RepoGeop.all(
               from(
                 sd in BoatNoodle.BN.SalesMaster_v1,
-                where: sd.brand_id == ^1 and sd.salesid == ^salesid
+                where: sd.salesid == ^salesid
               )
             )
 
@@ -924,7 +922,7 @@ defmodule BoatNoodle.UltiMigrator do
                     is =
                       BoatNoodle.Repo.get_by(
                         BoatNoodle.BN.ItemSubcat,
-                        brand_id: 1,
+                        brand_id: 2,
                         subcatid: v1sd.itemid
                       )
 
@@ -941,7 +939,7 @@ defmodule BoatNoodle.UltiMigrator do
                 cg =
                   BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, %{
                     itemname: itemname,
-                    remaks: "damien insert",
+                    remark: "damien insert",
                     sales_details: new_sd_id
                   })
 
@@ -957,7 +955,7 @@ defmodule BoatNoodle.UltiMigrator do
               else
                 cg =
                   BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, %{
-                    remaks: "damien insert",
+                    remark: "damien insert",
                     sales_details: new_sd_id
                   })
 
@@ -1024,7 +1022,7 @@ defmodule BoatNoodle.UltiMigrator do
             BoatNoodle.RepoGeop.all(
               from(
                 sd in BoatNoodle.BN.SalesMaster_v1,
-                where: sd.brand_id == ^1 and sd.salesid == ^salesid
+                where: sd.salesid == ^salesid
               )
             )
 
@@ -1058,7 +1056,7 @@ defmodule BoatNoodle.UltiMigrator do
                   is =
                     BoatNoodle.Repo.get_by(
                       BoatNoodle.BN.ItemSubcat,
-                      brand_id: 1,
+                      brand_id: 2,
                       subcatid: v1sd.itemid
                     )
 
@@ -1073,7 +1071,7 @@ defmodule BoatNoodle.UltiMigrator do
 
                 cg =
                   BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, %{
-                    remaks: "damien insert",
+                    remark: "damien insert",
                     itemname: itemname
                   })
 
@@ -1081,7 +1079,7 @@ defmodule BoatNoodle.UltiMigrator do
               else
                 cg =
                   BoatNoodle.BN.SalesMaster_v1.changeset(v1sd, %{
-                    remaks: "damien insert"
+                    remark: "damien insert"
                   })
 
                 case BoatNoodle.Repo.insert(cg) do
@@ -1493,8 +1491,8 @@ defmodule BoatNoodle.UltiMigrator do
     # bin = File.read!(new_path)
 
     # salesids = bin |> String.split("\n") |> Enum.reject(fn x -> x == "" end)
-    start_date = Date.new(2018, 9, 30) |> elem(1)
-    end_date = Date.new(2018, 11, 1) |> elem(1)
+    start_date = Date.new(2018, 10, 1) |> elem(1)
+    end_date = Date.new(2018, 11, 6) |> elem(1)
 
     salesids =
       BoatNoodle.RepoGeop.all(
