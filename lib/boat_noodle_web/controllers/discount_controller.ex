@@ -9,6 +9,116 @@ defmodule BoatNoodleWeb.DiscountController do
   alias BoatNoodle.BN.DiscountType
   alias BoatNoodle.BN.ItemSubcat
 
+  def date_discount(conn, params) do
+    discountitemsid = params["discountitemsid"]
+
+    discout_date =
+      Repo.all(
+        from(
+          d in BoatNoodle.BN.DateDiscount,
+          where:
+            d.is_delete == ^0 and d.discountitems_id == ^discountitemsid and
+              d.brand_id == ^BN.get_brand_id(conn),
+          order_by: [desc: d.start_date]
+        )
+      )
+
+    render(conn, "date_discount.html", discout_date: discout_date)
+  end
+
+  def new_discount_date(conn, params) do
+    discountitemsid = params["discountitemsid"]
+
+    discount_date =
+      Repo.all(
+        from(
+          d in BoatNoodle.BN.DateDiscount,
+          where:
+            d.is_delete == ^0 and d.discountitems_id == ^discountitemsid and
+              d.brand_id == ^BN.get_brand_id(conn),
+          select: {d.start_date, d.end_date}
+        )
+      )
+
+    list_of_date_ranges = Enum.map(discount_date, fn x -> Date.range(elem(x, 0), elem(x, 1)) end)
+
+    s_date = params["start_date"] |> Date.from_iso8601!()
+
+    check_start_date_clash =
+      list_of_date_ranges
+      |> Enum.map(fn x -> Enum.any?(x, fn y -> y == s_date end) end)
+      |> Enum.any?(fn x -> x == true end)
+
+    e_date = params["end_date"] |> Date.from_iso8601!()
+
+    check_start_end_clash =
+      list_of_date_ranges
+      |> Enum.map(fn x -> Enum.any?(x, fn y -> y == e_date end) end)
+      |> Enum.any?(fn x -> x == true end)
+
+    if check_start_date_clash == true and check_start_end_clash == true do
+      conn
+      |> put_flash(
+        :info,
+        "Got date clash! Please set the date again."
+      )
+      |> redirect(
+        to: discount_path(conn, :date_discount, BN.get_domain(conn), params["discountitemsid"])
+      )
+    else
+      cg =
+        BoatNoodle.BN.DateDiscount.changeset(
+          %BoatNoodle.BN.DateDiscount{},
+          %{
+            discountitems_id: params["discountitemsid"],
+            brand_id: BN.get_brand_id(conn),
+            start_date: params["start_date"],
+            end_date: params["end_date"]
+          },
+          BN.current_user(conn),
+          "create"
+        )
+
+      Repo.insert(cg)
+
+      conn
+      |> put_flash(
+        :info,
+        "Discount Date added!"
+      )
+      |> redirect(
+        to: discount_path(conn, :date_discount, BN.get_domain(conn), params["discountitemsid"])
+      )
+    end
+  end
+
+  def delete_discount_date(conn, params) do
+    item_subcat_id = params["subcatid"]
+
+    dp = Repo.get(BoatNoodle.BN.DateDiscount, params["id"])
+
+    cg =
+      BoatNoodle.BN.DateDiscount.changeset(
+        dp,
+        %{
+          is_delete: 1
+        },
+        BN.current_user(conn),
+        "Update"
+      )
+
+    Repo.update(cg)
+
+    conn
+    |> put_flash(
+      :info,
+      "Discount Date deleted!"
+    )
+    |> redirect(
+      to: discount_path(conn, :date_discount, BN.get_domain(conn), params["discountitemsid"])
+    )
+  end
+
   def index(conn, _params) do
     discount = BN.list_discount()
     brand = BN.get_brand_id(conn)

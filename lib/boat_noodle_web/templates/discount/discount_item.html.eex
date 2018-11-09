@@ -48,6 +48,12 @@
         <td>
           
            <a href="/<%= @conn.params["brand"]%>/discount_item/<%= discount.discountitemsid %>/edits" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+          <a href="/<%= BN.get_domain(@conn) %>/discount/<%=  discount.discountitemsid %>/date_discount" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%=  discount.discountitemsid %>" data-original-title="Edit Menu">
+
+                    <i class="material-icons">event_note</i> Set Date 
+                  <div class="ripple-container"></div>
+                </a>
+
 
         </td>
       </tr>

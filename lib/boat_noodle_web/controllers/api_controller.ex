@@ -365,7 +365,8 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in DiscountItem,
-          where: d.discountitemsid in ^item_ids and d.brand_id == ^brand_id and d.is_visable == ^1,
+          where:
+            d.discountitemsid in ^item_ids and d.brand_id == ^brand_id and d.is_visable == ^1,
           select: %{
             brand_id: d.brand_id,
             discountitemsid: d.discountitemsid,
@@ -415,9 +416,25 @@ defmodule BoatNoodleWeb.ApiController do
         }
       end)
 
+    discount_date =
+      Repo.all(
+        from(
+          d in BoatNoodle.BN.DateDiscount,
+          where: d.brand_id == ^brand_id,
+          select: %{
+            start_date: d.start_date,
+            end_date: d.end_date,
+            discountitemsid: d.discountitems_id
+          }
+        )
+      )
+
     # IO.inspect(disc_items)
     # arrange the discount item
-    json_map = %{disc_categories: disc_categories, disc_items: disc_items} |> Poison.encode!()
+    json_map =
+      %{disc_categories: disc_categories, disc_items: disc_items, discount_date: discount_date}
+      |> Poison.encode!()
+
     # IO.inspect(json_map)
     message = List.insert_at(conn.req_headers, 0, {"discount", "discount"})
     log_error_api(message, "#{branchcode} - API GET - discount")
@@ -733,7 +750,8 @@ defmodule BoatNoodleWeb.ApiController do
         Repo.all(
           from(
             c in ComboDetails,
-            where: c.combo_id == ^combo.subcatid and c.brand_id == ^brand_id and c.is_delete == ^0,
+            where:
+              c.combo_id == ^combo.subcatid and c.brand_id == ^brand_id and c.is_delete == ^0,
             select: %{
               # brand_id: c.brand_id,
               id: c.id,
@@ -1486,18 +1504,21 @@ defmodule BoatNoodleWeb.ApiController do
               Enum.map(data, fn x -> Decimal.to_float(x.sub_total) end) |> Enum.sum()
 
             total_sales =
-              Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end) |> Enum.sum()
+              Enum.map(data, fn x -> Decimal.to_float(x.grand_total) end)
+              |> Enum.sum()
               |> Float.round(2)
 
             total_rounding =
               Enum.map(data, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
 
             total_taxes =
-              Enum.map(data, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+              Enum.map(data, fn x -> Decimal.to_float(x.gst) end)
+              |> Enum.sum()
               |> Float.round(2)
 
             total_service_charge =
-              Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end) |> Enum.sum()
+              Enum.map(data, fn x -> Decimal.to_float(x.service_charge) end)
+              |> Enum.sum()
               |> Float.round(2)
 
             total_discount =
@@ -1588,7 +1609,8 @@ defmodule BoatNoodleWeb.ApiController do
               pax = Enum.map(item, fn x -> Decimal.to_float(x.pax) end) |> Enum.sum()
 
               transaction =
-                Enum.map(item, fn x -> x.transaction end) |> Enum.sum()
+                Enum.map(item, fn x -> x.transaction end)
+                |> Enum.sum()
                 |> Number.Delimit.number_to_delimited()
 
               %{
@@ -1623,7 +1645,8 @@ defmodule BoatNoodleWeb.ApiController do
       (grand_total - gst - rounding + rounding) |> Number.Delimit.number_to_delimited()
 
     d_taxes =
-      Enum.map(a, fn x -> Decimal.to_float(x.gst) end) |> Enum.sum()
+      Enum.map(a, fn x -> Decimal.to_float(x.gst) end)
+      |> Enum.sum()
       |> Number.Delimit.number_to_delimited()
 
     d_pax =
