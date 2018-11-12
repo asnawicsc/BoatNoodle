@@ -207,7 +207,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 total_all =
                   if payload["brand_id"] == "8" do
-                    total_sales - total_taxes
+                    total_sales - total_taxes - total_rounding
                   else
                     total_sales - total_taxes - total_rounding - total_service_charge
                   end
@@ -283,7 +283,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                   nett_sales =
                     if payload["brand_id"] == "8" do
-                      (grand_total - gst)
+                      (grand_total - gst - rounding)
                       |> Number.Delimit.number_to_delimited()
                     else
                       (grand_total - gst - rounding - service_charge)
@@ -344,7 +344,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
         d_nett_sales =
           if payload["brand_id"] == "8" do
-            (grand_total - gst)
+            (grand_total - gst - rounding)
             |> Number.Delimit.number_to_delimited()
           else
             (grand_total - gst - rounding - service_charge)
@@ -805,7 +805,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                 total_all =
                   if payload["brand_id"] == "8" do
-                    total_sales - total_taxes
+                    total_sales - total_taxes - total_rounding
                   else
                     total_sales - total_taxes - total_rounding - total_service_charge
                   end
@@ -853,7 +853,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
                   rounding =
                     Enum.map(item, fn x -> Decimal.to_float(x.rounding) end) |> Enum.sum()
 
-                  discount = after_disc - sub_total
+                  discount = after_disc - sub_total - rounding
                   nett_sale = grand_total - gst - rounding - service_charge
 
                   branchname = Enum.map(item, fn x -> x.branchname end) |> Enum.uniq() |> hd
@@ -882,7 +882,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
                   nett_sales =
                     if payload["brand_id"] == "8" do
-                      (grand_total - gst)
+                      (grand_total - gst - rounding)
                       |> Number.Delimit.number_to_delimited()
                     else
                       (grand_total - gst - rounding - service_charge)
@@ -944,7 +944,7 @@ defmodule BoatNoodleWeb.DashboardChannel do
 
         d_nett_sales =
           if payload["brand_id"] == "8" do
-            (grand_total - gst)
+            (grand_total - gst - rounding)
             |> Number.Delimit.number_to_delimited()
           else
             (grand_total - gst - rounding - service_charge)
