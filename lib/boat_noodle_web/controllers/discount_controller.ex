@@ -639,63 +639,64 @@ defmodule BoatNoodleWeb.DiscountController do
         "Create"
       )
 
-    di =
-      Repo.all(
-        from(
-          d in DiscountItem,
-          where: d.discitemsname == ^discitemsname and d.descriptions == ^descriptions
-        )
-      )
+    # di =
+    #   Repo.all(
+    #     from(
+    #       d in DiscountItem,
+    #       where: d.discitemsname == ^discitemsname and d.descriptions == ^descriptions
+    #     )
+    #   )
 
-    if di == [] do
-      case BoatNoodle.Repo.insert(discount_item) do
-        {:ok, discountitem} ->
-          discountitem =
-            Repo.get_by(
-              DiscountItem,
-              discountid: discountid,
-              discitemsname: discitemsname,
-              descriptions: descriptions
+    # if di == [] do
+    case BoatNoodle.Repo.insert(discount_item) do
+      {:ok, discountitem} ->
+        discountitem =
+          Repo.get_by(
+            DiscountItem,
+            discountid: discountid,
+            discitemsname: discitemsname,
+            descriptions: descriptions
+          )
+
+        branch_ids = params["branc"]["branch"] |> String.split(",")
+
+        for id <- branch_ids do
+          id = id |> String.to_integer()
+          branch = Repo.get_by(DiscountCatalog, id: id, brand_id: BN.get_brand_id(conn))
+          dis_discount = branch.discounts
+          disc_discount = dis_discount |> String.split(",")
+          disc_id = discountitem.discountitemsid |> Integer.to_string()
+          all_discount_discounts = List.insert_at(disc_discount, 0, disc_id)
+          new_discounts = all_discount_discounts |> Enum.join(",")
+
+          params = %{discounts: new_discounts}
+
+          changeset =
+            BoatNoodle.BN.DiscountCatalog.changeset(
+              branch,
+              params,
+              BN.current_user(conn),
+              "Update"
             )
 
-          branch_ids = params["branc"]["branch"] |> String.split(",")
+          BoatNoodle.Repo.update(changeset)
+        end
 
-          for id <- branch_ids do
-            id = id |> String.to_integer()
-            branch = Repo.get_by(DiscountCatalog, id: id, brand_id: BN.get_brand_id(conn))
-            dis_discount = branch.discounts
-            disc_discount = dis_discount |> String.split(",")
-            disc_id = discountitem.discountitemsid |> Integer.to_string()
-            all_discount_discounts = List.insert_at(disc_discount, 0, disc_id)
-            new_discounts = all_discount_discounts |> Enum.join(",")
+        conn
+        |> put_flash(:info, "Discount Item  successfully created.")
+        |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
 
-            params = %{discounts: new_discounts}
-
-            changeset =
-              BoatNoodle.BN.DiscountCatalog.changeset(
-                branch,
-                params,
-                BN.current_user(conn),
-                "Update"
-              )
-
-            BoatNoodle.Repo.update(changeset)
-          end
-
-          conn
-          |> put_flash(:info, "Discount Item  successfully created.")
-          |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
-
-        {:error, cg} ->
-          conn
-          |> put_flash(:error, "Discount Item not successfully created.")
-          |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
-      end
-    else
-      conn
-      |> put_flash(:info, "Discount Item  already exist.")
-      |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
+      {:error, cg} ->
+        conn
+        |> put_flash(:error, "Discount Item not successfully created.")
+        |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
     end
+
+    # else
+    #   conn
+    #   |> put_flash(:info, "Discount Item  already exist.")
+    #   |> redirect(to: discount_path(conn, :index, BN.get_domain(conn)))
+    # end
   end
 
   def discount_category_details(conn, %{"id" => id}) do
