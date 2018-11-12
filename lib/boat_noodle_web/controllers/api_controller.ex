@@ -365,8 +365,7 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in DiscountItem,
-          where:
-            d.discountitemsid in ^item_ids and d.brand_id == ^brand_id and d.is_visable == ^1,
+          where: d.discountitemsid in ^item_ids and d.brand_id == ^brand_id and d.is_visable == ^1,
           select: %{
             brand_id: d.brand_id,
             discountitemsid: d.discountitemsid,
@@ -420,7 +419,7 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in BoatNoodle.BN.DateDiscount,
-          where: d.brand_id == ^brand_id,
+          where: d.brand_id == ^brand_id and d.is_delete == ^0,
           select: %{
             start_date: d.start_date,
             end_date: d.end_date,
@@ -750,8 +749,7 @@ defmodule BoatNoodleWeb.ApiController do
         Repo.all(
           from(
             c in ComboDetails,
-            where:
-              c.combo_id == ^combo.subcatid and c.brand_id == ^brand_id and c.is_delete == ^0,
+            where: c.combo_id == ^combo.subcatid and c.brand_id == ^brand_id and c.is_delete == ^0,
             select: %{
               # brand_id: c.brand_id,
               id: c.id,
