@@ -3666,7 +3666,7 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and sd.is_void == 0 and sp.discountid != "0" and
+              s.is_void == 0 and sd.is_void == 0 and sp.discountid != "0" and sd.order_price != 0 and
                 s.brand_id == ^brand.id and sd.brand_id == ^brand.id and di.brand_id == ^brand.id and
                 sp.brand_id == ^brand.id and b.brand_id == ^brand.id and s.branchid == ^branch_id and
                 s.salesdate >= ^start_date and s.salesdate <= ^end_date,
@@ -3704,7 +3704,7 @@ defmodule BoatNoodleWeb.SalesController do
             left_join: b in BoatNoodle.BN.Branch,
             on: b.branchid == s.branchid,
             where:
-              s.is_void == 0 and sd.is_void == 0 and sp.discountid != "0" and
+              s.is_void == 0 and sd.is_void == 0 and sp.discountid != "0" and sd.order_price != 0 and
                 s.brand_id == ^brand.id and sd.brand_id == ^brand.id and di.brand_id == ^brand.id and
                 sp.brand_id == ^brand.id and b.brand_id == ^brand.id and
                 s.salesdate >= ^start_date and s.salesdate <= ^end_date,
@@ -3776,7 +3776,7 @@ defmodule BoatNoodleWeb.SalesController do
           left_join: sd in SalesMaster,
           on: s.salesid == sd.salesid,
           where:
-            s.is_void == 0 and sd.is_void == 0 and s.brand_id == ^brand.id and
+            s.is_void == 0 and sd.is_void == 0 and s.brand_id == ^brand.id and sd.order_price != 0 and
               sd.brand_id == ^brand.id and s.salesdate >= ^start_date and s.salesdate <= ^end_date,
           group_by: sd.salesid,
           select: %{
