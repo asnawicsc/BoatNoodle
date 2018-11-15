@@ -41,6 +41,8 @@ defmodule BoatNoodle.BN.SalesMaster do
     field(:salesdatetime, :naive_datetime)
     field(:branchname, :string)
     field(:staffname, :string)
+    field(:combo_line, :string)
+    field(:combo_detail_gross_sale, :decimal)
   end
 
   @doc false
@@ -81,7 +83,9 @@ defmodule BoatNoodle.BN.SalesMaster do
       :itemid,
       :itemcustomid,
       :qty,
-      :order_price
+      :order_price,
+      :combo_line,
+      :combo_detail_gross_sale
     ])
     |> validate_required([
       :brand_id,
