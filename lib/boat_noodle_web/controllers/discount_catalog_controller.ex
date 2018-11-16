@@ -101,7 +101,7 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
       Repo.all(
         from(
           d in Discount,
-          where: d.brand_id == ^BN.get_brand_id(conn),
+          where: d.brand_id == ^BN.get_brand_id(conn) and d.is_delete != 1,
           select: %{id: d.discountid, name: d.discname}
         )
       )
@@ -124,7 +124,10 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
   def list_discount_catalog3(conn, %{"brand" => brand, "subcatid" => subcat_id}) do
     catalogs_ori =
       Repo.all(
-        from(m in DiscountCatalog, where: m.brand_id == ^BN.get_brand_id(conn), select: %{id: m.id, name: m.name, categories: m.categories})
+        from(m in DiscountCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: %{id: m.id, name: m.name, categories: m.categories}
+        )
       )
       |> Enum.map(fn x -> Map.put(x, :categories, String.split(x.categories, ",")) end)
 
@@ -294,14 +297,16 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
     discounts =
       disc_cata.discounts |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
 
-
     all_cata =
       Repo.all(
         from(
           d in DiscountItem,
-          left_join: s in Discount, on: d.discountid == s.discountid,
-          where: d.brand_id == ^BN.get_brand_id(conn),
-          select: %{discount_name: s.discname,id: d.discountitemsid, name: d.discitemsname}
+          left_join: s in Discount,
+          on: d.discountid == s.discountid,
+          where:
+            d.brand_id == ^BN.get_brand_id(conn) and s.brand_id == ^BN.get_brand_id(conn) and
+              d.is_delete != 1 and s.is_delete != 1,
+          select: %{discount_name: s.discname, id: d.discountitemsid, name: d.discitemsname}
         )
       )
 
@@ -309,13 +314,14 @@ defmodule BoatNoodleWeb.DiscountCatalogController do
       Repo.all(
         from(
           d in DiscountItem,
-          left_join: s in Discount, on: d.discountid == s.discountid,
-          where: d.discountitemsid in ^discounts and d.brand_id == ^BN.get_brand_id(conn),
-          select: %{discount_name: s.discname,id: d.discountitemsid, name: d.discitemsname}
+          left_join: s in Discount,
+          on: d.discountid == s.discountid,
+          where:
+            d.discountitemsid in ^discounts and d.brand_id == ^BN.get_brand_id(conn) and
+              s.brand_id == ^BN.get_brand_id(conn),
+          select: %{discount_name: s.discname, id: d.discountitemsid, name: d.discitemsname}
         )
       )
-
-  
 
     not_selected = all_cata -- disc_cat
 

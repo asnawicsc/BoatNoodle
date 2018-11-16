@@ -1435,8 +1435,6 @@ defmodule BoatNoodleWeb.SalesController do
               )
             )
 
-          IEx.pry()
-
           paytype = (paytype1 ++ paytype2) |> Enum.filter(fn x -> x.payment_type_name != nil end)
 
           shortextra =
@@ -2220,6 +2218,7 @@ defmodule BoatNoodleWeb.SalesController do
         conn,
         params,
         staffs,
+        brand,
         subcat_data,
         combo_data,
         combo_data_price
@@ -2243,6 +2242,7 @@ defmodule BoatNoodleWeb.SalesController do
          conn,
          params,
          staffs,
+         brand,
          subcat_data,
          combo_data,
          combo_data_price
@@ -2252,6 +2252,13 @@ defmodule BoatNoodleWeb.SalesController do
     foc = foc_qty(discount_value, up)
     gs = gross_sales(item.gross_sales, item.gross_qty, item.itemid, subcat_data, combo_data_price)
     nett_sales = nett_sales(gs, discount_value)
+
+    service_charge =
+      if brand.id == 8 do
+        0.00
+      else
+        :erlang.float_to_binary(nett_sales(gs, discount_value) * 0.1, decimals: 2)
+      end
 
     [
       item.salesdate,
@@ -2269,10 +2276,7 @@ defmodule BoatNoodleWeb.SalesController do
       nett_sales,
       up,
       discount_value |> :erlang.float_to_binary(decimals: 2),
-      :erlang.float_to_binary(
-        nett_sales(gs, discount_value) * 0.1,
-        decimals: 2
-      ),
+      service_charge,
       manager(item.store_owner, staffs)
     ]
   end
@@ -2447,6 +2451,7 @@ defmodule BoatNoodleWeb.SalesController do
         conn,
         params,
         staffs,
+        brand,
         subcat_data,
         combo_data,
         combo_data_price
@@ -2572,7 +2577,7 @@ defmodule BoatNoodleWeb.SalesController do
 
     item_sales_outlet
     |> Stream.map(fn x ->
-      item_sales_outlet_csv_content_v2(x, conn, params)
+      item_sales_outlet_csv_content_v2(x, conn, params, brand)
     end)
     |> (fn stream -> Stream.concat(csv_header, stream) end).()
     |> CSV.encode()
@@ -2590,7 +2595,8 @@ defmodule BoatNoodleWeb.SalesController do
   defp item_sales_outlet_csv_content_v2(
          item,
          conn,
-         params
+         params,
+         brand
        ) do
     item_qty =
       if item.qty == nil do
@@ -2651,6 +2657,7 @@ defmodule BoatNoodleWeb.SalesController do
          conn,
          params,
          staffs,
+         brand,
          subcat_data,
          combo_data,
          combo_data_price
@@ -2659,6 +2666,13 @@ defmodule BoatNoodleWeb.SalesController do
     up = unit_price(item.unit_price, item.itemid, item.combo_id, combo_data_price)
     foc = foc_qty(discount_value, up)
     gs = gross_sales(item.gross_sales, item.gross_qty, item.itemid, subcat_data, combo_data_price)
+
+    service_charge =
+      if brand.id == 8 do
+        0.00
+      else
+        :erlang.float_to_binary(nett_sales(gs, discount_value) * 0.1, decimals: 2)
+      end
 
     [
       item.salesdate,
@@ -2675,10 +2689,7 @@ defmodule BoatNoodleWeb.SalesController do
       nett_sales(gs, discount_value),
       up,
       discount_value |> :erlang.float_to_binary(decimals: 2),
-      :erlang.float_to_binary(
-        nett_sales(gs, discount_value) * 0.1,
-        decimals: 2
-      ),
+      service_charge,
       manager(item.store_owner, staffs),
       combo_name(item.itemid, item.combo_id, subcat_data, combo_data)
     ]
@@ -3235,6 +3246,7 @@ defmodule BoatNoodleWeb.SalesController do
         conn,
         params,
         staffs,
+        brand,
         subcat_data,
         combo_data,
         combo_data_price
@@ -3258,12 +3270,19 @@ defmodule BoatNoodleWeb.SalesController do
          conn,
          params,
          staffs,
+         brand,
          subcat_data,
          combo_data,
          combo_data_price
        ) do
     discount_value = Decimal.to_float(item.gross_sales) - Decimal.to_float(item.nett_sales)
-    service_charge = (Decimal.to_float(item.nett_sales) / 10) |> Float.round(2)
+
+    service_charge =
+      if brand.id == 8 do
+        0.00
+      else
+        (Decimal.to_float(item.nett_sales) / 10) |> Float.round(2)
+      end
 
     foc = foc_qty(discount_value, item.unit_price)
 
