@@ -1090,9 +1090,9 @@ defmodule BoatNoodleWeb.ApiController do
                         %{message: "Sales #{sales.salesid} create successfully.", status: "ok"}
                         |> Poison.encode!()
 
-                      Task.start_link(__MODULE__, :update_dashboard_1, [
-                        user.brand_id
-                      ])
+                      # Task.start_link(__MODULE__, :update_dashboard_1, [
+                      #   user.brand_id
+                      # ])
 
                       Task.start_link(__MODULE__, :update_voucher_code, [
                         sales.salesid
@@ -1385,9 +1385,9 @@ defmodule BoatNoodleWeb.ApiController do
                           %{message: "Sales #{sales.salesid} create successfully.", status: "ok"}
                           |> Poison.encode!()
 
-                        Task.start_link(__MODULE__, :update_dashboard_1, [
-                          user.brand_id
-                        ])
+                        # Task.start_link(__MODULE__, :update_dashboard_1, [
+                        #   user.brand_id
+                        # ])
 
                         send_resp(conn, 200, map)
                       else

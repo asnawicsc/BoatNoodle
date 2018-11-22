@@ -69,7 +69,7 @@ defmodule BoatNoodle.MallSync do
 
     # Start the Repo(s) for myapp
     IO.puts("Starting repos..")
-    Enum.each(repos(), & &1.start_link(pool_size: 1))
+    Enum.each(repos(), & &1.start_link(pool_size: 10))
 
     connect_to(1, "2")
     connect_to(2, "2")
