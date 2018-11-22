@@ -59,9 +59,9 @@ defmodule BoatNoodle.MallSync do
   def start_sync do
     me = boat_noodle()
 
-    IO.puts("Loading #{me}..")
-    # Load the code for myapp, but don't start it
-    :ok = Application.load(me)
+    # IO.puts("Loading #{me}..")
+    # # Load the code for myapp, but don't start it
+    # :ok = Application.load(me)
 
     IO.puts("Starting dependencies..")
     # Start apps necessary for executing migrations
