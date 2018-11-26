@@ -1006,6 +1006,278 @@ defmodule BoatNoodleWeb.SalesController do
     end
   end
 
+  def sql_accounting(conn, params) do
+    brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
+
+    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+
+    id = branch.branchid |> Integer.to_string()
+
+    conn
+    |> put_resp_content_type("text/csv")
+    |> put_resp_header(
+      "content-disposition",
+      "attachment; filename=\"SQL ACCOUNTING" <> branch.branchcode <> ".csv\""
+    )
+    |> send_resp(200, sql_accounting_detail(conn, params))
+  end
+
+  defp sql_accounting_detail(conn, params) do
+    brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
+
+    branch = Repo.get_by(Branch, branchid: params["branch"], brand_id: brand.id)
+
+    id = branch.branchid |> Integer.to_string()
+
+    if params["branch"] != "0" do
+      cash =
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesPayment,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
+                s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
+                s.salesdate <= ^params["end_date"] and p.payment_type == "CASH",
+            group_by: [s.salesdate, p.payment_type, b.branchcode],
+            order_by: [s.salesdate, p.payment_type],
+            select: %{
+              date: s.salesdate,
+              payment_type: p.payment_type,
+              sub_total: sum(p.sub_total),
+              branch: b.branchcode,
+              qty: count(p.salesid),
+              after_disc: sum(p.after_disc),
+              gst_charge: sum(p.gst_charge)
+            }
+          )
+        )
+
+      other =
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesPayment,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
+                s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
+                s.salesdate <= ^params["end_date"] and p.payment_type == "Other",
+            group_by: [s.salesdate, p.payment_type_id1, b.branchcode],
+            order_by: [s.salesdate, p.payment_type],
+            select: %{
+              date: s.salesdate,
+              payment_type: p.payment_name1,
+              sub_total: sum(p.sub_total),
+              branch: b.branchcode,
+              qty: count(p.salesid),
+              after_disc: sum(p.after_disc),
+              gst_charge: sum(p.gst_charge)
+            }
+          )
+        )
+        |> Enum.filter(fn x ->
+          x.payment_type == "Master Card" or x.payment_type == "Visa Card"
+        end)
+
+      debit =
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesPayment,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
+                s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
+                s.salesdate <= ^params["end_date"] and p.payment_type == "Other" and
+                p.payment_name1 != "Visa Card" and p.payment_name1 != "Master Card",
+            group_by: [s.salesdate, p.payment_type_id1, b.branchcode],
+            order_by: [s.salesdate, p.payment_type],
+            select: %{
+              date: s.salesdate,
+              payment_type: "Debit Card",
+              sub_total: sum(p.sub_total),
+              branch: b.branchcode,
+              qty: count(p.salesid),
+              after_disc: sum(p.after_disc),
+              gst_charge: sum(p.gst_charge)
+            }
+          )
+        )
+
+      service_charge =
+        Repo.all(
+          from(
+            s in Sales,
+            left_join: p in SalesPayment,
+            on: s.salesid == p.salesid,
+            left_join: b in Branch,
+            on: b.branchid == s.branchid,
+            where:
+              s.is_void == 0 and b.branchid == ^id and b.brand_id == ^brand.id and
+                s.brand_id == ^brand.id and s.salesdate >= ^params["start_date"] and
+                s.salesdate <= ^params["end_date"],
+            group_by: [s.salesdate, b.branchcode],
+            order_by: [s.salesdate],
+            select: %{
+              date: s.salesdate,
+              payment_type: "Service Charge",
+              sub_total: sum(p.service_charge),
+              branch: b.branchcode,
+              qty: count(p.salesid),
+              after_disc: 0,
+              gst_charge: sum(p.gst_charge)
+            }
+          )
+        )
+
+      all = (cash ++ other ++ service_charge ++ debit) |> List.flatten()
+
+      all =
+        all
+        |> Enum.group_by(fn x -> x.date end)
+
+      csv_content = [
+        'DocDate ',
+        'DocNo',
+        'Code',
+        'CompanyName',
+        'Agent',
+        'TERMS',
+        'SEQ',
+        'ACCOUNT',
+        'ItemCode',
+        'ItemDescription',
+        'Qty',
+        'UOM',
+        'TaxInclusive',
+        'UnitPrice',
+        'DISC',
+        'UOM',
+        'Tax',
+        'TaxAmount',
+        'SubTotal',
+        'Location',
+        'Batch',
+        'DetailProject',
+        'Remark',
+        'Remark2'
+      ]
+
+      data =
+        for item <- all do
+          date2 = item |> elem(0) |> Date.to_string()
+          date = item |> elem(0) |> Timex.format!("%d/%m/%Y", :strftime)
+          items = item |> elem(1) |> Enum.with_index()
+
+          a =
+            for item <- items do
+              no = item |> elem(1)
+              item = item |> elem(0)
+
+              code =
+                if item.payment_type != nil do
+                  case item.payment_type do
+                    "CASH" ->
+                      doc_no = '321-000'
+
+                    "Master Card" ->
+                      doc_no = '360-002'
+
+                    "Visa Card" ->
+                      doc_no = '360-001'
+
+                    "Debit Card" ->
+                      doc_no = '360-003'
+
+                    "Service Charge" ->
+                      doc_no = '700-020'
+                  end
+                else
+                  "Unknown Code"
+                end
+
+              payment_type =
+                if item.payment_type != nil do
+                  case item.payment_type do
+                    "CASH" ->
+                      payment_type = "CASH"
+
+                    "Master Card" ->
+                      payment_type = "Master Card"
+
+                    "Visa Card" ->
+                      payment_type = "Visa Card"
+
+                    "Debit Card" ->
+                      payment_type = "Debit Card"
+
+                    "Service Charge" ->
+                      payment_type = "Service Charge"
+                  end
+                else
+                  "Unknown Payment Type"
+                end
+
+              after_disc =
+                if item.payment_type == "Service Charge" do
+                  Decimal.to_float(item.sub_total)
+                else
+                  Decimal.to_float(item.after_disc)
+                end
+
+              [
+                date,
+                'IV-1000061',
+                code,
+                brand.name,
+                '',
+                '',
+                no + 1,
+                '',
+                '',
+                payment_type,
+                item.qty,
+                'PCS',
+                '1',
+                item.sub_total,
+                (Decimal.to_float(item.sub_total) - after_disc)
+                |> Float.round(2),
+                'SR',
+                'SST',
+                item.gst_charge,
+                item.sub_total,
+                '',
+                '',
+                '',
+                '',
+                ''
+              ]
+            end
+
+          a
+        end
+        |> Enum.flat_map(fn x -> x end)
+
+      csv_content =
+        List.insert_at(data, 0, csv_content)
+        |> CSV.encode()
+        |> Enum.to_list()
+        |> to_string
+    else
+      conn
+      |> put_flash(:info, "Please Choose a Branch.")
+      |> redirect(to: sales_path(conn, :index, BN.get_domain(conn)))
+    end
+  end
+
   def quickbook(conn, params) do
     brand = Repo.get_by(Brand, id: BN.get_brand_id(conn))
 

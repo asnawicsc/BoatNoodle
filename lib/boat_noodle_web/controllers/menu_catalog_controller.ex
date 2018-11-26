@@ -46,7 +46,9 @@ defmodule BoatNoodleWeb.MenuCatalogController do
           if Enum.any?(cata_categories, fn x -> x == is.itemcatid end) do
             cata_categories |> Enum.uniq() |> Enum.join(",") |> String.trim_trailing(",")
           else
-            List.insert_at(cata_categories, 0, is.itemcatid) |> Enum.uniq() |> Enum.join(",")
+            List.insert_at(cata_categories, 0, is.itemcatid)
+            |> Enum.uniq()
+            |> Enum.join(",")
             |> String.trim_trailing(",")
           end
 
@@ -136,7 +138,10 @@ defmodule BoatNoodleWeb.MenuCatalogController do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
 
     items =
-      cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+      cata.items
+      |> String.split(",")
+      |> Enum.sort()
+      |> Enum.reject(fn x -> x == "" end)
       |> Enum.uniq()
 
     branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
@@ -144,7 +149,9 @@ defmodule BoatNoodleWeb.MenuCatalogController do
     cata =
       if Enum.any?(items, fn x -> x == subcat_id end) do
         items =
-          List.delete(items, subcat_id) |> Enum.uniq() |> Enum.join(",")
+          List.delete(items, subcat_id)
+          |> Enum.uniq()
+          |> Enum.join(",")
           |> String.trim_trailing(",")
 
         {:ok, cata} =
@@ -181,7 +188,9 @@ defmodule BoatNoodleWeb.MenuCatalogController do
       existing_combo_ids = tag.combo_item_ids |> String.split(",") |> Enum.uniq()
 
       new_combo_item_ids =
-        (existing_combo_ids -- combo_item_ids) |> Enum.uniq() |> Enum.join(",")
+        (existing_combo_ids -- combo_item_ids)
+        |> Enum.uniq()
+        |> Enum.join(",")
         |> String.trim_trailing(",")
 
       Tag.changeset(tag, %{combo_item_ids: new_combo_item_ids}, BN.current_user(conn), "update")
@@ -189,7 +198,9 @@ defmodule BoatNoodleWeb.MenuCatalogController do
     end
 
     new_ids =
-      (existing_combo_ids -- combo_ids) |> Enum.uniq() |> Enum.join(",")
+      (existing_combo_ids -- combo_ids)
+      |> Enum.uniq()
+      |> Enum.join(",")
       |> String.trim_trailing(",")
 
     {:ok, cata} =
@@ -207,7 +218,10 @@ defmodule BoatNoodleWeb.MenuCatalogController do
     cata = Repo.get_by(MenuCatalog, id: catalog_id, brand_id: BN.get_brand_id(conn))
 
     items =
-      cata.items |> String.split(",") |> Enum.sort() |> Enum.reject(fn x -> x == "" end)
+      cata.items
+      |> String.split(",")
+      |> Enum.sort()
+      |> Enum.reject(fn x -> x == "" end)
       |> Enum.uniq()
 
     branch = Repo.get_by(Branch, menu_catalog: catalog_id, brand_id: BN.get_brand_id(conn))
@@ -217,7 +231,9 @@ defmodule BoatNoodleWeb.MenuCatalogController do
         cata
       else
         new_items =
-          List.insert_at(items, 0, subcat_id) |> Enum.uniq() |> Enum.join(",")
+          List.insert_at(items, 0, subcat_id)
+          |> Enum.uniq()
+          |> Enum.join(",")
           |> String.trim_trailing(",")
 
         is = Repo.get_by(ItemSubcat, brand_id: BN.get_brand_id(conn), subcatid: subcat_id)
@@ -227,7 +243,9 @@ defmodule BoatNoodleWeb.MenuCatalogController do
           if Enum.any?(cata_categories, fn x -> x == is.itemcatid end) do
             cata_categories |> Enum.uniq() |> Enum.join(",") |> String.trim_trailing(",")
           else
-            List.insert_at(cata_categories, 0, is.itemcatid) |> Enum.uniq() |> Enum.join(",")
+            List.insert_at(cata_categories, 0, is.itemcatid)
+            |> Enum.uniq()
+            |> Enum.join(",")
             |> String.trim_trailing(",")
           end
 
