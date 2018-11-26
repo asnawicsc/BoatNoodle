@@ -105,6 +105,7 @@ defmodule BoatNoodleWeb.Router do
     get("/csv", MenuItemController, :export)
     get("/csv_discount", DiscountController, :export)
     get("/quickbook", SalesController, :quickbook)
+    get("/sql_accounting", SalesController, :sql_accounting)
     get("/excel", SalesController, :excel)
     get("/tables", SalesController, :tables)
     post("/item_sales_report_csv", SalesController, :item_sales_report_csv)
