@@ -281,34 +281,10 @@ defmodule BoatNoodleWeb.MenuItemController do
     item_subcat_params = Map.put(item_subcat_params, "include_spend", include_spend)
     item_subcat_params = Map.put(item_subcat_params, "brand_id", BN.get_brand_id(conn))
 
-    # numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] |> Enum.map(fn x -> Integer.to_string(x) end)
-    # first_letter = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end) 
-    # |> Enum.reject(fn x -> Enum.any?(numbers, fn y -> x == y end) end) |> Enum.join()
-
-    # if Float.parse(first_letter) == :error do
-    # running_no = itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end)     |> Enum.filter(fn x -> Enum.any?(numbers, fn y -> x == y end) end) 
-
-    # if Enum.count(running_no) == 2 do
-    # part_code =
-    #   List.insert_at(running_no, 0, "0") |> List.insert_at(0, first_letter) |> Enum.join()
-
-    # itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
     part_code = item_subcat_params["part_code"]
 
-    # itemname = itemcode <> " " <> item_subcat_params["itemdesc"]
-    # product_code = item_subcat_params["product_code"]
     extension_params = %{"part_code" => part_code}
     item_param = Map.merge(item_subcat_params, extension_params)
-
-    # cg =
-    #   BoatNoodle.BN.ItemSubcat.changeset(
-    #     %BoatNoodle.BN.ItemSubcat{},
-    #     item_param,
-    #     BN.current_user(conn),
-    #     "Create"
-    #   )
-
-    # subcat id needs to be generated manually.
 
     price_codes = item_subcat_params["price_code"] |> Map.keys()
 
@@ -379,24 +355,6 @@ defmodule BoatNoodleWeb.MenuItemController do
       |> put_flash(:info, "Menu item created successfully.")
       |> redirect(to: item_subcat_path(conn, :item_show, BN.get_domain(conn), item_cat.subcatid))
     end
-
-    # else
-    #   conn
-    #   |> put_flash(:info, "code behind are not numbers")
-    #   |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
-    # end
-    # else
-    #   conn
-    #   |> put_flash(:info, "code first letter is not alphabet")
-    #   |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
-    # end
-
-    # case BN.create_menu_item(menu_item_params) do
-    #   {:ok, menu_item} ->
-
-    #   {:error, %Ecto.Changeset{} = changeset} ->
-    #     render(conn, "new.html", changeset: changeset)
-    # end
   end
 
   def show(conn, %{"id" => id}) do
@@ -489,13 +447,12 @@ defmodule BoatNoodleWeb.MenuItemController do
     end
   end
 
-  def update(conn, %{
-        "id" => subcatid,
-        "menu_item" => menu_item_params,
-        "brand" => brand,
-        "a" => a
-      }) do
+  def update(conn, params) do
     # menu_item = BN.get_menu_item!(id)
+    subcatid = params["id"]
+    menu_item_params = params["menu_item"]
+    brand = params["brand"]
+    a = params["a"]
 
     enable_disc =
       if a["enable_disc"] == "on" do
@@ -558,28 +515,9 @@ defmodule BoatNoodleWeb.MenuItemController do
       )
       |> hd()
 
-    # cat = Repo.all(from(i in BoatNoodle.BN.ItemCat, where: ))
     itemcode = menu_item_params["itemcode"]
 
-    # numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] |> Enum.map(fn x -> Integer.to_string(x) end)
-
-    # first_letter =
-    #   itemcode
-    #   |> String.split("")
-    #   |> Enum.reject(fn x -> x == "" end)
-    #   |> Enum.reject(fn x -> Enum.any?(numbers, fn y -> x == y end) end)
-    #   |> Enum.join()
-
-    # if Float.parse(first_letter) == :error do
-    #   running_no =
-    #     itemcode |> String.split("") |> Enum.reject(fn x -> x == "" end)
-    #     |> Enum.filter(fn x -> Enum.any?(numbers, fn y -> x == y end) end)
-
-    # if Enum.count(running_no) == 2 do
-    #   part_code =
-    #     List.insert_at(running_no, 0, "0") |> List.insert_at(0, first_letter) |> Enum.join()
     part_code = menu_item_params["part_code"]
-    # itemname = itemcode <> " " <> menu_item_params["itemdesc"]
 
     extension_params = %{"part_code" => part_code}
     item_param = Map.merge(menu_item_params, extension_params)
@@ -590,81 +528,85 @@ defmodule BoatNoodleWeb.MenuItemController do
       if menu_item_params["price_code"][price_code] != "" do
         price = menu_item_params["price_code"][price_code] |> Decimal.new()
 
-        item_param = Map.put(item_param, "itemprice", price)
-        item_param = Map.put(item_param, "price_code", price_code)
-        product_code = cat.itemcatcode <> part_code <> price_code
+        if menu_item_params["price_code"][price_code] != "0.00" do
+          item_param = Map.put(item_param, "itemprice", price)
+          item_param = Map.put(item_param, "price_code", price_code)
+          product_code = cat.itemcatcode <> part_code <> price_code
 
-        item_param = Map.put(item_param, "product_code", product_code)
+          item_param = Map.put(item_param, "product_code", product_code)
 
-        isc = same_items |> Enum.filter(fn x -> x.price_code == price_code end)
+          isc = same_items |> Enum.filter(fn x -> x.price_code == price_code end)
 
-        isc =
-          if isc == [] do
-            # create new item subcat
+          isc =
+            if isc == [] do
+              # create new item subcat
 
-            subcat_id_list =
-              Repo.all(
-                from(
-                  s in ItemSubcat,
-                  left_join: c in ItemCat,
-                  on: c.itemcatid == s.itemcatid,
-                  where:
-                    s.is_comboitem == ^0 and c.category_type != "COMBO" and
-                      s.brand_id == ^BN.get_brand_id(conn) and
-                      c.brand_id == ^BN.get_brand_id(conn),
-                  select: s.subcatid,
-                  order_by: [asc: s.subcatid]
+              subcat_id_list =
+                Repo.all(
+                  from(
+                    s in ItemSubcat,
+                    left_join: c in ItemCat,
+                    on: c.itemcatid == s.itemcatid,
+                    where:
+                      s.is_comboitem == ^0 and c.category_type != "COMBO" and
+                        s.brand_id == ^BN.get_brand_id(conn) and
+                        c.brand_id == ^BN.get_brand_id(conn),
+                    select: s.subcatid,
+                    order_by: [asc: s.subcatid]
+                  )
                 )
-              )
 
-            if subcat_id_list != [] do
-              a =
-                subcat_id_list
-                |> List.last()
+              if subcat_id_list != [] do
+                a =
+                  subcat_id_list
+                  |> List.last()
+              else
+                a = 0
+              end
+
+              item_param = Map.put(item_param, "subcatid", a + 1)
+
+              item_param = Map.put(item_param, "brand_id", BN.get_brand_id(conn))
+
+              cg2 =
+                BoatNoodle.BN.ItemSubcat.changeset(
+                  %BoatNoodle.BN.ItemSubcat{},
+                  item_param,
+                  BN.current_user(conn),
+                  "Create"
+                )
+
+              case Repo.insert(cg2) do
+                {:ok, item_cat} ->
+                  item_cat
+
+                {:error, cg2} ->
+                  IEx.pry()
+                  false
+              end
             else
-              a = 0
+              isc |> hd()
             end
 
-            item_param = Map.put(item_param, "subcatid", a + 1)
+          file_param = conn.params["image"]
 
-            item_param = Map.put(item_param, "brand_id", BN.get_brand_id(conn))
+          if file_param != nil do
+            {:ok, bin} = File.read(file_param.path)
 
-            cg2 =
-              BoatNoodle.BN.ItemSubcat.changeset(
-                %BoatNoodle.BN.ItemSubcat{},
-                item_param,
-                BN.current_user(conn),
-                "Create"
-              )
-
-            case Repo.insert(cg2) do
-              {:ok, item_cat} ->
-                item_cat
-
-              {:error, cg2} ->
-                false
-            end
-          else
-            isc |> hd()
+            item_param = Map.put(item_param, "itemimage", Base.encode64(bin))
           end
 
-        file_param = conn.params["image"]
+          cg2 =
+            BoatNoodle.BN.ItemSubcat.changeset(isc, item_param, BN.current_user(conn), "Update")
 
-        if file_param != nil do
-          {:ok, bin} = File.read(file_param.path)
+          case Repo.update(cg2) do
+            {:ok, item_cat} ->
+              true
 
-          item_param = Map.put(item_param, "itemimage", Base.encode64(bin))
-        end
-
-        cg2 = BoatNoodle.BN.ItemSubcat.changeset(isc, item_param, BN.current_user(conn), "Update")
-
-        case Repo.update(cg2) do
-          {:ok, item_cat} ->
-            true
-
-          _ ->
-            IO.puts("failed item udpate")
-            false
+            _ ->
+              IO.puts("failed item udpate")
+              false
+          end
         end
       end
     end
@@ -672,28 +614,6 @@ defmodule BoatNoodleWeb.MenuItemController do
     conn
     |> put_flash(:info, "Menu item updated successfully.")
     |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
-
-    # else
-    #   conn
-    #   |> put_flash(:info, "code behind are not numbers")
-    #   |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
-    # end
-    # else
-    #   conn
-    #   |> put_flash(:info, "code first letter is not alphabet")
-    #   |> redirect(to: menu_item_path(conn, :new, BN.get_domain(conn)))
-    # end
-
-    # case BN.update_menu_item(menu_item, menu_item_params) do
-    #   {:ok, menu_item} ->
-
-    conn
-    |> put_flash(:info, "Menu item updated successfully.")
-    |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
-
-    #   {:error, %Ecto.Changeset{} = changeset} ->
-    #     render(conn, "edit.html", menu_item: menu_item, changeset: changeset)
-    # end
   end
 
   def delete(conn, %{"id" => id}) do

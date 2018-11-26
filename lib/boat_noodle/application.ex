@@ -10,7 +10,7 @@ defmodule BoatNoodle.Application do
     children = [
       # Start the Ecto repository
       supervisor(BoatNoodle.Repo, []),
-      # supervisor(BoatNoodle.RepoGeop, []),
+      supervisor(BoatNoodle.RepoGeop, []),
       # Start the endpoint when the application starts
       supervisor(BoatNoodleWeb.Endpoint, [])
       # Start your own worker by calling: BoatNoodle.Worker.start_link(arg1, arg2, arg3)

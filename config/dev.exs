@@ -76,6 +76,16 @@ config :phoenix, :stacktrace_depth, 20
 #   pool_size: 10,
 #   timeout: 1500_000
 
+config :boat_noodle, BoatNoodle.RepoGeop,
+  adapter: Ecto.Adapters.MySQL,
+  hostname: "bnsg.geopbyteapp.com",
+  port: "3306",
+  username: "bnsggumm_user",
+  password: "pos!@#000",
+  database: "bnsggumm_db",
+  pool_size: 10,
+  timeout: 1500_000
+
 config :boat_noodle, BoatNoodle.Repo,
   adapter: Ecto.Adapters.MySQL,
   hostname: "110.4.42.47",

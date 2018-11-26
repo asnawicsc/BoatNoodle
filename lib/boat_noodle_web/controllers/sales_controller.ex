@@ -733,6 +733,8 @@ defmodule BoatNoodleWeb.SalesController do
           Decimal.to_float(item.sub_total) + Decimal.to_float(item.service_charge) +
             Decimal.to_float(item.gst) + Decimal.to_float(item.rounding)
 
+        gst_charge = (sub_total - dis) * 0.06
+
         csv_content = [
           item.salesdate,
           item.pax,

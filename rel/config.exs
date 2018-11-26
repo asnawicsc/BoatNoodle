@@ -48,7 +48,8 @@ release :boat_noodle do
 
   set(
     applications: [
-      :runtime_tools
+      :runtime_tools,
+      :inets
     ]
   )
 

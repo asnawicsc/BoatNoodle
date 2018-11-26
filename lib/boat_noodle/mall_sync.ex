@@ -3,12 +3,13 @@ defmodule BoatNoodle.MallSync do
     :crypto,
     :ssl,
     :postgrex,
-    :ecto
+    :ecto,
+    :inets
   ]
 
   require IEx
   alias BoatNoodle.Repo
-
+  alias BoatNoodle.RepoGeop
   import Ecto.Query
   alias BoatNoodle.BN
 
@@ -49,7 +50,8 @@ defmodule BoatNoodle.MallSync do
     ApiLog,
     Voucher,
     HistoryData,
-    ModalLog
+    ModalLog,
+    DailyTransaction
   }
 
   def boat_noodle, do: :boat_noodle
@@ -59,9 +61,9 @@ defmodule BoatNoodle.MallSync do
   def start_sync do
     me = boat_noodle()
 
-    # IO.puts("Loading #{me}..")
-    # # Load the code for myapp, but don't start it
-    # :ok = Application.load(me)
+    IO.puts("Loading #{me}..")
+    # Load the code for myapp, but don't start it
+    :ok = Application.load(me)
 
     IO.puts("Starting dependencies..")
     # Start apps necessary for executing migrations
@@ -71,77 +73,347 @@ defmodule BoatNoodle.MallSync do
     IO.puts("Starting repos..")
     Enum.each(repos(), & &1.start_link(pool_size: 10))
 
-    connect_to(1, "2")
-    connect_to(2, "2")
-    connect_to(3, "2")
-    connect_to(1, "7")
-    connect_to(2, "7")
-    connect_to(3, "7")
-    connect_to(1, "23")
-    connect_to(2, "23")
-    connect_to(3, "23")
-    connect_to(1, "26")
-    connect_to(2, "26")
-    connect_to(3, "26")
+    connect_to(1, "2", "MY")
+    connect_to(2, "2", "MY")
+    connect_to(3, "2", "MY")
+    connect_to(1, "7", "MY")
+    connect_to(2, "7", "MY")
+    connect_to(3, "7", "MY")
+    connect_to(1, "23", "MY")
+    connect_to(2, "23", "MY")
+    connect_to(3, "23", "MY")
+    connect_to(1, "26", "MY")
+    connect_to(2, "26", "MY")
+    connect_to(3, "26", "MY")
 
     # Signal shutdown
     IO.puts("Success!")
     :init.stop()
   end
 
-  def connect_to(days_ago, branchid_str) do
-    {tenant_machine_id, password} =
-      case branchid_str do
-        "2" ->
-          {'50000078', 'e8kgjhR'}
+  def connect_to(days_ago, branchid_str, country) do
+    case country do
+      "MY" ->
+        {tenant_machine_id, password} =
+          case branchid_str do
+            "2" ->
+              {'50000078', 'e8kgjhR'}
 
-        "7" ->
-          {'53000147', '6W95xLM'}
+            "7" ->
+              {'53000147', '6W95xLM'}
 
-        "26" ->
-          {'51000039', '52F4A1F'}
+            "26" ->
+              {'51000039', '52F4A1F'}
 
-        "23" ->
-          {'52000183', '4LpAUv1'}
-      end
+            "23" ->
+              {'52000183', '4LpAUv1'}
 
-    host = 'sunway.serveftp.org'
+            "6" ->
+              {'30000298', ''}
+          end
 
-    # # connects to host and assigns pid
-    {:ok, pid} = :inets.start(:ftpc, host: host)
+        host = 'sunway.serveftp.org'
 
-    # # logs into host with username and password
-    :ftp.user(pid, tenant_machine_id, password)
+        # # connects to host and assigns pid
+        {:ok, pid} = :inets.start(:ftpc, host: host)
 
-    date_str =
-      Date.utc_today() |> Timex.shift(days: -days_ago) |> Date.to_string() |> String.split("-")
-      |> Enum.join()
+        # # logs into host with username and password
+        :ftp.user(pid, tenant_machine_id, password)
 
-    date_str2 =
-      Date.utc_today()
-      |> Timex.shift(days: -days_ago)
-      |> Date.to_string()
-      |> String.split("-")
-      |> Enum.reverse()
-      |> Enum.join()
+        date_str =
+          Date.utc_today()
+          |> Timex.shift(days: -days_ago)
+          |> Date.to_string()
+          |> String.split("-")
+          |> Enum.join()
 
-    no_range = 0..23
-    sales_data = sales_payment_data(days_ago, branchid_str)
+        date_str2 =
+          Date.utc_today()
+          |> Timex.shift(days: -days_ago)
+          |> Date.to_string()
+          |> String.split("-")
+          |> Enum.reverse()
+          |> Enum.join()
 
-    data =
-      for hour <- no_range do
-        line(
-          tenant_machine_id,
-          date_str,
-          date_str2,
-          hour,
+        no_range = 0..23
+        sales_data = sales_payment_data(days_ago, branchid_str)
+
+        data =
+          for hour <- no_range do
+            line(
+              tenant_machine_id,
+              date_str,
+              date_str2,
+              hour,
+              sales_data
+            )
+          end
+
+        :ftp.send_bin(pid, Enum.join(data), 'H#{tenant_machine_id}_#{date_str}.txt')
+
+        :inets.stop(:ftpc, pid)
+
+      "SG" ->
+        tenant_machine_id = '0600590'
+
+        date_str =
+          Date.utc_today()
+          |> Timex.shift(days: -days_ago)
+          |> Date.to_string()
+          |> String.split("-")
+          |> Enum.join()
+
+        date_date =
+          Date.utc_today()
+          |> Timex.shift(days: -days_ago)
+
+        sales_data =
+          sales_payment_data_sg(days_ago, branchid_str, date_str, tenant_machine_id, date_date)
+
+        fsn =
+          RepoGeop.all(
+            from(
+              d in DailyTransaction,
+              where: d.transation_date == ^date_str,
+              select: d.file_serial_number,
+              order_by: [desc: d.id],
+              limit: 10
+            )
+          )
+          |> List.first()
+
+        # ip = "202.79.215.178"
+        # port = "2222"
+        # username = "dts_pos0600590_p"
+        # path = "/POS/06/0600590"
+
+        # # # connects to host and assigns pid
+        # {:ok, pid} = :inets.start(:ftpc, host: host)
+
+        # # # logs into host with username and password
+        # :ftp.user(pid, tenant_machine_id, password)
+
+        # :ftp.send_bin(pid, sales_data, path <> 'D#{tenant_machine_id}.#{date_str}.#{fsn}')
+
+        # :inets.stop(:ftpc, pid)
+
+        {:ok, connection} =
+          SftpEx.connect(host: '110.4.42.48', user: 'ubuntu', password: 'scmcapp')
+
+        SFTP.TransferService.upload(
+          connection,
+          "/boat_noodle/D#{tenant_machine_id}#{date_str}.#{fsn}",
           sales_data
         )
+
+        if Date.utc_today().day == 7 do
+          month = (Date.utc_today().month - 1) |> Integer.to_string()
+          year = Date.utc_today().year |> Integer.to_string()
+
+          end_day =
+            Timex.end_of_month(Date.utc_today().year, Date.utc_today().month - 1).day
+            |> Integer.to_string()
+
+          month_str = year <> month
+
+          case sg_check_total_sales(
+                 branchid_str,
+                 "#{year}-#{month}-01",
+                 "#{year}-#{month}-#{end_day}"
+               ) do
+            {:ok, total} ->
+              true
+
+            {:error, total} ->
+              final =
+                (total + 100_000_000.00) |> :erlang.float_to_binary(decimals: 2)
+                |> String.replace_prefix("1", "")
+
+              line = "T#{tenant_machine_id}#{month_str}#{final}"
+
+              fsn =
+                RepoGeop.all(
+                  from(
+                    d in DailyTransaction,
+                    where: d.transation_date == ^month_str,
+                    select: d.file_serial_number,
+                    order_by: [desc: d.id],
+                    limit: 10
+                  )
+                )
+                |> List.first()
+
+              SFTP.TransferService.upload(
+                connection,
+                "/boat_noodle/T#{tenant_machine_id}.#{fsn}",
+                line
+              )
+          end
+        end
+
+        SftpEx.disconnect(connection)
+
+      _ ->
+        true
+    end
+  end
+
+  def sales_payment_data_sg(days_ago, branchid_str, date_str, tenant_machine_id, date_date) do
+    date = Date.utc_today() |> Timex.shift(days: -days_ago)
+
+    sales_data =
+      RepoGeop.all(
+        from(
+          s in Sales,
+          left_join: sp in SalesPayment,
+          on: sp.salesid == s.salesid,
+          where: s.is_void == ^0 and s.salesdate == ^date and s.branchid == ^branchid_str,
+          group_by: [s.salesdate],
+          select: %{
+            date: s.salesdate,
+            afterdisc: sum(sp.after_disc),
+            serv: sum(sp.service_charge)
+          }
+        )
+      )
+
+    a = sales_data |> hd()
+    total = Decimal.to_float(a.afterdisc) + Decimal.to_float(a.serv) + 100_000_000.00
+    final = total |> :erlang.float_to_binary(decimals: 2) |> String.replace_prefix("1", "")
+
+    fsn =
+      RepoGeop.all(from(d in DailyTransaction, order_by: [desc: d.id], limit: 10)) |> List.first()
+
+    fsn =
+      if fsn == nil do
+        "000"
+      else
+        a = "1" <> fsn.file_serial_number
+        b = String.to_integer(a)
+
+        c = b + 1
+        d = Integer.to_string(c)
+
+        e = String.replace_prefix(d, String.first(d), "")
+        e
       end
 
-    :ftp.send_bin(pid, Enum.join(data), 'H#{tenant_machine_id}_#{date_str}.txt')
+    check =
+      RepoGeop.all(
+        from(
+          d in DailyTransaction,
+          where: d.transation_date == ^date_str,
+          order_by: [desc: d.id],
+          limit: 10
+        )
+      )
+      |> List.first()
 
-    :inets.stop(:ftpc, pid)
+    if check != nil do
+      {:ok, dt} =
+        BoatNoodle.BN.DailyTransaction.changeset(check, %{
+          transation_date: date_str,
+          sales_amount: final,
+          branchid: branchid_str
+        })
+        |> RepoGeop.update()
+    else
+      {:ok, dt} =
+        BoatNoodle.BN.DailyTransaction.changeset(%BoatNoodle.BN.DailyTransaction{}, %{
+          file_serial_number: fsn,
+          transation_date: date_str,
+          sales_amount: final,
+          branchid: branchid_str,
+          sales_date: date_date
+        })
+        |> RepoGeop.insert()
+    end
+
+    "D#{tenant_machine_id}#{date_str}#{final}"
+  end
+
+  def sg_check_total_sales(branchid_str, start_date, end_date) do
+    s_date = Date.from_iso8601!(start_date)
+    e_date = Date.from_iso8601!(end_date)
+
+    drange = Date.range(s_date, e_date)
+
+    sales_data =
+      RepoGeop.all(
+        from(
+          s in Sales,
+          left_join: sp in SalesPayment,
+          on: sp.salesid == s.salesid,
+          where:
+            s.is_void == ^0 and s.salesdate >= ^s_date and s.salesdate <= ^e_date and
+              s.branchid == ^branchid_str,
+          group_by: [s.branchid],
+          select: %{
+            branchid: s.branchid,
+            date: s.salesdate,
+            afterdisc: sum(sp.after_disc),
+            serv: sum(sp.service_charge)
+          }
+        )
+      )
+
+    a = sales_data |> hd()
+    total = Decimal.to_float(a.afterdisc) + Decimal.to_float(a.serv)
+
+    data =
+      RepoGeop.all(
+        from(
+          s in DailyTransaction,
+          where: s.sales_date >= ^s_date and s.sales_date <= ^e_date,
+          select: %{amount: s.sales_amount, salesdate: s.sales_date}
+        )
+      )
+      |> Enum.reject(fn x -> String.length(x.transation_date) == 6 end)
+      |> Enum.map(fn x -> String.to_float(x) end)
+      |> Enum.sum()
+
+    result =
+      if data == 0 do
+        false
+      else
+        Float.round(data, 2) == Float.round(total, 2)
+      end
+
+    if result do
+      {:ok, Float.round(data, 2)}
+    else
+      fsn =
+        RepoGeop.all(from(d in DailyTransaction, order_by: [desc: d.id], limit: 10))
+        |> List.first()
+
+      fsn =
+        if fsn == nil do
+          "000"
+        else
+          a = "1" <> fsn.file_serial_number
+          b = String.to_integer(a)
+
+          c = b + 1
+          d = Integer.to_string(c)
+
+          e = String.replace_prefix(d, String.first(d), "")
+          e
+        end
+
+      month_str = Integer.to_string(s_date.year) <> Integer.to_string(s_date.month)
+      final = total |> :erlang.float_to_binary(decimals: 2) |> String.replace_prefix("1", "")
+
+      {:ok, dt} =
+        BoatNoodle.BN.DailyTransaction.changeset(%BoatNoodle.BN.DailyTransaction{}, %{
+          file_serial_number: fsn,
+          transation_date: month_str,
+          sales_amount: final,
+          branchid: branchid_str
+        })
+        |> RepoGeop.insert()
+
+      {:error, Float.round(total, 2)}
+    end
   end
 
   def sales_payment_data(days_ago, branchid_str) do
@@ -368,7 +640,7 @@ defmodule BoatNoodle.MallSync do
     drange = Date.range(s_date, e_date)
 
     for date <- drange do
-      connect_to(Date.diff(Date.utc_today(), date), branchid_str)
+      connect_to(Date.diff(Date.utc_today(), date), branchid_str, "MY")
     end
   end
 
@@ -395,6 +667,9 @@ defmodule BoatNoodle.MallSync do
 
         "23" ->
           "52000183"
+
+        "7" ->
+          "30000298"
       end
 
     # new_path = image_path <> "/H#{tenant_machine_id}-#{date_str}.txt"
