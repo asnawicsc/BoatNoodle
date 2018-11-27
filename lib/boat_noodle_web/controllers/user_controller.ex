@@ -76,6 +76,8 @@ defmodule BoatNoodleWeb.UserController do
   def create(conn, %{"user" => user_params}) do
     crypted_password = Comeonin.Bcrypt.hashpwsalt(user_params["password"])
     user_params = Map.put(user_params, "password", crypted_password)
+    usr = Repo.get(User, BN.current_user(conn))
+    user_params = Map.put(user_params, "brand_id", usr.brand_id)
 
     changeset =
       BoatNoodle.BN.User.changeset(
