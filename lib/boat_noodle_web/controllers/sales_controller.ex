@@ -1233,9 +1233,13 @@ defmodule BoatNoodleWeb.SalesController do
                   Decimal.to_float(item.after_disc)
                 end
 
+              string = "LAVA"
+
+              a = List.to_string([string, date])
+
               [
                 date,
-                'IV-1000061',
+                a,
                 code,
                 brand.name,
                 '',
