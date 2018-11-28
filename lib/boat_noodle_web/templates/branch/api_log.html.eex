@@ -1,28 +1,110 @@
 
-<h2>API Logs</h2>
+<h2>API Logs for <%= @branch.branchname%></h2>
 <div class="row">
-  <div class="col-lg-7">
-    <table class="table">
-      <thead>
-        
-      <tr>
- 
-      </tr>
-      </thead>
-    <tbody>
-  
-      
- 
-    </tbody>
-    </table>
-    
-  </div>
-  <div class="col-lg-4">
-
-
-    
-  </div>
+             <div class="col-md-12">
+                <div class="card card-chart">
+                  <div class="card-header card-header-warning">
+                    <div id="straightLinesChart" class="ct-chart"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">API calls (hourly)</h4>
+                    <p class="card-category">Past 50 working hours</p>
+                  </div>
+                </div>
+              </div>
 </div>
+<% new_data = @api_logs |> Enum.map(fn x -> Map.put(x, :label,  Integer.to_string(x.hour + 8)) end) %>
+<% labels = Enum.map(new_data, fn x -> "#{x.label}" end )  %>
+<% counts = Enum.map(new_data, fn x -> "#{x.count}" end )  %>
+<script type="text/javascript">
+  
+            dataStraightLinesChart = {
+                labels: [
+                <%= for l <- labels do %>
+                "<%= l %>",
+                 <% end %>],
+                series: [
+                    [<%= for l <- counts do %>
+                      "<%= l %>",
+                      <%  end %>]
+                ]
+            };
+
+           var optionsSimpleBarChart = {
+                seriesBarDistance: 100,
+                axisX: {
+                    showGrid: false
+                }
+            };
+
+            var responsiveOptionsSimpleBarChart = [
+                ['screen and (max-width: 640px)', {
+                    seriesBarDistance: 5,
+                    axisX: {
+                        labelInterpolationFnc: function(value) {
+                            return value[0];
+                        }
+                    }
+                }]
+            ];
+     var simpleBarChart = Chartist.Bar('#straightLinesChart', dataStraightLinesChart, optionsSimpleBarChart, responsiveOptionsSimpleBarChart);
 
 
+            md.startAnimationForLineChart(straightLinesChart);
 
+</script>
+
+
+<div class="row">
+             <div class="col-md-12">
+                <div class="card card-chart">
+                  <div class="card-header card-header-rose">
+                    <div id="straightLinesChart2" class="ct-chart"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">API calls (daily)</h4>
+                    <p class="card-category">Past 30 days</p>
+                  </div>
+                </div>
+              </div>
+</div>
+<% new_data = @b |> Enum.map(fn x -> Map.put(x, :label,  Integer.to_string(x.day)) end) %>
+<% labels = Enum.map(new_data, fn x -> "#{x.label}" end )  %>
+<% counts = Enum.map(new_data, fn x -> "#{x.count}" end )  %>
+<script type="text/javascript">
+  
+            dataStraightLinesChart = {
+                labels: [
+                <%= for l <- labels do %>
+                "<%= l %>",
+                 <% end %>],
+                series: [
+                    [<%= for l <- counts do %>
+                      "<%= l %>",
+                      <%  end %>]
+                ]
+            };
+
+           var optionsSimpleBarChart = {
+                seriesBarDistance: 100,
+                axisX: {
+                    showGrid: false
+                }
+            };
+
+            var responsiveOptionsSimpleBarChart = [
+                ['screen and (max-width: 640px)', {
+                    seriesBarDistance: 5,
+                    axisX: {
+                        labelInterpolationFnc: function(value) {
+                            return value[0];
+                        }
+                    }
+                }]
+            ];
+     var simpleBarChart = Chartist.Bar('#straightLinesChart2', dataStraightLinesChart, optionsSimpleBarChart, responsiveOptionsSimpleBarChart);
+
+
+            md.startAnimationForLineChart(straightLinesChart);
+
+</script>

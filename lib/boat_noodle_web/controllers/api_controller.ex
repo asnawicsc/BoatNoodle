@@ -82,7 +82,9 @@ defmodule BoatNoodleWeb.ApiController do
       {:ok, ci} ->
         Task.start_link(__MODULE__, :log_api, [
           IO.inspect(ci),
-          params["code"] <> " API POST -" <> params["scope"]
+          params["code"] <> " API POST -" <> params["scope"],
+          user.brand_id,
+          user.branchid
         ])
 
         map = %{status: "ok"} |> Poison.encode!()
@@ -104,7 +106,9 @@ defmodule BoatNoodleWeb.ApiController do
       {:ok, ci} ->
         Task.start_link(__MODULE__, :log_api, [
           IO.inspect(ci),
-          params["code"] <> " API POST -" <> params["scope"]
+          params["code"] <> " API POST -" <> params["scope"],
+          user.brand_id,
+          user.branchid
         ])
 
         map = %{status: "ok"} |> Poison.encode!()
@@ -134,7 +138,9 @@ defmodule BoatNoodleWeb.ApiController do
       {:ok, ci} ->
         Task.start_link(__MODULE__, :log_api, [
           IO.inspect(ci),
-          params["code"] <> " API POST -" <> params["scope"]
+          params["code"] <> " API POST -" <> params["scope"],
+          user.brand_id,
+          user.branchid
         ])
 
         map = %{status: "ok"} |> Poison.encode!()
@@ -157,6 +163,7 @@ defmodule BoatNoodleWeb.ApiController do
           sync_by: params["current_user"],
           unsync: params["unsync"],
           version2: params["version"],
+          sidepos2: params["sidepos"],
           last_sync: Timex.now()
         },
         0,
@@ -185,7 +192,9 @@ defmodule BoatNoodleWeb.ApiController do
       {:ok, ci} ->
         Task.start_link(__MODULE__, :log_api, [
           IO.inspect(ci),
-          params["code"] <> " API POST -" <> params["scope"]
+          params["code"] <> " API POST -" <> params["scope"],
+          user.brand_id,
+          user.branchid
         ])
 
         map = %{status: "ok"} |> Poison.encode!()
@@ -213,7 +222,9 @@ defmodule BoatNoodleWeb.ApiController do
       {:ok, ci} ->
         Task.start_link(__MODULE__, :log_api, [
           IO.inspect(ci),
-          params["code"] <> " API POST -" <> params["scope"]
+          params["code"] <> " API POST -" <> params["scope"],
+          user.brand_id,
+          user.branchid
         ])
 
         map = %{status: "ok"} |> Poison.encode!()
@@ -1736,7 +1747,7 @@ defmodule BoatNoodleWeb.ApiController do
     BoatNoodleWeb.Endpoint.broadcast(topic, event, %{messages: messages})
   end
 
-  def log_api(message, username) do
+  def log_api(message, username, branch_id, brand_id) do
     message =
       message
       |> Map.to_list()
