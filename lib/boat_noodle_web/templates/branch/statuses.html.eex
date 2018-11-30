@@ -10,7 +10,7 @@
       <div class="card-body">
 		<div class="row">
       <% latest_versions = @branches |> Enum.map(fn x -> x.version2 end ) |> Enum.sort() |> Enum.uniq() |> List.last %>
-      
+       <% latest_versions_side = @branches |> Enum.map(fn x -> x.sidepos2 end ) |> Enum.sort() |> Enum.uniq() |> List.last %>
 <%= for branch <- @branches |> Enum.sort_by(fn x -> x.last_sync end ) |> Enum.reverse do %>
 
 <div class="col-sm-3">
@@ -24,7 +24,16 @@
 <% else %>
         class="badge badge-danger"
 <% end %>
-        ><%= branch.version2%></span></h4>
+        ><%= branch.version2%></span>
+<span 
+<%= if latest_versions_side == branch.sidepos2 do %>
+        class="badge badge-primary"
+<% else %>
+        class="badge badge-danger"
+<% end %>
+        ><%= branch.sidepos2%></span>
+
+      </h4>
 	    <p class="card-text logged_in">Logged In: <span aria-label="<%= branch.branchid%>" class="staff"><%= branch.sync_by%></span> </p>
       <p class="card-text logged_in">Last Sync: <br> <span aria-label="<%= branch.branchid%>" class="staff"><%= BoatNoodleWeb.LayoutView.my_time_ago(branch.last_sync) %></span> </p>
 

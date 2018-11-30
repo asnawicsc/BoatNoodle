@@ -33,6 +33,7 @@ defmodule BoatNoodle.BN.Branch do
     field(:brand_id, :integer, primary_key: true)
 
     field(:version2, :string)
+    field(:sidepos2, :string)
     field(:unsync, :integer)
     field(:sync_by, :string)
     field(:last_sync, :naive_datetime)
@@ -44,6 +45,7 @@ defmodule BoatNoodle.BN.Branch do
     branch =
       branch
       |> cast(attrs, [
+        :sidepos2,
         :is_test,
         :version2,
         :unsync,

@@ -19,8 +19,7 @@ defmodule BoatNoodleWeb.BranchController do
       Repo.all(
         from(
           a in ApiLog,
-          where: a.inserted_at > ^last_30_days and a.username == ^branch.branchcode,
-          limit: 100
+          where: a.inserted_at > ^last_30_days and a.username == ^branch.branchcode
         )
       )
       |> Enum.map(fn x ->
@@ -42,20 +41,30 @@ defmodule BoatNoodleWeb.BranchController do
           hours = days[day] |> Enum.group_by(fn x -> x.hour end)
 
           for hour <- hours |> Map.keys() do
-            minutes = hours[hour] |> Enum.group_by(fn x -> x.minutes end)
+            count = hours[hour] |> Enum.count()
 
-            for minute <- minutes |> Map.keys() do
-              count = minutes[minute] |> Enum.count()
-
-              %{month: month, day: day, hour: hour, minute: minute, count: count}
-            end
+            %{month: month, day: day, hour: hour, count: count}
           end
         end
       end
+      |> List.flatten()
+      |> Enum.take(50)
 
-    IEx.pry()
+    b =
+      for month <- months |> Map.keys() do
+        days = months[month] |> Enum.group_by(fn x -> x.day end)
 
-    render(conn, "api_log.html", api_logs: api_logs)
+        for day <- days |> Map.keys() do
+          hours = days[day] |> Enum.group_by(fn x -> x.hour end)
+
+          count = days[day] |> Enum.count()
+
+          %{month: month, day: day, count: count}
+        end
+      end
+      |> List.flatten()
+
+    render(conn, "api_log.html", api_logs: a, b: b, branch: branch)
   end
 
   def statuses(conn, params) do
