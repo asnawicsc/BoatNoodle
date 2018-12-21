@@ -193,7 +193,7 @@ defmodule BoatNoodle.MallSync do
         # # # logs into host with username and password
         # :ftp.user(pid, tenant_machine_id, password)
 
-        # :ftp.send_bin(pid, sales_data, path <> 'D#{tenant_machine_id}.#{date_str}.#{fsn}')
+        # :ftp.send_bin(pid, sales_data, path <> 'D#{tenant_machine_id}.#{fsn}')
 
         # :inets.stop(:ftpc, pid)
 
@@ -202,7 +202,7 @@ defmodule BoatNoodle.MallSync do
 
         SFTP.TransferService.upload(
           connection,
-          "/boat_noodle/D#{tenant_machine_id}#{date_str}.#{fsn}",
+          "/boat_noodle/D#{tenant_machine_id}.#{fsn}",
           sales_data
         )
 

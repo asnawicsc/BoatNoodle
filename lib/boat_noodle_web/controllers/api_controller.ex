@@ -57,10 +57,24 @@ defmodule BoatNoodleWeb.ApiController do
                   {"authentication", "code and key doesnt match"}
                 )
 
+              message =
+                List.insert_at(
+                  conn.req_headers,
+                  0,
+                  {"requester", params["code"]}
+                )
+
               log_error_api(message, params["code"] <> " API POST -" <> params["scope"])
               send_resp(conn, 400, "User not found.")
 
             true ->
+              message =
+                List.insert_at(
+                  conn.req_headers,
+                  0,
+                  {"requester", params["code"]}
+                )
+
               message = List.insert_at(conn.req_headers, 0, {"authentication", "unknown"})
               log_error_api(message, params["code"] <> " API POST -" <> params["scope"])
               send_resp(conn, 400, "user credentials are incorrect.")
@@ -240,6 +254,14 @@ defmodule BoatNoodleWeb.ApiController do
     model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
     type = changeset.errors |> hd() |> elem(1) |> elem(0)
     message = List.insert_at(conn.req_headers, 0, {model, type})
+
+    message =
+      List.insert_at(
+        conn.req_headers,
+        0,
+        {"requester", params["code"]}
+      )
+
     log_error_api(message, params["code"] <> " API POST -" <> params["scope"])
   end
 
@@ -307,16 +329,39 @@ defmodule BoatNoodleWeb.ApiController do
                 message =
                   List.insert_at(conn.req_headers, 0, {"fields", "not within defined fields"})
 
+                message =
+                  List.insert_at(
+                    conn.req_headers,
+                    0,
+                    {"requester", params["code"]}
+                  )
+
                 log_error_api(message, "API GET")
                 send_resp(conn, 200, "request not available. \n")
             end
           else
             message = List.insert_at(conn.req_headers, 0, {"branch", "db cant find branch"})
+
+            message =
+              List.insert_at(
+                conn.req_headers,
+                0,
+                {"requester", params["code"]}
+              )
+
             log_error_api(message, "API GET")
             send_resp(conn, 200, "branch doesnt exist. \n")
           end
         else
           message = List.insert_at(conn.req_headers, 0, {"authentication", "wrong combination"})
+
+          message =
+            List.insert_at(
+              conn.req_headers,
+              0,
+              {"requester", params["code"]}
+            )
+
           log_error_api(message, "API GET")
 
           send_resp(conn, 200, "branch doesnt exist. \n")
@@ -478,7 +523,7 @@ defmodule BoatNoodleWeb.ApiController do
     map_json = %{date_prices: date_prices} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"date_prices", "date_prices"})
-    log_error_api(message, "API GET - date_prices")
+    log_error_api(message, "#{branchcode} - API GET - date_prices")
     send_resp(conn, 200, map_json)
   end
 
@@ -504,7 +549,7 @@ defmodule BoatNoodleWeb.ApiController do
     map_json = %{payment_types: payment_types} |> Poison.encode!()
 
     message = List.insert_at(conn.req_headers, 0, {"payment_types", "payment_types"})
-    log_error_api(message, "API GET - payment_types")
+    log_error_api(message, "#{branchcode} - API GET - payment_types")
     send_resp(conn, 200, map_json)
   end
 
@@ -895,19 +940,19 @@ defmodule BoatNoodleWeb.ApiController do
 
   def webhook_post(conn, params) do
     IO.puts("incoming api post...")
-
+    branchcode = params["code"]
     # IO.inspect(params)
     a_list = params["details"]
 
     cond do
       params["key"] == nil ->
         message = List.insert_at(conn.req_headers, 0, {"api key", "key value is empty"})
-        log_error_api(message, "API POST")
+        log_error_api(message, "#{branchcode} - API POST")
         send_resp(conn, 400, "please include key .")
 
       params["code"] == nil ->
         message = List.insert_at(conn.req_headers, 0, {"branch code", "code value is empty"})
-        log_error_api(message, "API POST")
+        log_error_api(message, "#{branchcode} - API POST")
         send_resp(conn, 400, "please include code .")
 
       true ->
@@ -968,7 +1013,7 @@ defmodule BoatNoodleWeb.ApiController do
           cond do
             sales_exist != nil ->
               message = List.insert_at(conn.req_headers, 0, {"sales id", "already exist"})
-              log_error_api(message, "API POST - sales")
+              log_error_api(message, "#{branchcode} - API POST - sales")
 
               map =
                 %{message: "Sales #{sales_exist.salesid} already exist.", status: "existed"}
@@ -1011,7 +1056,12 @@ defmodule BoatNoodleWeb.ApiController do
                   sales_payment_params = Map.put(sales_payment_params, :salesid, sales.salesid)
                   sales_payment_params = Map.put(sales_payment_params, :brand_id, user.brand_id)
 
-                  Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
+                  Task.start_link(__MODULE__, :log_api, [
+                    IO.inspect(sales),
+                    params["code"],
+                    user.branchid,
+                    user.brand_id
+                  ])
 
                   sd =
                     for sales_master_params <- sales_master_params_list do
@@ -1030,7 +1080,9 @@ defmodule BoatNoodleWeb.ApiController do
                         {:ok, sales_master} ->
                           Task.start_link(__MODULE__, :log_api, [
                             IO.inspect(sales_master),
-                            params["code"]
+                            params["code"],
+                            user.branchid,
+                            user.brand_id
                           ])
 
                           :ok
@@ -1062,14 +1114,16 @@ defmodule BoatNoodleWeb.ApiController do
                          "one of it has issues, the created sales and other sales details will be deleted."}
                       )
 
-                    log_error_api(message, "API POST - sales details")
+                    log_error_api(message, "#{branchcode} - API POST - sales details")
                     send_resp(conn, 500, "Sales master failed to create.")
                   else
                     case BN.create_sales_payment(sales_payment_params) do
                       {:ok, sales_payment} ->
                         Task.start_link(__MODULE__, :log_api, [
                           IO.inspect(sales_payment),
-                          params["code"]
+                          params["code"],
+                          user.branchid,
+                          user.brand_id
                         ])
 
                         Task.start_link(__MODULE__, :inform_sales_update, [
@@ -1082,7 +1136,7 @@ defmodule BoatNoodleWeb.ApiController do
                         model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                         type = changeset.errors |> hd() |> elem(1) |> elem(0)
                         message = List.insert_at(conn.req_headers, 0, {model, type})
-                        log_error_api(message, "API POST - sales payment")
+                        log_error_api(message, "#{branchcode} - API POST - sales payment")
                     end
 
                     sp =
@@ -1128,7 +1182,7 @@ defmodule BoatNoodleWeb.ApiController do
                   model = changeset.errors |> hd() |> elem(0) |> Atom.to_string()
                   type = changeset.errors |> hd() |> elem(1) |> elem(0)
                   message = List.insert_at(conn.req_headers, 0, {model, type})
-                  log_error_api(message, "API POST - sales")
+                  log_error_api(message, "#{branchcode} - API POST - sales")
 
                   send_resp(conn, 500, "Sales to create. Please use the latest sales ID")
               end
@@ -1143,12 +1197,12 @@ defmodule BoatNoodleWeb.ApiController do
                   {"authentication", "code and key doesnt match"}
                 )
 
-              log_error_api(message, "API POST")
+              log_error_api(message, "#{branchcode} - API POST")
               send_resp(conn, 400, "User not found.")
 
             true ->
               message = List.insert_at(conn.req_headers, 0, {"authentication", "unknown"})
-              log_error_api(message, "API POST")
+              log_error_api(message, "#{branchcode} - API POST")
               send_resp(conn, 400, "user credentials are incorrect.")
           end
         end
@@ -1269,7 +1323,12 @@ defmodule BoatNoodleWeb.ApiController do
 
               case BN.create_sales(sales_params) do
                 {:ok, sales} ->
-                  Task.start_link(__MODULE__, :log_api, [IO.inspect(sales), params["code"]])
+                  Task.start_link(__MODULE__, :log_api, [
+                    IO.inspect(sales),
+                    params["code"],
+                    user.branchid,
+                    user.brand_id
+                  ])
 
                   sd =
                     for sales_master_params <- sales_master_params_list do
@@ -1280,7 +1339,9 @@ defmodule BoatNoodleWeb.ApiController do
                         {:ok, sales_master} ->
                           Task.start_link(__MODULE__, :log_api, [
                             IO.inspect(sales_master),
-                            params["code"]
+                            params["code"],
+                            user.branchid,
+                            user.brand_id
                           ])
 
                           :ok
@@ -1327,7 +1388,9 @@ defmodule BoatNoodleWeb.ApiController do
                           {:ok, sales_payment} ->
                             Task.start_link(__MODULE__, :log_api, [
                               IO.inspect(sales_payment),
-                              params["code"]
+                              params["code"],
+                              user.branchid,
+                              user.brand_id
                             ])
 
                             Task.start_link(__MODULE__, :inform_sales_update, [
@@ -1758,7 +1821,14 @@ defmodule BoatNoodleWeb.ApiController do
       |> Enum.map(fn {k, v} -> %{Atom.to_string(k) => v} end)
       |> Poison.encode!()
 
-    a = ApiLog.changeset(%ApiLog{}, %{message: message, username: username})
+    a =
+      ApiLog.changeset(%ApiLog{}, %{
+        message: message,
+        username: username,
+        brand_id: brand_id,
+        branch_id: branch_id
+      })
+
     Repo.insert(a)
 
     messages =
