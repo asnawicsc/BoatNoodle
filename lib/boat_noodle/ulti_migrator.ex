@@ -970,8 +970,6 @@ defmodule BoatNoodle.UltiMigrator do
                 end
               end
 
-            IEx.pry()
-
             # case a do
             #   {:ok, v2sd} ->
             #     true
