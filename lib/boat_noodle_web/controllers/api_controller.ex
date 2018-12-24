@@ -1043,7 +1043,6 @@ defmodule BoatNoodleWeb.ApiController do
               if user.is_test == 1 do
                 sales_params = Map.put(sales_params, :is_void, 1)
                 sales_params = Map.put(sales_params, :void_by, "Phoenix")
-
                 sales_params = Map.put(sales_params, :voidreason, "Flag as is_test")
               end
 

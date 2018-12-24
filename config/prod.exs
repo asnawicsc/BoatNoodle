@@ -2,8 +2,8 @@ use Mix.Config
 
 config :boat_noodle, BoatNoodleWeb.Endpoint,
   http: [port: 8889],
-  url: [host: "gummypos.resertech.com", port: 8889],
-  check_origin: ["https://gummypos.resertech.com"]
+  url: [host: "str8.resertech.com", port: 8889],
+  check_origin: ["https://str8.resertech.com"]
 
 # config :boat_noodle, BoatNoodleWeb.Endpoint,
 #   http: [port: 8889],
@@ -25,12 +25,12 @@ config :boat_noodle, BoatNoodle.Repo,
   pool_size: 10,
   timeout: 90000
 
-config :boat_noodle, BoatNoodle.RepoGeop,
-  adapter: Ecto.Adapters.MySQL,
-  hostname: "bnsg.geopbyteapp.com",
-  port: "3306",
-  username: "bnsggumm_user",
-  password: "pos!@#000",
-  database: "bnsggumm_db",
-  pool_size: 10,
-  timeout: 1500_000
+# config :boat_noodle, BoatNoodle.RepoGeop,
+#   adapter: Ecto.Adapters.MySQL,
+#   hostname: "bnsg.geopbyteapp.com",
+#   port: "3306",
+#   username: "bnsggumm_user",
+#   password: "pos!@#000",
+#   database: "bnsggumm_db",
+#   pool_size: 10,
+#   timeout: 1500_000
