@@ -103,6 +103,7 @@ defmodule BoatNoodleWeb.Router do
     get("/show_voucher", ItemSubcatController, :show_voucher)
     post("/upload_voucher", DiscountController, :upload_voucher)
     get("/csv", MenuItemController, :export)
+    get("/sync_to_client", MenuItemController, :sync_to_client)
     get("/csv_discount", DiscountController, :export)
     get("/quickbook", SalesController, :quickbook)
     get("/sql_accounting", SalesController, :sql_accounting)

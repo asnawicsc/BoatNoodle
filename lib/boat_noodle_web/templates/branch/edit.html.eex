@@ -375,7 +375,11 @@
     </div>
 
   </div>
+<button class="btn btn-success btn-round" onclick="window.location.href='/<%= @conn.params["brand"] %>/sync_to_client?branchcode=<%= String.downcase(@branch.branchcode) %>&menu_catalog_id=<%= @branch.menu_catalog %>'" >
+                <i class="material-icons">add_box</i> Sync to client tablet
+              <div class="ripple-container"></div>
 
+            </button>
 </div>
 <script type="text/javascript">
 $(document).ready(function(){

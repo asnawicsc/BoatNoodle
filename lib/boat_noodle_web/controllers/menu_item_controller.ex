@@ -35,6 +35,38 @@ defmodule BoatNoodleWeb.MenuItemController do
     )
   end
 
+  def sync_to_client(conn, params) do
+    # this place send the broadcast
+    brand = BN.get_brand_id(conn)
+    branchcode = params["branchcode"]
+    menu_catalog = Repo.get_by(MenuCatalog, id: params["menu_catalog_id"], brand_id: brand)
+    ids = menu_catalog.items |> String.split(",")
+
+    items =
+      Repo.all(
+        from(
+          i in ItemSubcat,
+          where: i.brand_id == ^brand and i.subcatid in ^ids,
+          select: %{
+            name: i.itemname,
+            price: i.itemprice,
+            printer_ip: "10.239.30.114",
+            port_no: 9100
+          }
+        )
+      )
+
+    IO.inspect(items)
+    topic = "restaurant:#{branchcode}"
+    event = "new_menu_items"
+    message = %{menu_items: items}
+    BoatNoodleWeb.Endpoint.broadcast(topic, event, message)
+
+    conn
+    |> put_flash(:info, "Syncing to client")
+    |> redirect(to: branch_path(conn, :index, BN.get_domain(conn)))
+  end
+
   def export(conn, _params) do
     conn
     |> put_resp_content_type("text/csv")
