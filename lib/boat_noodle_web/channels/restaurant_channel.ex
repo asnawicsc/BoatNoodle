@@ -2,7 +2,7 @@ defmodule BoatNoodleWeb.RestaurantChannel do
   use BoatNoodleWeb, :channel
 
   def join("restaurant:" <> branchcode, payload, socket) do
-    if authorized?(payload) do
+    if authorized?(payload, branchcode) do
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -47,7 +47,17 @@ defmodule BoatNoodleWeb.RestaurantChannel do
 
   # EcomBackendWeb.Endpoint.broadcast(topic, event, message)
   # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
+  defp authorized?(payload, branchcode) do
+    IO.inspect(payload)
+    branches = Repo.all(from(b in Branch, where: b.branchcode == ^branchcode))
+
+    branch =
+      if branches != [] do
+        branches |> List.first()
+      else
+        %{api_key: nil}
+      end
+
+    payload["license_key"] == branch.api_key
   end
 end
