@@ -221,6 +221,10 @@ defmodule BoatNoodle.Images do
       |> resize("400x400")
       |> save(path: absolute_path_bin)
 
+    File.cp(resized.path, absolute_path)
+    File.rm(image_path <> "/uploads")
+    File.ln_s(path, image_path <> "/uploads")
+
     {:ok, bin} = File.read(resized.path)
 
     File.rm(resized.path)

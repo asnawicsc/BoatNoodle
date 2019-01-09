@@ -12,9 +12,34 @@ defmodule BoatNoodleWeb.RestaurantChannel do
   def handle_in("order_completed", payload, socket) do
     # broadcast(socket, "shout", payload)
     IO.inspect(payload)
-    a = Sales.changeset(%Sales{}, payload) |> Repo.insert()
+    branchcode = socket.topic |> String.split(":") |> List.last()
+    branch = Repo.all(from(b in Branch, where: b.branchcode == ^branchcode)) |> List.first()
 
+    brand_id = branch.brand_id
+    sales_param = payload["sales"]["sales"]
+    sales_param = Map.put(sales_param, "brand_id", brand_id)
+    sales_param = Map.put(sales_param, "branchid", Integer.to_string(branch.branchid))
+    a = Sales.changeset(%Sales{}, sales_param) |> Repo.insert()
     IO.inspect(a)
+
+    for map <- payload["sales"]["sales_details"] do
+      sales_detail_param = map
+      sales_detail_param = Map.put(sales_detail_param, "brand_id", brand_id)
+      b = SalesMaster.changeset(%SalesMaster{}, sales_detail_param) |> Repo.insert()
+      IO.inspect(b)
+    end
+
+    for map <- payload["sales"]["sales_payment"] do
+      sales_payment_param = map
+      sales_payment_param = Map.put(sales_payment_param, "brand_id", brand_id)
+
+      c =
+        SalesPayment.changeset(%SalesPayment{}, sales_payment_param)
+        |> Repo.insert()
+
+      IO.inspect(c)
+    end
+
     {:noreply, socket}
   end
 
@@ -31,12 +56,16 @@ defmodule BoatNoodleWeb.RestaurantChannel do
       Repo.all(
         from(
           i in ItemSubcat,
+          left_join: c in ItemCat,
+          on: c.itemcatid == i.itemcatid,
           where: i.brand_id == ^branch.brand_id and i.subcatid in ^ids,
           select: %{
             name: i.itemname,
             price: i.itemprice,
             printer_ip: "10.239.30.114",
-            port_no: 9100
+            port_no: 9100,
+            category: c.itemcatname,
+            img_url: ""
           }
         )
       )

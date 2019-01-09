@@ -4,7 +4,6 @@ defmodule BoatNoodle.BN.ItemSubcat do
   require IEx
   @primary_key false
   schema "item_subcat" do
-  
     field(:subcatid, :integer, primary_key: true)
     field(:created_at, :utc_datetime)
     field(:enable_disc, :integer, default: 0)
@@ -31,6 +30,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:disc_reminder, :integer, default: 0)
     field(:tagdesc, :string)
     field(:printer, :string)
+    field(:item_image_url, :binary)
   end
 
   @doc false
@@ -63,7 +63,8 @@ defmodule BoatNoodle.BN.ItemSubcat do
         :include_spend,
         :is_print,
         :updated_at,
-        :created_at
+        :created_at,
+        :item_image_url
       ])
       |> unique_constraint(:subcatid, name: "PRIMARY")
 

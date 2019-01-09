@@ -90,15 +90,7 @@ defmodule BoatNoodle.BN.SalesMaster do
     |> validate_required([
       :brand_id,
       :unit_price,
-      :afterdisc,
-      :discountid,
-      :combo_id,
-      :is_void,
-      :orderid,
-      :salesid,
-      :itemid,
-      :qty,
-      :order_price
+      :salesid
     ])
     |> unique_constraint(:sales_details, name: "PRIMARY")
   end

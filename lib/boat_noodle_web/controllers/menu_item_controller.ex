@@ -613,7 +613,6 @@ defmodule BoatNoodleWeb.MenuItemController do
                   item_cat
 
                 {:error, cg2} ->
-                  IEx.pry()
                   false
               end
             else
@@ -626,6 +625,10 @@ defmodule BoatNoodleWeb.MenuItemController do
             {:ok, bin} = File.read(file_param.path)
 
             item_param = Map.put(item_param, "itemimage", Base.encode64(bin))
+
+            {:ok, pic} = BoatNoodle.Images.upload(file_param, 0, 0, "thumbnail")
+
+            item_param = Map.put(item_param, "item_image_url", pic.filename)
           end
 
           cg2 =
