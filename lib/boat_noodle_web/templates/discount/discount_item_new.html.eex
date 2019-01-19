@@ -1,440 +1,1416 @@
-<form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
-  <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-  <div class="col-sm-12">
-    <div class="card ">
 
-      <div class="card-header card-header-rose card-header-text">
-        <div class="card-text">
-          <h4 class="card-title">New Discount Item</h4>
-        </div>
-      </div>
-      <div class="card-body">
-
-        <div class="row" style="border-radius: 25px;
-    border: 2px solid #DB7093;
-    padding: 20px; 
-    width: 800px;
-    height: auto; margin-right: auto; margin-left: auto; ">
-
-          <ul>
-            <b>Discount items instructions:</b>
-            <li>The discount item can only target either specific item category or item or none.</li>
-            <li>
-              The calculation of discount amount for each discount type as below:
-              <table id="discTable" border="1">
-                <tbody>
-                  <tr>
-                    <th>Discount Type</th>
-                    <th>Discount Calculation</th>
-                    <th>Example</th>
-                  </tr>
-                  <tr>
-                    <td>CASH</td>
-                    <td>Discount Exact Amount on Total Bill, Discount Quantity is not required.</td>
-                    <td>100.00</td>
-                  </tr>
-                  <tr>
-                    <td>Percentage</td>
-                    <td>Discount Amount Percentage on Subtotal. Discount Quantity is not required</td>
-                    <td>20.00 (20%)</td>
-                  </tr>
-                  <tr>
-                    <td>Voucher</td>
-                    <td>Cash Voucher Discount on Total Bill. Discount Quantity is not required</td>
-                    <td>50.00</td>
-                  </tr>
-                  <tr>
-                    <td>Promo</td>
-                    <td>Discount on Exact Amount based on selected Item Category or Item and specified Discount Quantity (GST Exclusive)</td>
-                    <td>Buy 3 drinks at 16.00 </td>
-                  </tr>
-                  <tr>
-                    <td>Free</td>
-                    <td>Price and amount of selected item or category will void from final receipt.</td>
-                    <td>Free 1 Drink, Free 4 noodles</td>
-                  </tr>
-                  <tr>
-                    <td>Percent</td>
-                    <td>Amount Percentage discount on total bill</td>
-                    <td>30.00 (30%)</td>
-                  </tr>
-                  <tr>
-                    <td>Multi Percent</td>
-                    <td>Discount Amount Percentage on Selected Item</td>
-                    <td>30.00 (30%)</td>
-                  </tr>
-                  <tr>
-                    <td>Multi Value</td>
-                    <td>Discount Exact Amount on Selected Item</td>
-                    <td>50.00</td>
-                  </tr>
-                </tbody>
-              </table>
-            </li>
-          </ul>
-
-        </div>
-        <br>
-        <br>
-
-        <div class="row justify-content-left">
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
-              <input type="text" class="form-control" required="required" name="item[discount_item]">
-            </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="exampleInput1" class="bmd-label-floating">Description</label>
-              <input type="text" class="form-control" name="item[description]" required="required">
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-3">
-            <select class="selectpicker" data-style="btn select-with-transition" onchange="changeFunc();" id="dis_type" name="item[discount_type]" title="Discount Type" data-size="8">
-                                           
-                                             <option value="2" >PERCENTAGE
-                                            </option>
-                                             <option value="3" >VOUCHER
-                                            </option>
-                                             <option value="5" >FREE
-                                            </option>
-                                             <option value="6" >Single Item -Percent
-                                            </option>
-                                             <option value="1" >Single Item -Cash
-                                            </option>
-                                            <option value="7" >Multi Percent
-                                            </option>
-                                            <option value="8" >Multi Value
-                                            </option>
-                                            <option value="9" >Mobile
-                                            </option>
-                                          
-                                        </select>
-                                     
-          </div>
-
-        </div>
-
-        <div class="row justify-content-left">
-          <div class="col-sm-3" id="discount_category">
-            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="dis_cat" name="item[discount_category]" title="Discount Category" data-size="7">
-                                           
-                                           <%= for item <- @discount do %>
-                                             <option value="<%= item.discountid %>" ><%= item.discname %>
-                                            </option>
-                                           
-                                             
-                                          <% end %>
-                                          
-                                        </select>
-          </div>
-          <div class="col-sm-3" id="discount_quantity">
-            <div class="form-group">
-              <label for="exampleInput1" class="bmd-label-floating">Discount Quantity</label>
-              <input type="number" class="form-control" name="item[discount_quantity]">
-            </div>
-          </div>
-          <div class="col-sm-3" id="discount_percentage">
-            <div class="form-group">
-              <label for="exampleInput1" class="bmd-label-floating">Discount Percentage</label>
-              <input type="number" class="form-control" name="item[discount_percentage]">
-            </div>
-          </div>
-          <div class="col-sm-3" id="voucher_amount">
-            <div class="form-group">
-              <label for="exampleInput1" class="bmd-label-floating">Voucher Amount</label>
-              <input type="number" step="0.01" class="form-control" name="item[voucher_amount]">
-            </div>
-          </div>
-          <div class="col-sm-3" id="discount_amount">
-            <div class="form-group">
-              <label for="exampleInput1" class="bmd-label-floating">Discount Amount</label>
-              <input type="number" step="0.01" class="form-control" name="item[discount_amount]">
-            </div>
-          </div>
-          <div class="col-sm-3" id="minimum_spend">
-            <div class="form-group">
-              <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
-              <input type="text" class="form-control" name="item[minimum_spend]">
-            </div>
-          </div>
-
-        </div>
-
-        <div class="row justify-content-left">
-          <div class="col-sm-5" id="target_item">
-            <label>Target Items</label>
-            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
-                                           
-                                           <%= for item <- @item_subcat |> Enum.sort() do %>
-                                             <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
-                                            </option>
-                                           
-                                             
-                                          <% end %>
-                                          
-                                        </select>
-          </div>
-          <input type="hidden" class="form-control" name="item[target_items]">
-          <div class="col-sm-3" id="target_category">
-            <label>Discount Category</label>
-            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="select_target_category" name="item[target_category]" title="Target Category" data-size="7">
-                                           
-                                            <%= for item <- @categories do %>
-                                             <option value="<%= item.id %>" ><%= item.name %>
-                                            </option>
-                                           
-                                             
-                                          <% end %>
-                                          
-                                        </select>
-          </div>
-          <div class="col-sm-4" id="target_item">
-            <label>Pre-requisite Items</label>
-            <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple" title="Pre-requisite Item" name="prerequisite_items[]" data-size="7">
-                                           
-                                           <%= for item <- @item_subcat |> Enum.sort() do %>
-                                             <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
-                                            </option>
-                                           
-                                             
-                                          <% end %>
-                                          
-                                        </select>
-          </div>
-          <input type="hidden" class="form-control" name="item[prerequisite_items]">
-
-        </div>
-
-        <div class="row justify-content-left">
-          <div class="col-sm-3">
-            <div class="form-check form-check-inline">
-              <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" name="item[status]" > Active?
-                            <span class="form-check-sign">
-                              <span class="check"></span>
-                            </span>
-                          </label>
-            </div>
-          </div>
-
-              <div class="col-sm-3">
-            <div class="form-check form-check-inline">
-              <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
-                            <span class="form-check-sign">
-                              <span class="check"></span>
-                            </span>
-                          </label>
-            </div>
-          </div>
-        </div>
-
-
-
-      </div>
-
-      <div class="card-header text-center">
-        <h3 class="card-title">
-          Discount Catalog
-        </h3>
-
-      </div>
-
-      <div class="card-body">
-        <input type="hidden" name="branc[branch]">
-
-        <div class="row">
-
-          <div class="col-sm-6">
-            <div class="card card-stats">
-              <div class="card-header card-header-rose card-header-icon">
-                <div class="card-icon">
-                  <i class="material-icons">equalizer</i>
+<div class="col-md-12">
+              <div class="card ">
+                <div class="card-header ">
+                  <h4 class="card-title">Discount Item -
+                    <small class="description">Create New Discount Item</small>
+                  </h4>
                 </div>
-                <p class="card-category">Discount</p>
-                <h3 class="card-title">Catalog</h3>
-              </div>
-              <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
-                <ol class="item" id="list5">
-                  <%= for carte <- @discount_catalog do %>
-                    <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
-                      <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
-                    <% end %>
-                </ol>
 
-              </div>
-              <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
 
-                    <i class="material-icons">fast_forward</i> Select All
-                  <div class="ripple-container"></div>
-                </button>
-              </div>
-            </div>
-          </div>
+                <div class="card-body ">
+                  <div class="row">
+                    <div class="col-md-2">
 
-          <div class="col-sm-6">
-            <div class="card card-stats">
-              <div class="card-header card-header-info card-header-icon">
-                <div class="card-icon">
-                  <i class="material-icons">equalizer</i>
+                      <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
+
+                        <li class="nav-item">
+                          <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                            PERCENTAGE
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                            VOUCHER
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
+                            FREE
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
+                            Single Item -Percent
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" href="#link5" role="tablist">
+                            Single Item -Cash
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" href="#link6" role="tablist">
+                            Multi Percent
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" href="#link7" role="tablist">
+                            Multi Value
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" data-toggle="tab" href="#link8" role="tablist">
+                            Mobile
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="col-md-10">
+                      <div class="tab-content">
+                        <div class="tab-pane active" id="link1">
+                           <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="2">
+                              <div class="col-sm-3" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Percentage</label>
+                                  <input type="number" class="form-control" name="item[discount_percentage]">
+                                </div>
+                              </div>
+
+                              <div class="col-sm-3" id="minimum_spend">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
+                                  <input type="number" class="form-control" name="item[minimum_spend]">
+                                </div>
+                              </div>
+                            </div>
+
+                                <div class="row ">
+
+                                    <div class="col-sm-6" id="discount_category">
+                                       <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Discount Category</label>
+                                      <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  data-size="7">
+                                                                   
+                                                                   <%= for item <- @discount do %>
+                                                                     <option value="<%= item.discountid %>" ><%= item.discname %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                    </div>
+
+        
+
+       
+                                      <div class="col-sm-6" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                        <input type="hidden" class="form-control" name="item[prerequisite_items]">
+                                </div>
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list5">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list6">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+
+                                </form>
+                        </div>
+                        <div class="tab-pane " id="link2">
+                            <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="3">
+                              <div class="col-sm-3" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Voucher Amount</label>
+                                  <input type="number" class="form-control" name="item[voucher_amount]">
+                                </div>
+                              </div>
+
+                              <div class="col-sm-3" id="minimum_spend">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
+                                  <input type="number" class="form-control" name="item[minimum_spend]">
+                                </div>
+                              </div>
+                            </div>
+
+                                <div class="row ">
+
+                                    <div class="col-sm-6" id="discount_category">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Discount Category</label>
+                                      <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  data-size="7">
+                                                                   
+                                                                   <%= for item <- @discount do %>
+                                                                     <option value="<%= item.discountid %>" ><%= item.discname %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                    </div>
+
+        
+
+       
+                                      <div class="col-sm-6" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                        <input type="hidden" class="form-control" name="item[prerequisite_items]">
+                                </div>
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list51">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list61">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                </form>
+                        </div>
+                        <div class="tab-pane " id="link3">
+                          <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="5">
+                              <div class="col-sm-3" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Quantity</label>
+                                  <input type="number" class="form-control" name="item[discount_quantity]">
+                                </div>
+                              </div>
+
+                              <div class="col-sm-3" id="minimum_spend">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
+                                  <input type="number" class="form-control" name="item[minimum_spend]">
+                                </div>
+                              </div>
+                            </div>
+
+                                <div class="row ">
+
+                                    <div class="col-sm-6" id="discount_category">
+                                        <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Discount Category</label>
+                                      <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  data-size="7">
+                                                                   
+                                                                   <%= for item <- @discount do %>
+                                                                     <option value="<%= item.discountid %>" ><%= item.discname %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                    </div>
+
+        
+
+       
+                                      <div class="col-sm-6" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                        <input type="hidden" class="form-control" name="item[prerequisite_items]">
+                                </div>
+
+                                 <div class="row justify-content-left">
+                                  <div class="col-sm-6" id="target_item">
+                                      <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Items</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
+                                                                   
+                                                                   <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                     <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+                                  <input type="hidden" class="form-control" name="item[target_items]">
+                                  <div class="col-sm-6" id="target_category">
+                                      <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Category</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="select_target_category" name="item[target_category]" title="Target Category" data-size="7">
+                                                                   
+                                                                    <%= for item <- @categories do %>
+                                                                     <option value="<%= item.id %>" ><%= item.name %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+                           
+
+                                </div>
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list52">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list62">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+                              </form>
+                        </div>
+                        <div class="tab-pane " id="link4">
+                           <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="6">
+                              <div class="col-sm-3" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Percentage</label>
+                                  <input type="number" class="form-control" name="item[discount_percentage]">
+                                </div>
+                              </div>
+
+                              <div class="col-sm-3" id="minimum_spend">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
+                                  <input type="number" class="form-control" name="item[minimum_spend]">
+                                </div>
+                              </div>
+                            </div>
+
+                             <div class="row justify-content-left">
+                                  <div class="col-sm-4" id="target_item">
+                                     <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Items</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
+                                                                   
+                                                                   <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                     <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+                                  <input type="hidden" class="form-control" name="item[target_items]">
+                                  <div class="col-sm-4" id="target_category">
+                                    <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Category</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="select_target_category" name="item[target_category]" title="Target Category" data-size="6">
+                                                                   
+                                                                    <%= for item <- @categories do %>
+                                                                     <option value="<%= item.id %>" ><%= item.name %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+
+                                    <div class="col-sm-4" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                      <input type="hidden" class="form-control" name="item[prerequisite_items]">
+
+                                </div>
+
+          
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list53">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list63">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                </form>
+                        </div>
+                        <div class="tab-pane " id="link5">
+                           <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-3">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="1">
+                              <div class="col-sm-3" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Amount</label>
+                                  <input type="number" class="form-control" name="item[discount_amount]">
+                                </div>
+                              </div>
+
+                              <div class="col-sm-3" id="minimum_spend">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Minimum Spend</label>
+                                  <input type="number" class="form-control" name="item[minimum_spend]">
+                                </div>
+                              </div>
+                            </div>
+
+                             <div class="row justify-content-left">
+                                  <div class="col-sm-4" id="target_item">
+                                     <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Items</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
+                                                                   
+                                                                   <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                     <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+                                  <input type="hidden" class="form-control" name="item[target_items]">
+                                  <div class="col-sm-4" id="target_category">
+                                     <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Category</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="select_target_category" name="item[target_category]" title="Target Category" data-size="7">
+                                                                   
+                                                                    <%= for item <- @categories do %>
+                                                                     <option value="<%= item.id %>" ><%= item.name %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+
+                                    <div class="col-sm-4" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                      <input type="hidden" class="form-control" name="item[prerequisite_items]">
+
+                                </div>
+
+          
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list54">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list64">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+                          </form>
+                        </div>
+                        <div class="tab-pane " id="link6">
+                           <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-4">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-4">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="7">
+                              <div class="col-sm-4" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Percentage</label>
+                                  <input type="number" class="form-control" name="item[discount_percentage]">
+                                </div>
+                              </div>
+
+            
+                            </div>
+
+                                <div class="row ">
+
+                                    <div class="col-sm-4" id="discount_category">
+                                        <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Discount Category</label>
+                                      <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  data-size="7">
+                                                                   
+                                                                   <%= for item <- @discount do %>
+                                                                     <option value="<%= item.discountid %>" ><%= item.discname %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                    </div>
+
+                                    <div class="col-sm-4" id="target_item">
+                                     <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Items</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
+                                                                   
+                                                                   <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                     <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+
+        
+
+       
+                                      <div class="col-sm-4" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                        <input type="hidden" class="form-control" name="item[prerequisite_items]">
+                                </div>
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list55">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list65">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+                          </form>
+                        </div>
+                        <div class="tab-pane " id="link7">
+                          <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-4">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-4">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="8">
+                              <div class="col-sm-4" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Amount</label>
+                                  <input type="number" class="form-control" name="item[discount_amount]">
+                                </div>
+                              </div>
+
+            
+                            </div>
+
+                                <div class="row ">
+
+                                    <div class="col-sm-4" id="discount_category">
+                                        <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Discount Category</label>
+                                      <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  data-size="7">
+                                                                   
+                                                                   <%= for item <- @discount do %>
+                                                                     <option value="<%= item.discountid %>" ><%= item.discname %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                    </div>
+
+                                    <div class="col-sm-4" id="target_item">
+                                     <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Items</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
+                                                                   
+                                                                   <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                     <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+
+        
+
+       
+                                      <div class="col-sm-4" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                        <input type="hidden" class="form-control" name="item[prerequisite_items]">
+                                </div>
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list56">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list66">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+                            </form>      
+                        </div>
+                        <div class="tab-pane " id="link8">
+                          <form method="post" action="/<%= @conn.params["brand"] %>/create_discount_item_new" class="form-horizontal" aria-label="item_form">
+                             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                            <div class="row ">
+                              <div class="col-sm-4">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Item Name</label>
+                                  <input type="text" class="form-control" required="required" name="item[discount_item]">
+                                </div>
+                              </div>
+                              <div class="col-sm-4">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Description</label>
+                                  <input type="text" class="form-control" name="item[description]" required="required">
+                                </div>
+                              </div>
+                                 <input type="hidden" class="form-control" name="item[discount_type]" value="9">
+                              <div class="col-sm-4" id="discount_percentage">
+                                <div class="form-group">
+                                  <label for="exampleInput1" class="bmd-label-floating">Discount Amount</label>
+                                  <input type="number" class="form-control" name="item[discount_amount]">
+                                </div>
+                              </div>
+
+            
+                            </div>
+
+                                <div class="row ">
+
+                                    <div class="col-sm-4" id="discount_category">
+                                        <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Discount Category</label>
+                                      <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_category();" id="dis_cat" name="item[discount_category]"  data-size="7">
+                                                                   
+                                                                   <%= for item <- @discount do %>
+                                                                     <option value="<%= item.discountid %>" ><%= item.discname %>
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                    </div>
+
+                                    <div class="col-sm-4" id="target_item">
+                                     <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Target Items</label>
+                                    <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="target_items" multiple="multiple" title="Target Item" name="target_items[]" data-size="7">
+                                                                   
+                                                                   <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                     <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                    </option>
+                                                                   
+                                                                     
+                                                                  <% end %>
+                                                                  
+                                                                </select>
+                                  </div>
+
+        
+
+       
+                                      <div class="col-sm-4" id="target_item">
+                                         <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 5px;position: absolute;">Pre-requisite Items</label>
+                                          <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" id="prerequisite_items" multiple="multiple"  name="prerequisite_items[]" data-size="7">
+                                                                     
+                                                                     <%= for item <- @item_subcat |> Enum.sort() do %>
+                                                                       <option value="<%= item.subcatid %>" ><%= item.itemname %>(Code: <%= item.price_code %>)(Price: <%= item.itemprice%>)
+                                                                      </option>
+                                                                     
+                                                                       
+                                                                    <% end %>
+                                                                    
+                                                                  </select>
+                                      </div>
+                                        <input type="hidden" class="form-control" name="item[prerequisite_items]">
+                                </div>
+
+                                <div class="row justify-content-left">
+                                  <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                      <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" name="item[status]" > Active?
+                                                    <span class="form-check-sign">
+                                                      <span class="check"></span>
+                                                    </span>
+                                                  </label>
+                                    </div>
+                                  </div>
+
+                                    <div class="col-sm-3">
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                                  <input class="form-check-input" type="checkbox" name="item[is_force_apply]" > Is Force Apply?
+                                                  <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                  </span>
+                                                </label>
+                                  </div>
+                                  </div>
+                                </div>
+
+                                <div class="card-body">
+                                          <input type="hidden" name="branc[branch]">
+                                      <div class="row">
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-rose card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">Discount</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" id="list57">
+                                                <%= for carte <- @discount_catalog do %>
+                                                  <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>">
+                                                    <%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                                  <% end %>
+                                              </ol>
+
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                                                  <i class="material-icons">fast_forward</i> Select All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                          <div class="card card-stats">
+                                            <div class="card-header card-header-info card-header-icon">
+                                              <div class="card-icon">
+                                                <i class="material-icons">equalizer</i>
+                                              </div>
+                                              <p class="card-category">To be included in catalog</p>
+                                              <h3 class="card-title">Catalog</h3>
+                                            </div>
+                                            <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                                              <ol class="item" style="height: 300px; min-width: 300px;" id="list67">
+                                              </ol>
+                                            </div>
+                                            <div class="card-footer">
+                                              <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                                                  <i class="material-icons">fast_rewind</i> Unselect All
+                                                <div class="ripple-container"></div>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="mr-auto">
+                                      <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
+                                    </div>
+                                    <div class="ml-auto">
+                                      <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                  </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <p class="card-category">To be included in catalog</p>
-                <h3 class="card-title">Catalog</h3>
-              </div>
-              <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
-                <ol class="item" style="height: 300px; min-width: 300px;" id="list6">
-                </ol>
-              </div>
-              <div class="card-footer">
-                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
-
-                    <i class="material-icons">fast_rewind</i> Unselect All
-                  <div class="ripple-container"></div>
-                </button>
               </div>
             </div>
-          </div>
-        </div>
-
-      </div>
-      <div class="card-footer">
-        <div class="mr-auto">
-          <%#   <a class="btn btn-previous btn-fill btn-default btn-wd" name="previous_item" value="Back" type="button"> %>
-        </div>
-        <div class="ml-auto">
-          <input class="btn btn-next btn-fill btn-rose btn-wd" name="" value="Create" type="submit">
-
-        </div>
-        <div class="clearfix"></div>
-      </div>
-
-    </div>
-  </div>
-  </div>
-</form>
-
-
-
-<script type="text/javascript">
-
-    $('select[name="target_items[]"]').on('hidden.bs.select', function(e) {
-      var multiselect = $('#target_items').val();
-      $("input[name='item[target_items]']").val(multiselect);
-    });
-
-
-    $('select[name="prerequisite_items[]"]').on('hidden.bs.select', function(e) {
-      var multiselect2 = $('#prerequisite_items').val();
-      $("input[name='item[prerequisite_items]']").val(multiselect2);
-    });
-
-
-
-  $("#discount_category").hide();
-  $("#discount_percentage").hide();
-  $("#discount_quantity").hide();
-  $("#target_category").hide();
-  $("#target_item").hide();
-  $("#minimum_spend").hide();
-  $("#voucher_amount").hide();
-  $("#discount_amount").hide();
-
-  function changeFunc() {
-    var selectBox = document.getElementById("dis_type");
-    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-    if (selectedValue == 5) {
-      $("#discount_category").show();
-      $("#discount_quantity").show();
-      $("#target_category").show();
-      $("#target_item").show();
-      $("#minimum_spend").show();
-      $("#voucher_amount").hide();
-      $("#discount_percentage").hide();
-      $("#discount_amount").hide();
-    }
-    if (selectedValue == 2) {
-      $("#discount_percentage").show();
-      $("#discount_category").show();
-      $("#minimum_spend").show();
-      $("#voucher_amount").hide();
-      $("#target_item").hide();
-      $("#target_category").hide();
-      $("#discount_quantity").hide();
-      $("#discount_amount").hide();
-    }
-    if (selectedValue == 3) {
-      $("#voucher_amount").show();
-      $("#discount_category").show();
-      $("#minimum_spend").show();
-      $("#discount_percentage").hide();
-      $("#target_item").hide();
-      $("#target_category").hide();
-      $("#discount_quantity").hide();
-      $("#discount_amount").hide();
-    }
-    if (selectedValue == 6) {
-      $("#minimum_spend").show();
-      $("#target_item").show();
-      $("#target_category").show();
-      $("#discount_percentage").show();
-      $("#discount_quantity").hide();
-      $("#voucher_amount").hide();
-      $("#discount_category").hide();
-      $("#discount_amount").hide();
-    }
-    if (selectedValue == 1) {
-      $("#minimum_spend").show();
-      $("#target_item").show();
-      $("#target_category").show();
-      $("#discount_amount").show();
-      $("#discount_quantity").hide();
-      $("#discount_percentage").hide();
-      $("#voucher_amount").hide();
-      $("#discount_category").hide();
-    }
-    if (selectedValue == 4) {
-      $("#discount_category").hide();
-      $("#discount_percentage").hide();
-      $("#discount_quantity").hide();
-      $("#target_category").hide();
-      $("#target_item").hide();
-      $("#minimum_spend").hide();
-      $("#voucher_amount").hide();
-      $("#discount_amount").hide();
-    }
-
-        if (selectedValue == 7) {
-      $("#discount_category").show();
-      $("#discount_percentage").show();
-      $("#discount_quantity").hide();
-      $("#target_category").hide();
-      $("#target_item").show();
-      $("#minimum_spend").hide();
-      $("#voucher_amount").hide();
-      $("#discount_amount").hide();
-    }
-        if (selectedValue == 8) {
-      $("#discount_category").show();
-      $("#discount_percentage").hide();
-      $("#discount_quantity").hide();
-      $("#target_category").hide();
-      $("#target_item").show();
-      $("#minimum_spend").hide();
-      $("#voucher_amount").hide();
-      $("#discount_amount").show();
-    }
-            if (selectedValue == 9) {
-      $("#discount_category").show();
-      $("#discount_percentage").hide();
-      $("#discount_quantity").hide();
-      $("#target_category").hide();
-      $("#target_item").show();
-      $("#minimum_spend").show();
-      $("#voucher_amount").hide();
-      $("#discount_amount").show();
-    }
-  }
-</script>

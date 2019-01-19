@@ -1,0 +1,5 @@
+
+
+<%= render "form.html", Map.put(assigns, :action, subcat_catalog_path(@conn, :update, BN.get_domain(@conn), @subcat_catalog.id)) %>
+
+

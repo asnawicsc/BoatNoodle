@@ -1,0 +1,30 @@
+<h2>Show Subcat catalog</h2>
+
+<ul>
+
+  <li>
+    <strong>Subcat:</strong>
+    <%= @subcat_catalog.subcat_id %>
+  </li>
+
+  <li>
+    <strong>Catalog:</strong>
+    <%= @subcat_catalog.catalog_id %>
+  </li>
+
+  <li>
+    <strong>Start date:</strong>
+    <%= @subcat_catalog.start_date %>
+  </li>
+
+  <li>
+    <strong>End date:</strong>
+    <%= @subcat_catalog.end_date %>
+  </li>
+
+  <li>
+    <strong>Price:</strong>
+    <%= @subcat_catalog.price %>
+  </li>
+
+</ul>

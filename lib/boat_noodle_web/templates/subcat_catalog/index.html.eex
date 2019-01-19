@@ -1,0 +1,30 @@
+<h2>Listing Subcat catalog</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Subcat</th>
+      <th>Catalog</th>
+      <th>Start date</th>
+      <th>End date</th>
+      <th>Price</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for subcat_catalog <- @subcat_catalog do %>
+    <tr>
+      <td><%= subcat_catalog.subcat_id %></td>
+      <td><%= subcat_catalog.catalog_id %></td>
+      <td><%= subcat_catalog.start_date %></td>
+      <td><%= subcat_catalog.end_date %></td>
+      <td><%= subcat_catalog.price %></td>
+
+    
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+

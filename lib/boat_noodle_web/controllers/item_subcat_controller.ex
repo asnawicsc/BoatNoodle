@@ -5,6 +5,243 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   alias BoatNoodle.BN.{MenuItem, Discount, ItemSubcat, ComboDetails, Branch, ItemCat, Tag}
   require IEx
 
+  def combo_price_list(conn, params) do
+    id1 = params["subcatid"]
+
+    subcat =
+      Repo.get_by(BoatNoodle.BN.ItemSubcat, %{
+        subcatid: id1,
+        brand_id: BN.get_brand_id(conn)
+      })
+
+    combo =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.ComboDetails,
+          where: s.combo_id == ^id1 and s.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+      |> Enum.sort_by(fn x -> x.menu_cat_id end)
+
+    item_subcat =
+      Repo.get_by(ItemSubcat, subcatid: params["subcatid"], brand_id: BN.get_brand_id(conn))
+
+    price_list =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          where: s.subcat_id == ^params["subcatid"],
+          order_by: [asc: s.start_date]
+        )
+      )
+
+    render(conn, "combo_price_list.html",
+      price_list: price_list,
+      item_subcat: item_subcat,
+      subcat: subcat,
+      combo: combo
+    )
+  end
+
+  def new_combo_price_list(conn, params) do
+    item_subcat =
+      Repo.get_by(BoatNoodle.BN.ItemSubcat, %{
+        subcatid: params["subcat_id"],
+        brand_id: BN.get_brand_id(conn)
+      })
+
+    combo =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.ComboDetails,
+          where: s.combo_id == ^params["subcat_id"] and s.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+      |> Enum.sort_by(fn x -> x.menu_cat_id end)
+
+    render(conn, "new_combo_price_list.html", combo: combo, item_subcat: item_subcat)
+  end
+
+  def create_combo_price_list(conn, params) do
+    prev_id =
+      Repo.all(from(c in BoatNoodle.BN.SubcatCatalog, select: %{id: c.id}))
+      |> Enum.sort()
+      |> List.last()
+
+    new_id =
+      if prev_id == nil do
+        1
+      else
+        prev_id.id + 1
+      end
+
+    is_active =
+      if params["is_active"] == nil do
+        0
+      else
+        1
+      end
+
+    subcat_catalog_params = %{
+      id: new_id,
+      subcat_id: params["subcat_id"],
+      start_date: params["start_date"],
+      end_date: params["end_date"],
+      brand_id: BN.get_brand_id(conn),
+      price: params["price"],
+      is_active: is_active,
+      is_combo: 1
+    }
+
+    price_list_exist =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          where:
+            s.subcat_id == ^params["subcat_id"] and s.start_date >= ^params["start_date"] and
+              s.start_date <= ^params["end_date"]
+        )
+      )
+
+    if price_list_exist != [] do
+      conn
+      |> put_flash(
+        :info,
+        "This Date Range alrdy Exist, Please Edit Existing Combo Price List/ Select Another Date Range"
+      )
+      |> redirect(to: menu_item_path(conn, :combos, BN.get_domain(conn)))
+    else
+      sub_combo = params["combo"]
+
+      for item <- sub_combo do
+        combo_id = item |> elem(0)
+        cost = item |> elem(1)
+
+        price = cost["price"]
+        to_up = cost["top_up"]
+
+        c_id =
+          Repo.all(from(c in BoatNoodle.BN.ComboCatalog, select: %{id: c.id}))
+          |> Enum.sort()
+          |> List.last()
+
+        c_id =
+          if c_id == nil do
+            1
+          else
+            c_id.id + 1
+          end
+
+        subcat_combo_params = %{
+          id: c_id,
+          subcat_id: params["subcat_id"],
+          combo_item_id: combo_id,
+          start_date: params["start_date"],
+          end_date: params["end_date"],
+          brand_id: BN.get_brand_id(conn),
+          price: price,
+          to_up: to_up,
+          is_active: is_active
+        }
+
+        BN.create_combo_catalog(subcat_combo_params)
+      end
+
+      BN.create_subcat_catalog(subcat_catalog_params)
+
+      conn
+      |> put_flash(:info, "Combo Price List created successfully.")
+      |> redirect(to: menu_item_path(conn, :combos, BN.get_domain(conn)))
+    end
+  end
+
+  def edit_combo_price_list(conn, params) do
+    item_subcat =
+      Repo.get_by(BoatNoodle.BN.SubcatCatalog, %{
+        subcat_id: params["subcat_id"],
+        brand_id: BN.get_brand_id(conn),
+        start_date: params["start_date"],
+        end_date: params["end_date"]
+      })
+
+    subcat =
+      Repo.get_by(BoatNoodle.BN.ItemSubcat, %{
+        subcatid: params["subcat_id"],
+        brand_id: BN.get_brand_id(conn)
+      })
+
+    combo =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.ComboCatalog,
+          where:
+            s.subcat_id == ^params["subcat_id"] and s.start_date == ^params["start_date"] and
+              s.end_date == ^params["end_date"] and s.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+
+    render(conn, "edit_combo_price_list.html",
+      subcat: subcat,
+      combo: combo,
+      item_subcat: item_subcat
+    )
+  end
+
+  def update_combo_price_list(conn, params) do
+    item_subcat =
+      Repo.get_by(BoatNoodle.BN.SubcatCatalog, %{
+        subcat_id: String.to_integer(params["subcat_id"]),
+        brand_id: BN.get_brand_id(conn),
+        start_date: params["old_start_date"],
+        end_date: params["old_end_date"]
+      })
+
+    is_active =
+      if params["is_active"] == nil do
+        0
+      else
+        1
+      end
+
+    sub_combo = params["combo"]
+
+    subcat_catalog_params = %{
+      price: params["price"],
+      is_active: is_active
+    }
+
+    for item <- sub_combo do
+      combo_id = item |> elem(0)
+      cost = item |> elem(1)
+
+      price = cost["price"]
+      to_up = cost["top_up"]
+
+      subcat_combo_params = %{
+        price: price,
+        to_up: to_up,
+        is_active: is_active
+      }
+
+      sub =
+        Repo.get_by(BoatNoodle.BN.ComboCatalog, %{
+          subcat_id: String.to_integer(params["subcat_id"]),
+          brand_id: BN.get_brand_id(conn),
+          combo_item_id: String.to_integer(combo_id),
+          start_date: params["old_start_date"],
+          end_date: params["old_end_date"]
+        })
+
+      BoatNoodle.BN.update_combo_catalog(sub, subcat_combo_params)
+    end
+
+    BoatNoodle.BN.update_subcat_catalog(item_subcat, subcat_catalog_params)
+
+    conn
+    |> put_flash(:info, "Combo Price List updated successfully.")
+    |> redirect(to: menu_item_path(conn, :combos, BN.get_domain(conn)))
+  end
+
   def combo_date_prices(conn, params) do
     item_subcat_id = params["subcatid"]
 
@@ -41,13 +278,15 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     s_date = params["start_date"] |> Date.from_iso8601!()
 
     check_start_date_clash =
-      list_of_date_ranges |> Enum.map(fn x -> Enum.any?(x, fn y -> y == s_date end) end)
+      list_of_date_ranges
+      |> Enum.map(fn x -> Enum.any?(x, fn y -> y == s_date end) end)
       |> Enum.any?(fn x -> x == true end)
 
     e_date = params["end_date"] |> Date.from_iso8601!()
 
     check_start_end_clash =
-      list_of_date_ranges |> Enum.map(fn x -> Enum.any?(x, fn y -> y == e_date end) end)
+      list_of_date_ranges
+      |> Enum.map(fn x -> Enum.any?(x, fn y -> y == e_date end) end)
       |> Enum.any?(fn x -> x == true end)
 
     if check_start_date_clash == true and check_start_end_clash == true do
@@ -150,13 +389,15 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     s_date = params["start_date"] |> Date.from_iso8601!()
 
     check_start_date_clash =
-      list_of_date_ranges |> Enum.map(fn x -> Enum.any?(x, fn y -> y == s_date end) end)
+      list_of_date_ranges
+      |> Enum.map(fn x -> Enum.any?(x, fn y -> y == s_date end) end)
       |> Enum.any?(fn x -> x == true end)
 
     e_date = params["end_date"] |> Date.from_iso8601!()
 
     check_start_end_clash =
-      list_of_date_ranges |> Enum.map(fn x -> Enum.any?(x, fn y -> y == e_date end) end)
+      list_of_date_ranges
+      |> Enum.map(fn x -> Enum.any?(x, fn y -> y == e_date end) end)
       |> Enum.any?(fn x -> x == true end)
 
     if check_start_date_clash == true and check_start_end_clash == true do
@@ -746,7 +987,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
     prev_subcatid =
       Repo.all(from(c in ItemSubcat, select: %{subcatid: c.subcatid}))
       |> Enum.map(fn x -> Integer.to_string(x.subcatid) end)
-      |> Enum.filter(fn x -> String.length(x) == 6 end)
       |> Enum.sort()
       |> List.last()
 
@@ -772,6 +1012,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       itemdesc: item_desc,
       itemprice: total_price,
       brand_id: brand_id,
+      is_combo: 1,
       is_default_combo: is_default_combo,
       is_activate: is_activate,
       enable_disc: enable_discount,
@@ -936,11 +1177,13 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
       case Repo.insert(create_combo_details) do
         {:ok, combo_details} ->
-          combo_details =
-            Repo.get_by(
-              ComboDetails,
-              combo_item_id: combo_details.combo_item_id,
-              brand_id: BN.get_brand_id(conn)
+          combo_d =
+            Repo.get_by(ComboDetails,
+              combo_item_id: combo_item_id,
+              combo_id: combo_id,
+              combo_item_code: item_coded,
+              brand_id: BN.get_brand_id(conn),
+              menu_cat_id: menu_cat_id
             )
 
           a = params["branc"]
@@ -953,7 +1196,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
             combo_items = catalog.combo_items
             comb = combo_items |> String.split(",") |> Enum.uniq()
 
-            combo_id = combo_details.id |> Integer.to_string()
+            combo_id = combo_d.id |> Integer.to_string()
 
             all_combo_items = List.insert_at(comb, 0, combo_id)
 
@@ -1109,7 +1352,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
   defp get_item_subcat(brand_id) do
     item_subcat =
-      BN.list_item_subcat() |> Enum.filter(fn x -> x.brand_id == brand_id end)
+      BN.list_item_subcat()
+      |> Enum.filter(fn x -> x.brand_id == brand_id end)
       |> Enum.filter(fn x -> x.subcatid < 10000 end)
 
     subcat =
@@ -1288,7 +1532,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
           old_list = Enum.map(old_combo_items, fn x -> x.id end)
 
           new_list =
-            (menu_cat_combo_items ++ (list -- old_list)) |> Enum.join(",")
+            (menu_cat_combo_items ++ (list -- old_list))
+            |> Enum.join(",")
             |> String.trim_trailing(",")
 
           params = %{combo_items: new_list}
@@ -1361,7 +1606,9 @@ defmodule BoatNoodleWeb.ItemSubcatController do
             list = printer.combo_item_ids |> String.split(",") |> Enum.uniq()
 
             new_list =
-              List.insert_at(list, 0, combo_item.combo_item_id) |> Enum.join(",") |> Enum.sort()
+              List.insert_at(list, 0, combo_item.combo_item_id)
+              |> Enum.join(",")
+              |> Enum.sort()
               |> String.trim_trailing(",")
 
             update_tag =

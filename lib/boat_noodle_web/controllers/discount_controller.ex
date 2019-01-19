@@ -518,7 +518,7 @@ defmodule BoatNoodleWeb.DiscountController do
     item = params["item"]
 
     discountid =
-      if item["discount_category"] == "" do
+      if item["discount_category"] == "" or item["discount_category"] == nil do
         0
       else
         item["discount_category"] |> String.to_integer()
@@ -529,13 +529,19 @@ defmodule BoatNoodleWeb.DiscountController do
     discitemsname = item["discount_item"]
     discount_percentage = item["discount_percentage"]
 
-    disc_qty = item["discount_quantity"]
+    disc_qty =
+      if item["discount_quantity"] == nil or item["discount_quantity"] == "" do
+        0
+      else
+        item["discount_quantity"]
+      end
+
     type = item["discount_type"] |> String.to_integer()
     all_disc_type = Repo.get_by(DiscountType, disctypeid: type)
     disc_type = all_disc_type.disctypename
 
     target_cat =
-      if item["target_category"] == "" do
+      if item["target_category"] == nil or item["target_category"] == "" do
         0
       else
         item["target_category"] |> String.to_integer()
@@ -572,30 +578,30 @@ defmodule BoatNoodleWeb.DiscountController do
       end
 
     {is_targetmenuitems, multi_item_list} =
-      if item["target_items"] == "" do
+      if params["target_items"] == nil or params["target_items"] == "" do
         {is_targetmenuitems = 0, multi_item_list = ""}
       else
-        count = item["target_items"] |> String.split(",") |> Enum.count()
+        count = params["target_items"] |> Enum.count()
 
         {is_targetmenuitems, multi_item_list} =
           if count > 1 do
             is_targetmenuitems = 0
-            multi_item_list = item["target_items"]
+            multi_item_list = Enum.join(params["target_items"], ",")
             {is_targetmenuitems, multi_item_list}
           else
             multi_item_list = ""
-            is_targetmenuitems = item["target_items"] |> String.to_integer()
+            is_targetmenuitems = params["target_items"] |> hd
             {is_targetmenuitems, multi_item_list}
           end
       end
 
-    count2 = item["prerequisite_items"] |> String.split(",") |> Enum.count()
+    count2 = params["prerequisite_items"] |> Enum.count()
 
     pre_req_item =
       if count2 > 1 do
-        item["prerequisite_items"]
+        Enum.join(params["prerequisite_items"], ",")
       else
-        ""
+        params["prerequisite_items"] |> hd
       end
 
     is_visable =
@@ -651,8 +657,7 @@ defmodule BoatNoodleWeb.DiscountController do
     case BoatNoodle.Repo.insert(discount_item) do
       {:ok, discountitem} ->
         discountitem =
-          Repo.get_by(
-            DiscountItem,
+          Repo.get_by(DiscountItem,
             discountid: discountid,
             discitemsname: discitemsname,
             descriptions: descriptions

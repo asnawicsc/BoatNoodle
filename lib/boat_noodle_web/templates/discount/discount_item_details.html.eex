@@ -25,7 +25,7 @@
               <input type="text" class="form-control" value="<%= @discount_a.descriptions %>" name="descriptions" required="required">
             </div>
           </div>
-          <div class="col-lg-4 col-md-6 col-sm-3">
+          <div class="col-lg-3 col-md-6 col-sm-3">
            <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Discount Type</label>
             <select class="selectpicker" data-style="btn select-with-transition" disabled="" onchange="changeFunc();" id="dis_type" value="<%= @discount_a.disctypeid %>" name="disctype" data-size="7">
 
@@ -46,6 +46,8 @@
                                             <option value="7"<%=if @discount_a.disctypeid == 7 do selected="selected" else "" end %> >Multi Percent
                                             </option>
                                             <option value="8"<%=if @discount_a.disctypeid == 8 do selected="selected" else "" end %> >Multi Value
+                                            </option>
+                                             <option value="9"<%=if @discount_a.disctypeid == 9 do selected="selected" else "" end %> >Mobile
                                             </option>
 
                                        </select>
@@ -157,7 +159,7 @@
                                         </select>
 
           </div>
-          <div class="col-sm-4" id="target_item">
+          <div class="col-sm-6" id="target_item">
             <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Pre-requisite Items</label>
             <select class="selectpicker" data-style="btn select-with-transition" onchange="select_target_item();" value="<%= @discount_a.pre_req_item %>" multiple="multiple" id="target_item3" name="pre_req_item[]" data-size="7">
 
@@ -386,6 +388,17 @@
       $("#voucher_amount").hide();
       $("#discount_amount").show();
     }
+
+          if (selectedValue == 9) {
+      $("#discount_category").show();
+      $("#discount_percentage").hide();
+      $("#discount_quantity").hide();
+      $("#target_category").hide();
+      $("#target_item").show();
+      $("#minimum_spend").hide();
+      $("#voucher_amount").hide();
+      $("#discount_amount").show();
+    }
   var checkedValue = $('.checkbox:checked').val();
   $("input[name='is_visable'").attr("value", checkedValue)
 
@@ -463,6 +476,17 @@
       $("#discount_amount").hide();
     }
         if (selectedValue == 8) {
+      $("#discount_category").show();
+      $("#discount_percentage").hide();
+      $("#discount_quantity").hide();
+      $("#target_category").hide();
+      $("#target_item").show();
+      $("#minimum_spend").hide();
+      $("#voucher_amount").hide();
+      $("#discount_amount").show();
+    }
+
+    if (selectedValue == 9) {
       $("#discount_category").show();
       $("#discount_percentage").hide();
       $("#discount_quantity").hide();

@@ -261,6 +261,119 @@ $("div.jumbotron").html("")
     $("ol#list5").append(this)
   })
 
+  $("ol#list51").on("click", "li", function(){
+
+    $("ol#list61").append(this)
+    var list_ids = [] 
+    $("ol#list61 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list61").on("click", "li", function(){
+
+    $("ol#list51").append(this)
+  })
+
+  $("ol#list52").on("click", "li", function(){
+
+    $("ol#list62").append(this)
+    var list_ids = [] 
+    $("ol#list62 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list62").on("click", "li", function(){
+
+    $("ol#list52").append(this)
+  })
+
+   $("ol#list53").on("click", "li", function(){
+
+    $("ol#list63").append(this)
+    var list_ids = [] 
+    $("ol#list63 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list63").on("click", "li", function(){
+
+    $("ol#list53").append(this)
+  })
+
+   $("ol#list54").on("click", "li", function(){
+
+    $("ol#list64").append(this)
+    var list_ids = [] 
+    $("ol#list64 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list64").on("click", "li", function(){
+
+    $("ol#list54").append(this)
+  })
+
+   $("ol#list55").on("click", "li", function(){
+
+    $("ol#list65").append(this)
+    var list_ids = [] 
+    $("ol#list65 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list65").on("click", "li", function(){
+
+    $("ol#list55").append(this)
+  })
+
+
+ $("ol#list56").on("click", "li", function(){
+
+    $("ol#list66").append(this)
+    var list_ids = [] 
+    $("ol#list66 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list66").on("click", "li", function(){
+
+    $("ol#list56").append(this)
+  })
+
+   $("ol#list57").on("click", "li", function(){
+
+    $("ol#list67").append(this)
+    var list_ids = [] 
+    $("ol#list67 li").each(function(){
+    var id = $(this).attr("id")
+      list_ids.push(id)
+    })
+    $("input[name='branc[branch]']").val(list_ids)
+  })
+
+  $("ol#list67").on("click", "li", function(){
+
+    $("ol#list57").append(this)
+  })
+
 
    $("ol#edit1").on("click", "li", function(){
 

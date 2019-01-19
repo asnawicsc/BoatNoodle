@@ -1,0 +1,35 @@
+ <div class="col-md-12">
+              <div class="card ">
+                <div class="card-header card-header-rose card-header-icon">
+                  <div class="card-icon">
+                    <i class="material-icons">assignment</i>
+                  </div>
+                  <h4 class="card-title">New Price List- <%= @item_subcat.itemname %></h4>
+                </div>
+                <div class="card-body ">
+                  <form method="post" action="/<%= @conn.params["brand"] %>/create_price_list">
+                  	 <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+                  	  <input type="hidden" name="subcat_id" value="<%= @item_subcat.subcatid %>">
+                    <div class="form-group">
+                      <label for="exampleEmail" class="bmd-label-floating">Date</label>
+                     <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                    <i class="fa fa-calendar"></i>&nbsp;
+                                    <span></span> <i class="fa fa-caret-down"></i>
+                                    <input type="hidden" name="start_date">
+                                    <input type="hidden" name="end_date">
+                                   
+                                </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="examplePass" class="bmd-label-floating">Price</label>
+                      <input type="number" class="form-control" step="0.01" name="price" id="examplePass">
+                    </div>
+                  
+                 
+                </div>
+                <div class="card-footer ">
+                  <button type="submit" class="btn btn-fill btn-rose">Submit</button>
+                </div>
+                 </form>
+              </div>
+            </div>

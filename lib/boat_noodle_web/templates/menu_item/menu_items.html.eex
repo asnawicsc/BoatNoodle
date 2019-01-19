@@ -1,5 +1,58 @@
 
+
+  
 <div class="tab-pane active show" id="menu_item" >
+  <div class="row">
+  <div class="col-lg-4">
+<div class="tab-pane active show" id="menu_item" >
+  <div class="card">
+      <div class="card-header card-header-text card-header-danger">
+      <div class="card-text">     <h4 class="card-title mt-0">Active Price List</h4>
+       
+       
+      </div>
+  
+     
+    
+    
+     
+    </div>
+      
+    <div class="card-body" >
+     
+      <table class="table data">
+      <thead>
+        <tr>
+ 
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Name</th>
+         
+          <th>Price</th>
+      
+        </tr>
+      </thead>  
+      <tbody>
+    
+  <%= for item <- @price_list do %>
+          
+       
+     
+      <tr>
+        <td><%= item.name %></td>
+        <td><%= item.start_date %></td>
+        <td><%= item.end_date %></td>
+        <td><%= item.price %></td>
+      
+      </tr>
+  <%  end %>
+      </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+  <div class="col-lg-8">
   <div class="card">
       <div class="card-header card-header-text card-header-warning">
       <div class="card-text">
@@ -56,7 +109,7 @@
           <th>Code</th>
           <th>Name</th>
           <th>Category</th>
-          <th>Price</th>
+        
           <th>Edit</th>
         </tr>
       </thead>  
@@ -69,11 +122,13 @@
         <td><%= elem(subcat,0).itemcode %></td>
         <td><%= elem(subcat,0).itemname %></td>
         <td><%= elem(subcat,0).category %></td>
-        <td class="subcat_price"><%= raw(pricing(elem(subcat,0).subcatid, @conn, subcatdata)) %></td>
+        
         <td>
-          
-          <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a>
-          <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+          <span>
+          <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show<div class="ripple-container"></div></a></span>
+           <span><a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a>
+         </span> <span> <a href="/<%= @conn.params["brand"]%>/price_list/<%= elem(subcat,0).subcatid %>" class="btn btn-success btn-sm">Price List<div class="ripple-container"></div></a>
+        </span>
         </td>
       </tr>
       <% end %>
@@ -82,7 +137,8 @@
     </div>
   </div>
 </div>
-
+</div>
+</div>
  <%= form_for @changeset, item_subcat_path(@conn, :upload_menu_item,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
                     <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">

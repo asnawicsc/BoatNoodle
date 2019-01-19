@@ -3990,4 +3990,140 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_date_price(date_price)
     end
   end
+
+  describe "subcat_catalog" do
+    alias BoatNoodle.BN.SubcatCatalog
+
+    @valid_attrs %{catalog_id: 42, end_date: ~D[2010-04-17], price: "120.5", start_date: ~D[2010-04-17], subcat_id: 42}
+    @update_attrs %{catalog_id: 43, end_date: ~D[2011-05-18], price: "456.7", start_date: ~D[2011-05-18], subcat_id: 43}
+    @invalid_attrs %{catalog_id: nil, end_date: nil, price: nil, start_date: nil, subcat_id: nil}
+
+    def subcat_catalog_fixture(attrs \\ %{}) do
+      {:ok, subcat_catalog} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_subcat_catalog()
+
+      subcat_catalog
+    end
+
+    test "list_subcat_catalog/0 returns all subcat_catalog" do
+      subcat_catalog = subcat_catalog_fixture()
+      assert BN.list_subcat_catalog() == [subcat_catalog]
+    end
+
+    test "get_subcat_catalog!/1 returns the subcat_catalog with given id" do
+      subcat_catalog = subcat_catalog_fixture()
+      assert BN.get_subcat_catalog!(subcat_catalog.id) == subcat_catalog
+    end
+
+    test "create_subcat_catalog/1 with valid data creates a subcat_catalog" do
+      assert {:ok, %SubcatCatalog{} = subcat_catalog} = BN.create_subcat_catalog(@valid_attrs)
+      assert subcat_catalog.catalog_id == 42
+      assert subcat_catalog.end_date == ~D[2010-04-17]
+      assert subcat_catalog.price == Decimal.new("120.5")
+      assert subcat_catalog.start_date == ~D[2010-04-17]
+      assert subcat_catalog.subcat_id == 42
+    end
+
+    test "create_subcat_catalog/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_subcat_catalog(@invalid_attrs)
+    end
+
+    test "update_subcat_catalog/2 with valid data updates the subcat_catalog" do
+      subcat_catalog = subcat_catalog_fixture()
+      assert {:ok, subcat_catalog} = BN.update_subcat_catalog(subcat_catalog, @update_attrs)
+      assert %SubcatCatalog{} = subcat_catalog
+      assert subcat_catalog.catalog_id == 43
+      assert subcat_catalog.end_date == ~D[2011-05-18]
+      assert subcat_catalog.price == Decimal.new("456.7")
+      assert subcat_catalog.start_date == ~D[2011-05-18]
+      assert subcat_catalog.subcat_id == 43
+    end
+
+    test "update_subcat_catalog/2 with invalid data returns error changeset" do
+      subcat_catalog = subcat_catalog_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_subcat_catalog(subcat_catalog, @invalid_attrs)
+      assert subcat_catalog == BN.get_subcat_catalog!(subcat_catalog.id)
+    end
+
+    test "delete_subcat_catalog/1 deletes the subcat_catalog" do
+      subcat_catalog = subcat_catalog_fixture()
+      assert {:ok, %SubcatCatalog{}} = BN.delete_subcat_catalog(subcat_catalog)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_subcat_catalog!(subcat_catalog.id) end
+    end
+
+    test "change_subcat_catalog/1 returns a subcat_catalog changeset" do
+      subcat_catalog = subcat_catalog_fixture()
+      assert %Ecto.Changeset{} = BN.change_subcat_catalog(subcat_catalog)
+    end
+  end
+
+  describe "combo_catalog" do
+    alias BoatNoodle.BN.ComboCatalog
+
+    @valid_attrs %{brand_id: 42, combo_id: 42, combo_item_id: 42, is_active: 42, is_combo_header: 42}
+    @update_attrs %{brand_id: 43, combo_id: 43, combo_item_id: 43, is_active: 43, is_combo_header: 43}
+    @invalid_attrs %{brand_id: nil, combo_id: nil, combo_item_id: nil, is_active: nil, is_combo_header: nil}
+
+    def combo_catalog_fixture(attrs \\ %{}) do
+      {:ok, combo_catalog} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_combo_catalog()
+
+      combo_catalog
+    end
+
+    test "list_combo_catalog/0 returns all combo_catalog" do
+      combo_catalog = combo_catalog_fixture()
+      assert BN.list_combo_catalog() == [combo_catalog]
+    end
+
+    test "get_combo_catalog!/1 returns the combo_catalog with given id" do
+      combo_catalog = combo_catalog_fixture()
+      assert BN.get_combo_catalog!(combo_catalog.id) == combo_catalog
+    end
+
+    test "create_combo_catalog/1 with valid data creates a combo_catalog" do
+      assert {:ok, %ComboCatalog{} = combo_catalog} = BN.create_combo_catalog(@valid_attrs)
+      assert combo_catalog.brand_id == 42
+      assert combo_catalog.combo_id == 42
+      assert combo_catalog.combo_item_id == 42
+      assert combo_catalog.is_active == 42
+      assert combo_catalog.is_combo_header == 42
+    end
+
+    test "create_combo_catalog/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_combo_catalog(@invalid_attrs)
+    end
+
+    test "update_combo_catalog/2 with valid data updates the combo_catalog" do
+      combo_catalog = combo_catalog_fixture()
+      assert {:ok, combo_catalog} = BN.update_combo_catalog(combo_catalog, @update_attrs)
+      assert %ComboCatalog{} = combo_catalog
+      assert combo_catalog.brand_id == 43
+      assert combo_catalog.combo_id == 43
+      assert combo_catalog.combo_item_id == 43
+      assert combo_catalog.is_active == 43
+      assert combo_catalog.is_combo_header == 43
+    end
+
+    test "update_combo_catalog/2 with invalid data returns error changeset" do
+      combo_catalog = combo_catalog_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_combo_catalog(combo_catalog, @invalid_attrs)
+      assert combo_catalog == BN.get_combo_catalog!(combo_catalog.id)
+    end
+
+    test "delete_combo_catalog/1 deletes the combo_catalog" do
+      combo_catalog = combo_catalog_fixture()
+      assert {:ok, %ComboCatalog{}} = BN.delete_combo_catalog(combo_catalog)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_combo_catalog!(combo_catalog.id) end
+    end
+
+    test "change_combo_catalog/1 returns a combo_catalog changeset" do
+      combo_catalog = combo_catalog_fixture()
+      assert %Ecto.Changeset{} = BN.change_combo_catalog(combo_catalog)
+    end
+  end
 end

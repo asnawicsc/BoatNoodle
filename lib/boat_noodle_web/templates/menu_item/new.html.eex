@@ -13,7 +13,7 @@
       <div class="card-body">
 
         <div class="row">
-          <div class="col-sm-3">
+          <div class="col-sm-4">
 <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Category</label>
             <select name="menu_item[itemcatid]" class="selectpicker" data-style="btn select-with-transition" title="Choose Category" data-size="10" required="">
             <%= for cat <- @item_cat do %>
@@ -22,17 +22,25 @@
             </select>
 
           </div>
-          <div class="col-sm-3">
+          <div class="col-sm-4">
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Item Code</label>
               <input name="menu_item[itemcode]" class="form-control" type="text" required="">
             </div>
           </div>
     
-          <div class="col-sm-3">
+          <div class="col-sm-4">
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Part Code</label>
               <input name="menu_item[part_code]"  class="form-control" type="text" required="">
+            </div>
+
+          </div>
+
+                    <div class="col-sm-3">
+            <div class="form-group bmd-form-group">
+           
+              <input name="menu_item[price_code][A]" class="form-control" value="0.00" type="hidden" step="0.01" required="">
             </div>
 
           </div>
@@ -55,66 +63,47 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-3">
-          	<div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Price Code A</label>
-              <input name="menu_item[price_code][A]" class="form-control" type="text" required="">
-            </div>
-            <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Price Code B</label>
-              <input name="menu_item[price_code][B]" class="form-control" type="text" required="">
-            </div>
-            <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Price Code C</label>
-              <input name="menu_item[price_code][C]" class="form-control" type="text" required="">
-            </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Price Code D</label>
-              <input disabled name="menu_item[price_code][D]" class="form-control" type="text" >
-            </div>
-            <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Price Code E</label>
-              <input disabled name="menu_item[price_code][E]" class="form-control" type="text" >
-            </div>
-            <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Price Code F</label>
-              <input disabled name="menu_item[price_code][F]" class="form-control" type="text" >
-            </div>
-          </div>
-                             <div class="col-sm-3">
+
+
+                     <div class="col-sm-3">       
           
             <div class="form-group bmd-form-group">
                <label class="bmd-label-floating">Logical Printer</label>
               <input name="menu_item[tagdesc]" class="form-control" value="" type="text" >
             </div>
+             </div>
+
+                <div class="col-sm-3">
        
            <div class="form-group bmd-form-group">
 
                <label class="bmd-label-floating">Pshyical Printer</label>
                <input name="menu_item[printer]" class="form-control" value="" type="text" >
             </div> 
+
+          </div>
   
-   </div>
+  
           <div class="col-sm-3">
           
             <div class="form-group bmd-form-group">
                <label class="bmd-label-floating">Start Time</label>
               <input name="menu_item[item_start_hour]" class="form-control" type="number" >
             </div>
-       
-
+       </div>
+       <div class="col-sm-3">
             <div class="form-group bmd-form-group">
 
                <label class="bmd-label-floating">End Time</label>
               <input name="menu_item[item_end_hour]" class="form-control" type="number" >
             </div>  
           </div>
+
+
            <div class="col-sm-3">
               <div class="form-check form-check-inline">
                 <label class="form-check-label">
-                            <input class="form-check-input" name="a[enable_disc]" type="checkbox" > Enable Discount?
+                            <input class="form-check-input" name="menu_item[enable_disc]" type="checkbox" > Enable Discount?
                             <span class="form-check-sign">
                               <span class="check"></span>
                             </span>
@@ -124,7 +113,7 @@
             <div class="col-sm-3">
               <div class="form-check form-check-inline">
                 <label class="form-check-label">
-                            <input class="form-check-input" name="a[is_active]" type="checkbox" > Active?
+                            <input class="form-check-input" name="menu_item[is_active]" type="checkbox" > Active?
                             <span class="form-check-sign">
                               <span class="check"></span>
                             </span>
@@ -134,7 +123,7 @@
             <div class="col-sm-3">
               <div class="form-check form-check-inline">
                 <label class="form-check-label">
-                            <input class="form-check-input" name="a[include_spend]" type="checkbox" > Include In Minimum Spend?
+                            <input class="form-check-input" name="menu_item[include_spend]" type="checkbox" > Include In Minimum Spend?
                             <span class="form-check-sign">
                               <span class="check"></span>
                             </span>

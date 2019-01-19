@@ -74,6 +74,42 @@ if (localStorage.getItem('new_brand') == null) {
 
     cb(start, end);
 
+
+
+      function cb(start, end){
+          $('#price_lists span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+          $("input[name='start_date']").val(localStorage.getItem('start_date'))
+          $("input[name='end_date']").val(localStorage.getItem('end_date'))
+
+        
+           $('#price_lists').on('hide.daterangepicker', function(ev, picker) {
+             localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
+                  localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
+        
+          });  
+      }
+
+          
+ 
+
+    $('#price_lists').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+
+        }
+    }, cb);
+
+    cb(start, end);
+    
+
 dashboard_channel.on("dashboard_2", payload => {
 var bool = localStorage.getItem("real_time_update")
   if (bool == "yes") {

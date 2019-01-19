@@ -230,9 +230,28 @@ defmodule BoatNoodleWeb.MenuItemController do
 
     changeset = BN.change_menu_item(%MenuItem{})
 
+    price_list =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          left_join: r in ItemSubcat,
+          on: r.subcatid == s.subcat_id,
+          where:
+            s.is_active == ^1 and s.is_combo == ^0 and s.brand_id == ^BN.get_brand_id(conn) and
+              r.brand_id == ^BN.get_brand_id(conn),
+          select: %{
+            name: r.itemname,
+            start_date: s.start_date,
+            end_date: s.end_date,
+            price: s.price
+          }
+        )
+      )
+
     render(
       conn,
       "index.html",
+      price_list: price_list,
       menu_catalog: menu_catalog,
       subcats: subcats,
       remark: remark,
@@ -241,7 +260,8 @@ defmodule BoatNoodleWeb.MenuItemController do
       new_url: new_url,
       delete_url: delete_url,
       view_url: view_url,
-      changeset: changeset
+      changeset: changeset,
+      price_list: price_list
     )
   end
 
@@ -282,27 +302,27 @@ defmodule BoatNoodleWeb.MenuItemController do
     render(conn, "new.html", changeset: changeset, item_cat: item_cat, itemcodes: itemcodes)
   end
 
-  def create(conn, %{"menu_item" => item_subcat_params, "a" => a}) do
+  def create(conn, %{"menu_item" => item_subcat_params}) do
     cat_id = item_subcat_params["itemcatid"]
     cat = Repo.get_by(BoatNoodle.BN.ItemCat, itemcatid: cat_id, brand_id: BN.get_brand_id(conn))
     itemcode = item_subcat_params["itemcode"]
 
     enable_disc =
-      if a["enable_disc"] == "on" do
+      if item_subcat_params["enable_disc"] == "on" do
         1
       else
         0
       end
 
     is_activate =
-      if a["is_active"] == "on" do
+      if item_subcat_params["is_active"] == "on" do
         1
       else
         0
       end
 
     include_spend =
-      if a["include_spend"] == "on" do
+      if item_subcat_params["include_spend"] == "on" do
         1
       else
         0
@@ -348,14 +368,15 @@ defmodule BoatNoodleWeb.MenuItemController do
           |> Enum.map(fn x -> Integer.to_string(x) end)
           |> Enum.reject(fn x -> String.length(x) > 5 end)
 
-        if a != [] do
-          a =
-            a
-            |> List.last()
-            |> String.to_integer()
-        else
-          a = 0
-        end
+        a =
+          if a != [] do
+            a =
+              a
+              |> List.last()
+              |> String.to_integer()
+          else
+            a = 0
+          end
 
         item_param = Map.put(item_param, "subcatid", a + 1)
 
@@ -386,6 +407,76 @@ defmodule BoatNoodleWeb.MenuItemController do
       conn
       |> put_flash(:info, "Menu item created successfully.")
       |> redirect(to: item_subcat_path(conn, :item_show, BN.get_domain(conn), item_cat.subcatid))
+    end
+  end
+
+  def price_list(conn, params) do
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: params["id"], brand_id: BN.get_brand_id(conn))
+
+    price_list =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          where: s.subcat_id == ^params["id"],
+          order_by: [asc: s.start_date]
+        )
+      )
+
+    render(conn, "price_list.html", price_list: price_list, item_subcat: item_subcat)
+  end
+
+  def new_price_list(conn, params) do
+    item_subcat =
+      Repo.get_by(ItemSubcat, subcatid: params["subcat_id"], brand_id: BN.get_brand_id(conn))
+
+    render(conn, "new_price_list.html", item_subcat: item_subcat)
+  end
+
+  def create_price_list(conn, params) do
+    prev_id =
+      Repo.all(from(c in BoatNoodle.BN.SubcatCatalog, select: %{id: c.id}))
+      |> Enum.sort()
+      |> List.last()
+
+    new_id =
+      if prev_id == nil do
+        1
+      else
+        prev_id + 1
+      end
+
+    subcat_catalog_params = %{
+      id: new_id,
+      subcat_id: params["subcat_id"],
+      start_date: params["start_date"],
+      end_date: params["end_date"],
+      brand_id: BN.get_brand_id(conn),
+      price: params["price"]
+    }
+
+    price_list_exist =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          where:
+            s.subcat_id == ^params["subcat_id"] and s.start_date >= ^params["start_date"] and
+              s.start_date <= ^params["end_date"]
+        )
+      )
+
+    if price_list_exist != [] do
+      conn
+      |> put_flash(
+        :info,
+        "This Date Range alrdy Exist, Please Edit Existing Item Price/ Select Another Date Range"
+      )
+      |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
+    else
+      BN.create_subcat_catalog(subcat_catalog_params)
+
+      conn
+      |> put_flash(:info, "Price List created successfully.")
+      |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
     end
   end
 

@@ -47,7 +47,7 @@ if (localStorage.getItem('new_brand') == null) {
            $('#reportrange').on('hide.daterangepicker', function(ev, picker) {
              localStorage.setItem('start_date', start.format('YYYY-MM-DD'));
                   localStorage.setItem('end_date', end.format('YYYY-MM-DD'));
-         location.reload();
+       
           });  
       }
 

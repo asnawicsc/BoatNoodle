@@ -84,7 +84,7 @@
 										color-classes: "nav-pills-primary", "nav-pills-info", "nav-pills-success", "nav-pills-warning","nav-pills-danger"
 									-->
 
-								  
+						
 								 
 							<ul class="nav nav-pills nav-pills-rose nav-pills-icons flex-column" role="tablist">
 								<%= for item <- @all|>Enum.with_index do %>

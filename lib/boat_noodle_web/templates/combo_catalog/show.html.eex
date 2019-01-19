@@ -1,0 +1,45 @@
+<h2>Show Combo catalog</h2>
+
+<ul>
+
+  <li>
+    <strong>Combo:</strong>
+    <%= @combo_catalog.subcat_id %>
+  </li>
+
+  <li>
+    <strong>Combo item:</strong>
+    <%= @combo_catalog.combo_item_id %>
+  </li>
+
+  <li>
+    <strong>Is active:</strong>
+    <%= @combo_catalog.is_active %>
+  </li>
+
+  <li>
+    <strong>Price:</strong>
+    <%= @combo_catalog.price %>
+  </li>
+
+    <li>
+    <strong>Start Date:</strong>
+    <%= @combo_catalog.start_date %>
+  </li>
+
+
+  <li>
+    <strong>End Date:</strong>
+     <%= @combo_catalog.end_date %>
+  </li>
+
+
+  <li>
+    <strong>Brand:</strong>
+    <%= @combo_catalog.brand_id %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: combo_catalog_path(@conn, :edit, BN.get_domain(@conn), @combo_catalog.id) %></span>
+<span><%= link "Back", to: combo_catalog_path(@conn, :index, BN.get_domain(@conn)) %></span>

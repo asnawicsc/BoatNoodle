@@ -5034,4 +5034,196 @@ defmodule BoatNoodle.BN do
   def change_date_price(%DatePrice{} = date_price) do
     DatePrice.changeset(date_price, %{})
   end
+
+  alias BoatNoodle.BN.SubcatCatalog
+
+  @doc """
+  Returns the list of subcat_catalog.
+
+  ## Examples
+
+      iex> list_subcat_catalog()
+      [%SubcatCatalog{}, ...]
+
+  """
+  def list_subcat_catalog do
+    Repo.all(SubcatCatalog)
+  end
+
+  @doc """
+  Gets a single subcat_catalog.
+
+  Raises `Ecto.NoResultsError` if the Subcat catalog does not exist.
+
+  ## Examples
+
+      iex> get_subcat_catalog!(123)
+      %SubcatCatalog{}
+
+      iex> get_subcat_catalog!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_subcat_catalog!(id), do: Repo.get!(SubcatCatalog, id)
+
+  @doc """
+  Creates a subcat_catalog.
+
+  ## Examples
+
+      iex> create_subcat_catalog(%{field: value})
+      {:ok, %SubcatCatalog{}}
+
+      iex> create_subcat_catalog(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_subcat_catalog(attrs \\ %{}) do
+    %SubcatCatalog{}
+    |> SubcatCatalog.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a subcat_catalog.
+
+  ## Examples
+
+      iex> update_subcat_catalog(subcat_catalog, %{field: new_value})
+      {:ok, %SubcatCatalog{}}
+
+      iex> update_subcat_catalog(subcat_catalog, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_subcat_catalog(%SubcatCatalog{} = subcat_catalog, attrs) do
+    subcat_catalog
+    |> SubcatCatalog.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a SubcatCatalog.
+
+  ## Examples
+
+      iex> delete_subcat_catalog(subcat_catalog)
+      {:ok, %SubcatCatalog{}}
+
+      iex> delete_subcat_catalog(subcat_catalog)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_subcat_catalog(%SubcatCatalog{} = subcat_catalog) do
+    Repo.delete(subcat_catalog)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking subcat_catalog changes.
+
+  ## Examples
+
+      iex> change_subcat_catalog(subcat_catalog)
+      %Ecto.Changeset{source: %SubcatCatalog{}}
+
+  """
+  def change_subcat_catalog(%SubcatCatalog{} = subcat_catalog) do
+    SubcatCatalog.changeset(subcat_catalog, %{})
+  end
+
+  alias BoatNoodle.BN.ComboCatalog
+
+  @doc """
+  Returns the list of combo_catalog.
+
+  ## Examples
+
+      iex> list_combo_catalog()
+      [%ComboCatalog{}, ...]
+
+  """
+  def list_combo_catalog do
+    Repo.all(ComboCatalog)
+  end
+
+  @doc """
+  Gets a single combo_catalog.
+
+  Raises `Ecto.NoResultsError` if the Combo catalog does not exist.
+
+  ## Examples
+
+      iex> get_combo_catalog!(123)
+      %ComboCatalog{}
+
+      iex> get_combo_catalog!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_combo_catalog!(id), do: Repo.get!(ComboCatalog, id)
+
+  @doc """
+  Creates a combo_catalog.
+
+  ## Examples
+
+      iex> create_combo_catalog(%{field: value})
+      {:ok, %ComboCatalog{}}
+
+      iex> create_combo_catalog(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_combo_catalog(attrs \\ %{}) do
+    %ComboCatalog{}
+    |> ComboCatalog.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a combo_catalog.
+
+  ## Examples
+
+      iex> update_combo_catalog(combo_catalog, %{field: new_value})
+      {:ok, %ComboCatalog{}}
+
+      iex> update_combo_catalog(combo_catalog, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_combo_catalog(%ComboCatalog{} = combo_catalog, attrs) do
+    combo_catalog
+    |> ComboCatalog.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ComboCatalog.
+
+  ## Examples
+
+      iex> delete_combo_catalog(combo_catalog)
+      {:ok, %ComboCatalog{}}
+
+      iex> delete_combo_catalog(combo_catalog)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_combo_catalog(%ComboCatalog{} = combo_catalog) do
+    Repo.delete(combo_catalog)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking combo_catalog changes.
+
+  ## Examples
+
+      iex> change_combo_catalog(combo_catalog)
+      %Ecto.Changeset{source: %ComboCatalog{}}
+
+  """
+  def change_combo_catalog(%ComboCatalog{} = combo_catalog) do
+    ComboCatalog.changeset(combo_catalog, %{})
+  end
 end

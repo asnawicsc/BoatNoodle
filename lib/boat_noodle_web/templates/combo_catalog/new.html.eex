@@ -1,0 +1,5 @@
+<h2>New Combo catalog</h2>
+
+<%= render "form.html", Map.put(assigns, :action, combo_catalog_path(@conn, :create, BN.get_domain(@conn))) %>
+
+<span><%= link "Back", to: combo_catalog_path(@conn, :index, BN.get_domain(@conn)) %></span>

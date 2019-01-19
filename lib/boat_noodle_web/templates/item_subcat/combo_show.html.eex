@@ -88,6 +88,14 @@
                     <%= same_item.subcatid %>
                   </td>
                   <td>
+
+                     <a href="/<%= BN.get_domain(@conn) %>/combos/<%= same_item.subcatid %>/price_list" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
+
+                    <i class="material-icons">event_note</i> Price List
+                  <div class="ripple-container"></div>
+                </a>
+
+
                     <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
 
                     <i class="material-icons">bookmarks</i> Menu

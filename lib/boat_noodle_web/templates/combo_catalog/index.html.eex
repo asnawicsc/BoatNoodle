@@ -1,0 +1,38 @@
+<h2>Listing Combo catalog</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Combo</th>
+      <th>Combo item</th>
+      <th>Is active</th>
+      <th>Price</th>
+       <th>Start Date</th>
+        <th>End Date</th>
+      <th>Brand</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for combo_catalog <- @combo_catalog do %>
+    <tr>
+      <td><%= combo_catalog.subcat_id %></td>
+      <td><%= combo_catalog.combo_item_id %></td>
+      <td><%= combo_catalog.is_active %></td>
+      <td><%= combo_catalog.price %></td>
+       <td><%= combo_catalog.start_date %></td>
+        <td><%= combo_catalog.end_date %></td>
+      <td><%= combo_catalog.brand_id %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: combo_catalog_path(@conn, :show, BN.get_domain(@conn), combo_catalog.id), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: combo_catalog_path(@conn, :edit, BN.get_domain(@conn), combo_catalog.id), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: combo_catalog_path(@conn, :delete, BN.get_domain(@conn), combo_catalog.id), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Combo catalog", to: combo_catalog_path(@conn, :new, BN.get_domain(@conn)) %></span>

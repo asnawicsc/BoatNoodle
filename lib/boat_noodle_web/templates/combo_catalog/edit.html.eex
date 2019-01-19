@@ -1,0 +1,7 @@
+<h2>Edit Combo catalog</h2>
+
+<%= render "form.html", Map.put(assigns, :action, combo_catalog_path(@conn, :update, BN.get_domain(@conn), @combo_catalog.id)) %>
+
+
+<%# <span><%= link "Back", to: combo_catalog_path(@conn, :index) %></span>
+ %>

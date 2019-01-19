@@ -1,0 +1,55 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :subcat_id, class: "control-label" %>
+    <%= number_input f, :subcat_id, class: "form-control" %>
+    <%= error_tag f, :subcat_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :combo_item_id, class: "control-label" %>
+    <%= number_input f, :combo_item_id, class: "form-control" %>
+    <%= error_tag f, :combo_item_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_active, class: "control-label" %>
+    <%= number_input f, :is_active, class: "form-control" %>
+    <%= error_tag f, :is_active %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :price, class: "control-label" %>
+    <%= number_input f, :price, class: "form-control" %>
+    <%= error_tag f, :price %>
+  </div>
+
+    <div class="form-group">
+    <%= label f, :to_up, class: "control-label" %>
+    <%= number_input f, :to_up, class: "form-control" %>
+    <%= error_tag f, :to_up %>
+  </div>
+
+    <div class="form-group">
+    <%= label f, :start_date, class: "control-label" %>
+    <%= date_select f, :start_date, class: "form-control" %>
+    <%= error_tag f, :start_date %>
+  </div>
+
+
+  <div class="form-group">
+    <%= label f, :end_date, class: "control-label" %>
+    <%= date_select f, :end_date, class: "form-control" %>
+    <%= error_tag f, :end_date %>
+  </div>
+
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

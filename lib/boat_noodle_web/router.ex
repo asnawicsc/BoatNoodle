@@ -268,6 +268,8 @@ defmodule BoatNoodleWeb.Router do
       :delete_discount_date
     )
 
+    resources("/subcat_catalog", SubcatCatalogController)
+
     get("/items/:subcatid/edit", ItemSubcatController, :item_edit)
     get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid/add_item", ItemSubcatController, :add_item)
@@ -276,17 +278,37 @@ defmodule BoatNoodleWeb.Router do
 
     get("/combos/:subcatid/date_prices", ItemSubcatController, :combo_date_prices)
 
+    get("/combos/:subcatid/price_list", ItemSubcatController, :combo_price_list)
+
+    get("/price_list/:id", MenuItemController, :price_list)
+
     post(
       "/combos/:subcatid/date_prices/new_date_price",
       ItemSubcatController,
       :combo_new_date_prices
     )
 
+    get("/price_list/:subcat_id/new", MenuItemController, :new_price_list)
+
+    post("/create_price_list", MenuItemController, :create_price_list)
+
     get(
       "/combos/:subcatid/date_prices/delete_date_price/:id",
       ItemSubcatController,
       :combo_delete_date_price
     )
+
+    post("/create_combo_price_list", ItemSubcatController, :create_combo_price_list)
+
+    get("/combo_price_list/:subcat_id/new", ItemSubcatController, :new_combo_price_list)
+
+    get(
+      "/combo_catalog/:subcat_id/:start_date/:end_date/edit",
+      ItemSubcatController,
+      :edit_combo_price_list
+    )
+
+    post("/update_combo_price_list", ItemSubcatController, :update_combo_price_list)
 
     get("/edit_combo/:subcatid/:price_code", ItemSubcatController, :edit_combo)
     post("/edit_combo_detail", ItemSubcatController, :edit_combo_detail)
@@ -300,6 +322,8 @@ defmodule BoatNoodleWeb.Router do
       ItemSubcatController,
       :combo_create_price_unselect
     )
+
+    resources("/combo_catalog", ComboCatalogController)
 
     post("/combos/branch", ItemSubcatController, :combo_branch)
     post("/combos/unselect", ItemSubcatController, :combo_unselect)

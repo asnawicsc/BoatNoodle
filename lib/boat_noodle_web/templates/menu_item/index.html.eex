@@ -34,7 +34,7 @@
 
                 </ul>
                 <div class="tab-content tab-space tab-subcategories" >
-									<%= render("menu_items.html", conn: @conn, subcats: @subcats,changeset: @changeset)%>
+									<%= render("menu_items.html", conn: @conn, subcats: @subcats,changeset: @changeset, price_list: @price_list)%>
 							    <%= render("item_remark.html", conn: @conn,remark: @remark)%>
 									<%= render("categories.html", conn: @conn, admin_menus: @admin_menus, edit_url: @edit_url,new_url: @new_url,delete_url: @delete_url,view_url: @view_url)%>
                 </div>
