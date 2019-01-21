@@ -186,6 +186,7 @@ defmodule BoatNoodleWeb.ApiController do
       |> Repo.update()
 
     IO.inspect(a)
+
     # update_rest_status(user.brand_id, user.branchid, params)
 
     map = %{status: "ok"} |> Poison.encode!()
@@ -421,7 +422,8 @@ defmodule BoatNoodleWeb.ApiController do
       Repo.all(
         from(
           d in DiscountItem,
-          where: d.discountitemsid in ^item_ids and d.brand_id == ^brand_id and d.is_visable == ^1,
+          where:
+            d.discountitemsid in ^item_ids and d.brand_id == ^brand_id and d.is_visable == ^1,
           select: %{
             brand_id: d.brand_id,
             discountitemsid: d.discountitemsid,
@@ -805,7 +807,8 @@ defmodule BoatNoodleWeb.ApiController do
         Repo.all(
           from(
             c in ComboDetails,
-            where: c.combo_id == ^combo.subcatid and c.brand_id == ^brand_id and c.is_delete == ^0,
+            where:
+              c.combo_id == ^combo.subcatid and c.brand_id == ^brand_id and c.is_delete == ^0,
             select: %{
               # brand_id: c.brand_id,
               id: c.id,

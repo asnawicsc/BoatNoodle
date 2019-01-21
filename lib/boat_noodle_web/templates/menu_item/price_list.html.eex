@@ -77,7 +77,7 @@
 						  			
 						  		<% end %></td>
 						  		<td><%= elem(subcat,0).price %></td>
-						  		<td><a href="/<%= @conn.params["brand"] %>/subcat_catalog/<%= elem(subcat,0).id %>/edit" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a></td>
+						  		<td><a href="/<%= @conn.params["brand"] %>/edit_price_list/<%= elem(subcat,0).id %>" class="btn btn-primary btn-sm">Edit<div class="ripple-container"></div></a></td>
 						  		
 						      </tr>
 						      <% end %>

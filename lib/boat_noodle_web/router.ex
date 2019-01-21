@@ -270,6 +270,10 @@ defmodule BoatNoodleWeb.Router do
 
     resources("/subcat_catalog", SubcatCatalogController)
 
+    get("/edit_price_list/:id", MenuItemController, :edit_price_list)
+
+    post("/update_price_list", MenuItemController, :update_price_list)
+
     get("/items/:subcatid/edit", ItemSubcatController, :item_edit)
     get("/combos/new", ItemSubcatController, :combo_new)
     get("/combos/:subcatid/add_item", ItemSubcatController, :add_item)

@@ -34,11 +34,55 @@ defmodule BoatNoodleWeb.SubcatCatalogController do
 
   def edit(conn, %{"id" => id}) do
     subcat_catalog = BN.get_subcat_catalog!(id)
+
+    menu_catalog =
+      Repo.all(
+        from(
+          m in BoatNoodle.BN.MenuCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: %{catalog_id: m.id, name: m.name}
+        )
+      )
+
+    price_list_catalog =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          left_join: r in BoatNoodle.BN.MenuCatalog,
+          on: s.catalog_id == r.id,
+          where:
+            s.subcat_id == ^subcat_catalog.subcat_id and s.is_combo != 1 and
+              r.brand_id == ^BN.get_brand_id(conn),
+          select: %{catalog_id: s.catalog_id, name: r.name}
+        )
+      )
+
+    balence = menu_catalog -- price_list_catalog
+
+    active =
+      for item <- price_list_catalog do
+        %{catalog_id: item.catalog_id, name: item.name, is_active: 1}
+      end
+
+    not_active =
+      for item <- balence do
+        %{catalog_id: item.catalog_id, name: item.name, is_active: 0}
+      end
+
+    all = active ++ not_active
+
     changeset = BN.change_subcat_catalog(subcat_catalog)
-    render(conn, "edit.html", subcat_catalog: subcat_catalog, changeset: changeset)
+
+    render(conn, "edit.html",
+      menu_catalog: menu_catalog,
+      subcat_catalog: subcat_catalog,
+      all: all,
+      changeset: changeset
+    )
   end
 
   def update(conn, %{"id" => id, "subcat_catalog" => subcat_catalog_params}) do
+    IEx.pry()
     subcat_catalog = BN.get_subcat_catalog!(id)
 
     is_active =

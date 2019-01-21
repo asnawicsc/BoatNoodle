@@ -418,6 +418,7 @@ defmodule BoatNoodleWeb.MenuItemController do
         from(
           s in BoatNoodle.BN.SubcatCatalog,
           where: s.subcat_id == ^params["id"],
+          group_by: [s.subcat_id, s.start_date, s.end_date, s.price],
           order_by: [asc: s.start_date]
         )
       )
@@ -429,55 +430,212 @@ defmodule BoatNoodleWeb.MenuItemController do
     item_subcat =
       Repo.get_by(ItemSubcat, subcatid: params["subcat_id"], brand_id: BN.get_brand_id(conn))
 
-    render(conn, "new_price_list.html", item_subcat: item_subcat)
-  end
-
-  def create_price_list(conn, params) do
-    prev_id =
-      Repo.all(from(c in BoatNoodle.BN.SubcatCatalog, select: %{id: c.id}))
-      |> Enum.sort()
-      |> List.last()
-
-    new_id =
-      if prev_id == nil do
-        1
-      else
-        prev_id + 1
-      end
-
-    subcat_catalog_params = %{
-      id: new_id,
-      subcat_id: params["subcat_id"],
-      start_date: params["start_date"],
-      end_date: params["end_date"],
-      brand_id: BN.get_brand_id(conn),
-      price: params["price"]
-    }
-
-    price_list_exist =
+    all_menu_catalog =
       Repo.all(
         from(
-          s in BoatNoodle.BN.SubcatCatalog,
-          where:
-            s.subcat_id == ^params["subcat_id"] and s.start_date >= ^params["start_date"] and
-              s.start_date <= ^params["end_date"]
+          m in BoatNoodle.BN.MenuCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: %{id: m.id, name: m.name}
         )
       )
 
-    if price_list_exist != [] do
-      conn
-      |> put_flash(
-        :info,
-        "This Date Range alrdy Exist, Please Edit Existing Item Price/ Select Another Date Range"
-      )
-      |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
-    else
-      BN.create_subcat_catalog(subcat_catalog_params)
+    render(conn, "new_price_list.html", menu_catalog: all_menu_catalog, item_subcat: item_subcat)
+  end
+
+  def create_price_list(conn, params) do
+    a = params["branc"]
+    branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
+
+    for branch <- branchs do
+      prev_id =
+        Repo.all(from(c in BoatNoodle.BN.SubcatCatalog, select: %{id: c.id}))
+        |> Enum.sort()
+        |> List.last()
+
+      new_id =
+        if prev_id == nil do
+          1
+        else
+          prev_id.id + 1
+        end
+
+      subcat_catalog_params = %{
+        id: new_id,
+        subcat_id: params["subcat_id"],
+        start_date: params["start_date"],
+        end_date: params["end_date"],
+        brand_id: BN.get_brand_id(conn),
+        price: params["price"],
+        catalog_id: branch
+      }
+
+      price_list_exist =
+        Repo.all(
+          from(
+            s in BoatNoodle.BN.SubcatCatalog,
+            where:
+              s.subcat_id == ^params["subcat_id"] and s.catalog_id == ^branch and
+                s.start_date >= ^params["start_date"] and s.start_date <= ^params["end_date"]
+          )
+        )
+
+      if price_list_exist != [] do
+        conn
+        |> put_flash(
+          :info,
+          "This Date Range alrdy Exist, Please Edit Existing Item Price/ Select Another Date Range"
+        )
+        |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
+      else
+        BN.create_subcat_catalog(subcat_catalog_params)
+      end
 
       conn
       |> put_flash(:info, "Price List created successfully.")
       |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
     end
+  end
+
+  def edit_price_list(conn, params) do
+    subcat_catalog = BN.get_subcat_catalog!(params["id"])
+
+    menu_catalog =
+      Repo.all(
+        from(
+          m in BoatNoodle.BN.MenuCatalog,
+          where: m.brand_id == ^BN.get_brand_id(conn),
+          select: %{catalog_id: m.id, name: m.name}
+        )
+      )
+
+    price_list_catalog =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          left_join: r in BoatNoodle.BN.MenuCatalog,
+          on: s.catalog_id == r.id,
+          where:
+            s.subcat_id == ^subcat_catalog.subcat_id and s.is_combo != 1 and
+              r.brand_id == ^BN.get_brand_id(conn),
+          select: %{catalog_id: s.catalog_id, name: r.name}
+        )
+      )
+      |> Enum.uniq()
+
+    balence = menu_catalog -- price_list_catalog
+
+    active =
+      for item <- price_list_catalog do
+        %{catalog_id: item.catalog_id, name: item.name, is_active: 1}
+      end
+
+    not_active =
+      for item <- balence do
+        %{catalog_id: item.catalog_id, name: item.name, is_active: 0}
+      end
+
+    all = active ++ not_active
+
+    changeset = BN.change_subcat_catalog(subcat_catalog)
+
+    render(conn, "edit_price_list.html",
+      menu_catalog: menu_catalog,
+      subcat_catalog: subcat_catalog,
+      all: all,
+      changeset: changeset
+    )
+  end
+
+  def update_price_list(conn, params) do
+    catalog_id = params["catalog_id"]
+
+    price_list_exist =
+      Repo.delete_all(
+        from(
+          s in BoatNoodle.BN.SubcatCatalog,
+          where:
+            s.subcat_id == ^params["subcat_id"] and s.start_date == ^params["old_start_date"] and
+              s.end_date == ^params["old_end_date"] and s.brand_id == ^BN.get_brand_id(conn)
+        )
+      )
+
+    for id <- catalog_id do
+      cat_id = id |> elem(0)
+
+      is_active =
+        if params["is_active"] != nil do
+          1
+        else
+          0
+        end
+
+      prev_id =
+        Repo.all(from(c in BoatNoodle.BN.SubcatCatalog, select: %{id: c.id}))
+        |> Enum.sort()
+        |> List.last()
+
+      new_id =
+        if prev_id == nil do
+          1
+        else
+          prev_id.id + 1
+        end
+
+      subcat_catalog_params = %{
+        id: new_id,
+        subcat_id: params["subcat_id"],
+        start_date: params["start_date"],
+        end_date: params["end_date"],
+        brand_id: BN.get_brand_id(conn),
+        price: params["price"],
+        catalog_id: cat_id,
+        is_active: is_active
+      }
+
+      BN.create_subcat_catalog(subcat_catalog_params)
+    end
+
+    # price_list_exist =
+    #   Repo.get_by(
+    #     BoatNoodle.BN.SubcatCatalog,
+    #     %{
+    #       subcat_id: params["subcat_id"],
+    #       catalog_id: cat_id,
+    #       start_date: params["start_date"],
+    #       end_date: params["end_date"]
+    #     }
+    #   )
+
+    #   if price_list_exist != nil do
+    #     subcat_catalog = BN.get_subcat_catalog!(price_list_exist.id)
+
+    #     is_active =
+    #       if params["is_active"] != nil do
+    #         1
+    #       else
+    #         0
+    #       end
+    # 
+    #     if status == "on" do
+    #       params = %{
+    #         start_date: start_date,
+    #         end_date: end_date,
+    #         is_active: is_active,
+    #         price: price
+    #       }
+
+    #       BN.update_subcat_catalog(subcat_catalog, params)
+    #     else
+    #       BN.delete_subcat_catalog(subcat_catalog)
+    #     end
+    #   else
+
+    #   end
+    # end
+
+    conn
+    |> put_flash(:info, "Price List updated successfully.")
+    |> redirect(to: menu_item_path(conn, :index, BN.get_domain(conn)))
   end
 
   def show(conn, %{"id" => id}) do
