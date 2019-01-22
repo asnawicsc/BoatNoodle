@@ -46,10 +46,16 @@ defmodule BoatNoodleWeb.MenuItemController do
       Repo.all(
         from(
           i in ItemSubcat,
-          where: i.brand_id == ^brand and i.subcatid in ^ids,
+          left_join: r in BoatNoodle.BN.SubcatCatalog,
+          on: r.subcat_id == i.subcat_id,
+          where:
+            i.brand_id == ^brand and r.brand_id == ^brand and r.catalog_id == ^menu_catalog.id and
+              r.is_active == ^1 and r.is_combo != 1,
           select: %{
             name: i.itemname,
-            price: i.itemprice,
+            price: r.price,
+            start_date: r.start_date,
+            end_date: r.end_date,
             printer_ip: "10.239.30.114",
             port_no: 9100
           }

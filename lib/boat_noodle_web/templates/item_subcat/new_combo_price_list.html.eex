@@ -66,6 +66,7 @@
 
 
       <% item_cat=Repo.get_by(BN.ItemCat, %{itemcatid: item.menu_cat_id,brand_id: item.brand_id }) %>
+
       <td><%= item.combo_item_name %></td>
       <td><%= item_cat.itemcatname %></td>
       <td align="center"><%= item.combo_qty %></td>
@@ -79,6 +80,68 @@
                   
                  
                 </div>
+
+                 <div class="card-body">     
+            <input type="hidden" name="branc[branch]">
+       
+          
+ 
+            
+            <div class="row">
+
+                  <div class="col-sm-6">
+                    <div class="card card-stats">
+                      <div class="card-header card-header-rose card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">Ala Cart</p>
+                              <h3 class="card-title">Catalog</h3>
+                            </div>
+                      <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                       <ol class="item"   id="list5">
+                                <%= for carte <- @menu_catalog do %>
+                                <li style="font-size: 15px; height: 40px;" id="<%= carte.id %>"><%= carte.name %> <span class="badge badge-primary badge-xl" style="cursor: pointer;"></span></li>
+                                <% end %>
+                              </ol>
+                        
+                      </div>
+                                                    <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-primary btn-link btn-sm show_menu_cata" data-original-title="combo branch">
+
+                    <i class="material-icons">fast_forward</i> Select All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
+                    </div>
+                    </div>
+          
+              <div class="col-sm-6">
+                 <div class="card card-stats">
+                  <div class="card-header card-header-info card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">To be included in Ala Cart</p>
+                              <h3 class="card-title">Catalog</h3>
+                            </div>
+                    <div class="card-body" style="min-height: 300px; height: 500px; overflow-y: scroll;">
+                      <ol class="item" style="height: 300px; min-width: 300px;" id="list6">
+                      </ol>
+                    </div>
+                                                     <div class="card-footer">
+                <button type="button" rel="tooltip" title="" class="btn btn-success btn-link btn-sm show_menu_cata" data-original-title="un combo branch">
+
+                    <i class="material-icons">fast_rewind</i> Unselect All
+                  <div class="ripple-container"></div>
+                </button>
+            </div>
+                  </div>
+              </div>
+            </div>
+
+       
+        </div>
                 <div class="card-footer ">
                   <button type="submit" class="btn btn-fill btn-rose">Submit</button>
                 </div>

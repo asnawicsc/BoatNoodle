@@ -82,7 +82,6 @@ defmodule BoatNoodleWeb.SubcatCatalogController do
   end
 
   def update(conn, %{"id" => id, "subcat_catalog" => subcat_catalog_params}) do
-    IEx.pry()
     subcat_catalog = BN.get_subcat_catalog!(id)
 
     is_active =

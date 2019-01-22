@@ -12,6 +12,7 @@ defmodule BoatNoodle.BN.ComboCatalog do
     field(:end_date, :date)
     field(:price, :decimal)
     field(:to_up, :decimal)
+    field(:catalog_id, :integer)
   end
 
   @doc false
@@ -26,7 +27,8 @@ defmodule BoatNoodle.BN.ComboCatalog do
       :brand_id,
       :start_date,
       :end_date,
-      :to_up
+      :to_up,
+      :catalog_id
     ])
   end
 end
