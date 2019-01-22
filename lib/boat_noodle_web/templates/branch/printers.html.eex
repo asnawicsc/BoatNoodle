@@ -273,6 +273,14 @@
             </div>
           </div>
 
+          <div class="col-sm-2">a
+           <div class="form-group bmd-form-group">
+              <%= label f, :port_no, class: "bmd-label-floating" %>
+              <%= text_input f, :port_no, class: "form-control", required: true%>
+              <%= error_tag f, :port_no %>
+            </div>
+          </div>
+
 
         </div>
 

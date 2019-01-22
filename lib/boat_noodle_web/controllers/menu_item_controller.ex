@@ -253,6 +253,7 @@ defmodule BoatNoodleWeb.MenuItemController do
           }
         )
       )
+      |> Enum.uniq()
 
     render(
       conn,

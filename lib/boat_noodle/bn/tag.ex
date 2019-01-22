@@ -12,6 +12,7 @@ defmodule BoatNoodle.BN.Tag do
     field(:tagdesc, :string)
     field(:printer, :string)
     field(:printer_ip, :string)
+    field(:port_no, :string)
     field(:tagname, :string)
     field(:updated_at, :utc_datetime)
     field(:created_at, :utc_datetime)
@@ -33,7 +34,8 @@ defmodule BoatNoodle.BN.Tag do
         :tagid,
         :tagname,
         :tagdesc,
-        :printer
+        :printer,
+        :port_no
       ])
 
     if action == "new" or action == "edit" do

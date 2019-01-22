@@ -102,25 +102,7 @@
                   <div class="ripple-container"></div>
                 </button>
 
-                <a href="/<%= BN.get_domain(@conn) %>/combos/<%= same_item.subcatid %>/date_prices" rel="tooltip" title="" class="btn btn-info btn-link btn-sm" subcat_id="<%= same_item.subcatid %>" data-original-title="Edit Menu">
 
-                    <i class="material-icons">event_note</i> Date Prices
-                  <div class="ripple-container"></div>
-                </a>
-
-                    <button type="button" rel="tooltip" title="" class="btn btn-danger btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>"  data-toggle="modal" aria-label="price" data-target="#model1" data-original-title="Edit Item">                     <i class="material-icons">autorenew</i>Edit                   <div class="ripple-container"></div>                 
-                    </button>
-
-       
-      
-                    <%= if DateTime.diff(Timex.now,same_item.created_at) < 21600 do %>
-                      
-                
-                    <a href="/<%= @conn.private.plug_session["brand"] %>/combos/<%= same_item.subcatid %>/add_item" rel="tooltip" title="" class="btn btn-rose btn-link btn-sm" id="<%= same_item.subcatid %>" name="<%= same_item.price_code %>"  >
-                      <i class="material-icons">autorenew</i>Add Combo Items<div class="ripple-container"></div>                 
-                    </a>
-                    
-                      <%  end %>
 
                   </td>
 
@@ -271,7 +253,7 @@
       </div>
     </div>
   </div>
-
+<%# 
   <div class="col-lg-6">
 
     <div class="card">
@@ -325,7 +307,7 @@
       </div>
     </div>
   </div>
-
+ %>
 </div>
 
 <%=  if Enum.any?(@admin_menus, fn x -> x == @url end) do %>

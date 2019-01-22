@@ -35,16 +35,18 @@ defmodule BoatNoodleWeb.RestaurantChannel do
           on: r.subcat_id == i.subcat_id,
           left_join: t in BoatNoodle.BN.ItemCat,
           on: t.id == i.menu_cat_id,
+          left_join: f in BoatNoodle.BN.Tag,
+          on: f.printer == i.printer,
           where:
             t.brand_id == ^menu_catalog.brand_id and i.brand_id == ^menu_catalog.brand_id and
               r.brand_id == ^menu_catalog.brand_id and r.catalog_id == ^menu_catalog.id and
-              r.is_active == ^1 and r.is_combo != ^1,
+              r.is_active == ^1 and r.is_combo != ^1 and f.tagdesc == i.tagdesc,
           select: %{
             name: i.itemname,
             price: r.price,
             category_name: t.itemcatname,
-            printer_ip: "10.239.30.114",
-            port_no: 9100
+            printer_ip: f.printer_ip,
+            port_no: f.port_no
           }
         )
       )
@@ -66,16 +68,19 @@ defmodule BoatNoodleWeb.RestaurantChannel do
           i in BoatNoodle.BN.ItemSubcat,
           left_join: r in BoatNoodle.BN.SubcatCatalog,
           on: r.subcat_id == i.subcat_id,
+          left_join: f in BoatNoodle.BN.Tag,
+          on: f.printer == i.printer,
           where:
             i.brand_id == ^menu_catalog.brand_id and r.brand_id == ^menu_catalog.brand_id and
-              r.catalog_id == ^menu_catalog.id and r.is_active == ^1 and r.is_combo == ^1,
+              r.catalog_id == ^menu_catalog.id and r.is_active == ^1 and r.is_combo == ^1 and
+              f.tagdesc == i.tagdesc,
           select: %{
             name: i.itemname,
             price: r.price,
             start_date: r.start_date,
             end_date: r.end_date,
-            printer_ip: "10.239.30.114",
-            port_no: 9100
+            printer_ip: f.printer_ip,
+            port_no: f.port_no
           }
         )
       )
@@ -97,14 +102,12 @@ defmodule BoatNoodleWeb.RestaurantChannel do
             price: r.price,
             to_up: r.to_up,
             category_limit: i.combo_qty,
-            category_name: t.itemcatname,
-            printer_ip: "10.239.30.114",
-            port_no: 9100
+            category_name: t.itemcatname
           }
         )
       )
 
-    broadcast(socket, "new_menu_items", %{
+    broadcast(socket, "new_combo_items", %{
       combo_items_header: combo_items_header,
       sub_combo_item: sub_combo_item
     })
