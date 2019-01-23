@@ -15,7 +15,8 @@ defmodule BoatNoodleWeb.RemarkController do
 
     item =
       Repo.all(
-        from(s in BoatNoodle.BN.ItemCat,
+        from(
+          s in BoatNoodle.BN.ItemCat,
           where: s.brand_id == ^BN.get_brand_id(conn),
           select: %{itemcatname: s.itemcatname, itemcatid: s.itemcatid}
         )

@@ -1,58 +1,132 @@
 <div class="row">
-  <div class="col-lg-12">
+  <div class="col-lg-8">
     <div class="card">
-	    <div class="card-header card-header-text card-header-warning">
-	      <div class="card-text">
-	        <h4 class="card-title">New Remark</h4>
-	      </div>
-
-	    </div>
-		  <div class="card-body">
-
-				<%= form_for @changeset, remark_path(@conn, :create, BN.get_domain(@conn)), [class: "form-horizontal"], fn f -> %>
-				  <%= if @changeset.action do %>
-				    <div class="alert alert-danger">
-				      <p>Oops, something went wrong! Please check the errors below.</p>
-				    </div>
-				  <% end %>
-
-          <div class="row">
-            <div class="col-sm-2">
-              <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Item Name</label>
-              <select name="remark[target_cat]" class="selectpicker" data-style="btn select-with-transition"  data-size="10">
-                <%= for item <- @item do %>
-                  <option value="<%= item.itemcatid %>"><%= item.itemcatname %> </option>
-                <% end %>
-          </select>
+      <div class="card-header card-header-text card-header-warning">
+        <div class="card-text">
+          <h4 class="card-title">New Remark</h4>
+        </div>
       </div>
+      <div class="card-body">
+        <%= form_for @changeset, remark_path(@conn, :create, BN.get_domain(@conn)), [class: "form-horizontal"], fn f -> %>
+        <%= if @changeset.action do %>
+        <div class="alert alert-danger">
+          <p>Oops, something went wrong! Please check the errors below.</p>
+        </div>
+        <% end %>
+        <div class="row">
+          <div class="col-sm-2">
+            <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Item Name</label>
+            <select name="remark[target_cat]" class="selectpicker" data-style="btn select-with-transition" data-size="10">
+              <%= for item <- @item do %>
+              <option value="<%= item.itemcatid %>"><%= item.itemcatname %> </option>
+              <% end %>
+            </select>
+          </div>
+          <div class="col-sm-2">
+            <div class="form-group bmd-form-group">
+              <%= label f, :price, class: "bmd-label-floating"  %>
+              <%= number_input f, :price, class: "form-control" %>
+              <%= error_tag f, :price %>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group bmd-form-group">
+              <%= label f, :remark_description, class: "bmd-label-floating"  %>
+              <%= text_input f, :remark, class: "form-control" %>
+              <%= error_tag f, :remark %>
+            </div>
+          </div>
 
-
-         <div class="col-sm-6">
-           <div class="form-group bmd-form-group">
-             <%= label f, :remark_description, class: "bmd-label-floating"  %>
-             <%= text_input f, :remark, class: "form-control" %>
-             <%= error_tag f, :remark %>
-           </div>
-         </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group  bmd-form-group">
+              <% submit "Submit", class: "btn btn-primary" %>
+              <div id="remark_submit" class="btn btn-primary">Submit</div>
+              <div class="btn btn-secondary" aria-label="go_back">Go Back</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% end %>
   </div>
-
-
-
-
-         </div>
-
-
-              <div class="form-group">
-                <%= submit "Submit", class: "btn btn-primary" %>
-
-                  <div class="btn btn-secondary" aria-label="go_back">Go Back</div>
-
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header card-header-text card-header-warning">
+                <div class="card-text">
+                  <h4 class="card-title">Remarks for this item</h4>
+                </div>
               </div>
+              <div class="card-body" id="remark_table">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Action</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody id="remark_body">
+                    <%= for l <- @list_r do %>
+                    <tr>
+                      <td><%= l.name %></td>
+                      <td><%= l.price %></td>
+                      <td><div class="btn btn-danger delete" id="<%= l.id %>">Delete</div></td>
+                    </tr>
+                    <% end %>
+                  </tbody>
+                </table>
               </div>
-
-
-				<% end %>
-		  </div>
-  	</div>
-
-
+            </div>
+          </div>
+</div>
+<script type="text/javascript">
+$(document).on("click", "#remark_submit", function() {
+var subcat_id = "<%= @subcat_id %>"
+var cat = $("select[name='remark[target_cat]']").val()
+var price = $("#remark_price").val()
+var remark = $("#remark_remark").val()
+$.ajax({
+url: "/<%= BN.get_domain(@conn) %>/internal_api",
+dataType: "json",
+data: {
+scope: "submit_item_remark",
+target_item: subcat_id,
+target_cat: cat,
+price: price,
+remark: remark,
+brand_id: "<%= BN.get_brand_id(@conn) %>"
+}
+}).done(function(j) {
+var result = j
+$("#remark_body").html("")
+for (i in result) {
+var tr = "<tr><td>" + result[i]["name"] + "</td><td>" + result[i]["price"] + "</td><td><div class='btn btn-danger delete' id='" + result[i]["id"] + "'>delete</div></td></tr>"
+$("#remark_body").append(tr)
+}
+})
+})
+$(document).on("click", ".delete", function() {
+var id = $(this).attr("id")
+$.ajax({
+url: "/<%= BN.get_domain(@conn) %>/internal_api",
+dataType: "json",
+data: {
+scope: "delete_item_remark",
+id: id,
+target_item: "<%= @subcat_id %>",
+brand_id: "<%= BN.get_brand_id(@conn) %>"
+}
+}).done(function(j) {
+var result = j
+$("#remark_body").html("")
+for (i in result) {
+var tr = "<tr><td>" + result[i]["name"] + "</td><td>" + result[i]["price"] + "</td><td><div class='btn btn-danger delete' id='" + result[i]["id"] + "'>delete</div></td></tr>"
+$("#remark_body").append(tr)
+}
+})
+})
+</script>
