@@ -1539,7 +1539,7 @@ defmodule BoatNoodleWeb.ItemSubcatController do
 
   """
   def item_edit(conn, %{"subcatid" => id}) do
-    item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.get_brand_id(conn))
+    item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.brand_id(conn))
 
     changes =
       Repo.all(
@@ -1635,6 +1635,40 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       |> Enum.group_by(fn x -> x.branch end)
 
     branch_names = printers |> Map.keys()
+    changeset_r = Remark.changeset(%BoatNoodle.BN.Remark{}, %{}, BN.current_user(conn), "new")
+
+    item =
+      Repo.all(
+        from(
+          s in BoatNoodle.BN.ItemCat,
+          where: s.brand_id == ^BN.get_brand_id(conn),
+          select: %{itemcatname: s.itemcatname, itemcatid: s.itemcatid}
+        )
+      )
+
+    list_r =
+      Repo.all(
+        from(
+          i in Remark,
+          where: i.target_item == ^id and i.brand_id == ^BN.get_brand_id(conn),
+          select: %{
+            id: i.itemsremarkid,
+            name: i.remark,
+            price: i.price
+          }
+        )
+      )
+
+    remark_html =
+      Phoenix.View.render_to_string(
+        BoatNoodleWeb.RemarkView,
+        "new.html",
+        conn: conn,
+        changeset: changeset_r,
+        item: item,
+        subcat_id: id,
+        list_r: list_r
+      )
 
     # the printer has subcat ids
     # because this item has multiple codes
@@ -1647,7 +1681,8 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       item_cat: item_cat,
       price_codes: price_codes,
       printers: printers,
-      changes: changes
+      changes: changes,
+      remark_html: remark_html
     )
   end
 

@@ -60,18 +60,35 @@ defmodule BoatNoodleWeb.RestaurantChannel do
           on: c.itemcatid == i.itemcatid,
           where: i.brand_id == ^branch.brand_id and i.subcatid in ^ids,
           select: %{
+            id: i.subcatid,
             name: i.itemname,
             price: i.itemprice,
             printer_ip: "10.239.30.114",
             port_no: 9100,
             category: c.itemcatname,
-            img_url: ""
+            img_url: i.item_image_url
           }
         )
       )
+      |> Enum.map(fn x -> Map.put(x, :customization, customization(x.id, branch.brand_id)) end)
 
     broadcast(socket, "new_menu_items", %{menu_items: items})
     {:noreply, socket}
+  end
+
+  def customization(target_item, brand_id) do
+    Repo.all(
+      from(
+        i in Remark,
+        where: i.target_item == ^target_item and i.brand_id == ^brand_id,
+        select: %{
+          id: i.itemsremarkid,
+          name: i.remark,
+          price: i.price
+        }
+      )
+    )
+    |> Poison.encode!()
   end
 
   # EcomBackendWeb.Endpoint.broadcast(topic, event, message)

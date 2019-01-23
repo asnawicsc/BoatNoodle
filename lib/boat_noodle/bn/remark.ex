@@ -9,13 +9,14 @@ defmodule BoatNoodle.BN.Remark do
     field(:target_cat, :integer)
     field(:target_item, :integer)
     field(:brand_id, :integer, primary_key: true)
+    field(:price, :decimal)
   end
 
   @doc false
   def changeset(remark, attrs, user_id, action) do
     remark =
       remark
-      |> cast(attrs, [:brand_id, :itemsremarkid, :remark, :target_cat, :target_item])
+      |> cast(attrs, [:price, :brand_id, :itemsremarkid, :remark, :target_cat, :target_item])
 
     if action == "new" or action == "edit" do
     else

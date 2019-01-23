@@ -218,7 +218,7 @@ defmodule BoatNoodle.Images do
 
     resized =
       Mogrify.open(absolute_path)
-      |> resize("400x400")
+      |> resize("100x100")
       |> save(path: absolute_path_bin)
 
     File.cp(resized.path, absolute_path)

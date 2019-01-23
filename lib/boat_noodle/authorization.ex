@@ -36,27 +36,25 @@ defmodule BoatNoodle.Authorization do
           end
         end
 
-        if domain_name != "" do
+      if domain_name != "" do
         route_user_brand(conn, domain_name)
       else
         route_user(conn)
       end
 
-    if conn.private.plug_session["user_id"] == nil do
-      conn
-    else
-      if authorize?(conn, domain_name) do
+      if conn.private.plug_session["user_id"] == nil do
         conn
-        |> put_flash(:error, "Unauthorized")
-        |> redirect(to: "/#{domain_name}")
-        |> halt
       else
-        conn
+        if authorize?(conn, domain_name) do
+          conn
+          |> put_flash(:error, "Unauthorized")
+          |> redirect(to: "/#{domain_name}")
+          |> halt
+        else
+          conn
+        end
       end
     end
- 
-    end
-
   end
 
   def check_plug_session_has_brand(conn) do
@@ -69,7 +67,8 @@ defmodule BoatNoodle.Authorization do
            conn.request_path == "/#{brands}/authenticate_login" or
            conn.request_path == "/#{brands}/forget_password" or
            conn.request_path == "/#{brands}/forget_password_email" or
-           conn.request_path == "/#{brands}/api/sales" do
+           conn.request_path == "/#{brands}/api/sales" or
+           conn.request_path == "/#{brands}/internal_api" do
         conn
       else
         conn
