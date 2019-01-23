@@ -90,7 +90,7 @@
 				    <div class="card-icon">
 					<i class="material-icons">assignment</i>
 				    </div>
-				    <h4 class="card-title ">Price Detail</h4>
+				    <h4 class="card-title ">Price Detail</h4><label style="color: red" >Total Price  Need to be created at Price List</label>
 				</div>
 		<div class="card-body ">
 		  <div class="row">
@@ -99,10 +99,10 @@
 		      <div class="tab-content">
 			<div class="tab-pane active" id="link10">
 			    <div class="row">
-				<label class="col-sm-2 col-form-label">Total Price</label>
+				
 				<div class="col-sm-4">
 				    <div class="form-group">
-					<input type="number" class="form-control" step="0.01"  placeholder="0.00" name="com[total_price]" >
+					<input type="hidden" class="form-control" step="0.01" value="0.00"  name="com[total_price]" >
 					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[item_category]" value="<%= @item_cat %>">
 					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[item_name]" value="<%= @item_name %>">
 					<input type="hidden" class="form-control" step="0.01"  placeholder="0.00" name="com[item_code]" value="<%= @item_code %>">
@@ -160,14 +160,14 @@
 									    </td>
 
 									    <td>
-
+									    	Cost Price Need To be Create At Price List
 										<%= for item <- c do %>
 
 										     <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item 
 										     # and c.itemcatid==^d 
 										     and c.brand_id ==^BN.get_brand_id(@conn), select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 
-											<p><input type="number" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cost_price]" required></p>
+											<p><input type="hidden" value="0.00" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cost_price]" required></p>
 
 											   <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cat_limit]" value="<%= b %>" >
 
@@ -184,13 +184,14 @@
 											<%end %>
 									    </td>
 									    <td>
+									    	Top Up Price Need To be Create At Price List
 										<%= for item <- c do %>
 
 										    <% prev_subcatid = Repo.all(from c in BoatNoodle.BN.ItemSubcat, where: c.subcatid== ^item 
 										    # and c.itemcatid==^d 
 										    and c.brand_id ==^BN.get_brand_id(@conn), select: %{itemname: c.itemname,price_code: c.price_code,subcatid: c.subcatid})|>hd %>
 
-											<p><input type="number" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][top_up]" required></p>
+											<p><input type="hidden" value="0.00"   placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][top_up]" required></p>
 
 											   <input type="hidden" step="0.01"  placeholder="0.00" name="item[<%= elem(param,0)%>,<%= prev_subcatid.itemname %>,<%= prev_subcatid.price_code %>][cat_limit]" value="<%= b %>" >
 

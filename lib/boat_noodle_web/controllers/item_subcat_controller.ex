@@ -1147,33 +1147,33 @@ defmodule BoatNoodleWeb.ItemSubcatController do
         true
     end
 
-    a = params["branc"]
-    branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
+    # a = params["branc"]
+    # branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
 
-    for branch <- branchs do
-      id = branch |> String.to_integer()
+    # for branch <- branchs do
+    #   id = branch |> String.to_integer()
 
-      item = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
-      com_items = item.items
-      comb = com_items |> String.split(",") |> Enum.uniq()
-      comb_id = subcatid |> Integer.to_string()
-      all_items = List.insert_at(comb, 0, subcatid)
-      new_items = all_items |> Enum.join(",")
+    #   item = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+    #   com_items = item.items
+    #   comb = com_items |> String.split(",") |> Enum.uniq()
+    #   comb_id = subcatid |> Integer.to_string()
+    #   all_items = List.insert_at(comb, 0, subcatid)
+    #   new_items = all_items |> Enum.join(",")
 
-      params = %{items: new_items}
+    #   params = %{items: new_items}
 
-      update_menu_catalog =
-        BoatNoodle.BN.MenuCatalog.changeset(item, params, BN.current_user(conn), "Update")
+    #   update_menu_catalog =
+    #     BoatNoodle.BN.MenuCatalog.changeset(item, params, BN.current_user(conn), "Update")
 
-      case Repo.update(update_menu_catalog) do
-        {:ok, menu_catalog} ->
-          true
+    #   case Repo.update(update_menu_catalog) do
+    #     {:ok, menu_catalog} ->
+    #       true
 
-        _ ->
-          IO.puts("failed menu catalog update")
-          false
-      end
-    end
+    #     _ ->
+    #       IO.puts("failed menu catalog update")
+    #       false
+    #   end
+    # end
 
     for item <- all_item do
       itemname = elem(item, 1)["product_name"]
@@ -1298,41 +1298,41 @@ defmodule BoatNoodleWeb.ItemSubcatController do
               menu_cat_id: menu_cat_id
             )
 
-          a = params["branc"]
-          branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
+          # a = params["branc"]
+          # branchs = a |> Enum.map(fn x -> x end) |> hd |> elem(1) |> String.split(",")
 
-          for branch <- branchs do
-            id = branch |> String.to_integer()
-            catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
+          # for branch <- branchs do
+          #   id = branch |> String.to_integer()
+          #   catalog = Repo.get_by(MenuCatalog, id: id, brand_id: BN.get_brand_id(conn))
 
-            combo_items = catalog.combo_items
-            comb = combo_items |> String.split(",") |> Enum.uniq()
+          #   combo_items = catalog.combo_items
+          #   comb = combo_items |> String.split(",") |> Enum.uniq()
 
-            combo_id = combo_d.id |> Integer.to_string()
+          #   combo_id = combo_d.id |> Integer.to_string()
 
-            all_combo_items = List.insert_at(comb, 0, combo_id)
+          #   all_combo_items = List.insert_at(comb, 0, combo_id)
 
-            new = all_combo_items |> Enum.join(",")
+          #   new = all_combo_items |> Enum.join(",")
 
-            catalog_params = %{combo_items: new}
+          #   catalog_params = %{combo_items: new}
 
-            update_menu_catalog =
-              BoatNoodle.BN.MenuCatalog.changeset(
-                catalog,
-                catalog_params,
-                BN.current_user(conn),
-                "Update Menu Catalog"
-              )
+          #   update_menu_catalog =
+          #     BoatNoodle.BN.MenuCatalog.changeset(
+          #       catalog,
+          #       catalog_params,
+          #       BN.current_user(conn),
+          #       "Update Menu Catalog"
+          #     )
 
-            case Repo.update(update_menu_catalog) do
-              {:ok, tag} ->
-                true
+          #   case Repo.update(update_menu_catalog) do
+          #     {:ok, tag} ->
+          #       true
 
-              _ ->
-                IO.puts("failed menu catalog update")
-                false
-            end
-          end
+          #     _ ->
+          #       IO.puts("failed menu catalog update")
+          #       false
+          #   end
+          # end
       end
     end
 
