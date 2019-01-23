@@ -12,7 +12,7 @@ defmodule BoatNoodleWeb.Endpoint do
     at: "/",
     from: :boat_noodle,
     gzip: false,
-    only: ~w(assets css fonts images js favicon.ico robots.txt)
+    only: ~w(assets css fonts images js favicon.ico robots.txt .well-known)
   )
 
   # Code reloading can be explicitly enabled under the

@@ -1,27 +1,23 @@
-<div class="col-md-8 mr-auto ml-auto" aria-label="add_new_item">
-
-  <div class="card " data-color="rose">
-
-    <div class="card-header text-center">
-      <h3 class="card-title">
+<%= form_for @conn, menu_item_path(@conn, :update, BN.get_domain(@conn), @item_subcat.subcatid), [multipart: true, method: "PUT",class: "form-horizontal"], fn f -> %>
+<div class="row">
+  
+  <div class="col-md-8" aria-label="add_new_item">
+    <div class="card " data-color="rose">
+      <div class="card-header text-center">
+        <h3 class="card-title">
         Edit <%= @item_subcat.itemname %>
-      </h3>
-
-    </div>
-
-    <%= form_for @conn, menu_item_path(@conn, :update, BN.get_domain(@conn), @item_subcat.subcatid), [multipart: true, method: "PUT",class: "form-horizontal"], fn f -> %>
+        </h3>
+      </div>
       <div class="card-body">
-
         <div class="row">
           <div class="col-sm-3">
-           
-                  <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Category</label>
+            
+            <label class="bmd-label-floating" style="font-size: 11px;margin-bottom: 0px;top: 0px;position: absolute;">Category</label>
             <select name="menu_item[itemcatid]" class="selectpicker" data-style="btn select-with-transition" title="Choose Category" data-size="10" required="">
-            <%= for cat <- @item_cat do %>
+              <%= for cat <- @item_cat do %>
               <option value="<%= cat.itemcatid %>"><%= cat.itemcatname %> (<%= cat.itemcatcode %>)</option>
-            <% end %>
+              <% end %>
             </select>
-
           </div>
           <div class="col-sm-3">
             <div class="form-group bmd-form-group">
@@ -29,13 +25,14 @@
               <input name="menu_item[itemcode]" value="<%= @item_subcat.itemcode %>" class="form-control" type="text" required="">
             </div>
           </div>
- 
+          
           <div class="col-sm-3">
             <div class="form-group bmd-form-group">
-              <label class="bmd-label-floating">Part Code</label>
-              <input name="menu_item[part_code]" value="<%= @item_subcat.part_code %>" class="form-control" type="text" required="">
+              <label class="bmd-label-floating">Price Code A</label>
+              <% val =  Enum.filter(@price_codes, fn x -> x.code == "A" end)  %>
+              <input name="menu_item[price_code][A]" value="<%= if val != [], do: hd(val).price %>" class="form-control" type="text" required="">
             </div>
-
+            
           </div>
 
                     <div class="col-sm-3">
@@ -53,27 +50,103 @@
               <label class="bmd-label-floating">Name</label>
               <input name="menu_item[itemname]" value="<%= @item_subcat.itemname %>" class="form-control" type="text" required="">
             </div>
-
           </div>
- 
+          
           <div class="col-sm-6">
             <div class="form-group bmd-form-group">
               <label class="bmd-label-floating">Description</label>
               <input name="menu_item[itemdesc]" value="<%= @item_subcat.itemdesc %>" class="form-control" type="text" required="">
             </div>
-
           </div>
 
 
         </div>
         <div class="row">
 
-                   <div class="col-sm-3">
           
+          <div class="col-sm-4">
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <%= if  @item_subcat.enable_disc == 0  do   %>
+                
+                <input class="form-check-input" name="a[enable_disc]" type="checkbox" > Enable Discount?
+                <% else %>
+                
+                <input class="form-check-input" name="a[enable_disc]" type="checkbox" checked="" > Enable Discount?
+                <% end %>
+                
+                <span class="form-check-sign">
+                  <span class="check"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                
+                <%= if  @item_subcat.is_activate == 0  do   %>
+                
+                <input class="form-check-input" type="checkbox" name="a[is_active]" > Activate?
+                <% else %>
+                
+                <input class="form-check-input" type="checkbox" name="a[is_active]"  checked > Activate?
+                <% end %>
+                <span class="form-check-sign">
+                  <span class="check"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <%= if  @item_subcat.include_spend == 0  do   %>
+                
+                <input class="form-check-input" name="a[include_spend]" type="checkbox" > Include In Minimum Spend?
+                <% else %>
+                
+                <input class="form-check-input" name="a[include_spend]" type="checkbox" checked> Include In Minimum Spend?
+                <% end %>
+                <span class="form-check-sign">
+                  <span class="check"></span>
+                </span>
+              </label>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="mr-auto">
+          <div class="btn btn-previous btn-fill btn-default btn-wd" aria-label="go_back">Go Back</div>
+        </div>
+        <div class="ml-auto">
+          <input class="btn btn-next btn-fill btn-rose btn-wd" name="item_update" value="Update" type="submit">
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card " data-color="rose">
+      <div class="card-header text-center">
+        <h3 class="card-title">
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          
+
+          
+          <div class="col-sm-12">
+            
             <div class="form-group bmd-form-group">
-               <label class="bmd-label-floating">Logical Printer</label>
+              <label class="bmd-label-floating">Logical Printer</label>
               <input name="menu_item[tagdesc]" class="form-control" value="<%= @item_subcat.tagdesc %>" type="text" >
             </div>
+
 
             </div>
                   <div class="col-sm-3">
@@ -85,11 +158,22 @@
   
         </div>
           <div class="col-sm-3">
-          
+ 
             <div class="form-group bmd-form-group">
-               <label class="bmd-label-floating">Start Time</label>
+              <label class="bmd-label-floating">Pshyical Printer</label>
+              <input name="menu_item[printer]" class="form-control" value="<%= @item_subcat.printer %>" type="text" >
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">Start Time</label>
               <input name="menu_item[item_start_hour]" class="form-control" value="<%= @item_subcat.item_start_hour %>" type="number" >
             </div>
+
         </div>
         <div class="col-sm-3">
             <div class="form-group bmd-form-group">
@@ -120,47 +204,33 @@
                             </span>
                           </label>
               </div>
+
+            
+            <div class="form-group bmd-form-group">
+              <label class="bmd-label-floating">End Time</label>
+              <input name="menu_item[item_end_hour]" class="form-control" value="<%= @item_subcat.item_end_hour %>" type="number" >
+
             </div>
-            <div class="col-sm-3">
-              <div class="form-check form-check-inline">
-                <label class="form-check-label">
-
-                          
-
-                       <%= if  @item_subcat.is_activate == 0  do   %>
-                   
-                              <input class="form-check-input" type="checkbox" name="a[is_active]" > Activate?
-                          <% else %>
-                        
-                             <input class="form-check-input" type="checkbox" name="a[is_active]"  checked > Activate?
-
-                          <% end %> 
-
-                            <span class="form-check-sign">
-                              <span class="check"></span>
-                            </span>
-                          </label>
-              </div>
+          </div>
+          
+        </div>
+        <div class="row" style="justify-content: center">
+          <div class="fileinput fileinput-new text-center" data-provides="fileinput" >
+            <div  class="fileinput-new thumbnail">
+              
+              <%= if @item_subcat.itemimage == nil do %>
+              
+              
+              <% else %>
+              <img src="data:image/png;base64, <%= @item_subcat.itemimage %>" alt="..." >
+              <% end %>
             </div>
-            <div class="col-sm-3">
-              <div class="form-check form-check-inline">
-                <label class="form-check-label">
-                        <%= if  @item_subcat.include_spend == 0  do   %>
-                   
-                              <input class="form-check-input" name="a[include_spend]" type="checkbox" > Include In Minimum Spend?
-                          <% else %>
-                        
-                              <input class="form-check-input" name="a[include_spend]" type="checkbox" checked> Include In Minimum Spend?
-
-                          <% end %> 
-
-
-                            <span class="form-check-sign">
-                              <span class="check"></span>
-                            </span>
-                          </label>
-              </div>
+            <div class="fileinput-preview fileinput-exists thumbnail" style=""></div>
+            
+            <div style="padding-left: 15%">
+              <input type="file" name="image" accept="image/*">
             </div>
+
 
           </div>
  
@@ -194,64 +264,99 @@
         <div class="ml-auto">
           <input class="btn btn-next btn-fill btn-rose btn-wd" name="item_update" value="Update" type="submit">
 
+
+            
+          </div>
+
         </div>
-        <div class="clearfix"></div>
       </div>
-      <% end %>
-
+    </div>
   </div>
-
 </div>
-
-
+<%= raw(@remark_html)  %>
+<% end %>
 <div class="col-md-8 mr-auto ml-auto" aria-label="add_new_item">
-
   <div class="card " data-color="rose">
-
     <div class="card-header text-center">
       <h3 class="card-title">
-        Existing Menu Items
-      </h3><p>Item code reference</p>
+      History Changes
+      </h3><p>User Edits</p>
       
-
     </div>
     <div class="card-body">
-    	<% group = @itemcodes |> Map.keys %>
-    	<div class="row">
-    		
-    	<%= for itemcode <- group do %>
-    		<div class="col-sm-3">
-    			<h3><%= itemcode %></h3>
-    		<% items = @itemcodes[itemcode] %>
-    		<%= for item <- items do %>
-    			<%= item.name %><br>
-    		<% end %>
-    		</div>
-    	<% end %>
-    	</div>
+      
+      <div class="row">
+        
+        
+        <div class="col-lg-12">
+          <table class="table">
+            <%= for change <- @changes do %>
+            <tr>
+              <td><%= elem(change,3) %></td>
+              <td>
+                <% map = elem(change,0) %>
+                <% keys = map |> Map.keys %>
+                <ul>
+                  <%= for key <- keys do %>
+                  <li><%= key%>: <%= map[key] %></li>
+                  <% end %>
+                </ul>
+              </td>
+              <td><%= elem(change,1) %></td>
+              <td><%= BoatNoodleWeb.LayoutView.my_time(elem(change,2)) %></td>
+            </tr>
+            <% end %>
+          </table>
+          
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-8 mr-auto ml-auto" aria-label="add_new_item">
+  <div class="card " data-color="rose">
+    <div class="card-header text-center">
+      <h3 class="card-title">
+      Existing Menu Items
+      </h3><p>Item code reference</p>
+      
+    </div>
+    <div class="card-body">
+      <% group = @itemcodes |> Map.keys %>
+      <div class="row">
+        
+        <%= for itemcode <- group do %>
+        <div class="col-sm-3">
+          <h3><%= itemcode %></h3>
+          <% items = @itemcodes[itemcode] %>
+          <%= for item <- items do %>
+          <%= item.name %><br>
+          <% end %>
+        </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
 <script type="text/javascript">
-  $(document).ready(function() {
-    $('select[name="menu_item[itemcatid]"]').selectpicker('val', '<%= @item_subcat.itemcatid %>');
-
-      $("select[title='Choose Printer']").each(function(){
-        var name  = $(this).attr("name")
-        var id = location.pathname.split("/")[3]
-      var brand = location.pathname.split("/")[1]
-
-        $.ajax({
-          url: "/"+brand+"/check_printer", 
-          dataType: "json",
-          data: {name: name, id: id}
-        }).done(function(j){
-          $(j).each(function(){
-         
-            $('select[name="'+j.name+'"]').selectpicker('val', j.tag_id);
-          })
-        })
-      })
-
-  })
+$(document).ready(function() {
+$('select[name="menu_item[itemcatid]"]').selectpicker('val', '<%= @item_subcat.itemcatid %>');
+$("select[title='Choose Printer']").each(function(){
+var name  = $(this).attr("name")
+var id = location.pathname.split("/")[3]
+var brand = location.pathname.split("/")[1]
+$.ajax({
+url: "/"+brand+"/check_printer",
+dataType: "json",
+data: {name: name, id: id}
+}).done(function(j){
+$(j).each(function(){
+$('select[name="'+j.name+'"]').selectpicker('val', j.tag_id);
+})
+})
+})
+})
 </script>

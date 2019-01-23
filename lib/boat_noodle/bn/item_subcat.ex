@@ -31,6 +31,7 @@ defmodule BoatNoodle.BN.ItemSubcat do
     field(:tagdesc, :string)
     field(:printer, :string)
     field(:is_combo, :integer, default: 0)
+    field(:item_image_url, :binary)
   end
 
   @doc false
@@ -64,7 +65,8 @@ defmodule BoatNoodle.BN.ItemSubcat do
         :is_print,
         :updated_at,
         :created_at,
-        :is_combo
+        :is_combo,
+        :item_image_url
       ])
       |> unique_constraint(:subcatid, name: "PRIMARY")
 

@@ -12,9 +12,34 @@ defmodule BoatNoodleWeb.RestaurantChannel do
   def handle_in("order_completed", payload, socket) do
     # broadcast(socket, "shout", payload)
     IO.inspect(payload)
-    a = Sales.changeset(%Sales{}, payload) |> Repo.insert()
+    branchcode = socket.topic |> String.split(":") |> List.last()
+    branch = Repo.all(from(b in Branch, where: b.branchcode == ^branchcode)) |> List.first()
 
+    brand_id = branch.brand_id
+    sales_param = payload["sales"]["sales"]
+    sales_param = Map.put(sales_param, "brand_id", brand_id)
+    sales_param = Map.put(sales_param, "branchid", Integer.to_string(branch.branchid))
+    a = Sales.changeset(%Sales{}, sales_param) |> Repo.insert()
     IO.inspect(a)
+
+    for map <- payload["sales"]["sales_details"] do
+      sales_detail_param = map
+      sales_detail_param = Map.put(sales_detail_param, "brand_id", brand_id)
+      b = SalesMaster.changeset(%SalesMaster{}, sales_detail_param) |> Repo.insert()
+      IO.inspect(b)
+    end
+
+    for map <- payload["sales"]["sales_payment"] do
+      sales_payment_param = map
+      sales_payment_param = Map.put(sales_payment_param, "brand_id", brand_id)
+
+      c =
+        SalesPayment.changeset(%SalesPayment{}, sales_payment_param)
+        |> Repo.insert()
+
+      IO.inspect(c)
+    end
+
     {:noreply, socket}
   end
 
@@ -42,14 +67,17 @@ defmodule BoatNoodleWeb.RestaurantChannel do
               r.brand_id == ^menu_catalog.brand_id and r.catalog_id == ^menu_catalog.id and
               r.is_active == ^1 and r.is_combo != ^1 and f.tagdesc == i.tagdesc,
           select: %{
+            id: i.subcatid,
             name: i.itemname,
             price: r.price,
             category_name: t.itemcatname,
             printer_ip: f.printer_ip,
-            port_no: f.port_no
+            port_no: f.port_no,
+            img_url: i.item_image_url
           }
         )
       )
+      |> Enum.map(fn x -> Map.put(x, :customization, customization(x.id, branch.brand_id)) end)
 
     broadcast(socket, "new_menu_items", %{menu_items: items})
     {:noreply, socket}
@@ -113,6 +141,21 @@ defmodule BoatNoodleWeb.RestaurantChannel do
     })
 
     {:noreply, socket}
+  end
+
+  def customization(target_item, brand_id) do
+    Repo.all(
+      from(
+        i in Remark,
+        where: i.target_item == ^target_item and i.brand_id == ^brand_id,
+        select: %{
+          id: i.itemsremarkid,
+          name: i.remark,
+          price: i.price
+        }
+      )
+    )
+    |> Poison.encode!()
   end
 
   # EcomBackendWeb.Endpoint.broadcast(topic, event, message)

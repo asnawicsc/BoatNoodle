@@ -106,6 +106,7 @@
       <thead>
         <tr>
           <th>No</th>
+          <th></th>
           <th>Code</th>
           <th>Name</th>
           <th>Category</th>
@@ -119,6 +120,13 @@
       <%= for subcat <- sbs do %>
       <tr>
         <td><%= elem(subcat,1) + 1 %></td>
+        <td>
+          <%= if elem(subcat,0).item_image_url != nil do %>
+<%= if File.exists?( File.cwd!() <> "/media/" <> elem(subcat,0).item_image_url) do %>
+          <img width="50px;" src="/images/uploads/<%= elem(subcat,0).item_image_url %>">
+<% end %>
+<% end %>
+        </td>
         <td><%= elem(subcat,0).itemcode %></td>
         <td><%= elem(subcat,0).itemname %></td>
         <td><%= elem(subcat,0).category %></td>

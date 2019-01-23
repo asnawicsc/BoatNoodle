@@ -53,7 +53,7 @@ defmodule BoatNoodleWeb.Router do
 
   scope "/:brand", BoatNoodleWeb do
     pipe_through(:browser)
-
+    get("/internal_api", InternalApiController, :webhook_get)
     get("/data_source/:query", SalesController, :query)
 
     get("/", PageController, :index2)

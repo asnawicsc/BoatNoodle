@@ -331,25 +331,38 @@ defmodule BoatNoodleWeb.BranchController do
   #   end
   # end
 
-  def get_api2(conn, %{"code" => branch_code}) do
-    branch = Repo.get_by(Branch, branchcode: branch_code)
+  def get_api2(conn, %{"code" => branch_code, "license_key" => api_key}) do
+    IO.inspect(conn)
+    branch = Repo.all(from(b in Branch, where: b.branchcode == ^branch_code))
 
-    api_key =
-      Comeonin.Bcrypt.hashpwsalt(branch.branchname)
-      |> String.replace("$2b", "$2y")
-      |> Base.url_encode64()
+    if branch != [] do
+      IO.inspect(api_key)
+      IO.inspect(hd(branch).api_key)
 
-    cg = Branch.changeset(branch, %{api_key: api_key}, 0, "edit")
-
-    map = %{key: api_key} |> Poison.encode!()
-
-    case Repo.update(cg) do
-      {:ok, bb} ->
-        send_resp(conn, 200, map)
-
-      {:error, cg} ->
-        send_resp(conn, 500, " not ok")
+      if api_key == hd(branch).api_key do
+        send_resp(conn, 200, "ok")
+      else
+        send_resp(conn, 500, "not ok")
+      end
+    else
+      send_resp(conn, 500, "not ok")
     end
+
+    # Comeonin.Bcrypt.hashpwsalt(branch.branchname)
+    # |> String.replace("$2b", "$2y")
+    # |> Base.url_encode64()
+
+    # cg = Branch.changeset(branch, %{api_key: api_key}, 0, "edit")
+
+    # map = %{key: api_key} |> Poison.encode!()
+
+    # case Repo.update(cg) do
+    #   {:ok, bb} ->
+    #     send_resp(conn, 200, map)
+
+    #   {:error, cg} ->
+    #     send_resp(conn, 500, "not ok")
+    # end
   end
 
   def index(conn, params) do

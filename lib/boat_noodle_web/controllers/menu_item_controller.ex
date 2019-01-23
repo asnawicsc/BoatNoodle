@@ -161,7 +161,8 @@ defmodule BoatNoodleWeb.MenuItemController do
             itemcatid: s.itemcatid,
             itemname: s.itemname,
             subcatid: s.subcatid,
-            itemcode: s.itemcode
+            itemcode: s.itemcode,
+            item_image_url: s.item_image_url
           }
         )
       )
@@ -807,7 +808,7 @@ defmodule BoatNoodleWeb.MenuItemController do
 
     part_code = menu_item_params["part_code"]
 
-    extension_params = %{"part_code" => part_code}
+    extension_params = %{}
     item_param = Map.merge(menu_item_params, extension_params)
 
     price_codes = menu_item_params["price_code"] |> Map.keys()
@@ -819,7 +820,7 @@ defmodule BoatNoodleWeb.MenuItemController do
         if menu_item_params["price_code"][price_code] != "0.00" do
           item_param = Map.put(item_param, "itemprice", price)
           item_param = Map.put(item_param, "price_code", price_code)
-          product_code = cat.itemcatcode <> part_code <> price_code
+          product_code = cat.itemcatcode <> price_code
 
           item_param = Map.put(item_param, "product_code", product_code)
 
@@ -869,7 +870,6 @@ defmodule BoatNoodleWeb.MenuItemController do
                   item_cat
 
                 {:error, cg2} ->
-                  IEx.pry()
                   false
               end
             else
@@ -882,6 +882,10 @@ defmodule BoatNoodleWeb.MenuItemController do
             {:ok, bin} = File.read(file_param.path)
 
             item_param = Map.put(item_param, "itemimage", Base.encode64(bin))
+
+            {:ok, pic} = BoatNoodle.Images.upload(file_param, 0, 0, "thumbnail")
+
+            item_param = Map.put(item_param, "item_image_url", pic.filename)
           end
 
           cg2 =

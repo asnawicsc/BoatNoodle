@@ -1,14 +1,22 @@
 use Mix.Config
 
-config :boat_noodle, BoatNoodleWeb.Endpoint,
-  http: [port: 8889],
-  url: [host: "str8.resertech.com", port: 8889],
-  check_origin: ["https://str8.resertech.com"]
-
 # config :boat_noodle, BoatNoodleWeb.Endpoint,
 #   http: [port: 8889],
-#   url: [host: "110.4.42.48", port: 8889],
-#   check_origin: ["http://110.4.42.48:8889"]
+#   url: [host: "pos.str8.my", port: 8889],
+#   check_origin: ["http://pos.str8.my"]
+
+config :boat_noodle, BoatNoodleWeb.Endpoint,
+  url: [host: "pos.str8.my", port: 443],
+  http: [port: 8889],
+  force_ssl: [hsts: true],
+  https: [
+    port: 443,
+    otp_app: :boat_noodle,
+    keyfile: "/etc/letsencrypt/live/str8.my/privkey.pem",
+    cacertfile: "/etc/letsencrypt/live/str8.my/fullchain.pem",
+    certfile: "/etc/letsencrypt/live/str8.my/cert.pem"
+  ],
+  check_origin: ["https://pos.str8.my"]
 
 config :logger, level: :info
 
