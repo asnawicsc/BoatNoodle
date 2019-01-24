@@ -1900,25 +1900,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
   def item_edit(conn, %{"subcatid" => id}) do
     item_subcat = Repo.get_by(ItemSubcat, subcatid: id, brand_id: BN.brand_id(conn))
 
-    changes =
-      Repo.all(
-        from(
-          m in ModalLog,
-          left_join: u in User,
-          on: u.id == m.user_id,
-          where: m.name == ^"item_subcat",
-          select: %{
-            description: m.description,
-            user_id: u.username,
-            inserted_at: m.inserted_at,
-            action: m.action
-          },
-          order_by: [desc: m.inserted_at, desc: m.id]
-        )
-      )
-      |> Enum.map(fn x -> {Poison.decode!(x.description), x.user_id, x.inserted_at, x.action} end)
-      |> Enum.filter(fn x -> elem(x, 0)["subcatid"] == String.to_integer(id) end)
-
     same_items =
       Repo.all(
         from(
@@ -2040,7 +2021,6 @@ defmodule BoatNoodleWeb.ItemSubcatController do
       item_cat: item_cat,
       price_codes: price_codes,
       printers: printers,
-      changes: changes,
       remark_html: remark_html
     )
   end

@@ -3,8 +3,8 @@
         <div class="panel panel-default">
             <div class="panel-heading">
 
-                <div class="row">
-                    <div class="col-md-6">
+               
+                    <div class="col-md-12">
                         <div class="card">
                             <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
@@ -13,7 +13,10 @@
                                 <h4 class="card-title">Date</h4>
                             </div>
                             <div class="card-body ">
-                                <br>
+                                
+                                 <div class="row">
+                                   <div class="col-md-6" style="margin-top: 13px;">
+                                   
                                 <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
                                     <i class="fa fa-calendar"></i>&nbsp;
                                     <span></span> <i class="fa fa-caret-down"></i>
@@ -22,30 +25,20 @@
                                    
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header card-header-rose card-header-text">
-                                <div class="card-icon">
-                                    <i class="material-icons">library_books</i>
-                                </div>
-                                <h4 class="card-title">Branch</h4>
-
-                              </div>
-                              <div class="card-body ">
+                                <div class="col-md-6">
                                   <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
                                     <%= for branch <- @branches do %>
                                       <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
                                     <% end %>
                                   </select>
                               </div>
-
+                              </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                 
 
             </div>
        
@@ -61,7 +54,7 @@
                       <i class="material-icons">done_all</i> Transactions
                     </a>
                         </li>
-                        <li class="nav-item" id="2">
+                       <%#  <li class="nav-item" id="2">
                             <a class="nav-link" data-toggle="tab" id="hourly_pax_summary" href="" role="tablist">
                       <i class="material-icons">date_range</i> Hourly Pax Summary
                     </a>
@@ -75,7 +68,7 @@
                             <a class="nav-link" data-toggle="tab" id="hourly_transaction_summary" href="" role="tablist">
                       <i class="material-icons">date_range</i> Hourly Transaction Summary
                     </a>
-                        </li>
+                        </li> %>
                     </ul>
                 </div>
             </div>
@@ -101,11 +94,11 @@
                                     <input type="hidden" name="end_date">
                                      <input type="hidden" name="branch">
 
-             <button class="btn btn-warning btn-round" type="submit">
+ <%#             <button class="btn btn-warning btn-round" type="submit">
                 <i class="material-icons">add_box</i> Download SQL Accounting
               <div class="ripple-container"></div>
 
-            </button>
+            </button> %>
         </form>
         </div>
 
@@ -120,12 +113,12 @@
                                     <input type="hidden" name="end_date">
                                      <input type="hidden" name="branch">
 
-           <button class="btn btn-warning btn-round" type="submit">
+<%#            <button class="btn btn-warning btn-round" type="submit">
                 <i class="material-icons">add_box</i> Download QUICKBOOK
               <div class="ripple-container"></div>
 
             </button>
-
+ %>
           
         </form>
         </div>

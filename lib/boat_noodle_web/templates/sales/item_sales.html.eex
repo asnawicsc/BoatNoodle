@@ -3,8 +3,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
 
-                <div class="row">
-                    <div class="col-md-6">
+                                  <div class="col-md-12">
                         <div class="card">
                             <div class="card-header card-header-rose card-header-text">
                                 <div class="card-icon">
@@ -13,7 +12,10 @@
                                 <h4 class="card-title">Date</h4>
                             </div>
                             <div class="card-body ">
-                                <br>
+                                
+                                 <div class="row">
+                                   <div class="col-md-6" style="margin-top: 13px;">
+                                   
                                 <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
                                     <i class="fa fa-calendar"></i>&nbsp;
                                     <span></span> <i class="fa fa-caret-down"></i>
@@ -22,27 +24,18 @@
                                    
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header card-header-rose card-header-text">
-                                <div class="card-icon">
-                                    <i class="material-icons">library_books</i>
-                                </div>
-                                <h4 class="card-title">Branch</h4>
-                            </div>
-                            <div class="card-body ">
-                                <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
-                                          <%= for branch <- @branches do %>
-                                            <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
-                                          <% end %>
-                                        </select>
+                                <div class="col-md-6">
+                                  <select class="selectpicker" data-size="7" data-style="btn btn-primary btn-round"  name="branchid" id="branch_list">
+                                    <%= for branch <- @branches do %>
+                                      <option value="<%= branch.branchid %>"><%= branch.branchname %></option>
+                                    <% end %>
+                                  </select>
+                              </div>
+                              </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
             </div>
         </div>
@@ -91,7 +84,7 @@
                 <input type="hidden" name="end_date">
             <input type="hidden" name="branch">
             <button class="btn btn-rose btn-round" id="item_sales_report_csv" >
-                <i class="material-icons">add_box</i> Combo Item Sales Report
+                <i class="material-icons">add_box</i>  Item Sales Report (Combo)
               <div class="ripple-container"></div>
             </button>
         </form>
@@ -103,7 +96,7 @@
                 <input type="hidden" name="end_date">
             <input type="hidden" name="branch">
             <button class="btn btn-rose btn-round" id="item_sales_report_csv" >
-                <i class="material-icons">add_box</i> Item Sales Report
+                <i class="material-icons">add_box</i> Item Sales Report (ALACART)
               <div class="ripple-container"></div>
             </button>
         </form>
@@ -117,27 +110,8 @@
               <div class="ripple-container"></div>
             </button>
            </form>
-            <form method="post" action='/<%= @conn.params["brand"] %>/combo_item_sales_csv'>
-             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-              <input type="hidden" name="start_date">
-                <input type="hidden" name="end_date">
-            <input type="hidden" name="branch">
-             <button class="btn btn-success btn-round" data-toggle="modal" id="combo_item_sales_csv" data-target="#exampleModal2">
-                <i class="material-icons">add_box</i> Item Sales Outlet Report
-              <div class="ripple-container"></div>
-            </button>
-        </form>
 
-                    <form method="post" action='/<%= @conn.params["brand"] %>/item_sales_outlet_csv_v2'>
-             <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-              <input type="hidden" name="start_date">
-                <input type="hidden" name="end_date">
-            <input type="hidden" name="branch">
-             <button class="btn btn-default btn-round" data-toggle="modal" id="item_sales_outlet_csv_v2" data-target="#exampleModal2">
-                <i class="material-icons">add_box</i> Item Sales Outlet Report V2
-              <div class="ripple-container"></div>
-            </button>
-        </form>
+
              
            </div>
         </div>

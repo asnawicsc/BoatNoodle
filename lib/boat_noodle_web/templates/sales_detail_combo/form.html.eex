@@ -1,0 +1,113 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :sales_details_combo, class: "control-label" %>
+    <%= number_input f, :sales_details_combo, class: "form-control" %>
+    <%= error_tag f, :sales_details_combo %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :order_id, class: "control-label" %>
+    <%= text_input f, :order_id, class: "form-control" %>
+    <%= error_tag f, :order_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :sales_id, class: "control-label" %>
+    <%= text_input f, :sales_id, class: "form-control" %>
+    <%= error_tag f, :sales_id %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :itemname, class: "control-label" %>
+    <%= text_input f, :itemname, class: "form-control" %>
+    <%= error_tag f, :itemname %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :qty, class: "control-label" %>
+    <%= number_input f, :qty, class: "form-control" %>
+    <%= error_tag f, :qty %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :order_price, class: "control-label" %>
+    <%= number_input f, :order_price, step: "any", class: "form-control" %>
+    <%= error_tag f, :order_price %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_void, class: "control-label" %>
+    <%= number_input f, :is_void, class: "form-control" %>
+    <%= error_tag f, :is_void %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :void_by, class: "control-label" %>
+    <%= text_input f, :void_by, class: "form-control" %>
+    <%= error_tag f, :void_by %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :void_reason, class: "control-label" %>
+    <%= text_input f, :void_reason, class: "form-control" %>
+    <%= error_tag f, :void_reason %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :remark, class: "control-label" %>
+    <%= text_input f, :remark, class: "form-control" %>
+    <%= error_tag f, :remark %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :afterdisc, class: "control-label" %>
+    <%= number_input f, :afterdisc, step: "any", class: "form-control" %>
+    <%= error_tag f, :afterdisc %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :unit_price, class: "control-label" %>
+    <%= number_input f, :unit_price, step: "any", class: "form-control" %>
+    <%= error_tag f, :unit_price %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :created_at, class: "control-label" %>
+    <%= datetime_select f, :created_at, class: "form-control" %>
+    <%= error_tag f, :created_at %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :updated_at, class: "control-label" %>
+    <%= datetime_select f, :updated_at, class: "form-control" %>
+    <%= error_tag f, :updated_at %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :top_up, class: "control-label" %>
+    <%= number_input f, :top_up, step: "any", class: "form-control" %>
+    <%= error_tag f, :top_up %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :is_combo_header, class: "control-label" %>
+    <%= number_input f, :is_combo_header, class: "form-control" %>
+    <%= error_tag f, :is_combo_header %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :brand_id, class: "control-label" %>
+    <%= number_input f, :brand_id, class: "form-control" %>
+    <%= error_tag f, :brand_id %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

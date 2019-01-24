@@ -367,6 +367,8 @@ defmodule BoatNoodleWeb.Router do
     get("/advance", PageController, :advance)
     post("/upload_menu_item", ItemSubcatController, :upload_menu_item)
 
+    resources("/sales_detail_combo", SalesDetailComboController)
+
     get("/combo/combo_item_report_csv", SalesController, :combo_item_report_csv)
     get("/experiment", PageController, :experiment)
     get("/experiment2", PageController, :experiment2)

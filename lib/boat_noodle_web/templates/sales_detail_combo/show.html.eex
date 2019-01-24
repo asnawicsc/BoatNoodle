@@ -1,0 +1,93 @@
+<h2>Show Sales detail combo</h2>
+
+<ul>
+
+  <li>
+    <strong>Sales details combo:</strong>
+    <%= @sales_detail_combo.sales_details_combo %>
+  </li>
+
+  <li>
+    <strong>Order:</strong>
+    <%= @sales_detail_combo.order_id %>
+  </li>
+
+  <li>
+    <strong>Sales:</strong>
+    <%= @sales_detail_combo.sales_id %>
+  </li>
+
+  <li>
+    <strong>Itemname:</strong>
+    <%= @sales_detail_combo.itemname %>
+  </li>
+
+  <li>
+    <strong>Qty:</strong>
+    <%= @sales_detail_combo.qty %>
+  </li>
+
+  <li>
+    <strong>Order price:</strong>
+    <%= @sales_detail_combo.order_price %>
+  </li>
+
+  <li>
+    <strong>Is void:</strong>
+    <%= @sales_detail_combo.is_void %>
+  </li>
+
+  <li>
+    <strong>Void by:</strong>
+    <%= @sales_detail_combo.void_by %>
+  </li>
+
+  <li>
+    <strong>Void reason:</strong>
+    <%= @sales_detail_combo.void_reason %>
+  </li>
+
+  <li>
+    <strong>Remark:</strong>
+    <%= @sales_detail_combo.remark %>
+  </li>
+
+  <li>
+    <strong>Afterdisc:</strong>
+    <%= @sales_detail_combo.afterdisc %>
+  </li>
+
+  <li>
+    <strong>Unit price:</strong>
+    <%= @sales_detail_combo.unit_price %>
+  </li>
+
+  <li>
+    <strong>Created at:</strong>
+    <%= @sales_detail_combo.created_at %>
+  </li>
+
+  <li>
+    <strong>Updated at:</strong>
+    <%= @sales_detail_combo.updated_at %>
+  </li>
+
+  <li>
+    <strong>Top up:</strong>
+    <%= @sales_detail_combo.top_up %>
+  </li>
+
+  <li>
+    <strong>Is combo header:</strong>
+    <%= @sales_detail_combo.is_combo_header %>
+  </li>
+
+  <li>
+    <strong>Brand:</strong>
+    <%= @sales_detail_combo.brand_id %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: sales_detail_combo_path(@conn, :edit, @sales_detail_combo, BN.get_domain(@conn)) %></span>
+<span><%= link "Back", to: sales_detail_combo_path(@conn, :index, BN.get_domain(@conn)) %></span>

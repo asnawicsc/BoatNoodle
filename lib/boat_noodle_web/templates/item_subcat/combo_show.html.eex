@@ -239,8 +239,8 @@
           <p class="card-category">Selected for <span class="selected_id">none</span></p>
         </div>
         <div class="dropdown pull-right" style="padding: 10px;">
-          <button aria-label="item_summary" class="btn btn-info btn-round">
-                <i class="material-icons">ballot</i> COMBO Summary
+          <button aria-label="item_summary" class="btn btn-danger btn-round">
+                <i class="material-icons">ballot</i>BACK TO COMBO Summary
               <div class="ripple-container"></div>
             <div class="ripple-container"></div></button>
         </div>

@@ -5226,4 +5226,100 @@ defmodule BoatNoodle.BN do
   def change_combo_catalog(%ComboCatalog{} = combo_catalog) do
     ComboCatalog.changeset(combo_catalog, %{})
   end
+
+  alias BoatNoodle.BN.SalesDetailCombo
+
+  @doc """
+  Returns the list of sales_detail_combo.
+
+  ## Examples
+
+      iex> list_sales_detail_combo()
+      [%SalesDetailCombo{}, ...]
+
+  """
+  def list_sales_detail_combo do
+    Repo.all(SalesDetailCombo)
+  end
+
+  @doc """
+  Gets a single sales_detail_combo.
+
+  Raises `Ecto.NoResultsError` if the Sales detail combo does not exist.
+
+  ## Examples
+
+      iex> get_sales_detail_combo!(123)
+      %SalesDetailCombo{}
+
+      iex> get_sales_detail_combo!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_sales_detail_combo!(id), do: Repo.get!(SalesDetailCombo, id)
+
+  @doc """
+  Creates a sales_detail_combo.
+
+  ## Examples
+
+      iex> create_sales_detail_combo(%{field: value})
+      {:ok, %SalesDetailCombo{}}
+
+      iex> create_sales_detail_combo(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_sales_detail_combo(attrs \\ %{}) do
+    %SalesDetailCombo{}
+    |> SalesDetailCombo.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a sales_detail_combo.
+
+  ## Examples
+
+      iex> update_sales_detail_combo(sales_detail_combo, %{field: new_value})
+      {:ok, %SalesDetailCombo{}}
+
+      iex> update_sales_detail_combo(sales_detail_combo, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_sales_detail_combo(%SalesDetailCombo{} = sales_detail_combo, attrs) do
+    sales_detail_combo
+    |> SalesDetailCombo.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a SalesDetailCombo.
+
+  ## Examples
+
+      iex> delete_sales_detail_combo(sales_detail_combo)
+      {:ok, %SalesDetailCombo{}}
+
+      iex> delete_sales_detail_combo(sales_detail_combo)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_sales_detail_combo(%SalesDetailCombo{} = sales_detail_combo) do
+    Repo.delete(sales_detail_combo)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking sales_detail_combo changes.
+
+  ## Examples
+
+      iex> change_sales_detail_combo(sales_detail_combo)
+      %Ecto.Changeset{source: %SalesDetailCombo{}}
+
+  """
+  def change_sales_detail_combo(%SalesDetailCombo{} = sales_detail_combo) do
+    SalesDetailCombo.changeset(sales_detail_combo, %{})
+  end
 end

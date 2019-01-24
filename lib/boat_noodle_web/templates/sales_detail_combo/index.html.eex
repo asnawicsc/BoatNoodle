@@ -1,0 +1,58 @@
+<h2>Listing Sales detail combo</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Sales details combo</th>
+      <th>Order</th>
+      <th>Sales</th>
+      <th>Itemname</th>
+      <th>Qty</th>
+      <th>Order price</th>
+      <th>Is void</th>
+      <th>Void by</th>
+      <th>Void reason</th>
+      <th>Remark</th>
+      <th>Afterdisc</th>
+      <th>Unit price</th>
+      <th>Created at</th>
+      <th>Updated at</th>
+      <th>Top up</th>
+      <th>Is combo header</th>
+      <th>Brand</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for sales_detail_combo <- @sales_detail_combo do %>
+    <tr>
+      <td><%= sales_detail_combo.sales_details_combo %></td>
+      <td><%= sales_detail_combo.order_id %></td>
+      <td><%= sales_detail_combo.sales_id %></td>
+      <td><%= sales_detail_combo.itemname %></td>
+      <td><%= sales_detail_combo.qty %></td>
+      <td><%= sales_detail_combo.order_price %></td>
+      <td><%= sales_detail_combo.is_void %></td>
+      <td><%= sales_detail_combo.void_by %></td>
+      <td><%= sales_detail_combo.void_reason %></td>
+      <td><%= sales_detail_combo.remark %></td>
+      <td><%= sales_detail_combo.afterdisc %></td>
+      <td><%= sales_detail_combo.unit_price %></td>
+      <td><%= sales_detail_combo.created_at %></td>
+      <td><%= sales_detail_combo.updated_at %></td>
+      <td><%= sales_detail_combo.top_up %></td>
+      <td><%= sales_detail_combo.is_combo_header %></td>
+      <td><%= sales_detail_combo.brand_id %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: sales_detail_combo_path(@conn, :show, sales_detail_combo.sales_details_combo), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: sales_detail_combo_path(@conn, :edit, sales_detail_combo.sales_details_combo), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: sales_detail_combo_path(@conn, :delete, sales_detail_combo.sales_details_combo), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Sales detail combo", to: sales_detail_combo_path(@conn, :new, BN.get_domain(@conn)) %></span>

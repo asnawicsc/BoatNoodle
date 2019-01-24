@@ -3599,7 +3599,8 @@ defmodule BoatNoodleWeb.UserChannel do
               sp in BoatNoodle.BN.SalesPayment,
               left_join: s in BoatNoodle.BN.Sales,
               on: sp.salesid == s.salesid,
-              where: s.salesdate == ^item and sp.brand_id == ^brand_id and s.brand_id == ^brand_id,
+              where:
+                s.salesdate == ^item and sp.brand_id == ^brand_id and s.brand_id == ^brand_id,
               select: %{
                 salesdate: s.salesdate,
                 grand_total: sp.grand_total,

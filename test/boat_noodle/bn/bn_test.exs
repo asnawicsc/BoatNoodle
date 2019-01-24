@@ -4126,4 +4126,96 @@ defmodule BoatNoodle.BNTest do
       assert %Ecto.Changeset{} = BN.change_combo_catalog(combo_catalog)
     end
   end
+
+  describe "sales_detail_combo" do
+    alias BoatNoodle.BN.SalesDetailCombo
+
+    @valid_attrs %{afterdisc: "120.5", brand_id: 42, created_at: ~N[2010-04-17 14:00:00.000000], is_combo_header: 42, is_void: 42, itemname: "some itemname", order_id: "some order_id", order_price: "120.5", qty: 42, remark: "some remark", sales_details_combo: 42, sales_id: "some sales_id", top_up: "120.5", unit_price: "120.5", updated_at: ~N[2010-04-17 14:00:00.000000], void_by: "some void_by", void_reason: "some void_reason"}
+    @update_attrs %{afterdisc: "456.7", brand_id: 43, created_at: ~N[2011-05-18 15:01:01.000000], is_combo_header: 43, is_void: 43, itemname: "some updated itemname", order_id: "some updated order_id", order_price: "456.7", qty: 43, remark: "some updated remark", sales_details_combo: 43, sales_id: "some updated sales_id", top_up: "456.7", unit_price: "456.7", updated_at: ~N[2011-05-18 15:01:01.000000], void_by: "some updated void_by", void_reason: "some updated void_reason"}
+    @invalid_attrs %{afterdisc: nil, brand_id: nil, created_at: nil, is_combo_header: nil, is_void: nil, itemname: nil, order_id: nil, order_price: nil, qty: nil, remark: nil, sales_details_combo: nil, sales_id: nil, top_up: nil, unit_price: nil, updated_at: nil, void_by: nil, void_reason: nil}
+
+    def sales_detail_combo_fixture(attrs \\ %{}) do
+      {:ok, sales_detail_combo} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> BN.create_sales_detail_combo()
+
+      sales_detail_combo
+    end
+
+    test "list_sales_detail_combo/0 returns all sales_detail_combo" do
+      sales_detail_combo = sales_detail_combo_fixture()
+      assert BN.list_sales_detail_combo() == [sales_detail_combo]
+    end
+
+    test "get_sales_detail_combo!/1 returns the sales_detail_combo with given id" do
+      sales_detail_combo = sales_detail_combo_fixture()
+      assert BN.get_sales_detail_combo!(sales_detail_combo.id) == sales_detail_combo
+    end
+
+    test "create_sales_detail_combo/1 with valid data creates a sales_detail_combo" do
+      assert {:ok, %SalesDetailCombo{} = sales_detail_combo} = BN.create_sales_detail_combo(@valid_attrs)
+      assert sales_detail_combo.afterdisc == Decimal.new("120.5")
+      assert sales_detail_combo.brand_id == 42
+      assert sales_detail_combo.created_at == ~N[2010-04-17 14:00:00.000000]
+      assert sales_detail_combo.is_combo_header == 42
+      assert sales_detail_combo.is_void == 42
+      assert sales_detail_combo.itemname == "some itemname"
+      assert sales_detail_combo.order_id == "some order_id"
+      assert sales_detail_combo.order_price == Decimal.new("120.5")
+      assert sales_detail_combo.qty == 42
+      assert sales_detail_combo.remark == "some remark"
+      assert sales_detail_combo.sales_details_combo == 42
+      assert sales_detail_combo.sales_id == "some sales_id"
+      assert sales_detail_combo.top_up == Decimal.new("120.5")
+      assert sales_detail_combo.unit_price == Decimal.new("120.5")
+      assert sales_detail_combo.updated_at == ~N[2010-04-17 14:00:00.000000]
+      assert sales_detail_combo.void_by == "some void_by"
+      assert sales_detail_combo.void_reason == "some void_reason"
+    end
+
+    test "create_sales_detail_combo/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = BN.create_sales_detail_combo(@invalid_attrs)
+    end
+
+    test "update_sales_detail_combo/2 with valid data updates the sales_detail_combo" do
+      sales_detail_combo = sales_detail_combo_fixture()
+      assert {:ok, sales_detail_combo} = BN.update_sales_detail_combo(sales_detail_combo, @update_attrs)
+      assert %SalesDetailCombo{} = sales_detail_combo
+      assert sales_detail_combo.afterdisc == Decimal.new("456.7")
+      assert sales_detail_combo.brand_id == 43
+      assert sales_detail_combo.created_at == ~N[2011-05-18 15:01:01.000000]
+      assert sales_detail_combo.is_combo_header == 43
+      assert sales_detail_combo.is_void == 43
+      assert sales_detail_combo.itemname == "some updated itemname"
+      assert sales_detail_combo.order_id == "some updated order_id"
+      assert sales_detail_combo.order_price == Decimal.new("456.7")
+      assert sales_detail_combo.qty == 43
+      assert sales_detail_combo.remark == "some updated remark"
+      assert sales_detail_combo.sales_details_combo == 43
+      assert sales_detail_combo.sales_id == "some updated sales_id"
+      assert sales_detail_combo.top_up == Decimal.new("456.7")
+      assert sales_detail_combo.unit_price == Decimal.new("456.7")
+      assert sales_detail_combo.updated_at == ~N[2011-05-18 15:01:01.000000]
+      assert sales_detail_combo.void_by == "some updated void_by"
+      assert sales_detail_combo.void_reason == "some updated void_reason"
+    end
+
+    test "update_sales_detail_combo/2 with invalid data returns error changeset" do
+      sales_detail_combo = sales_detail_combo_fixture()
+      assert {:error, %Ecto.Changeset{}} = BN.update_sales_detail_combo(sales_detail_combo, @invalid_attrs)
+      assert sales_detail_combo == BN.get_sales_detail_combo!(sales_detail_combo.id)
+    end
+
+    test "delete_sales_detail_combo/1 deletes the sales_detail_combo" do
+      sales_detail_combo = sales_detail_combo_fixture()
+      assert {:ok, %SalesDetailCombo{}} = BN.delete_sales_detail_combo(sales_detail_combo)
+      assert_raise Ecto.NoResultsError, fn -> BN.get_sales_detail_combo!(sales_detail_combo.id) end
+    end
+
+    test "change_sales_detail_combo/1 returns a sales_detail_combo changeset" do
+      sales_detail_combo = sales_detail_combo_fixture()
+      assert %Ecto.Changeset{} = BN.change_sales_detail_combo(sales_detail_combo)
+    end
+  end
 end
