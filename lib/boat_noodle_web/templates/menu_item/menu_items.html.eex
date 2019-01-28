@@ -1,173 +1,170 @@
-
-
-  
-<div class="tab-pane active show" id="menu_item" >
+<div class="tab-pane active show" id="menu_item">
   <div class="row">
-  <div class="col-lg-4">
-<div class="tab-pane active show" id="menu_item" >
-  <div class="card">
-      <div class="card-header card-header-text card-header-danger">
-      <div class="card-text">     <h4 class="card-title mt-0">Active Price List</h4>
-       
-       
-      </div>
-  
-     
     
-    
-     
-    </div>
-      
-    <div class="card-body" >
-     
-      <table class="table data">
-      <thead>
-        <tr>
- 
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Name</th>
-         
-          <th>Price</th>
-      
-        </tr>
-      </thead>  
-      <tbody>
-    
-  <%= for item <- @price_list do %>
-          
-       
-     
-      <tr>
-        <td><%= item.name %></td>
-        <td><%= item.start_date %></td>
-        <td><%= item.end_date %></td>
-        <td><%= item.price %></td>
-      
-      </tr>
-  <%  end %>
-      </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-</div>
-  <div class="col-lg-8">
-  <div class="card">
-      <div class="card-header card-header-text card-header-warning">
-      <div class="card-text">
-        <h4 class="card-title">Menu Items</h4>
-      </div>
-      <div class="dropdown pull-right" style="padding: 10px;">
-          <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header card-header-text card-header-warning">
+          <div class="card-text">
+            <h4 class="card-title">Menu Items</h4>
+          </div>
+          <div class="dropdown pull-right" style="padding: 10px;">
+            <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
             <i class="material-icons">settings</i>
             <span class="caret"></span>
-          <div class="ripple-container"></div></button>
-          <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
+            <div class="ripple-container"></div></button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="top-end" style="position: absolute; top: -180px; left: -69px; will-change: top, left;">
+              <li>
+                <a href="/<%= @conn.params[" brand "] %>/menu_item/new">New Item</a>
+              </li>
+            </ul>
+          </div>
+          <div class="dropdown pull-right" style="padding: 10px;">
 
-            <li>
-              <a href="/<%= @conn.params["brand"] %>/menu_item/new">New Item</a>
-            </li>
-
-          </ul>
-        </div>
-        <div class="dropdown pull-right" style="padding: 10px;">
-          
-          <button class="btn btn-warning btn-round" onclick="window.location.href='/<%= @conn.params["brand"] %>/csv'" >
-                <i class="material-icons">add_box</i> Download Menu list CSV
-              <div class="ripple-container"></div>
-
+            <button class="btn btn-warning btn-round" onclick="window.location.href='/<%= @conn.params["brand"]%>/csv'">
+            <i class="material-icons">add_box</i> Download Menu list CSV
+            <div class="ripple-container"></div>
             </button>
             <button class="btn btn-rose btn-round" data-toggle="modal" data-target="#exampleModal2">
-                <i class="material-icons">add_box</i> Upload Menu
-              <div class="ripple-container"></div>
+            <i class="material-icons">add_box</i> Upload Menu
+            <div class="ripple-container"></div>
             </button>
-           
+
+          </div>
+
         </div>
-          
-     
-    </div>
-    
-    <div class="card-body" >
-       <div style="">
-          
-          <b>
+
+        <div class="card-body">
+          <div style="">
+
+            <b>
             
-          Price Codes: 
-          </b>
-          <span class="badge badge-primary" >A</span>
-          <span class="badge badge-warning" >B</span>
-          <span class="badge badge-success" >C</span>
-          <span class="badge badge-info" >D</span>
-          <span class="badge badge-rose" >E</span>
-          <span class="badge badge-danger" >Others</span>
+            Price Codes:
+            </b>
+            <span class="badge badge-primary">A</span>
+            <span class="badge badge-warning">B</span>
+            <span class="badge badge-success">C</span>
+            <span class="badge badge-info">D</span>
+            <span class="badge badge-rose">E</span>
+            <span class="badge badge-danger">Others</span>
+          </div>
+          <table class="table data" cellpadding="0" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th></th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Category</th>
+
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% sbs = @subcats |> Enum.with_index %>
+                <% subcatdata = subcat_data(@conn) %>
+                  <%= for subcat <- sbs do %>
+                    <tr>
+                      <td>
+                        <%= elem(subcat,1) + 1 %>
+                      </td>
+                      <td>
+                        <%= if elem(subcat,0).item_image_url != nil do %>
+                          <%= if File.exists?( File.cwd!() <> "/media/" <> elem(subcat,0).item_image_url) do %>
+                            <img width="50px;" src="/images/uploads/<%= elem(subcat,0).item_image_url %>">
+                            <% end %>
+                              <% end %>
+                      </td>
+                      <td>
+                        <%= elem(subcat,0).itemcode %>
+                      </td>
+                      <td>
+                        <%= elem(subcat,0).itemname %>
+                      </td>
+                      <td>
+                        <%= elem(subcat,0).category %>
+                      </td>
+                      <td style="width: auto;">
+                        <a href="/<%= @conn.params["brand"]%>/price_list/<%= elem(subcat,0).subcatid %>" class="btn btn-success btn-sm ">Price List</a>
+                        <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm">Show</a>
+                        <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>/edit" class="btn btn-primary btn-sm">Edit</a>
+                      </td>
+                    </tr>
+                    <% end %>
+            </tbody>
+          </table>
         </div>
-	  	<table class="table data" cellpadding="0" cellspacing="0" width="100%">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th></th>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Category</th>
-        
-          <th>Edit</th>
-        </tr>
-      </thead>  
-      <tbody>
-        <% sbs = @subcats |> Enum.with_index %>
-<% subcatdata = subcat_data(@conn) %>
-      <%= for subcat <- sbs do %>
-      <tr>
-        <td><%= elem(subcat,1) + 1 %></td>
-        <td>
-          <%= if elem(subcat,0).item_image_url != nil do %>
-<%= if File.exists?( File.cwd!() <> "/media/" <> elem(subcat,0).item_image_url) do %>
-          <img width="50px;" src="/images/uploads/<%= elem(subcat,0).item_image_url %>">
-<% end %>
-<% end %>
-        </td>
-        <td><%= elem(subcat,0).itemcode %></td>
-        <td><%= elem(subcat,0).itemname %></td>
-        <td><%= elem(subcat,0).category %></td>
-        <td  style="width: auto;">
-     <a href="/<%= @conn.params["brand"]%>/price_list/<%= elem(subcat,0).subcatid %>" class="btn btn-success btn-sm ">Price List</a>
-          <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>" class="btn btn-primary btn-sm" >Show</a>
-          <a href="/<%= @conn.params["brand"]%>/items/<%= elem(subcat,0).subcatid %>/edit" class="btn btn-primary btn-sm">Edit</a>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="tab-pane active show" id="menu_item">
+        <div class="card">
+          <div class="card-header card-header-text card-header-danger">
+            <div class="card-text">
+              <h4 class="card-title mt-0">Active Price List</h4>
+            </div>
+          </div>
+          <div class="card-body">
 
-        </td>
-      </tr>
-      <% end %>
-      </tbody>
-      </table>
+            <table class="table data">
+              <thead>
+                <tr>
+
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Name</th>
+                  <th>Price</th>
+
+                </tr>
+              </thead>
+              <tbody>
+
+                <%= for item <- @price_list do %>
+
+                  <tr>
+                    <td>
+                      <%= item.name %>
+                    </td>
+                    <td>
+                      <%= item.start_date %>
+                    </td>
+                    <td>
+                      <%= item.end_date %>
+                    </td>
+                    <td>
+                      <%= item.price %>
+                    </td>
+
+                  </tr>
+                  <%  end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-</div>
-</div>
- <%= form_for @changeset, item_subcat_path(@conn, :upload_menu_item,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
-                    <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
-   <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
-<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel2">Upload Menu </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+<%= form_for @changeset, item_subcat_path(@conn, :upload_menu_item,@conn.private.plug_session["brand"]), [method: :post, multipart: true], fn f -> %>
+  <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token() %>">
+  <input type="hidden" name="_csrf_token" value="<%= Phoenix.Controller.get_csrf_token %>">
+  <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel2">Upload Menu </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
         </button>
-      </div>
-      <div class="modal-body" >
-           <%= file_input f, :file, accept: ".csv"%>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary"  >Upload Menu</button>
-        
+        </div>
+        <div class="modal-body">
+          <%= file_input f, :file, accept: ".csv"%>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Upload Menu</button>
+
+        </div>
       </div>
     </div>
   </div>
-</div>
-    <% end %>
-
-
+  <% end %>
